@@ -2,6 +2,7 @@
 """Run the same QuickJS scripts on Windows and Unix, with per-process timeouts."""
 import argparse
 import errno
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -9,14 +10,15 @@ import platform
 import subprocess
 import sys
 import time
+from build_config import load_config
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def execute(command, cwd, timeout=60):
+def execute(command, cwd, timeout=60, loader=None):
     if platform.system() == "Linux" and str(command[0]).endswith(".exe"):
         arch = "aarch64" if platform.machine().lower() in ("aarch64", "arm64") else "x86_64"
-        loader = ROOT / f"dist/ape-{arch}.elf"
+        loader = loader or ROOT / f"dist/ape-{arch}.elf"
         if loader.exists():
             command = [loader, *command]
     environment = dict(os.environ, TZ="UTC", LC_ALL="C")
@@ -34,24 +36,28 @@ def main():
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--qjs", type=Path, default=ROOT / "dist/qjs.exe")
-    parser.add_argument("--qjsc", type=Path, default=ROOT / "dist/qjsc.exe")
+    parser.add_argument("--nightly", action="store_true")
+    parser.add_argument("--qjs", type=Path)
+    parser.add_argument("--qjsc", type=Path)
     parser.add_argument("--upstream", action="store_true")
     parser.add_argument("--compile", action="store_true", help="Also compile and run a standalone APE (needs cosmocc)")
     parser.add_argument("--standalone", type=Path, help="Run an existing standalone APE produced on another host")
     args = parser.parse_args()
-    qjs = args.qjs.resolve()
-    qjsc = args.qjsc.resolve()
+    settings = load_config("nightly" if args.nightly else None)
+    qjs = (args.qjs or settings.dist / "qjs.exe").resolve()
+    qjsc = (args.qjsc or settings.dist / "qjsc.exe").resolve()
+    arch = "aarch64" if platform.machine().lower() in ("aarch64", "arm64") else "x86_64"
+    loader = settings.dist / f"ape-{arch}.elf"
     system = platform.system().lower()
-    scratch = ROOT / "build" / ("test-" + system)
+    scratch = ROOT / "build" / ("test-" + ("nightly-" if settings.profile == "nightly" else "") + system)
     scratch.mkdir(parents=True, exist_ok=True)
     results = []
 
     def check(name, command, cwd=scratch, expected=0, contains=None, timeout=60):
         start = time.monotonic()
         try:
-            result = execute(command, cwd, timeout)
-            # Cosmo 4.0.2 intentionally exposes POSIX wait status to native
+            result = execute(command, cwd, timeout, loader=loader)
+            # Both locked toolchains expose POSIX wait status to native
             # Windows parents; retain the raw return code in the report.
             expected_raw = expected << 8 if os.name == "nt" else expected
             passed = result.returncode == expected_raw and (contains is None or contains in result.stdout)
@@ -92,6 +98,13 @@ def main():
             check("qjsc/run-ape", [standalone], contains="Hello from QuickJS")
     if args.standalone:
         check("qjsc/cross-host-ape", [args.standalone.resolve()], contains="Hello from QuickJS")
+    if os.name == "nt":
+        check("cli/windows-module-path", [qjs, "-m", r".\tests\modules.js"],
+              cwd=ROOT, contains="PASS modules")
+        check("cli/windows-argument", [qjs, "-m", r".\examples\system-info.js", r"literal\value"],
+              cwd=ROOT, contains=json.dumps(r"literal\value"))
+        check("qjsc/windows-module-path", [qjsc, "-c", "-m", "-o", scratch / "modules.c", r"tests\modules.js"],
+              cwd=ROOT)
 
     skipped = []
     if args.upstream:
@@ -106,10 +119,11 @@ def main():
             check("upstream/" + name, [qjs, *flags, Path(f"tests/{name}.js")], cwd=source, timeout=120)
 
     failed = sum(not result["passed"] for result in results)
-    report = dict(platform=platform.platform(), python=sys.version.split()[0],
-                  qjs=str(qjs), quickjs_commit=json.loads((ROOT / "versions.json").read_text())["quickjs"]["commit"],
+    report = dict(platform=platform.platform(), python=sys.version.split()[0], build_profile=settings.profile,
+                  qjs=str(qjs), qjs_sha256=hashlib.sha256(qjs.read_bytes()).hexdigest(),
+                  quickjs_commit=settings.data["quickjs"]["commit"], cosmopolitan=settings.data["cosmopolitan"],
                   passed=len(results) - failed, failed=failed, skipped=skipped, results=results)
-    reports = ROOT / "build/test-results"
+    reports = settings.reports
     reports.mkdir(parents=True, exist_ok=True)
     report_path = reports / (system + ".json")
     report_path.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

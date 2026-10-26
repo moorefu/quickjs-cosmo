@@ -8,9 +8,10 @@ import os
 from pathlib import Path
 import platform
 import subprocess
+from build_config import load_config
 
 root = Path(__file__).resolve().parents[1]
-toolchain = root / "toolchains/cosmocc-4.0.2"
+toolchain = load_config().toolchain
 if platform.system() == "Linux":
     machine = platform.machine().lower()
     arch = "aarch64" if machine in ("aarch64", "arm64") else "x86_64"

@@ -2,26 +2,43 @@
 set -eu
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$ROOT"
-python3 scripts/bootstrap.py "$@"
+QUICKJS_COSMO_PROFILE=${QUICKJS_COSMO_PROFILE:-stable}
+OFFLINE=
+for argument in "$@"; do
+    case "$argument" in
+        --nightly) QUICKJS_COSMO_PROFILE=nightly ;;
+        --offline) OFFLINE=--offline ;;
+        *) printf 'Unknown option: %s\n' "$argument" >&2; exit 2 ;;
+    esac
+done
+export QUICKJS_COSMO_PROFILE
+python3 scripts/bootstrap.py $OFFLINE
 MAKE=${MAKE:-$(command -v make)}
 python3 scripts/prepare-host.py
-TOOLCHAIN="$ROOT/toolchains/cosmocc-4.0.2"
+TOOLCHAIN=$(python3 scripts/build_config.py toolchain)
+BUILD=$(python3 scripts/build_config.py build)
+DIST=$(python3 scripts/build_config.py dist)
+LOCK=$(python3 scripts/build_config.py lock_file)
 export PATH="$TOOLCHAIN/bin:$PATH"
 export LC_ALL=C
 export TZ=UTC
-export SOURCE_DATE_EPOCH=1793026814
+SOURCE_DATE_EPOCH=$(python3 scripts/build_config.py source_epoch)
+export SOURCE_DATE_EPOCH
 JOBS=${JOBS:-4}
 
 # Keep upstream sources pristine; generated C and object files stay in build/.
 python3 - <<'PY'
 from pathlib import Path
 import shutil
+import sys
+sys.path.insert(0, str(Path.cwd() / "scripts"))
+from build_config import load_config
 root = Path.cwd()
-shutil.copytree(root / "upstream/quickjs", root / "build/quickjs",
+shutil.copytree(root / "upstream/quickjs", load_config().build,
                 dirs_exist_ok=True, ignore=shutil.ignore_patterns(".git", ".bootstrap.json"))
 PY
 for patch_file in "$ROOT"/patches/*.patch; do
-    patch --batch -d build/quickjs -p1 -i "$patch_file"
+    patch --batch -d "$BUILD" -p1 -i "$patch_file"
 done
 QJSC=./qjsc.exe
 if [ "$(uname -s)" = Linux ]; then
@@ -31,22 +48,22 @@ if [ "$(uname -s)" = Linux ]; then
     esac
     QJSC="$LOADER ./qjsc.exe"
 fi
-"$MAKE" -C build/quickjs -j "$JOBS" \
+"$MAKE" -C "$BUILD" -j "$JOBS" \
     CONFIG_COSMO=y CONFIG_WIN32= MSYSTEM= CONFIG_DARWIN= CONFIG_FREEBSD= CONFIG_CLANG= \
-    CC=cosmocc AR=cosmoar QJSC_CC=cosmocc QJSC="$QJSC" EXE=.exe PREFIX="$ROOT/dist" \
+    CC=cosmocc AR=cosmoar QJSC_CC=cosmocc QJSC="$QJSC" EXE=.exe PREFIX="$DIST" \
     qjs.exe qjsc.exe run-test262.exe libquickjs.a
-mkdir -p dist
-cp build/quickjs/qjs.exe build/quickjs/qjsc.exe build/quickjs/run-test262.exe dist/
-cp "$TOOLCHAIN/bin/ape-x86_64.elf" "$TOOLCHAIN/bin/ape-aarch64.elf" dist/
+mkdir -p "$DIST"
+cp "$BUILD/qjs.exe" "$BUILD/qjsc.exe" "$BUILD/run-test262.exe" "$DIST/"
+cp "$TOOLCHAIN/bin/ape-x86_64.elf" "$TOOLCHAIN/bin/ape-aarch64.elf" "$DIST/"
 for program in qjs qjsc run-test262; do
-    cp scripts/launch.sh "dist/$program"
-    chmod +x "dist/$program"
+    cp scripts/launch.sh "$DIST/$program"
+    chmod +x "$DIST/$program"
 done
-cp build/quickjs/quickjs.h build/quickjs/quickjs-libc.h dist/
-cp build/quickjs/libquickjs.a dist/
-mkdir -p dist/.aarch64
-cp build/quickjs/.aarch64/libquickjs.a dist/.aarch64/
-cp upstream/quickjs/LICENSE dist/QUICKJS-LICENSE
-cp versions.json dist/versions.json
+cp "$BUILD/quickjs.h" "$BUILD/quickjs-libc.h" "$DIST/"
+cp "$BUILD/libquickjs.a" "$DIST/"
+mkdir -p "$DIST/.aarch64"
+cp "$BUILD/.aarch64/libquickjs.a" "$DIST/.aarch64/"
+cp upstream/quickjs/LICENSE "$DIST/QUICKJS-LICENSE"
+cp "$LOCK" "$DIST/versions.json"
 python3 scripts/artifact_manifest.py
-printf '\nBuilt portable binaries in %s/dist\n' "$ROOT"
+printf '\nBuilt portable binaries in %s\n' "$DIST"

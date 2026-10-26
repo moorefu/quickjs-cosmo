@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
 """Match the upstream QuickJS Cosmopolitan binary release layout."""
 from datetime import datetime
+import argparse
 import hashlib
-import json
 from pathlib import Path
 import re
 import stat
 import zipfile
+from build_config import load_config
 
 root = Path(__file__).resolve().parents[1]
-lock = json.loads((root / "versions.json").read_text())
-output = root / "releases"
-output.mkdir(exist_ok=True)
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--nightly", action="store_true")
+args = parser.parse_args()
+settings = load_config("nightly" if args.nightly else None)
+lock = settings.data
+output = settings.releases
+output.mkdir(parents=True, exist_ok=True)
 version = (root / "upstream/quickjs/VERSION").read_text().strip()
 if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", version) or version != lock["quickjs"]["version"]:
     raise ValueError("QuickJS VERSION must match the locked YYYY-MM-DD version")
@@ -19,8 +24,8 @@ name = f"quickjs-cosmo-{version}.zip"
 archive = output / name
 files = [
     (root / "upstream/quickjs/readme-cosmo.txt", "readme.txt", 0o664),
-    (root / "dist/run-test262.exe", "run-test262", 0o755),
-    (root / "dist/qjs.exe", "qjs", 0o755),
+    (settings.dist / "run-test262.exe", "run-test262", 0o755),
+    (settings.dist / "qjs.exe", "qjs", 0o755),
 ]
 timestamp = datetime.fromisoformat(lock["quickjs"]["commit_date"].replace("Z", "+00:00"))
 contents = []

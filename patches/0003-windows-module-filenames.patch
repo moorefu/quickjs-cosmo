@@ -1,0 +1,95 @@
+--- a/quickjs-libc.c
++++ b/quickjs-libc.c
+@@ -393,6 +393,30 @@
+     JS_FreeCString(ctx, fmt_str);
+     dbuf_free(&dbuf);
+     return JS_EXCEPTION;
++}
++
++/* Keep module identity in POSIX form even when a Windows command line
++   contains relative backslash paths. Script arguments remain unchanged. */
++char *js_std_normalize_filename(JSContext *ctx, const char *filename)
++{
++    char *normalized, *p;
++    int windows = 0;
++
++    normalized = js_strdup(ctx, filename);
++    if (!normalized)
++        return NULL;
++#if defined(__COSMOPOLITAN__)
++    windows = IsWindows();
++#elif defined(_WIN32)
++    windows = 1;
++#endif
++    if (windows) {
++        for (p = normalized; *p; p++) {
++            if (*p == '\\')
++                *p = '/';
++        }
++    }
++    return normalized;
+ }
+ 
+ uint8_t *js_load_file(JSContext *ctx, size_t *pbuf_len, const char *filename)
+--- a/quickjs-libc.h
++++ b/quickjs-libc.h
+@@ -41,6 +41,7 @@
+ void js_std_init_handlers(JSRuntime *rt);
+ void js_std_free_handlers(JSRuntime *rt);
+ void js_std_dump_error(JSContext *ctx);
++char *js_std_normalize_filename(JSContext *ctx, const char *filename);
+ uint8_t *js_load_file(JSContext *ctx, size_t *pbuf_len, const char *filename);
+ int js_module_set_import_meta(JSContext *ctx, JSValueConst func_val,
+                               JS_BOOL use_realpath, JS_BOOL is_main);
+--- a/qjs.c
++++ b/qjs.c
+@@ -84,7 +84,14 @@
+     uint8_t *buf;
+     int ret, eval_flags;
+     size_t buf_len;
+-
++    char *normalized_filename;
++
++    normalized_filename = js_std_normalize_filename(ctx, filename);
++    if (!normalized_filename) {
++        js_std_dump_error(ctx);
++        return -1;
++    }
++    filename = normalized_filename;
+     buf = js_load_file(ctx, &buf_len, filename);
+     if (!buf) {
+         perror(filename);
+@@ -104,6 +111,7 @@
+     }
+     ret = eval_buf(ctx, buf, buf_len, filename, eval_flags);
+     js_free(ctx, buf);
++    js_free(ctx, normalized_filename);
+     return ret;
+ }
+ 
+--- a/qjsc.c
++++ b/qjsc.c
+@@ -340,7 +340,14 @@
+     int eval_flags;
+     JSValue obj;
+     size_t buf_len;
+-
++    char *normalized_filename;
++
++    normalized_filename = js_std_normalize_filename(ctx, filename);
++    if (!normalized_filename) {
++        js_std_dump_error(ctx);
++        exit(1);
++    }
++    filename = normalized_filename;
+     buf = js_load_file(ctx, &buf_len, filename);
+     if (!buf) {
+         fprintf(stderr, "Could not load '%s'\n", filename);
+@@ -371,6 +378,7 @@
+     }
+     output_object_code(ctx, fo, obj, c_name, CNAME_TYPE_SCRIPT);
+     JS_FreeValue(ctx, obj);
++    js_free(ctx, normalized_filename);
+ }
+ 
+ static const char main_c_template1[] =

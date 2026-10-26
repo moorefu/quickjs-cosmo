@@ -10,6 +10,7 @@ import stat
 import subprocess
 import tarfile
 import zipfile
+from build_config import load_config
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -51,6 +52,11 @@ def extract_zip(archive, destination):
                 with bundle.open(entry) as source, path.open("wb") as output:
                     shutil.copyfileobj(source, output)
                 path.chmod(stat.S_IMODE(mode) or 0o644)
+                # GitHub Actions ZIP artifacts flatten executable modes.
+                with path.open("rb") as probe:
+                    header = probe.read(4)
+                if header.startswith((b"#!", b"MZ", b"\x7fELF")):
+                    path.chmod(path.stat().st_mode | 0o111)
 
 
 def extract_tar(archive, destination):
@@ -84,10 +90,18 @@ def prepare(config, archive, destination, extractor, offline):
             raise ValueError("Missing or invalid cached archive: " + str(archive))
         archive.parent.mkdir(parents=True, exist_ok=True)
         partial = archive.with_suffix(archive.suffix + ".part")
-        subprocess.run([
-            "curl", "--fail", "--location", "--retry", "3", "--connect-timeout", "20",
-            "--output", str(partial), config["url"],
-        ], check=True)
+        if "artifact_id" in config:
+            if not shutil.which("gh"):
+                raise RuntimeError("Download the cosmocc artifact from " + config["run_url"] +
+                                   " to " + str(archive) + "; or authenticate the GitHub CLI (gh)")
+            with partial.open("wb") as output:
+                subprocess.run(["gh", "api", "repos/jart/cosmopolitan/actions/artifacts/" +
+                                str(config["artifact_id"]) + "/zip"], stdout=output, check=True)
+        else:
+            subprocess.run([
+                "curl", "--fail", "--location", "--retry", "3", "--connect-timeout", "20",
+                "--output", str(partial), config["url"],
+            ], check=True)
         actual = sha256(partial)
         if actual != expected:
             raise ValueError("SHA-256 mismatch for " + str(partial) + ": " + actual)
@@ -101,12 +115,14 @@ def prepare(config, archive, destination, extractor, offline):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--offline", action="store_true", help="Only use verified cached archives")
+    parser.add_argument("--nightly", action="store_true", help="Use the locked Nightly cosmocc artifact")
     args = parser.parse_args()
     if os.name != "posix":
         parser.error("Run this bootstrap inside WSL, Linux, macOS or BSD to preserve symlinks")
-    config = json.loads((ROOT / "versions.json").read_text())
-    prepare(config["cosmopolitan"], ROOT / ".cache/cosmocc-4.0.2.zip",
-            ROOT / "toolchains/cosmocc-4.0.2", extract_zip, args.offline)
+    settings = load_config("nightly" if args.nightly else None)
+    config = settings.data
+    prepare(config["cosmopolitan"], settings.archive,
+            settings.toolchain, extract_zip, args.offline)
     prepare(config["quickjs"], ROOT / ".cache/quickjs-source.tar.gz",
             ROOT / "upstream/quickjs", extract_tar, args.offline)
 

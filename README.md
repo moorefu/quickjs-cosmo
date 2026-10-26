@@ -1,4 +1,4 @@
-# QuickJS + Cosmopolitan 4.0.2
+# QuickJS + Cosmopolitan 4.0.2 / Nightly
 
 用 [Cosmopolitan 4.0.2](https://github.com/jart/cosmopolitan/releases/tag/4.0.2) 编译 [bellard/quickjs master](https://github.com/bellard/quickjs)，生成同时包含 **x86_64 与 ARM64** 代码的 Actually Portable Executable（APE）。
 
@@ -52,6 +52,47 @@ qjs
 
 `readme.txt` 来自上游 `readme-cosmo.txt`；其余两个文件为不带扩展名的 APE 二进制。Windows 下可将 `qjs`、`run-test262` 重命名为 `qjs.exe`、`run-test262.exe` 运行。源码、构建脚本、自编测试、验证报告和 `qjsc` 等开发文件保留在项目中，不加入这个精简发布包。WSL 若把无扩展名的 APE 交给 Windows 启动，可使用项目里的 loader，例如 `dist/ape-x86_64.elf <解压目录>/qjs examples/hello.js`。
 
+## 使用 Nightly cosmocc
+
+`versions-nightly.json` 锁定[官方 Nightly #802](https://github.com/jart/cosmopolitan/actions/runs/40271229025)，提交 `aefad27c09ffda64c6ac64bd69f758e9f9c7b91d`（2026-10-26），artifact ID `12629850103`。下载的工具链 ZIP 必须匹配官方 SHA-256：
+
+```text
+7f8a0bfd991401e027f794d516bf52a5184b5089e5dd1a50cf9e9ade54b5bb06
+```
+
+Nightly 使用相同的 QuickJS 提交和三项兼容补丁，保留 Temporal/Intl、`-O2` 和双架构 APE。工具链、对象文件、产物、报告和发布包分开存放，默认构建仍为 4.0.2。
+
+Windows PowerShell：
+
+```powershell
+.\scripts\build.ps1 -Nightly -Offline
+.\dist\nightly\qjs.exe .\examples\hello.js
+python scripts/test.py --nightly --upstream
+python scripts/package.py --nightly
+```
+
+WSL / Linux：
+
+```sh
+sh scripts/build.sh --nightly --offline
+./dist/nightly/qjs examples/hello.js
+PATH="$PWD/toolchains/cosmocc-nightly-2026-10-26-aefad27c09ff/bin:$PATH" \
+    python3 scripts/test.py --nightly --upstream --compile
+python3 scripts/package.py --nightly
+```
+
+| 内容 | Nightly 路径 |
+| --- | --- |
+| 工具链 | `toolchains/cosmocc-nightly-2026-10-26-aefad27c09ff/` |
+| 构建文件 | `build/quickjs-nightly/` |
+| 可执行文件与清单 | `dist/nightly/` |
+| 验证报告 | `build/test-results/nightly/` |
+| 官方格式的发布包 | `releases/nightly/quickjs-cosmo-2026-06-04.zip` |
+
+在其他机器上，可从上述 Actions run 下载 `cosmocc` artifact，保存为 `.cache/cosmocc-nightly-2026-10-26.zip`；也可在已登录 GitHub CLI 的环境去掉 `--offline`，由 bootstrap 使用 `gh api` 获取锁定的 artifact。解压时会恢复 Actions ZIP 丢失的执行权限。Nightly 是锁定的构建快照，后续运行不会自动切换到另一晚的工具链。
+
+Nightly 调整了 Windows 命令行路径处理，入口路径如 `tests\modules.js` 需要由 QuickJS 自行规范化。第三项补丁修复了这种路径下的相对模块导入、Worker 和 `qjsc -m`；脚本其余参数保持原样。Windows 测试额外覆盖这三种行为。
+
 ## Windows 上使用现有 WSL
 
 此机器已安装 **Ubuntu-22.04 / WSL2**。开始菜单的 WSL 快捷方式默认进入 Linux 用户主目录；项目在 Linux 中对应 `/mnt/d/Workspace/dairn/quickjs-cosmo`。
@@ -82,9 +123,9 @@ sh scripts/build.sh
 JOBS=4 sh scripts/build.sh --offline
 ```
 
-`bootstrap.py` 下载官方源码与固定版本工具链，先验证 SHA-256，再保留执行权限和符号链接解包。`upstream/` 中的源码保持原样；构建副本应用 `patches/` 下的两个兼容补丁，使用自带的 `CONFIG_COSMO=y`，并保留默认的实验性 Temporal/Intl 支持。补丁修正运行时 `os.platform`、4.0.2 Windows `poll` 的 64 句柄边界问题，以及 QuickJS 异步唤醒器的 poll 数组索引。
+`bootstrap.py` 下载官方源码与固定版本工具链，先验证 SHA-256，再保留执行权限和符号链接解包。`upstream/` 中的源码保持原样；构建副本应用 `patches/` 下的三个兼容补丁，使用自带的 `CONFIG_COSMO=y`，并保留默认的实验性 Temporal/Intl 支持。补丁修正运行时 `os.platform`、4.0.2 Windows `poll` 的 64 句柄边界问题、QuickJS 异步唤醒器的 poll 数组索引，以及 Windows 入口文件路径的模块解析。
 
-Linux 构建会用官方 `assimilate` 将项目内的 67 个构建工具转换为本机 ELF，避免 WSL 把工具误交给 Windows 启动；原始 ZIP 缓存和最终双架构 APE 均保留。整个过程不修改系统 binfmt_misc 配置。
+Linux 构建会用官方 `assimilate` 将项目内的构建工具转换为本机 ELF，避免 WSL 把工具误交给 Windows 启动；原始 ZIP 缓存和最终双架构 APE 均保留。整个过程不修改系统 binfmt_misc 配置。
 
 Windows 上若系统已设置本地 HTTP 代理，而命令行没有继承代理，可先在 **PowerShell 7+** 中用以下脚本下载约 442 MB 的官方工具链。它读取 Windows 现有代理设置并进行分段下载；不会新建或改变代理配置。
 
