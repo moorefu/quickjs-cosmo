@@ -38,6 +38,25 @@ def verify_assets(release, files):
             raise ValueError("Release asset hash mismatch: " + path.name)
 
 
+def find_release(client, api, tag):
+    # The tag endpoint only returns published releases. Authenticated release
+    # listings also include drafts, which must be resumed and read by numeric ID.
+    release = client.get(api + "/releases/tags/" + quote(tag, safe=""), missing_ok=True)
+    if release:
+        return release
+    page = 1
+    while True:
+        releases = client.get(api + f"/releases?per_page=100&page={page}")
+        matches = [item for item in releases if item["tag_name"] == tag]
+        if len(matches) > 1:
+            raise ValueError("Multiple release drafts use the requested tag")
+        if matches:
+            return matches[0]
+        if len(releases) < 100:
+            return None
+        page += 1
+
+
 def publish(tag, repository, commit, files, notes, client=None):
     validate_tag(tag)
     if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository):
@@ -51,9 +70,8 @@ def publish(tag, repository, commit, files, notes, client=None):
         if client.get(api + "/commits/" + tag_path)["sha"] != commit:
             raise ValueError("Release tag moved away from the commit tested by CI")
     require_tested_tag()
-    endpoint = api + "/releases/tags/" + tag_path
     marker = f"<!-- quickjs-cosmo-release: {tag} {commit} -->"
-    release = client.get(endpoint, missing_ok=True)
+    release = find_release(client, api, tag)
     if release and not release["draft"]:
         verify_assets(release, files)
         print("Release already published with matching assets:", release["html_url"], flush=True)
@@ -63,6 +81,10 @@ def publish(tag, repository, commit, files, notes, client=None):
     if not release:
         client.run("release", "create", tag, "--repo", repository, "--verify-tag",
                    "--target", commit, "--title", tag, "--notes-file", str(notes), "--draft")
+        release = find_release(client, api, tag)
+    if not release or not release["draft"] or marker not in (release.get("body") or ""):
+        raise ValueError("The workflow's release draft could not be found")
+    endpoint = api + "/releases/" + str(release["id"])
     # Only this workflow's draft can be resumed or have incomplete assets replaced.
     client.run("release", "upload", tag, *map(str, files), "--repo", repository, "--clobber")
     release = client.get(endpoint)

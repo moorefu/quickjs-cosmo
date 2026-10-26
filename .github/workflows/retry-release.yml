@@ -1,0 +1,70 @@
+name: Retry verified tag release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing version tag, for example v2026-06-04.1
+        required: true
+        type: string
+      run_id:
+        description: Build and verify APE run whose complete CI gate passed
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: release-retry-${{ inputs.tag }}
+  cancel-in-progress: false
+
+env:
+  PYTHONUTF8: "1"
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  release:
+    name: Retry publication of tested assets
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out the original release source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.tag }}
+          persist-credentials: false
+      - name: Check out the current publication tools
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          path: .release-tools
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      - name: Require the original tag and its complete CI gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          SOURCE_RUN_ID: ${{ inputs.run_id }}
+        run: python .release-tools/scripts/retry_release.py --tag "$RELEASE_TAG" --run-id "$SOURCE_RUN_ID"
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: quickjs-cosmo-build
+          path: build/ci
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+      - name: Verify and publish the original tested assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          SOURCE_RUN_ID: ${{ inputs.run_id }}
+        run: |
+          export GITHUB_REF_TYPE=tag
+          export GITHUB_REF_NAME="$RELEASE_TAG"
+          export GITHUB_RUN_ID="$SOURCE_RUN_ID"
+          python scripts/ci_artifact.py unpack
+          cp .release-tools/scripts/publish_release.py scripts/publish_release.py
+          python scripts/publish_release.py

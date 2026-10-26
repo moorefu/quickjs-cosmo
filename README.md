@@ -185,6 +185,8 @@ git push origin main refs/tags/v2026-06-04.1
 
 发布任务单独使用 `contents: write` 权限，其余构建和验证任务保持只读。本地可在 `package.py --tag v2026-06-04.1`、`ci_artifact.py pack --tag v2026-06-04.1` 之后，用 `python scripts/publish_release.py --tag v2026-06-04.1 --dry-run` 校验附件并预览发布说明。
 
+若原有 tag 的构建和完整矩阵已通过、但发布步骤需要修复，可在默认分支运行 `Retry verified tag release`，填写原 tag 和原 `Build and verify APE` 的 run ID。重试入口核对 tag 的提交、工作流来源和成功的 CI gate，再下载原始产物；仅发布工具采用当前工作流提交的版本。它保留 tag 和已经测试的二进制，仍核对全部附件摘要，拒绝覆盖内容不同的已发布版本。草稿通过包含草稿的发布列表查找，随后按 release ID 校验。
+
 工具链缓存只保存原始归档及已校验的兼容源码，不缓存改成 ELF 的构建工具。默认通过任务的 `GITHUB_TOKEN` 下载固定的上游 Nightly artifact；如需其他凭据，可设置仓库 secret `COSMOCC_ARTIFACT_TOKEN`。Actions artifact 有保留期限，归档不可用时可把相同 ZIP 放入 HTTPS 镜像，并设置仓库变量 `COSMOCC_ARCHIVE_URL`；镜像仍须匹配锁文件的 SHA-256，不能替换为其他 Nightly。
 
 可在本机演练产物传递：
