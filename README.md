@@ -42,6 +42,8 @@ python scripts/package.py
 
 生成 `releases/quickjs-cosmo-2026-06-04.zip` 及外置 SHA-256 校验文件。文件名中的日期取自 QuickJS `VERSION`，遵循[官方二进制发布包](https://bellard.org/quickjs/binary_releases/quickjs-cosmo-2026-06-04.zip)的命名方式；本包仍由上述 master 提交和本项目兼容补丁自行构建。
 
+tag 构建改用发布版本号：例如 `v2026-06-04.1` 生成 `quickjs-cosmo-2026-06-04.1.zip`。GitHub Actions 自动识别当前 tag；本地可执行 `python scripts/package.py --tag v2026-06-04.1`。这不改变固定的 QuickJS 源码提交或引擎 VERSION。
+
 ZIP 根目录只有三个文件，与官方包相同，无外层目录：
 
 ```text
@@ -171,6 +173,17 @@ Runner 标签对应 [GitHub 官方支持列表](https://docs.github.com/en/actio
 `scripts/ci_artifact.py` 打包、恢复并校验 SDK、源码归档、两份独立程序和官方格式发布 ZIP。传输使用 tar 保留执行权限与 `.aarch64` 目录；下载端先验证固定输入、完整文件清单与 SHA-256，再执行测试。矩阵用 `bootstrap.py --source-only --offline` 恢复上游测试源码，无需下载 cosmocc；macOS 的 APE 启动过程可使用 runner 预装的系统 C 编译器。Linux 构建任务包含编译步骤；其余 Unix 矩阵项运行 27 项主测试，Windows 运行 29 项并跳过一个 Unix 专用用例。
 
 每个任务保存主测试报告和进程汇总报告，产物名称为 `reports-*`。仅汇总报告会被上传，临时用例配置保留在任务工作目录。全部矩阵通过后，`CI gate` 保存 `quickjs-cosmo-release` Actions 产物，包含 ZIP、外置 SHA-256 与构建清单。构建或任一矩阵项失败、取消或跳过时，门禁不能成功；可将 `CI gate` 设为分支的必需检查。
+
+推送 `v` 开头的版本 tag 时，同一工作流会在 `CI gate` 成功后执行 `Publish tagged release`，以完整 tag 作为 GitHub Release 的版本和标题。例如首个版本 `v2026-06-04.1`；后续可递增末尾编号。普通分支和 PR 运行只保存 Actions 产物。
+
+发布附件为 `quickjs-cosmo-2026-06-04.1.zip`、对应的 `.sha256` 和 `manifest.json`。ZIP 文件名使用去掉前导 `v` 的 tag 版本号，内部三文件布局保持不变。CI 传输清单同时绑定发布 tag、版本和文件名，各矩阵项校验它们与当前 ref 一致。发布脚本 `scripts/publish_release.py` 先建立草稿，上传后核对 GitHub 返回的附件 SHA-256，并再次确认 tag 指向本次 CI 的提交，然后公开发布。重跑相同版本时，匹配的已发布附件直接复用；不同内容的已发布版本会被拒绝覆盖。本工作流创建的未完成草稿可以继续上传、校验和发布。
+
+```sh
+git tag -a v2026-06-04.1 -m "Release v2026-06-04.1"
+git push origin main refs/tags/v2026-06-04.1
+```
+
+发布任务单独使用 `contents: write` 权限，其余构建和验证任务保持只读。本地可在 `package.py --tag v2026-06-04.1`、`ci_artifact.py pack --tag v2026-06-04.1` 之后，用 `python scripts/publish_release.py --tag v2026-06-04.1 --dry-run` 校验附件并预览发布说明。
 
 工具链缓存只保存原始归档及已校验的兼容源码，不缓存改成 ELF 的构建工具。默认通过任务的 `GITHUB_TOKEN` 下载固定的上游 Nightly artifact；如需其他凭据，可设置仓库 secret `COSMOCC_ARTIFACT_TOKEN`。Actions artifact 有保留期限，归档不可用时可把相同 ZIP 放入 HTTPS 镜像，并设置仓库变量 `COSMOCC_ARCHIVE_URL`；镜像仍须匹配锁文件的 SHA-256，不能替换为其他 Nightly。
 

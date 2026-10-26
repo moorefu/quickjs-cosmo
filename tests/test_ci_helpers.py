@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import bootstrap
 import ci_artifact
 import host_runtime
+from release_version import release_info
 
 
 class HostSelectionTests(unittest.TestCase):
@@ -68,7 +69,8 @@ class BundleTransportTests(unittest.TestCase):
         files = files or {"dist/qjs.exe": b"payload"}
         records = {name: dict(bytes=len(data), sha256=hashlib.sha256(data).hexdigest())
                    for name, data in files.items()}
-        metadata = json.dumps(dict(format=1, versions=versions or self.settings.data, files=records)).encode()
+        metadata = json.dumps(dict(format=2, versions=versions or self.settings.data,
+                                   release=release_info(self.settings), files=records)).encode()
         members = [(ci_artifact.MANIFEST, metadata), *files.items()]
         if extra:
             members.append(extra)

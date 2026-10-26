@@ -71,4 +71,10 @@ Windows 中 `std.exit(7)` 返回 **7**，语法错误、未处理异常、未处
 
 本地验证通过 actionlint 1.7.12 的工作流语法与表达式检查、18 项 CI 辅助单元测试、Windows/WSL 各 29 项完整回归。另在没有 cosmocc 的干净目录中演练传输包恢复、离线源码恢复和跨主机独立程序测试：Windows 29/29（另跳过 1 项），Linux 27/27；执行前后均复核哈希。演练日志与报告在 `build/ci-rehearsal/build/`，构建任务日志在 `build/ci-build.log`、`build/ci-test-linux.log`。新异步用例使用父进程释放标记同步 WNOHANG 检查，避免依赖固定休眠时间。
 
-macOS、ARM64 与 GitHub 托管 runner 的实际结果以推送后 Actions 报告为准；配置矩阵不计作这些环境的本地实测通过。当前本地仓库未配置 Git remote，本次未触发远端工作流。
+提交 `3ff8091` 的[首轮远端 CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40386676718)已全部通过，覆盖上述 7 个 GitHub 托管矩阵项，包括 macOS 和 ARM64。Windows ARM64 项为 x64 PE 的系统兼容运行；这些结果与本地 WSL/Windows 演练分别记录。BSD 和 ARM64 Windows 原生 PE 未纳入该矩阵。
+
+## Tag 发布流程
+
+`v` 开头的版本 tag 会运行同一组构建与矩阵，只有 `CI gate` 成功后才创建 GitHub Release。Release 的版本和标题取完整 tag（例如 `v2026-06-04.1`）；ZIP 名使用去掉 `v` 的版本号（`quickjs-cosmo-2026-06-04.1.zip`），并额外提供 SHA-256 与构建清单。引擎提交和 VERSION 保持锁定。
+
+发布先创建草稿，校验服务端附件摘要和 tag 的提交指向后再公开。测试覆盖 tag 移动、附件损坏、草稿恢复、已有同版本的幂等重跑，以及拒绝修改不同内容的已发布版本。当前发布脚本的本机 `--dry-run` 只校验和生成发布说明，不写 GitHub Release。

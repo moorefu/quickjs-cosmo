@@ -8,10 +8,12 @@ import re
 import stat
 import zipfile
 from build_config import load_config
+from release_version import release_info
 
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--nightly", action="store_true", help="Compatibility alias; Nightly is always used")
+parser.add_argument("--tag", help="Release tag, for example v2026-06-04.1; automatic for Actions tag runs")
 args = parser.parse_args()
 settings = load_config("nightly" if args.nightly else None)
 lock = settings.data
@@ -20,7 +22,8 @@ output.mkdir(parents=True, exist_ok=True)
 version = (root / "upstream/quickjs/VERSION").read_text().strip()
 if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", version) or version != lock["quickjs"]["version"]:
     raise ValueError("QuickJS VERSION must match the locked YYYY-MM-DD version")
-name = f"quickjs-cosmo-{version}.zip"
+release = release_info(settings, args.tag)
+name = release["archive"]
 archive = output / name
 files = [
     (root / "upstream/quickjs/readme-cosmo.txt", "readme.txt", 0o664),
@@ -33,6 +36,7 @@ for path, relative, mode in files:
     data = path.read_bytes()
     if relative == "readme.txt":
         data += ("\n\nPinned build\n"
+                 "Release version: " + release["version"] + "\n"
                  "QuickJS commit: " + lock["quickjs"]["commit"] + "\n"
                  "cosmocc commit: " + lock["cosmopolitan"]["commit"] + "\n"
                  "cosmocc Nightly run: " + str(lock["cosmopolitan"]["run_number"]) + "\n").encode("ascii")

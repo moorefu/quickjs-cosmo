@@ -11,6 +11,7 @@ import tarfile
 import zipfile
 
 from build_config import load_config
+from release_version import bundle_release, release_info
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = "build/ci/bundle-manifest.json"
@@ -86,12 +87,12 @@ def verify_dist(settings):
     return manifest
 
 
-def verify_package(settings):
-    version = settings.data["quickjs"]["version"]
+def verify_package(settings, release=None):
+    release = release or release_info(settings)
     source = settings.root / SOURCE
     if sha256(source) != settings.data["quickjs"]["sha256"]:
         raise ValueError("Pinned QuickJS source archive hash mismatch")
-    archive = settings.releases / f"quickjs-cosmo-{version}.zip"
+    archive = settings.releases / release["archive"]
     checksum = archive.with_suffix(".zip.sha256").read_text().split()
     if checksum != [sha256(archive), archive.name]:
         raise ValueError("Release ZIP checksum mismatch")
@@ -102,6 +103,8 @@ def verify_package(settings):
             if bundle.read(name) != (settings.dist / (name + ".exe")).read_bytes():
                 raise ValueError("Release binary differs from SDK: " + name)
         readme = bundle.read("readme.txt")
+        if ("Release version: " + release["version"]).encode() not in readme:
+            raise ValueError("Release readme version differs from the archive version")
         with tarfile.open(source, "r:gz") as sources:
             original = next(m for m in sources if m.name.endswith("/readme-cosmo.txt"))
             with sources.extractfile(original) as stream:
@@ -113,41 +116,44 @@ def verify_package(settings):
 
 def bundle_metadata(settings):
     metadata = json.loads((settings.root / MANIFEST).read_text(encoding="utf-8"))
-    if metadata["format"] != 1 or metadata["versions"] != settings.data:
+    if metadata["format"] != 2 or metadata["versions"] != settings.data:
         raise ValueError("CI bundle does not match the pinned inputs")
+    bundle_release(metadata, settings)
     return metadata
 
 
 def verify(settings):
     metadata = bundle_metadata(settings)
+    release = bundle_release(metadata, settings)
     for name, record in metadata["files"].items():
-        checked_name(name, settings.data["quickjs"]["version"])
+        checked_name(name, release["version"])
         path = settings.root / name
         if path.stat().st_size != record["bytes"] or sha256(path) != record["sha256"]:
             raise ValueError("CI payload hash mismatch: " + name)
     sdk = verify_dist(settings)
     expected = {"dist/" + name for name in sdk["files"]} | {
         "dist/manifest.json", SOURCE, *STANDALONES,
-        f"releases/quickjs-cosmo-{settings.data['quickjs']['version']}.zip",
-        f"releases/quickjs-cosmo-{settings.data['quickjs']['version']}.zip.sha256"}
+        "releases/" + release["archive"], "releases/" + release["archive"] + ".sha256"}
     if set(metadata["files"]) != expected:
         raise ValueError("CI bundle payload inventory mismatch")
-    verify_package(settings)
+    verify_package(settings, release)
     print("PASS CI artifact integrity: SDK, sources, standalone APEs and release ZIP", flush=True)
+    return metadata
 
 
-def pack(settings, output):
+def pack(settings, output, tag=None):
     sdk = verify_dist(settings)
-    verify_package(settings)
+    release = release_info(settings, tag)
+    verify_package(settings, release)
     report = json.loads((settings.reports / "linux.json").read_text(encoding="utf-8"))
     if report["failed"] or report["qjs_sha256"] != sha256(settings.dist / "qjs.exe"):
         raise ValueError("Build host tests must pass for the packaged qjs")
-    release = f"releases/quickjs-cosmo-{settings.data['quickjs']['version']}.zip"
+    archive = "releases/" + release["archive"]
     files = sorted({"dist/" + name for name in sdk["files"]} | {
-        "dist/manifest.json", SOURCE, *STANDALONES, release, release + ".sha256"})
-    metadata = dict(format=1, versions=settings.data, files={})
+        "dist/manifest.json", SOURCE, *STANDALONES, archive, archive + ".sha256"})
+    metadata = dict(format=2, versions=settings.data, release=release, files={})
     for name in files:
-        checked_name(name, settings.data["quickjs"]["version"])
+        checked_name(name, release["version"])
         path = settings.root / name
         metadata["files"][name] = dict(bytes=path.stat().st_size, sha256=sha256(path))
     target = settings.root / MANIFEST
@@ -169,12 +175,13 @@ def unpack(settings, archive):
         members = bundle.getmembers()
         if len({m.name for m in members}) != len(members) or any(not m.isfile() for m in members):
             raise ValueError("CI transport only permits unique regular files")
-        for member in members:
-            checked_name(member.name, settings.data["quickjs"]["version"])
         with bundle.extractfile(MANIFEST) as stream:
             metadata = json.load(stream)
-        if metadata["format"] != 1 or metadata["versions"] != settings.data:
+        if metadata["format"] != 2 or metadata["versions"] != settings.data:
             raise ValueError("CI transport uses different pinned inputs")
+        release = bundle_release(metadata, settings)
+        for member in members:
+            checked_name(member.name, release["version"])
         if {m.name for m in members} != {MANIFEST, *metadata["files"]}:
             raise ValueError("CI transport inventory mismatch")
         # Verify every byte before overwriting any local payload file.
@@ -201,10 +208,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("operation", choices=("pack", "unpack", "verify"))
     parser.add_argument("--archive", type=Path, default=ROOT / "build/ci/quickjs-cosmo-ci.tar.gz")
+    parser.add_argument("--tag", help="Release tag when packing outside GitHub Actions")
     args = parser.parse_args()
     settings = load_config()
     if args.operation == "pack":
-        pack(settings, args.archive.resolve())
+        pack(settings, args.archive.resolve(), args.tag)
     elif args.operation == "unpack":
         unpack(settings, args.archive.resolve())
     else:
