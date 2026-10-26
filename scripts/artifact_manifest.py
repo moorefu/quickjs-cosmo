@@ -13,6 +13,10 @@ manifest = {
     "cosmopolitan": config["cosmopolitan"],
     "format": "Actually Portable Executable (APE), x86_64 + aarch64",
     "features": ["std", "os", "Worker", "BigInt", "experimental Temporal/Intl"],
+    "windows_exit_status": "raw uint32; Unix retains POSIX wait status",
+    "compatibility": json.loads((ROOT / "compat/versions.json").read_text()),
+    "compatibility_sources": {p.relative_to(ROOT).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+                              for p in sorted((ROOT / "compat").glob("*")) if p.is_file()},
     "files": {},
     "patches": {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in sorted((ROOT / "patches").glob("*.patch"))},

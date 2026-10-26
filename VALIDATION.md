@@ -1,74 +1,66 @@
-# 构建与验证记录
+# 固定版本的构建与验证记录
 
 验证日期：北京时间 **2026-10-27**。
 
-- QuickJS：`master`，提交 `1ec58aaa769a992213ec2b871b0228074169904b`，获取时为最新主干。
-- Cosmopolitan：官方 **4.0.2** 工具链；归档 SHA-256 为 `85b8c37a406d862e656ad4ec14be9f6ce474c1b436b9615e91a55208aced3f44`。
-- 构建：Ubuntu 22.04.5 LTS / WSL2，Linux `6.6.87.2-microsoft-standard-WSL2`，x86_64；GCC 14.1.0；`CONFIG_COSMO=y`、默认 `-O2`、无 LTO、保留 Temporal/Intl。
-- 所有交付 `.exe` 都保留双架构 APE 格式。辅助 ELF 检查确认包含 x86-64 与 AArch64 两条编译链的结果；没有将交付程序 assimilate 为单一系统格式。
+当前仓库仅使用 `versions.json` 中的这一组输入，构建不会自动更新源码或工具链：
 
-## 实测结果
-
-| 实际运行环境 | 结果 | 说明 |
-| --- | --- | --- |
-| WSL2 / Ubuntu 22.04.5 x86_64 | **27/27 通过** | 8 组自编测试、2 个示例、4 项退出/错误处理、qjsc 生成 C/编译/运行、10 项上游测试 |
-| Windows 11 x86_64，build 22000 | **28/28 通过，1 项跳过** | 相同的 8 组自编测试、示例、退出处理、qjsc 生成 C、运行 Linux 编译的独立程序、3 项 Windows 路径/参数回归、9 项上游测试 |
-
-8 组自编 JS 测试在每端共执行 **376 个断言**。包含 100 对管道、逆序注册的写回调、逐条数据校验与关闭，以及 Worker/SharedArrayBuffer/Atomics、BigInt、UTF-8 文件与路径、JSON 模块、顶层 await、Temporal/Intl。
-
-Windows 跳过的唯一上游用例为 `test_std.js`：它需要 Unix `/bin/sh`、`true`、`cat`。该用例已在 WSL 完整通过；Windows 自编文件 I/O、定时器、Worker、100 对管道测试均已通过。
-
-具体输出、耗时和原始退出码：
-
-- `build/test-results/linux.json`
-- `build/test-results/windows.json`
-- 官方格式的精简二进制 ZIP 不包含测试报告；报告保留在上述项目路径中。
-
-另已验证：PowerShell `scripts/build.ps1 -Offline` 入口、Python/PowerShell 语法、Unix `dist/qjs` 启动入口、产物清单 SHA-256。`qjsc` 在 WSL 编译的 `build/test-linux/hello-standalone.exe` 已在 WSL 和 Windows 各运行一次。
-
-## 必要的兼容修正
-
-1. `patches/0001-runtime-platform.patch`：上游 `os.platform` 依据编译宏初始化，Cosmopolitan 构建在 Windows 上也会报告 `linux`。改为使用 Cosmopolitan 的运行时平台检测，实测分别返回 `linux` 与 `win32`。
-2. `patches/0002-windows-poll-batches.patch`：官方 4.0.2 `poll-nt.c` 的慢路径每批传入 64 个描述符，但实际实现为信号保留一个句柄，只接受 63 个文件句柄。原版在上游 100 对管道测试中返回错误并挂起。QuickJS 事件循环在 Windows 大批量监听时改为每批最多 63 个描述符，扫描所有批次后最多休眠 10 ms；其他系统沿用原生 `poll`。同时修正上游将唤醒器 fd 误用为 poll 数组下标的问题。
-3. WSL 启动：项目内的构建工具用官方 `assimilate` 转换为本机 ELF；运行时入口显式使用附带 APE loader，避免 WSL 的 `MZ` 注册项把测试误交给 Windows。未修改 WSL 全局配置。
-4. `patches/0003-windows-module-filenames.patch`：Nightly 不再将相对命令行路径的反斜杠自动转换为斜杠。`qjs` 可以打开脚本，但模块解析器会丢失其目录，导致循环模块导入失败或 Worker 无法启动。解释器和编译器现在仅在 Windows 上规范化入口文件路径；保留其他脚本参数，以及 Unix 上的文件名语义。Windows 的 3 项新增用例覆盖相对模块路径、参数中的反斜杠和 `qjsc -m`。
-
-补丁摘要和产物哈希保存在 `dist/manifest.json`，原始上游源码仍保留在 `upstream/quickjs/`。
-
-## 4.0.2 的 Windows 退出码约定
-
-该版本官方 `libc/intrin/exit.c` 将 Windows 进程状态编码为 `status << 8`，用于 Cosmopolitan 父进程的 POSIX wait 语义。因此 `std.exit(7)` 在 Windows 原生 Python/PowerShell 下是 `1792`，语法错误/未处理异常是 `256`；Unix 下分别为 `7`、`1`，成功均为 `0`。
-
-测试严格核对这一约定，并保存原始返回码。未修改底层 libc 的退出机制。
-
-## Nightly cosmocc #802 验证
-
-使用[官方 Nightly 工作流 #802](https://github.com/jart/cosmopolitan/actions/runs/40271229025)，Cosmopolitan 提交 `aefad27c09ffda64c6ac64bd69f758e9f9c7b91d`，artifact ID `12629850103`，生成于 `2026-10-26T05:19:02Z`。工具链 ZIP 大小为 **419,652,152 字节**，SHA-256 与 GitHub 官方 artifact digest 一致：
-
-```text
-7f8a0bfd991401e027f794d516bf52a5184b5089e5dd1a50cf9e9ade54b5bb06
-```
-
-Nightly 和 4.0.2 均使用 GCC 14.1.0、同一 QuickJS 提交、同样三项兼容补丁、`-O2`、无 LTO，保留 Temporal/Intl。Nightly 的底层 `poll` 已将每批数量修正为 63，本次对比仍保留现有 QuickJS 层 workaround，以保持两套源码一致。
-
-| 实际运行环境 | Nightly 结果 |
+| 组件 | 固定值 |
 | --- | --- |
-| WSL2 / Ubuntu 22.04.5 x86_64 | **27/27 通过** |
-| Windows 11 x86_64 | **28/28 通过，1 项 Unix shell 测试跳过** |
+| QuickJS | `1ec58aaa769a992213ec2b871b0228074169904b`，VERSION `2026-06-04` |
+| cosmocc | Nightly #802，提交 `aefad27c09ffda64c6ac64bd69f758e9f9c7b91d` |
+| Nightly artifact | `12629850103`，419,652,152 字节 |
+| 工具链 ZIP SHA-256 | `7f8a0bfd991401e027f794d516bf52a5184b5089e5dd1a50cf9e9ade54b5bb06` |
+| QuickJS 源码归档 SHA-256 | `eb308d46654ae345f2396922dfb24656abf63990ff8c2ba7f155e4c08c8ef0f1` |
 
-Nightly `qjsc` 生成的独立 APE 已在两端运行；相对反斜杠路径下的循环模块导入、Worker、`qjsc -m` 均已通过。Unix launcher 返回 `os.platform = "linux"`，原生 Windows 返回 `"win32"`；辅助 ELF 文件检查确认 x86_64 和 AArch64 两种架构。原始日志位于 `build/test-results/nightly/linux.json` 和 `windows.json`，报告包含工具链信息及被测 qjs 的 SHA-256。
+工具链来源为[官方 Nightly #802](https://github.com/jart/cosmopolitan/actions/runs/40271229025)。原来的双配置已经合并，默认命令和兼容的 `--nightly` / `-Nightly` 参数使用相同输入和输出目录。4.0.2 不再是当前构建选项。
 
-官方格式的三个文件已打包为 `releases/nightly/quickjs-cosmo-2026-06-04.zip`，并检查 ZIP CRC、文件名顺序、readme 和二进制字节。解压出的 qjs 已在 Windows 和 Linux 启动验证，另从 APE 副本提取并确认了 ARM64 ELF。默认 4.0.2 的一键构建和两端完整测试也已重新通过。
+构建环境为 Ubuntu 22.04.5 / WSL2，Linux `6.6.87.2-microsoft-standard-WSL2`，x86_64，GCC 14.1.0。保留 `CONFIG_COSMO=y`、`-O2`、无 LTO、Temporal/Intl 和双架构 APE。构建文件在 `build/quickjs-nightly/`，当前产物在 `dist/`。
 
-| 当前构建 | qjs 二进制字节数 | 三文件 ZIP 字节数 |
-| --- | ---: | ---: |
-| Cosmopolitan 4.0.2 | 5,877,582 | 5,146,460 |
-| Nightly #802 | 5,930,744 | 5,215,662 |
+## 测试结果
 
-Nightly 的 ZIP 约大 1.34%；这里未做性能基准，不据此推断运行速度。完整快照信息位于 `versions-nightly.json`，产物清单位于 `dist/nightly/manifest.json`。
+| 环境 | 结果 |
+| --- | --- |
+| WSL2 / Linux x86_64 | 29/29 通过 |
+| Windows 11 x86_64，build 22000 | 29/29 通过，1 项跳过 |
+| 受限 Windows 账户 | 30 个进程回归场景通过 |
 
-## 尚未实测
+主测试包含原有 8 组自编 JS（376 个断言）、示例、退出处理、上游快速测试、qjsc 生成 C，以及进程回归。Linux 编译、执行独立 APE，并将含进程调用的 JS 编译成独立程序；Windows 执行这些 Linux 生成的独立程序，并验证反斜杠模块路径、参数保持和 `qjsc -m`。
 
-macOS、FreeBSD、OpenBSD、NetBSD，以及 ARM64 硬件运行。本环境没有这些系统或 QEMU；没有把编译成功描述为这些平台的测试通过。兼容目标来自 Cosmopolitan 4.0.2 的官方支持范围。
+进程回归作为主测试中的一项，在 Linux 内部验证 **17 个场景**，Windows 内部验证 **31 个场景**，均包含独立 APE 调用原生子进程。受限账户另外验证自然退出、qjsc、子进程和标准流。
 
-已构建 `run-test262.exe`，但未下载、运行完整 Test262 数据集。这里的通过数量是自编与上游快速测试数量，不是 ECMAScript 全规范认证结果。
+Windows 唯一跳过的上游测试为 `test_std.js`，依赖 Unix `/bin/sh`、`true`、`cat`；该测试在 WSL 通过。未运行完整 Test262 数据集。
+
+当前报告路径：
+
+- `build/test-results/linux.json`、`windows.json`
+- `build/runtime-audit/nightly-regression-linux.json`、`nightly-regression-windows.json`
+- `build/runtime-audit/nightly-restricted-final-windows.json`
+
+报告包含 qjs 的 SHA-256、工具链元数据和各场景退出码。旧诊断目录保留的历史结果不代表当前产物。
+
+## 保留的兼容修复
+
+四项 QuickJS 补丁修复运行时 `os.platform`、Windows poll 句柄边界、异步唤醒器索引、入口模块路径和进程调用。`compat/` 使用同一 Nightly 提交的少量 Cosmopolitan 源文件，原始文件、补丁和修改后文件均按 SHA-256 校验；构建还检查兼容源提交与工具链锁定提交一致。未引入新的第三方库。
+
+进程验证覆盖：
+
+- 使用 `posix_spawn` 启动 cmd、Python、Git，有限的描述符上限回退。
+- 等待错误仅重试 EINTR，WNOHANG 未完成时返回 `[0, 0]`。
+- 明确跟踪自建环境数组的所有权，继承环境传 NULL，避免 environ 重分配后的错误释放；测试固定 `TZ=UTC`、`LC_ALL=C`。
+- 同步与异步保留完整 DWORD，包括受控原生进程返回的 `0xC0000005`、`0xC0000142`。
+- 原生边界清理 `_COSMO_FDS`、`_COSMO_FDS_V2`、`_MASK`，直接 APE 保留协议，接收端保护标准句柄。
+- 原生标准流使用同步磁盘句柄，验证 UTF-8 输入、独立 stderr 和 1 MiB stdout。
+- 中文和空格工作目录、引号/反斜杠/Unicode 参数、PATH、替换环境、用户 `_COSMO_USER` 变量、缺失程序错误，以及不支持的 Windows uid/gid。
+- 信号文件放入用户临时目录 `quickjs-cosmo-sig/`，非 PID 碰撞错误明确退出，避免进入 main 前无限重试；保留退出清理。
+
+修复对象链接到解释器、编译器、run-test262 和开发静态库，qjsc 生成的独立程序同样包含修复。参考代码的单独许可文件与声明已移除；QuickJS、Cosmopolitan 的上游许可保留。
+
+## 退出码与发布包
+
+Windows 中 `std.exit(7)` 返回 **7**，语法错误、未处理异常、未处理 rejection 返回 **1**；阻塞 `os.exec` 与异步 `os.waitpid` 返回完整 unsigned DWORD。Unix 保持 POSIX 语义：阻塞 os.exec 返回逻辑退出码，os.waitpid 返回 wait status，退出 7 对应 1792。
+
+当前发布包为 `releases/quickjs-cosmo-2026-06-04.zip`。ZIP 根目录按官方顺序仅含 `readme.txt`、`run-test262`、`qjs`；readme 保留官方正文并附加两个组件的固定提交标识。SHA-256 校验文件在 ZIP 外，产物清单为 `dist/manifest.json`。
+
+验证 ZIP CRC、名称顺序、readme、二进制哈希和解压后在 Windows / Linux 的启动。从 qjs、run-test262 副本分别提取 ELF，确认每个程序均包含 x86_64（machine 62）和 AArch64（machine 183）；ZIP 内仍保留双架构 APE。
+
+尚未在 macOS、FreeBSD、OpenBSD、NetBSD 或 ARM64 硬件上运行。信号文件命名空间与未修补的官方运行时不同；用户临时路径过长时回退到原始 ProgramData 路径，失败会报错而非挂起。

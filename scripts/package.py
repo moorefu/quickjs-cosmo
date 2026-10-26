@@ -11,7 +11,7 @@ from build_config import load_config
 
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("--nightly", action="store_true")
+parser.add_argument("--nightly", action="store_true", help="Compatibility alias; Nightly is always used")
 args = parser.parse_args()
 settings = load_config("nightly" if args.nightly else None)
 lock = settings.data
@@ -31,6 +31,11 @@ timestamp = datetime.fromisoformat(lock["quickjs"]["commit_date"].replace("Z", "
 contents = []
 for path, relative, mode in files:
     data = path.read_bytes()
+    if relative == "readme.txt":
+        data += ("\n\nPinned build\n"
+                 "QuickJS commit: " + lock["quickjs"]["commit"] + "\n"
+                 "cosmocc commit: " + lock["cosmopolitan"]["commit"] + "\n"
+                 "cosmocc Nightly run: " + str(lock["cosmopolitan"]["run_number"]) + "\n").encode("ascii")
     if mode & 0o111 and not data.startswith(b"MZ"):
         raise ValueError(f"Expected an APE binary, not a shell launcher: {path}")
     contents.append((relative, mode, data))

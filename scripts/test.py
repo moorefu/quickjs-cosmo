@@ -36,7 +36,7 @@ def main():
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--nightly", action="store_true")
+    parser.add_argument("--nightly", action="store_true", help="Compatibility alias; Nightly is always used")
     parser.add_argument("--qjs", type=Path)
     parser.add_argument("--qjsc", type=Path)
     parser.add_argument("--upstream", action="store_true")
@@ -49,7 +49,7 @@ def main():
     arch = "aarch64" if platform.machine().lower() in ("aarch64", "arm64") else "x86_64"
     loader = settings.dist / f"ape-{arch}.elf"
     system = platform.system().lower()
-    scratch = ROOT / "build" / ("test-" + ("nightly-" if settings.profile == "nightly" else "") + system)
+    scratch = ROOT / "build" / ("test-" + system)
     scratch.mkdir(parents=True, exist_ok=True)
     results = []
 
@@ -57,9 +57,7 @@ def main():
         start = time.monotonic()
         try:
             result = execute(command, cwd, timeout, loader=loader)
-            # Both locked toolchains expose POSIX wait status to native
-            # Windows parents; retain the raw return code in the report.
-            expected_raw = expected << 8 if os.name == "nt" else expected
+            expected_raw = expected
             passed = result.returncode == expected_raw and (contains is None or contains in result.stdout)
             output = result.stdout
             code = result.returncode
@@ -96,8 +94,16 @@ def main():
         standalone = scratch / "hello-standalone.exe"
         if check("qjsc/compile-ape", [qjsc, "-o", standalone, ROOT / "examples/hello.js"], timeout=180):
             check("qjsc/run-ape", [standalone], contains="Hello from QuickJS")
+        check("qjsc/compile-process-ape", [qjsc, "-m", "-o", scratch / "runtime-standalone.exe",
+              ROOT / "tests/runtime_process.js"], timeout=180)
     if args.standalone:
         check("qjsc/cross-host-ape", [args.standalone.resolve()], contains="Hello from QuickJS")
+    runtime = [sys.executable, ROOT / "scripts/audit_runtime.py", "--verify", "--label", "regression",
+               "--qjs", qjs, "--qjsc", qjsc]
+    compiled_process = (args.standalone.resolve().parent if args.standalone else scratch) / "runtime-standalone.exe"
+    if (args.compile or args.standalone) and compiled_process.is_file():
+        runtime += ["--standalone", compiled_process]
+    check("custom/runtime-process", runtime, timeout=120, contains="PASS runtime")
     if os.name == "nt":
         check("cli/windows-module-path", [qjs, "-m", r".\tests\modules.js"],
               cwd=ROOT, contains="PASS modules")

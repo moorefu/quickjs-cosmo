@@ -1,0 +1,261 @@
+--- a/libc/calls/ntspawn.c
++++ b/libc/calls/ntspawn.c
+@@ -28,6 +28,7 @@
+ #include "libc/nt/enum/creationdisposition.h"
+ #include "libc/nt/enum/fileflagandattributes.h"
+ #include "libc/nt/enum/filesharemode.h"
++#include "libc/nt/enum/filetype.h"
+ #include "libc/nt/enum/processaccess.h"
+ #include "libc/nt/enum/processcreationflags.h"
+ #include "libc/nt/errors.h"
+@@ -66,6 +67,56 @@
+   HeapFree(GetProcessHeap(), 0, ptr);
+ }
+ 
++static textwindows bool qjs_is_ape(const char *p, size_t n) {
++  return n >= 8 && !memcmp(p, "MZqFpD='", 8);
++}
++
++static textwindows bool qjs_interpreter_is_ape(const char16_t *path) {
++  char magic[8];
++  intptr_t handle = CreateFile(path, kNtFileGenericRead,
++      kNtFileShareRead | kNtFileShareWrite | kNtFileShareDelete,
++      0, kNtOpenExisting, kNtFileAttributeNormal, 0);
++  if (handle == -1)
++    return false;
++  uint32_t got = 0;
++  bool ok = ReadFile(handle, magic, sizeof(magic), &got, 0);
++  CloseHandle(handle);
++  return ok && qjs_is_ape(magic, got);
++}
++
++static textwindows bool qjs_protocol_variable(const char16_t *entry) {
++  const char *const names[] = {"_COSMO_FDS=", "_COSMO_FDS_V2=", "_MASK="};
++  for (unsigned i = 0; i < sizeof(names) / sizeof(*names); ++i) {
++    size_t j;
++    for (j = 0; names[i][j]; ++j) {
++      unsigned c = entry[j];
++      if (c >= 'a' && c <= 'z')
++        c -= 'a' - 'A';
++      if (c != names[i][j])
++        break;
++    }
++    if (!names[i][j])
++      return true;
++  }
++  return false;
++}
++
++/* An ordinary Windows program must not forward transient APE handle records. */
++static textwindows void qjs_strip_protocol(char16_t *block) {
++  char16_t *source = block, *target = block;
++  while (*source) {
++    size_t length = strlen16(source) + 1;
++    if (!qjs_protocol_variable(source)) {
++      memmove(target, source, length * sizeof(*source));
++      target += length;
++    }
++    source += length;
++  }
++  *target = 0;
++  if (target == block)
++    target[1] = 0;
++}
++
+ textwindows static int ntspawn2(struct NtSpawnArgs *a, struct SpawnBlock *sb) {
+ 
+   // make executable path
+@@ -88,6 +139,7 @@
+     return enoexec();
+   if (got < 3)
+     return enoexec();
++  bool ape = qjs_is_ape(p, got);
+   pe = p + got;
+ 
+   // handle shebang
+@@ -134,6 +186,7 @@
+     // setup the true executable path
+     if (__mkntpathath(a->dirhand, argv[0], sb->path, false) == -1)
+       return -1;
++    ape = qjs_interpreter_is_ape(sb->path);
+   } else {
+     // it's something else
+     return enoexec();
+@@ -144,6 +197,45 @@
+     return e2big();
+   if (mkntenvblock(sb->envblock, a->envp, a->extravars, sb->envbuf) == -1)
+     return -1;
++  if (!ape)
++    qjs_strip_protocol(sb->envblock);
++
++  /* Native programs need synchronous disk handles; APE keeps its fd protocol. */
++  int64_t reopened[3] = {-1, -1, -1};
++  int64_t *native_handles = 0;
++  struct NtStartupInfo native_si = *a->lpStartupInfo;
++  struct NtSpawnArgs native_args = *a;
++  if (!ape && (!a->opt_hParentProcess ||
++               a->opt_hParentProcess == GetCurrentProcess())) {
++    native_handles = ntspawn_malloc((a->dwExplicitHandleCount + 3) * sizeof(int64_t));
++    if (!native_handles)
++      return enomem();
++    memcpy(native_handles, a->opt_lpExplicitHandleList,
++           a->dwExplicitHandleCount * sizeof(int64_t));
++    for (int fd = 0; fd < 3; ++fd) {
++      if (GetFileType(native_si.stdiofds[fd]) != kNtFileTypeDisk)
++        continue;
++      int64_t h = ReOpenFile(native_si.stdiofds[fd],
++          fd ? kNtGenericWrite : kNtGenericRead,
++          kNtFileShareRead | kNtFileShareWrite | kNtFileShareDelete, 0);
++      if (h == -1)
++        continue;
++      if (!SetHandleInformation(h, 1, 1)) {
++        CloseHandle(h);
++        continue;
++      }
++      int64_t position = lseek(fd, 0, SEEK_CUR);
++      if (position >= 0) {
++        SetFilePointerEx(h, position, 0, 0);
++      }
++      reopened[fd] = h;
++      native_si.stdiofds[fd] = h;
++      native_handles[native_args.dwExplicitHandleCount++] = h;
++    }
++    native_args.lpStartupInfo = &native_si;
++    native_args.opt_lpExplicitHandleList = native_handles;
++    a = &native_args;
++  }
+ 
+   // create attribute list
+   // this code won't call malloc in practice
+@@ -215,6 +307,11 @@
+     DeleteProcThreadAttributeList(alist);
+   if (freeme)
+     ntspawn_free(freeme);
++  for (int fd = 0; fd < 3; ++fd)
++    if (reopened[fd] != -1)
++      CloseHandle(reopened[fd]);
++  if (native_handles)
++    ntspawn_free(native_handles);
+   return rc;
+ }
+ 
+--- a/libc/intrin/fds.c
++++ b/libc/intrin/fds.c
+@@ -144,6 +144,9 @@
+           break;
+         if (!TokAtoi(&fdspec, &protocol))
+           break;
++        /* Keep the standard handles supplied by this process's parent. */
++        if (fd < 0 || (fd < 3 && handle != fds->p[fd].handle))
++          continue;
+         __ensurefds_unlocked(fd);
+         struct Fd *f = fds->p + fd;
+         if (f->handle && f->handle != -1 && f->handle != handle) {
+--- a/libc/proc/wait4-nt.c
++++ b/libc/proc/wait4-nt.c
+@@ -43,42 +43,9 @@
+ __msabi extern typeof(WaitForMultipleObjects)
+     *const __imp_WaitForMultipleObjects;
+ 
+-// turns some win32 wait statuses into unix style ones
++/* QuickJS exposes the full native DWORD on Windows, including NT errors. */
+ textwindows static int __proc_wstatus(uint32_t dwExitCode) {
+-  switch (dwExitCode) {
+-    case kNtStatusControlCExit:
+-      return SIGINT;
+-    case kNtStatusStackOverflow:
+-    case kNtStatusAccessViolation:
+-    case kNtStatusGuardPageViolation:
+-      return SIGSEGV;
+-    case kNtStatusInPageError:
+-      return SIGBUS;
+-    case kNtStatusIllegalInstruction:
+-    case kNtStatusPrivilegedInstruction:
+-      return SIGILL;
+-    case kNtStatusBreakpoint:
+-      return SIGTRAP;
+-    case kNtStatusIntegerOverflow:
+-    case kNtStatusFloatDivideByZero:
+-    case kNtStatusFloatOverflow:
+-    case kNtStatusFloatUnderflow:
+-    case kNtStatusFloatInexactResult:
+-    case kNtStatusFloatDenormalOperand:
+-    case kNtStatusFloatInvalidOperation:
+-    case kNtStatusFloatStackCheck:
+-    case kNtStatusIntegerDivideBYZero:
+-      return SIGFPE;
+-    case kNtStatusDllNotFound:
+-    case kNtStatusDllInitFailed:
+-    case kNtStatusOrdinalNotFound:
+-    case kNtStatusEntrypointNotFound:
+-      return SIGSYS;
+-    case kNtStatusAssertionFailure:
+-      return SIGABRT;
+-    default:
+-      return dwExitCode;
+-  }
++  return (int)dwExitCode;
+ }
+ 
+ textwindows static int __proc_unstop(struct Proc *pr, int *wstatus,
+--- a/libc/intrin/terminatethisprocess.c
++++ b/libc/intrin/terminatethisprocess.c
+@@ -131,7 +131,7 @@
+ 
+   // "When a process terminates itself, TerminateProcess stops execution
+   //  of the calling thread and does not return." -Quoth MSDN
+-  __imp_TerminateProcess(-1, dwExitCode);
++  ExitProcess(dwExitCode);
+   __builtin_unreachable();
+ }
+ 
+--- a/libc/intrin/sigproc.c
++++ b/libc/intrin/sigproc.c
+@@ -34,6 +34,7 @@
+ #include "libc/nt/memory.h"
+ #include "libc/nt/process.h"
+ #include "libc/nt/runtime.h"
++#include "libc/nt/systeminfo.h"
+ #include "libc/nt/thunk/msabi.h"
+ #include "libc/str/str.h"
+ #ifdef __x86_64__
+@@ -80,6 +81,12 @@
+         COSMO_PID_LOWER_BOUND + 1;
+     if ((*sigpending = __sig_map_process(pid, kNtCreateNew)))
+       return pid;
++    /* Permission and mapping failures do not improve with another random pid. */
++    uint32_t error = __imp_GetLastError();
++    if (error != kNtErrorFileExists && error != kNtErrorAlreadyExists) {
++      kprintf("QuickJS: cannot initialize Windows signal state (error %u)\n", error);
++      ExitProcess(1);
++    }
+   }
+ }
+ 
+@@ -110,7 +117,17 @@
+ 
+ // Generates C:\ProgramData\cosmo\sig\x\y.pid like path
+ textwindows char16_t *__sig_process_path(char16_t *path, uint32_t pid) {
+-  char16_t *p = path;
++  /* Keep this runtime's signal files in the user's writable temp directory. */
++  uint32_t length = GetTempPath(88, path);
++  char16_t *p;
++  if (length && length < 88) {
++    p = path + length;
++    const char16_t suffix[] = u"quickjs-cosmo-sig\\";
++    memcpy(p, suffix, sizeof(suffix) - sizeof(*suffix));
++    p += sizeof(suffix) / sizeof(*suffix) - 1;
++    goto pid_suffix;
++  }
++  p = path;
+   *p++ = __getcosmosdrive();
+   *p++ = ':';
+   *p++ = '\\';
+@@ -136,6 +153,7 @@
+   *p++ = 'i';
+   *p++ = 'g';
+   *p++ = '\\';
++pid_suffix:
+   p = __itoa16(p, (pid & 0x000ff800) >> 11);
+   *p++ = '\\';
+   p = __itoa16(p, pid);

@@ -2,7 +2,7 @@
 set -eu
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$ROOT"
-QUICKJS_COSMO_PROFILE=${QUICKJS_COSMO_PROFILE:-stable}
+QUICKJS_COSMO_PROFILE=${QUICKJS_COSMO_PROFILE:-nightly}
 OFFLINE=
 for argument in "$@"; do
     case "$argument" in
@@ -40,6 +40,7 @@ PY
 for patch_file in "$ROOT"/patches/*.patch; do
     patch --batch -d "$BUILD" -p1 -i "$patch_file"
 done
+python3 scripts/prepare_compat.py $OFFLINE
 QJSC=./qjsc.exe
 if [ "$(uname -s)" = Linux ]; then
     case "$(uname -m)" in
@@ -48,7 +49,8 @@ if [ "$(uname -s)" = Linux ]; then
     esac
     QJSC="$LOADER ./qjsc.exe"
 fi
-"$MAKE" -C "$BUILD" -j "$JOBS" \
+"$MAKE" -C "$BUILD" -f Makefile -f "$ROOT/compat/build.mk" -j "$JOBS" \
+    QJS_COSMO_ROOT="$ROOT" QJS_COSMO_COMPAT="$BUILD/compat-source" \
     CONFIG_COSMO=y CONFIG_WIN32= MSYSTEM= CONFIG_DARWIN= CONFIG_FREEBSD= CONFIG_CLANG= \
     CC=cosmocc AR=cosmoar QJSC_CC=cosmocc QJSC="$QJSC" EXE=.exe PREFIX="$DIST" \
     qjs.exe qjsc.exe run-test262.exe libquickjs.a

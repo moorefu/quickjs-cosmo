@@ -1,0 +1,224 @@
+--- a/quickjs-libc.c
++++ b/quickjs-libc.c
+@@ -30,6 +30,9 @@
+ #include <assert.h>
+ #include <unistd.h>
+ #include <errno.h>
++#if defined(__COSMOPOLITAN__)
++#include <spawn.h>
++#endif
+ #include <fcntl.h>
+ #include <sys/time.h>
+ #include <time.h>
+@@ -3194,6 +3197,92 @@
+     return -1;
+ }
+ 
++#ifdef __COSMOPOLITAN__
++static int js_spawn_windows(int *pid, const char *file, char **argv,
++                            char **envp, const char *cwd, int std_fds[3],
++                            BOOL use_path)
++{
++    posix_spawn_file_actions_t actions;
++    posix_spawnattr_t attributes;
++    const char *path, *next, *end;
++    char candidate[PATH_MAX];
++    size_t len, file_len = strlen(file);
++    int err, fd, fd_max, search_err = ENOENT;
++
++    err = posix_spawn_file_actions_init(&actions);
++    if (err)
++        return err;
++    err = posix_spawnattr_init(&attributes);
++    if (err) {
++        posix_spawn_file_actions_destroy(&actions);
++        return err;
++    }
++    err = posix_spawnattr_setflags(&attributes, POSIX_SPAWN_USEVFORK);
++    if (err)
++        goto done;
++    for (fd = 0; fd < 3; fd++) {
++        if (std_fds[fd] != fd) {
++            err = posix_spawn_file_actions_adddup2(&actions, std_fds[fd], fd);
++            if (err)
++                goto done;
++        }
++    }
++    /* 与原 fork 路径保持相同的描述符清理范围。 */
++    fd_max = min_int(sysconf(_SC_OPEN_MAX), 1024);
++    if (fd_max < 0)
++        fd_max = 1024;
++    for (fd = 3; fd < fd_max; fd++) {
++        if (fcntl(fd, F_GETFD) < 0)
++            continue;
++        err = posix_spawn_file_actions_addclose(&actions, fd);
++        if (err)
++            goto done;
++    }
++    if (cwd) {
++        err = posix_spawn_file_actions_addchdir_np(&actions, cwd);
++        if (err)
++            goto done;
++    }
++    if (!file_len) {
++        err = ENOENT;
++        goto done;
++    }
++    if (!use_path || strchr(file, '/') || strchr(file, '\\') ||
++        (file_len >= 2 && file[1] == ':')) {
++        err = posix_spawn(pid, file, &actions, &attributes, argv, envp);
++        goto done;
++    }
++    /* 在子进程 cwd 下解析相对 PATH，避免临时改变父进程目录。 */
++    path = getenv("PATH");
++    if (!path)
++        path = "/bin:/usr/bin";
++    for (; path; path = next) {
++        end = strchr(path, ':');
++        next = end ? end + 1 : NULL;
++        len = end ? (size_t)(end - path) : strlen(path);
++        if (len + 1 + file_len + 1 > sizeof(candidate))
++            continue;
++        memcpy(candidate, path, len);
++        if (len)
++            candidate[len++] = '/';
++        memcpy(candidate + len, file, file_len + 1);
++        err = posix_spawn(pid, candidate, &actions, &attributes, argv, envp);
++        if (!err)
++            goto done;
++        if (err == EACCES)
++            search_err = err;
++        else if (err != ENOENT && err != ENOTDIR)
++            goto done;
++    }
++    err = search_err;
++ done:
++    posix_spawnattr_destroy(&attributes);
++    posix_spawn_file_actions_destroy(&actions);
++    return err;
++}
++#endif
++
++
+ /* exec(args[, options]) -> exitcode */
+ static JSValue js_os_exec(JSContext *ctx, JSValueConst this_val,
+                           int argc, JSValueConst *argv)
+@@ -3204,7 +3293,7 @@
+     char **envp = environ;
+     uint32_t exec_argc, i;
+     int ret, pid, status;
+-    BOOL block_flag = TRUE, use_path = TRUE;
++    BOOL block_flag = TRUE, use_path = TRUE, owns_envp = FALSE;
+     static const char *std_name[3] = { "stdin", "stdout", "stderr" };
+     int std_fds[3];
+     uint32_t uid = -1, gid = -1;
+@@ -3287,6 +3376,7 @@
+             goto exception;
+         if (!JS_IsUndefined(val)) {
+             envp = build_envp(ctx, val);
++            owns_envp = TRUE;
+             JS_FreeValue(ctx, val);
+             if (!envp)
+                 goto exception;
+@@ -3313,6 +3403,21 @@
+         }
+     }
+ 
++#if defined(__COSMOPOLITAN__)
++    if (IsWindows()) {
++        if (uid != (uint32_t)-1 || gid != (uint32_t)-1) {
++            JS_ThrowTypeError(ctx, "os.exec uid/gid are unsupported on Windows");
++            goto exception;
++        }
++        ret = js_spawn_windows(&pid, file ? file : exec_argv[0],
++                               (char **)exec_argv, owns_envp ? envp : NULL, cwd, std_fds, use_path);
++        if (ret) {
++            JS_ThrowTypeError(ctx, "posix_spawn failed: %s (errno=%d)", strerror(ret), ret);
++            goto exception;
++        }
++        goto parent;
++    }
++#endif
+     pid = fork();
+     if (pid < 0) {
+         JS_ThrowTypeError(ctx, "fork error");
+@@ -3346,6 +3451,8 @@
+                https://stackoverflow.com/questions/899038/#918469
+              */
+             int fd_max = min_int(sysconf(_SC_OPEN_MAX), 1024);
++            if (fd_max < 0)
++                fd_max = 1024;
+             for(i = 3; i < fd_max; i++)
+                 close(i);
+         }
+@@ -3372,10 +3479,25 @@
+         _exit(127);
+     }
+     /* parent */
++#if defined(__COSMOPOLITAN__)
++ parent:
++#endif
+     if (block_flag) {
+         for(;;) {
+             ret = waitpid(pid, &status, 0);
++            if (ret < 0) {
++                if (errno == EINTR)
++                    continue;
++                JS_ThrowTypeError(ctx, "waitpid failed: %s (errno=%d)", strerror(errno), errno);
++                goto exception;
++            }
+             if (ret == pid) {
++#if defined(__COSMOPOLITAN__)
++                if (IsWindows()) {
++                    ret_val = JS_NewUint32(ctx, (uint32_t)status);
++                    goto done;
++                }
++#endif
+                 if (WIFEXITED(status)) {
+                     ret = WEXITSTATUS(status);
+                     break;
+@@ -3395,7 +3517,7 @@
+     for(i = 0; i < exec_argc; i++)
+         JS_FreeCString(ctx, exec_argv[i]);
+     js_free(ctx, exec_argv);
+-    if (envp && envp != environ) {
++    if (envp && owns_envp) {
+         char **p;
+         p = envp;
+         while (*p != NULL) {
+@@ -3421,7 +3543,7 @@
+ static JSValue js_os_waitpid(JSContext *ctx, JSValueConst this_val,
+                              int argc, JSValueConst *argv)
+ {
+-    int pid, status, options, ret;
++    int pid, status = 0, options, ret;
+     JSValue obj;
+ 
+     if (JS_ToInt32(ctx, &pid, argv[0]))
+@@ -3440,8 +3562,14 @@
+         return obj;
+     JS_DefinePropertyValueUint32(ctx, obj, 0, JS_NewInt32(ctx, ret),
+                                  JS_PROP_C_W_E);
++#if defined(__COSMOPOLITAN__)
++    JS_DefinePropertyValueUint32(ctx, obj, 1,
++        IsWindows() ? JS_NewUint32(ctx, (uint32_t)status) : JS_NewInt32(ctx, status),
++        JS_PROP_C_W_E);
++#else
+     JS_DefinePropertyValueUint32(ctx, obj, 1, JS_NewInt32(ctx, status),
+                                  JS_PROP_C_W_E);
++#endif
+     return obj;
+ }
+ 
+--- a/qjsc.c
++++ b/qjsc.c
+@@ -487,6 +487,9 @@
+     arg = argv;
+     *arg++ = CONFIG_CC;
+     *arg++ = "-O2";
++#if defined(__COSMOPOLITAN__)
++    *arg++ = "-Wl,--wrap=_Exit,-u,__wrap__Exit";
++#endif
+ #ifdef CONFIG_LTO
+     if (use_lto) {
+         *arg++ = "-flto";

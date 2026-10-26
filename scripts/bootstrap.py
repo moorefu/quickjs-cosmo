@@ -115,7 +115,7 @@ def prepare(config, archive, destination, extractor, offline):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--offline", action="store_true", help="Only use verified cached archives")
-    parser.add_argument("--nightly", action="store_true", help="Use the locked Nightly cosmocc artifact")
+    parser.add_argument("--nightly", action="store_true", help="Compatibility alias; Nightly is always used")
     args = parser.parse_args()
     if os.name != "posix":
         parser.error("Run this bootstrap inside WSL, Linux, macOS or BSD to preserve symlinks")

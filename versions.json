@@ -1,8 +1,17 @@
 {
   "cosmopolitan": {
-    "version": "4.0.2",
-    "url": "https://github.com/jart/cosmopolitan/releases/download/4.0.2/cosmocc-4.0.2.zip",
-    "sha256": "85b8c37a406d862e656ad4ec14be9f6ce474c1b436b9615e91a55208aced3f44"
+    "version": "nightly-2026-10-26-aefad27c09ff",
+    "archive_name": "cosmocc-nightly-2026-10-26.zip",
+    "url": "https://api.github.com/repos/jart/cosmopolitan/actions/artifacts/12629850103/zip",
+    "sha256": "7f8a0bfd991401e027f794d516bf52a5184b5089e5dd1a50cf9e9ade54b5bb06",
+    "workflow_url": "https://github.com/jart/cosmopolitan/actions/workflows/nightly-cosmocc.yml",
+    "run_url": "https://github.com/jart/cosmopolitan/actions/runs/40271229025",
+    "run_id": 40271229025,
+    "run_number": 802,
+    "commit": "aefad27c09ffda64c6ac64bd69f758e9f9c7b91d",
+    "artifact_id": 12629850103,
+    "artifact_size": 419652152,
+    "artifact_created_at": "2026-10-26T05:19:02Z"
   },
   "quickjs": {
     "repository": "https://github.com/bellard/quickjs",
