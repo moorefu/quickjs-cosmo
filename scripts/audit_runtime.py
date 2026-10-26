@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import platform
 import shutil
 import signal
 import subprocess
@@ -14,6 +15,7 @@ import sys
 import time
 
 from build_config import load_config
+from host_runtime import ape_command, host_info
 
 ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL = ("_COSMO_FDS", "_COSMO_FDS_V2", "_MASK")
@@ -158,16 +160,15 @@ def main():
     settings = load_config("nightly" if args.nightly else None)
     qjs = (args.qjs or settings.dist / "qjs.exe").resolve()
     qjsc = (args.qjsc or settings.dist / "qjsc.exe").resolve()
-    system = "windows" if os.name == "nt" else "linux"
+    system = platform.system().lower()
     work = ROOT / "build/runtime-audit" / (settings.profile + "-" + args.label + "-" + system)
     work.mkdir(parents=True, exist_ok=True)
-    loader = settings.dist / "ape-x86_64.elf"
     fixture = ROOT / "tests/runtime_process.js"
     outcomes = []
     expectations = {}
 
     def invoke(binary, arguments, **options):
-        command = [binary, *arguments] if os.name == "nt" else [loader, binary, *arguments]
+        command = ape_command(binary, arguments, settings.dist)
         return run(command, **options)
 
     def record(name, result):
@@ -196,7 +197,7 @@ def main():
         config.write_text(json.dumps({"program": str(program).replace("\\", "/"),
                                       "argv": argv, "async": asynchronous, **options}))
         expectations[name] = (expected, asynchronous)
-        return record(name, invoke(binary, [config] if binary != qjs else [fixture, config], timeout=8))
+        return record(name, invoke(binary, [config] if binary != qjs else [fixture, config], timeout=15))
 
     if os.name == "nt":
         cmd = Path(os.environ["SystemRoot"]) / "System32/cmd.exe"
@@ -218,9 +219,13 @@ def main():
         stale["_COSMO_FDS_V2"] = "".join(f"{fd}_-1_1_0_0_0_0_0_0;" for fd in range(3))
         record("stale-protocol", invoke(qjs, [fixture, "stdio"], env=stale, input_text="输入正文\n"))
 
-    # Slower child guarantees WNOHANG returns [0, 0] before completion.
+    # The child cannot finish until the parent has performed its first WNOHANG.
+    release = work / "async.release"
+    release.unlink(missing_ok=True)
     spawn("async-python7", sys.executable, ["python", "-c",
-          "import time; time.sleep(0.1); raise SystemExit(7)"], True, expected=7)
+          "import pathlib,time\np=pathlib.Path(" + repr(str(release)) + ")\n"
+          "while not p.exists(): time.sleep(0.01)\nraise SystemExit(7)"],
+          True, expected=7, releaseFile=release.as_posix())
     spawn("path-python", Path(sys.executable).name,
           [Path(sys.executable).name, "-c", "pass"], usePath=True)
     if args.standalone:
@@ -253,11 +258,8 @@ def main():
     native_stderr = Path(capture["stderr"]).read_text(encoding="utf-8")
     capture = {**capture, **{name: (work / ("ape-" + name + ".txt")).as_posix()
                             for name in ("stdout", "stderr")}}
-    direct = [str(qjs), str(fixture), "stdio"]
-    executable = qjs
-    if os.name != "nt":
-        executable = loader
-        direct.insert(0, str(loader))
+    direct = ape_command(qjs, [fixture, "stdio"], settings.dist)
+    executable = direct[0]
     spawn("ape-stdio", executable, direct, expected=7,
           env=dict(os.environ, QJS_AUDIT_MARKER="用户变量"), capture=capture)
     ape_stdout = Path(capture["stdout"]).read_text(encoding="utf-8")
@@ -318,7 +320,7 @@ def main():
         except (ValueError, KeyError, IndexError):
             failed.append("stdio/invalid-output")
 
-    report = dict(profile=settings.profile, variant=args.label,
+    report = dict(profile=settings.profile, variant=args.label, host=host_info(),
                   system=system, qjs=str(qjs), qjs_sha256=hashlib.sha256(qjs.read_bytes()).hexdigest(),
                   quickjs=settings.data["quickjs"], cosmopolitan=settings.data["cosmopolitan"],
                   outcomes=outcomes, verified=args.verify, failed=failed)

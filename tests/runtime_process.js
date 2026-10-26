@@ -37,8 +37,13 @@ try {
         }));
     } else {
         const firstWait = os.waitpid(result, os.WNOHANG);
+        if (config.releaseFile) {
+            const release = std.open(config.releaseFile, "w");
+            if (!release) throw Error("cannot release asynchronous child");
+            release.close();
+        }
         let current = firstWait;
-        const deadline = Date.now() + (config.timeout || 1200);
+        const deadline = Date.now() + (config.timeout || 5000);
         while (current[0] !== result && Date.now() < deadline) {
             os.sleep(10);
             current = os.waitpid(result, os.WNOHANG);

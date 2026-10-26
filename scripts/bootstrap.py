@@ -10,6 +10,7 @@ import stat
 import subprocess
 import tarfile
 import zipfile
+from urllib.parse import urlparse
 from build_config import load_config
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -77,7 +78,7 @@ def extract_tar(archive, destination):
                 raise ValueError("Unsupported source archive entry: " + entry.name)
 
 
-def prepare(config, archive, destination, extractor, offline):
+def prepare(config, archive, destination, extractor, offline, download_url=None):
     marker = destination / ".bootstrap.json"
     if marker.exists() and json.loads(marker.read_text()) == config:
         print("Ready:", destination.relative_to(ROOT), flush=True)
@@ -90,17 +91,23 @@ def prepare(config, archive, destination, extractor, offline):
             raise ValueError("Missing or invalid cached archive: " + str(archive))
         archive.parent.mkdir(parents=True, exist_ok=True)
         partial = archive.with_suffix(archive.suffix + ".part")
-        if "artifact_id" in config:
+        if download_url and (urlparse(download_url).scheme != "https" or not urlparse(download_url).netloc):
+            raise ValueError("COSMOCC_ARCHIVE_URL must be an HTTPS URL for the pinned archive")
+        if "artifact_id" in config and not download_url:
             if not shutil.which("gh"):
                 raise RuntimeError("Download the cosmocc artifact from " + config["run_url"] +
                                    " to " + str(archive) + "; or authenticate the GitHub CLI (gh)")
-            with partial.open("wb") as output:
-                subprocess.run(["gh", "api", "repos/jart/cosmopolitan/actions/artifacts/" +
-                                str(config["artifact_id"]) + "/zip"], stdout=output, check=True)
+            try:
+                with partial.open("wb") as output:
+                    subprocess.run(["gh", "api", "repos/jart/cosmopolitan/actions/artifacts/" +
+                                    str(config["artifact_id"]) + "/zip"], stdout=output, check=True)
+            except subprocess.CalledProcessError as error:
+                raise RuntimeError("Cannot download the pinned Nightly artifact. Restore its verified cache, "
+                                   "or set COSMOCC_ARCHIVE_URL to an HTTPS mirror with the same SHA-256.") from error
         else:
             subprocess.run([
                 "curl", "--fail", "--location", "--retry", "3", "--connect-timeout", "20",
-                "--output", str(partial), config["url"],
+                "--output", str(partial), download_url or config["url"],
             ], check=True)
         actual = sha256(partial)
         if actual != expected:
@@ -115,14 +122,16 @@ def prepare(config, archive, destination, extractor, offline):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--offline", action="store_true", help="Only use verified cached archives")
+    parser.add_argument("--source-only", action="store_true", help="Restore pinned QuickJS sources without a compiler")
     parser.add_argument("--nightly", action="store_true", help="Compatibility alias; Nightly is always used")
     args = parser.parse_args()
-    if os.name != "posix":
+    if os.name != "posix" and not args.source_only:
         parser.error("Run this bootstrap inside WSL, Linux, macOS or BSD to preserve symlinks")
     settings = load_config("nightly" if args.nightly else None)
     config = settings.data
-    prepare(config["cosmopolitan"], settings.archive,
-            settings.toolchain, extract_zip, args.offline)
+    if not args.source_only:
+        prepare(config["cosmopolitan"], settings.archive,
+                settings.toolchain, extract_zip, args.offline, os.environ.get("COSMOCC_ARCHIVE_URL"))
     prepare(config["quickjs"], ROOT / ".cache/quickjs-source.tar.gz",
             ROOT / "upstream/quickjs", extract_tar, args.offline)
 

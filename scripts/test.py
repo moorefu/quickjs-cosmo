@@ -11,16 +11,14 @@ import subprocess
 import sys
 import time
 from build_config import load_config
+from host_runtime import ape_command, check_host, host_info
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 def execute(command, cwd, timeout=60, loader=None):
-    if platform.system() == "Linux" and str(command[0]).endswith(".exe"):
-        arch = "aarch64" if platform.machine().lower() in ("aarch64", "arm64") else "x86_64"
-        loader = loader or ROOT / f"dist/ape-{arch}.elf"
-        if loader.exists():
-            command = [loader, *command]
+    if str(command[0]).endswith(".exe"):
+        command = ape_command(command[0], command[1:], ROOT / "dist", loader=loader)
     environment = dict(os.environ, TZ="UTC", LC_ALL="C")
     options = dict(cwd=cwd, env=environment, text=True, encoding="utf-8", errors="replace",
                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)
@@ -42,6 +40,9 @@ def main():
     parser.add_argument("--upstream", action="store_true")
     parser.add_argument("--compile", action="store_true", help="Also compile and run a standalone APE (needs cosmocc)")
     parser.add_argument("--standalone", type=Path, help="Run an existing standalone APE produced on another host")
+    parser.add_argument("--expected-platform", choices=("linux", "darwin", "win32"))
+    parser.add_argument("--expected-arch", choices=("x86_64", "arm64"))
+    parser.add_argument("--expected-execution-arch", choices=("x86_64", "arm64"))
     args = parser.parse_args()
     settings = load_config("nightly" if args.nightly else None)
     qjs = (args.qjs or settings.dist / "qjs.exe").resolve()
@@ -49,6 +50,14 @@ def main():
     arch = "aarch64" if platform.machine().lower() in ("aarch64", "arm64") else "x86_64"
     loader = settings.dist / f"ape-{arch}.elf"
     system = platform.system().lower()
+    host = host_info()
+    try:
+        check_host(host, args.expected_platform, args.expected_arch, args.expected_execution_arch)
+    except ValueError as error:
+        parser.error(str(error))
+    print("HOST " + json.dumps(host), flush=True)
+    if args.standalone and not (args.standalone.resolve().parent / "runtime-standalone.exe").is_file():
+        parser.error("--standalone requires the adjacent runtime-standalone.exe process fixture")
     scratch = ROOT / "build" / ("test-" + system)
     scratch.mkdir(parents=True, exist_ok=True)
     results = []
@@ -103,7 +112,7 @@ def main():
     compiled_process = (args.standalone.resolve().parent if args.standalone else scratch) / "runtime-standalone.exe"
     if (args.compile or args.standalone) and compiled_process.is_file():
         runtime += ["--standalone", compiled_process]
-    check("custom/runtime-process", runtime, timeout=120, contains="PASS runtime")
+    check("custom/runtime-process", runtime, timeout=240, contains="PASS runtime")
     if os.name == "nt":
         check("cli/windows-module-path", [qjs, "-m", r".\tests\modules.js"],
               cwd=ROOT, contains="PASS modules")
@@ -125,7 +134,7 @@ def main():
             check("upstream/" + name, [qjs, *flags, Path(f"tests/{name}.js")], cwd=source, timeout=120)
 
     failed = sum(not result["passed"] for result in results)
-    report = dict(platform=platform.platform(), python=sys.version.split()[0], build_profile=settings.profile,
+    report = dict(platform=platform.platform(), host=host, python=sys.version.split()[0], build_profile=settings.profile,
                   qjs=str(qjs), qjs_sha256=hashlib.sha256(qjs.read_bytes()).hexdigest(),
                   quickjs_commit=settings.data["quickjs"]["commit"], cosmopolitan=settings.data["cosmopolitan"],
                   passed=len(results) - failed, failed=failed, skipped=skipped, results=results)

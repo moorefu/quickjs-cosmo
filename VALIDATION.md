@@ -64,3 +64,11 @@ Windows 中 `std.exit(7)` 返回 **7**，语法错误、未处理异常、未处
 验证 ZIP CRC、名称顺序、readme、二进制哈希和解压后在 Windows / Linux 的启动。从 qjs、run-test262 副本分别提取 ELF，确认每个程序均包含 x86_64（machine 62）和 AArch64（machine 183）；ZIP 内仍保留双架构 APE。
 
 尚未在 macOS、FreeBSD、OpenBSD、NetBSD 或 ARM64 硬件上运行。信号文件命名空间与未修补的官方运行时不同；用户临时路径过长时回退到原始 ProgramData 路径，失败会报错而非挂起。
+
+## CI 配置验证
+
+工作流 `.github/workflows/build-ape.yml` 复用现有构建、测试和发布包脚本，定义 Linux x86_64/ARM64、macOS Intel/ARM64、Windows 2022/2025 x64，以及 Windows ARM64 的 x64 兼容运行共 7 个矩阵项。所有项消费同一构建产物，汇总门禁要求全部成功。Actions 依赖锁定到官方提交 SHA。
+
+本地验证通过 actionlint 1.7.12 的工作流语法与表达式检查、18 项 CI 辅助单元测试、Windows/WSL 各 29 项完整回归。另在没有 cosmocc 的干净目录中演练传输包恢复、离线源码恢复和跨主机独立程序测试：Windows 29/29（另跳过 1 项），Linux 27/27；执行前后均复核哈希。演练日志与报告在 `build/ci-rehearsal/build/`，构建任务日志在 `build/ci-build.log`、`build/ci-test-linux.log`。新异步用例使用父进程释放标记同步 WNOHANG 检查，避免依赖固定休眠时间。
+
+macOS、ARM64 与 GitHub 托管 runner 的实际结果以推送后 Actions 报告为准；配置矩阵不计作这些环境的本地实测通过。当前本地仓库未配置 Git remote，本次未触发远端工作流。

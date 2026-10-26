@@ -150,6 +150,44 @@ wsl -d Ubuntu-22.04 --cd /mnt/d/Workspace/dairn/quickjs-cosmo --exec /bin/sh -c 
 
 还运行上游语言、内建对象、循环、BigInt、循环模块、Worker、I/O 回调、Intl 等测试。Windows 下仅跳过依赖 Unix `/bin/sh`、`true`、`cat` 的上游 `test_std.js`，该测试在 WSL 内运行；自编的跨平台文件 I/O 测试在两端运行。
 
+## GitHub Actions CI
+
+[构建与验证工作流](.github/workflows/build-ape.yml) 在 push、pull request 和手动运行时触发，采用[参考仓库 CI](https://github.com/moorefu/quickjs-cosmo/blob/main/.github/workflows/build-ape.yml)的单次构建、多主机验收方式，输入始终取自 `versions.json`。
+
+构建任务在 Ubuntu x86_64 执行现有 `scripts/build.sh`、`scripts/test.py --upstream --compile` 和 `scripts/package.py`，编译两份独立 APE 测试程序。矩阵任务下载同一个产物，执行现有测试、上游快速测试、跨主机独立程序和进程回归。
+
+| Runner | 主机 | APE 执行方式 |
+| --- | --- | --- |
+| `ubuntu-24.04` | Linux x86_64 | x86_64 ELF loader |
+| `ubuntu-24.04-arm` | Linux ARM64 | AArch64 ELF loader |
+| `macos-15-intel` | macOS Intel | APE shell 入口 |
+| `macos-15` | macOS ARM64 | APE shell 入口 |
+| `windows-2022` | Windows x64 | x64 PE |
+| `windows-2025` | Windows x64 | x64 PE |
+| `windows-11-arm` | Windows ARM64 | 系统的 x64 兼容层；PE 入口为 x64 |
+
+Runner 标签对应 [GitHub 官方支持列表](https://docs.github.com/en/actions/how-tos/write-workflows/choose-where-workflows-run/choose-the-runner-for-a-job)。测试报告分别记录主机架构、Python 架构和启动策略选择的执行架构。Windows ARM 项会检查实际宿主为 ARM64，单独标明 APE 的 x64 兼容运行。
+
+`scripts/ci_artifact.py` 打包、恢复并校验 SDK、源码归档、两份独立程序和官方格式发布 ZIP。传输使用 tar 保留执行权限与 `.aarch64` 目录；下载端先验证固定输入、完整文件清单与 SHA-256，再执行测试。矩阵用 `bootstrap.py --source-only --offline` 恢复上游测试源码，无需下载 cosmocc；macOS 的 APE 启动过程可使用 runner 预装的系统 C 编译器。Linux 构建任务包含编译步骤；其余 Unix 矩阵项运行 27 项主测试，Windows 运行 29 项并跳过一个 Unix 专用用例。
+
+每个任务保存主测试报告和进程汇总报告，产物名称为 `reports-*`。仅汇总报告会被上传，临时用例配置保留在任务工作目录。全部矩阵通过后，`CI gate` 保存 `quickjs-cosmo-release` Actions 产物，包含 ZIP、外置 SHA-256 与构建清单。构建或任一矩阵项失败、取消或跳过时，门禁不能成功；可将 `CI gate` 设为分支的必需检查。
+
+工具链缓存只保存原始归档及已校验的兼容源码，不缓存改成 ELF 的构建工具。默认通过任务的 `GITHUB_TOKEN` 下载固定的上游 Nightly artifact；如需其他凭据，可设置仓库 secret `COSMOCC_ARTIFACT_TOKEN`。Actions artifact 有保留期限，归档不可用时可把相同 ZIP 放入 HTTPS 镜像，并设置仓库变量 `COSMOCC_ARCHIVE_URL`；镜像仍须匹配锁文件的 SHA-256，不能替换为其他 Nightly。
+
+可在本机演练产物传递：
+
+```sh
+# 先执行构建、--compile 测试和 package.py
+python3 scripts/ci_artifact.py pack
+python3 scripts/ci_artifact.py verify
+# 在干净的 checkout 中，放入 build/ci/ 下的 tar.gz 与其 .sha256
+python3 scripts/ci_artifact.py unpack
+python3 scripts/bootstrap.py --source-only --offline
+python3 scripts/test.py --upstream --standalone build/test-linux/hello-standalone.exe
+```
+
+CI 辅助测试使用 `python -m unittest discover -s tests -p 'test_ci_*.py' -v`，覆盖主机选择、ARM Windows 的架构区分、传输损坏、目录越界、重复文件、符号链接和镜像版本校验。
+
 ## 将 JS 编译为独立程序
 
 WSL / Linux 中：
