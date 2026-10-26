@@ -1,0 +1,8 @@
+.cache/
+toolchains/
+upstream/
+build/
+dist/
+releases/
+__pycache__/
+*.pyc

@@ -1,0 +1,16 @@
+{
+  "cosmopolitan": {
+    "version": "4.0.2",
+    "url": "https://github.com/jart/cosmopolitan/releases/download/4.0.2/cosmocc-4.0.2.zip",
+    "sha256": "85b8c37a406d862e656ad4ec14be9f6ce474c1b436b9615e91a55208aced3f44"
+  },
+  "quickjs": {
+    "repository": "https://github.com/bellard/quickjs",
+    "branch": "master",
+    "commit": "1ec58aaa769a992213ec2b871b0228074169904b",
+    "commit_date": "2026-10-26T15:00:14Z",
+    "version": "2026-06-04",
+    "url": "https://codeload.github.com/bellard/quickjs/tar.gz/1ec58aaa769a992213ec2b871b0228074169904b",
+    "sha256": "eb308d46654ae345f2396922dfb24656abf63990ff8c2ba7f155e4c08c8ef0f1"
+  }
+}
