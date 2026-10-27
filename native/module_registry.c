@@ -36,6 +36,8 @@ static const Builtin builtins[] = {
     { "node:fs", core_module },
     { "node:crypto", core_module },
     { "cosmo:crypto", core_module },
+    { "node:zlib", core_module },
+    { "cosmo:compression", core_module },
 };
 
 static const char *canonical_builtin(const char *name) {

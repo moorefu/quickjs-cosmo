@@ -16,6 +16,7 @@
 #include "common/windows_host.h"
 #include "fs/sync.h"
 #include "crypto/binding.h"
+#include "compression/binding.h"
 #include "qjs-cosmo-config.h"
 
 extern char **environ;
@@ -472,6 +473,8 @@ JSValue js_cosmo_native_api(JSContext *ctx, CosmoRuntimeState *state) {
     if (JS_IsException(fs) || JS_SetPropertyStr(ctx, api, "fs", fs) < 0) goto fail;
     JSValue crypto = js_cosmo_crypto_api(ctx);
     if (JS_IsException(crypto) || JS_SetPropertyStr(ctx, api, "crypto", crypto) < 0) goto fail;
+    JSValue compression = js_cosmo_compression_api(ctx);
+    if (JS_IsException(compression) || JS_SetPropertyStr(ctx, api, "compression", compression) < 0) goto fail;
     return api;
 fail:
     JS_FreeValue(ctx, api); return JS_EXCEPTION;

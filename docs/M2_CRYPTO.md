@@ -42,4 +42,4 @@ HKDF info 上限 1024 字节，输出上限 255 倍摘要长度。PBKDF2 iterati
 
 本地最终验收：Linux 66/66；Windows 使用同一产物 55/55，另保留一个既有 Unix 专用跳过；两端 Node 差分各 21/21。80 项 Python 门禁、TypeScript es2022/es2022+dom、15 个 APE 的传输清单与三文件发布 ZIP 校验通过。实际 x86_64/aarch64 可执行切片中 timingsafe_memcmp 的循环仅按长度分支，没有按首个不同字节退出。
 
-完整 CI 待确认；未完成本项 CI 前不进入 M2-04。
+提交 `4b19b83` 的[完整 CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40487013603)已通过构建、七个平台和最终门禁，允许进入 M2-04。

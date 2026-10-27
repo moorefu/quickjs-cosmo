@@ -6,6 +6,7 @@ QJS_COMPAT_OBJS += $(OBJDIR)/qjs-windows-host.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-fs-sync.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-fs-paths.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-crypto.o
+QJS_COMPAT_OBJS += $(OBJDIR)/qjs-compression.o
 QJS_COSMO_NATIVE ?= $(shell python3 "$(QJS_COSMO_ROOT)/scripts/build_config.py" native_source)
 ifneq ($(wildcard $(QJS_COSMO_COMPAT)/libc/intrin/sigproc.c),)
 QJS_COMPAT_CFLAGS = -DQJS_COSMO_SIGPROC
@@ -18,12 +19,17 @@ $(OBJDIR)/qjs-crypto.o: $(QJS_COSMO_ROOT)/build/native/crypto/qjs-crypto.o | $(O
 	mkdir -p $(OBJDIR)/.aarch64
 	cp $(QJS_COSMO_ROOT)/build/native/crypto/.aarch64/qjs-crypto.o $(OBJDIR)/.aarch64/
 
+$(OBJDIR)/qjs-compression.o: $(QJS_COSMO_ROOT)/build/native/compression/qjs-compression.o | $(OBJDIR)
+	cp $< $@
+	mkdir -p $(OBJDIR)/.aarch64
+	cp $(QJS_COSMO_ROOT)/build/native/compression/.aarch64/qjs-compression.o $(OBJDIR)/.aarch64/
+
 $(OBJDIR)/qjs-module-registry.o: $(QJS_COSMO_ROOT)/native/module_registry.c \
     $(QJS_COSMO_ROOT)/native/module_registry.h $(QJS_COSMO_ROOT)/native/runtime_state.h qjs-cosmo-config.h qjs-builtins.h quickjs.h quickjs-libc.h | $(OBJDIR)
 	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -c -o $@ $<
 
 $(OBJDIR)/qjs-runtime-state.o: $(QJS_COSMO_ROOT)/native/runtime_state.c \
-    $(QJS_COSMO_ROOT)/native/runtime_state.h $(QJS_COSMO_ROOT)/native/common/windows_host.h $(QJS_COSMO_ROOT)/native/fs/sync.h $(QJS_COSMO_ROOT)/native/crypto/binding.h $(QJS_COSMO_ROOT)/native/module_registry.h qjs-cosmo-config.h quickjs.h quickjs-libc.h | $(OBJDIR)
+    $(QJS_COSMO_ROOT)/native/runtime_state.h $(QJS_COSMO_ROOT)/native/common/windows_host.h $(QJS_COSMO_ROOT)/native/fs/sync.h $(QJS_COSMO_ROOT)/native/crypto/binding.h $(QJS_COSMO_ROOT)/native/compression/binding.h $(QJS_COSMO_ROOT)/native/module_registry.h qjs-cosmo-config.h quickjs.h quickjs-libc.h | $(OBJDIR)
 	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -c -o $@ $<
 
 $(OBJDIR)/qjs-fs-sync.o: $(QJS_COSMO_ROOT)/native/fs/sync.c $(QJS_COSMO_ROOT)/native/fs/sync.h $(QJS_COSMO_ROOT)/native/common/windows_host.h quickjs.h | $(OBJDIR)

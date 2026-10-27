@@ -80,6 +80,9 @@ jobs:
             build/node-compat/*.json
             build/native/probe-*.json
             build/native/backends-*.json
+            build/native/crypto/build.json
+            build/native/compression/build.json
+            build/interop/compression.json
           if-no-files-found: warn
           retention-days: 14
 

@@ -11,8 +11,8 @@
 | M1-04 调度合同 | 完成，CI 全绿 | `1f467a4`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40454177787)，[记录](M1_SCHEDULING.md) |
 | M2-01 原生构建 | 完成，CI 全绿 | `d2fdfc2`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40462993919)，[记录](M2_NATIVE_BUILD.md) |
 | M2-02 同步 fs | 完成，CI 全绿 | `3d743bc`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40476137441)，[记录](M2_FS.md) |
-| M2-03 摘要与 KDF | 本地验收通过，等待完整 CI | [记录](M2_CRYPTO.md)，哈希、HMAC、派生、随机与比较；Linux 66/66、Windows 55/55，Node 各 21/21 |
-| M2-04 同步压缩 | 待实现 | zlib、Zstd、LZ4、bzip2 与校验和 |
+| M2-03 摘要与 KDF | 完成，CI 全绿 | `4b19b83`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40487013603)，[记录](M2_CRYPTO.md) |
+| M2-04 同步压缩 | 本地验收通过，等待完整 CI | [记录](M2_COMPRESSION.md)，Linux 72/72、Windows 58/58，Node 各 24/24，独立互操作 30 组 |
 | M2-05 同步子进程 | 待实现 | spawnSync/execFileSync/execSync |
 | M3-01 原生任务调度 | 待实现 | 有界队列、唤醒、取消与销毁 |
 | M3-02 异步 fs/算法 | 待实现 | callback、Promise 与非阻塞验收 |

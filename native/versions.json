@@ -36,10 +36,14 @@
       "notes": [
         "Scoped native probe evidence; no JS support or general SDK archive admission."
       ],
-      "evidence_scope": "compress2/uncompress round trip and CRC32; full JS format contract pending M2-04",
+      "evidence_scope": "compress2/uncompress round trip and CRC32; full JS format contract pending M2-04; M2-04 synchronous production subset and bounded-output/interop tests in docs/M2_COMPRESSION.md; whole-library admission unchanged",
       "evidence": [
         "native/probes/toolchain.c",
-        "scripts/probe_native.py"
+        "scripts/probe_native.py",
+        "docs/M2_COMPRESSION.md",
+        "tests/runtime_compression.mjs",
+        "tests/native/compression.c",
+        "scripts/test_compression_interop.py"
       ]
     },
     {
@@ -233,11 +237,15 @@
       "notes": [
         "Scoped native probe evidence; no JS support or general SDK archive admission."
       ],
-      "evidence_scope": "C compression/decompression round trip, corrupt magic and bounded output; frame/option/interoperability contracts pending M2-04",
+      "evidence_scope": "C compression/decompression round trip, corrupt magic and bounded output; frame/option/interoperability contracts pending M2-04; M2-04 synchronous production subset and bounded-output/interop tests in docs/M2_COMPRESSION.md; whole-library admission unchanged",
       "evidence": [
         "native/build-inputs.json",
         "native/probes/backends.c",
-        "scripts/probe_backends.py"
+        "scripts/probe_backends.py",
+        "docs/M2_COMPRESSION.md",
+        "tests/runtime_compression.mjs",
+        "tests/native/compression.c",
+        "scripts/test_compression_interop.py"
       ]
     },
     {
@@ -262,11 +270,15 @@
       "notes": [
         "Scoped native probe evidence; no JS support or general SDK archive admission."
       ],
-      "evidence_scope": "LZ4 frame round trip and corrupt magic; full frame/interoperability/bounds contracts pending M2-04",
+      "evidence_scope": "LZ4 frame round trip and corrupt magic; full frame/interoperability/bounds contracts pending M2-04; M2-04 synchronous production subset and bounded-output/interop tests in docs/M2_COMPRESSION.md; whole-library admission unchanged",
       "evidence": [
         "native/build-inputs.json",
         "native/probes/backends.c",
-        "scripts/probe_backends.py"
+        "scripts/probe_backends.py",
+        "docs/M2_COMPRESSION.md",
+        "tests/runtime_compression.mjs",
+        "tests/native/compression.c",
+        "scripts/test_compression_interop.py"
       ]
     },
     {
@@ -291,11 +303,15 @@
       "notes": [
         "Scoped native probe evidence; no JS support or general SDK archive admission."
       ],
-      "evidence_scope": "buffer round trip, corrupt magic and bounded output; interoperability/stream contracts pending M2-04",
+      "evidence_scope": "buffer round trip, corrupt magic and bounded output; interoperability/stream contracts pending M2-04; M2-04 synchronous production subset and bounded-output/interop tests in docs/M2_COMPRESSION.md; whole-library admission unchanged",
       "evidence": [
         "native/build-inputs.json",
         "native/probes/backends.c",
-        "scripts/probe_backends.py"
+        "scripts/probe_backends.py",
+        "docs/M2_COMPRESSION.md",
+        "tests/runtime_compression.mjs",
+        "tests/native/compression.c",
+        "scripts/test_compression_interop.py"
       ]
     },
     {
@@ -333,6 +349,31 @@
         "tests/node/fs-overloads.mjs",
         "tests/native/fs.c",
         "docs/M2_FS.md"
+      ]
+    },
+    {
+      "id": "node-bzip2-workspace",
+      "delivery": "private-source",
+      "admission": "E2",
+      "files": [
+        {
+          "path": "third_party/bzip2/blocksort.c",
+          "sha256": "319451269a119e654466344001612b4f60ec3ca50b84a3c5e2e7f5c7fe9d2f21"
+        },
+        {
+          "path": "third_party/bzip2/huffman.c",
+          "sha256": "40bc4e45f9c97e6677cd1b302bb500fc02adfc0b1f50ea74543210039cb6c42a"
+        }
+      ],
+      "tests": [],
+      "notes": [
+        "Private translation units restore six fixed work arrays, each statically bounded to 2064 bytes; no unchecked heap allocation or libc GC in the production closure."
+      ],
+      "evidence_scope": "M2-04 adapter only: two-architecture build, allocation failure tests, Python bz2 interop and Worker/SDK lifecycle; seven-platform CI pending",
+      "evidence": [
+        "native/compression/bzip2-workspace.h",
+        "tests/native/compression.c",
+        "scripts/test_compression_interop.py"
       ]
     }
   ],

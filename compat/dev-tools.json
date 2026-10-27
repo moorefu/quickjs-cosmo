@@ -7,5 +7,14 @@
     "root": "quickjs-typescript-5.9.3-linux-x86",
     "sha256": "40d7284dc88a6a0685d52f8e50f11bb2a821960be59b0f9d2ed9bdf6615e186c",
     "scope": "Linux x86_64 build-host declaration checks only; never linked or shipped"
+  },
+  "lz4_interop": {
+    "version": "1.10.0",
+    "url": "https://github.com/lz4/lz4/releases/download/v1.10.0/lz4-1.10.0.tar.gz",
+    "checksum_url": "https://github.com/lz4/lz4/releases/download/v1.10.0/lz4-1.10.0.tar.gz.sha256",
+    "archive": "lz4-1.10.0.tar.gz",
+    "root": "lz4-1.10.0",
+    "sha256": "537512904744b35e232912055ccf8ec66d768639ff3abe5788d90d792ec5f48b",
+    "scope": "Linux build-host independent LZ4 Frame interoperability tests only; never linked into or shipped with the runtime"
   }
 }

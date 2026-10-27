@@ -45,7 +45,7 @@
     },
     {
       "id": "ZIP-001",
-      "status": "reference",
+      "status": "differential",
       "file": "tests/node/compression.mjs",
       "task": "M2-04",
       "description": "Compression formats, concatenated gzip and CRC32",
@@ -267,6 +267,30 @@
       "task": "M2-03",
       "timeout_seconds": 30,
       "description": "BLAKE2b256 independent vectors, RFC vectors and Worker integration"
+    },
+    {
+      "id": "ZIP-002",
+      "status": "differential",
+      "file": "tests/node/compression-options.mjs",
+      "task": "M2-04",
+      "timeout_seconds": 30,
+      "description": "zlib formats, dictionaries, options, concatenated gzip, errors and output limits"
+    },
+    {
+      "id": "ZIP-003",
+      "status": "differential",
+      "file": "tests/node/compression-zstd.mjs",
+      "task": "M2-04",
+      "timeout_seconds": 30,
+      "description": "Zstd parameters, frames, skip/trailing/truncated data, dictionaries and output caps"
+    },
+    {
+      "id": "ZIP-004",
+      "status": "runtime",
+      "file": "tests/runtime_compression.mjs",
+      "task": "M2-04",
+      "timeout_seconds": 30,
+      "description": "LZ4 Frame/bzip2 boundaries, concatenation, skippable frames, corruption, checksums and Worker"
     }
   ],
   "modules": [
@@ -11899,135 +11923,432 @@
       "entries": [
         {
           "name": "gzipSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-04",
           "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
           "tests": [
-            "ZIP-001"
+            "ZIP-001",
+            "ZIP-002",
+            "ZIP-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+          ],
+          "evidence": [
+            "tests/node/compression.mjs",
+            "tests/node/compression-options.mjs",
+            "tests/node/compression-zstd.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "gunzipSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-04",
           "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
           "tests": [
-            "ZIP-001"
+            "ZIP-001",
+            "ZIP-002",
+            "ZIP-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+          ],
+          "evidence": [
+            "tests/node/compression.mjs",
+            "tests/node/compression-options.mjs",
+            "tests/node/compression-zstd.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "deflateSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-04",
           "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
           "tests": [
-            "ZIP-001"
+            "ZIP-001",
+            "ZIP-002",
+            "ZIP-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+          ],
+          "evidence": [
+            "tests/node/compression.mjs",
+            "tests/node/compression-options.mjs",
+            "tests/node/compression-zstd.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "inflateSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-04",
           "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
           "tests": [
-            "ZIP-001"
+            "ZIP-001",
+            "ZIP-002",
+            "ZIP-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+          ],
+          "evidence": [
+            "tests/node/compression.mjs",
+            "tests/node/compression-options.mjs",
+            "tests/node/compression-zstd.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "deflateRawSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-04",
           "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
           "tests": [
-            "ZIP-001"
+            "ZIP-001",
+            "ZIP-002",
+            "ZIP-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+          ],
+          "evidence": [
+            "tests/node/compression.mjs",
+            "tests/node/compression-options.mjs",
+            "tests/node/compression-zstd.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "inflateRawSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-04",
           "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
           "tests": [
-            "ZIP-001"
+            "ZIP-001",
+            "ZIP-002",
+            "ZIP-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+          ],
+          "evidence": [
+            "tests/node/compression.mjs",
+            "tests/node/compression-options.mjs",
+            "tests/node/compression-zstd.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "unzipSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-04",
           "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
           "tests": [
-            "ZIP-001"
+            "ZIP-001",
+            "ZIP-002",
+            "ZIP-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+          ],
+          "evidence": [
+            "tests/node/compression.mjs",
+            "tests/node/compression-options.mjs",
+            "tests/node/compression-zstd.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "zstdCompressSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-04",
           "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
           "tests": [
-            "ZIP-001"
+            "ZIP-001",
+            "ZIP-002",
+            "ZIP-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+          ],
+          "evidence": [
+            "tests/node/compression.mjs",
+            "tests/node/compression-options.mjs",
+            "tests/node/compression-zstd.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "zstdDecompressSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-04",
           "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
           "tests": [
-            "ZIP-001"
+            "ZIP-001",
+            "ZIP-002",
+            "ZIP-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+          ],
+          "evidence": [
+            "tests/node/compression.mjs",
+            "tests/node/compression-options.mjs",
+            "tests/node/compression-zstd.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "crc32",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-04",
           "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
           "tests": [
-            "ZIP-001"
+            "ZIP-001",
+            "ZIP-002",
+            "ZIP-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+          ],
+          "evidence": [
+            "tests/node/compression.mjs",
+            "tests/node/compression-options.mjs",
+            "tests/node/compression-zstd.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "constants",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-04",
           "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
           "tests": [
-            "ZIP-001"
+            "ZIP-001",
+            "ZIP-002",
+            "ZIP-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+          ],
+          "evidence": [
+            "tests/node/compression.mjs",
+            "tests/node/compression-options.mjs",
+            "tests/node/compression-zstd.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "gzip",
@@ -12244,6 +12565,45 @@
           "differences": [
             "Not implemented; no compatibility claim."
           ]
+        },
+        {
+          "name": "codes",
+          "status": "partial",
+          "task": "M2-04",
+          "parameters": "Readonly zlib symbolic/numeric status code mapping",
+          "tests": [
+            "ZIP-001",
+            "ZIP-002",
+            "ZIP-003"
+          ],
+          "differences": [
+            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+          ],
+          "evidence": [
+            "tests/node/compression.mjs",
+            "tests/node/compression-options.mjs",
+            "tests/node/compression-zstd.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         }
       ]
     },
@@ -12774,87 +13134,262 @@
       "entries": [
         {
           "name": "lz4CompressSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-04",
-          "parameters": "LZ4 Frame and bzip2; explicit synchronous Node-style extension APIs",
+          "parameters": "Synchronous LZ4 Frame/bzip2 codecs, bounded output and incremental CRC32C/Adler32; see docs/M2_COMPRESSION.md",
           "tests": [
-            "ZIP-001"
+            "ZIP-004"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Extension APIs; LZ4 uses Frame rather than raw blocks. No extension dictionaries or async/stream interfaces."
+          ],
+          "evidence": [
+            "tests/runtime_compression.mjs",
+            "tests/native/compression.c",
+            "scripts/test_compression_interop.py"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "lz4DecompressSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-04",
-          "parameters": "LZ4 Frame and bzip2; explicit synchronous Node-style extension APIs",
+          "parameters": "Synchronous LZ4 Frame/bzip2 codecs, bounded output and incremental CRC32C/Adler32; see docs/M2_COMPRESSION.md",
           "tests": [
-            "ZIP-001"
+            "ZIP-004"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Extension APIs; LZ4 uses Frame rather than raw blocks. No extension dictionaries or async/stream interfaces."
+          ],
+          "evidence": [
+            "tests/runtime_compression.mjs",
+            "tests/native/compression.c",
+            "scripts/test_compression_interop.py"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "bzip2CompressSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-04",
-          "parameters": "LZ4 Frame and bzip2; explicit synchronous Node-style extension APIs",
+          "parameters": "Synchronous LZ4 Frame/bzip2 codecs, bounded output and incremental CRC32C/Adler32; see docs/M2_COMPRESSION.md",
           "tests": [
-            "ZIP-001"
+            "ZIP-004"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Extension APIs; LZ4 uses Frame rather than raw blocks. No extension dictionaries or async/stream interfaces."
+          ],
+          "evidence": [
+            "tests/runtime_compression.mjs",
+            "tests/native/compression.c",
+            "scripts/test_compression_interop.py"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "bzip2DecompressSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-04",
-          "parameters": "LZ4 Frame and bzip2; explicit synchronous Node-style extension APIs",
+          "parameters": "Synchronous LZ4 Frame/bzip2 codecs, bounded output and incremental CRC32C/Adler32; see docs/M2_COMPRESSION.md",
           "tests": [
-            "ZIP-001"
+            "ZIP-004"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Extension APIs; LZ4 uses Frame rather than raw blocks. No extension dictionaries or async/stream interfaces."
+          ],
+          "evidence": [
+            "tests/runtime_compression.mjs",
+            "tests/native/compression.c",
+            "scripts/test_compression_interop.py"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "crc32c",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-04",
-          "parameters": "LZ4 Frame and bzip2; explicit synchronous Node-style extension APIs",
+          "parameters": "Synchronous LZ4 Frame/bzip2 codecs, bounded output and incremental CRC32C/Adler32; see docs/M2_COMPRESSION.md",
           "tests": [
-            "ZIP-001"
+            "ZIP-004"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Extension APIs; LZ4 uses Frame rather than raw blocks. No extension dictionaries or async/stream interfaces."
+          ],
+          "evidence": [
+            "tests/runtime_compression.mjs",
+            "tests/native/compression.c",
+            "scripts/test_compression_interop.py"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "adler32",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-04",
-          "parameters": "LZ4 Frame and bzip2; explicit synchronous Node-style extension APIs",
+          "parameters": "Synchronous LZ4 Frame/bzip2 codecs, bounded output and incremental CRC32C/Adler32; see docs/M2_COMPRESSION.md",
           "tests": [
-            "ZIP-001"
+            "ZIP-004"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Extension APIs; LZ4 uses Frame rather than raw blocks. No extension dictionaries or async/stream interfaces."
+          ],
+          "evidence": [
+            "tests/runtime_compression.mjs",
+            "tests/native/compression.c",
+            "scripts/test_compression_interop.py"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "codecInfo",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-04",
-          "parameters": "LZ4 Frame and bzip2; explicit synchronous Node-style extension APIs",
+          "parameters": "Synchronous LZ4 Frame/bzip2 codecs, bounded output and incremental CRC32C/Adler32; see docs/M2_COMPRESSION.md",
           "tests": [
-            "ZIP-001"
+            "ZIP-004"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Extension APIs; LZ4 uses Frame rather than raw blocks. No extension dictionaries or async/stream interfaces."
+          ],
+          "evidence": [
+            "tests/runtime_compression.mjs",
+            "tests/native/compression.c",
+            "scripts/test_compression_interop.py"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         }
       ]
     },
