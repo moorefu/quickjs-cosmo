@@ -37,7 +37,7 @@
     },
     {
       "id": "HASH-001",
-      "status": "reference",
+      "status": "differential",
       "file": "tests/node/crypto.mjs",
       "task": "M2-03",
       "description": "Hash copy/finalization, HMAC, KDF return types and comparison errors",
@@ -235,6 +235,38 @@
       "file": "tests/node/fs-overloads.mjs",
       "timeout_seconds": 30,
       "description": "Synchronous file overloads, flags, byte paths and failure shapes"
+    },
+    {
+      "id": "HASH-002",
+      "status": "differential",
+      "file": "tests/node/crypto-state.mjs",
+      "task": "M2-03",
+      "timeout_seconds": 30,
+      "description": "Incremental hash boundaries, copy, encodings and object state"
+    },
+    {
+      "id": "KDF-001",
+      "status": "differential",
+      "file": "tests/node/crypto-kdf-random.mjs",
+      "task": "M2-03",
+      "timeout_seconds": 30,
+      "description": "HMAC/KDF vectors and random/comparison boundaries"
+    },
+    {
+      "id": "HASH-003",
+      "status": "differential",
+      "file": "tests/node/crypto-inputs.mjs",
+      "task": "M2-03",
+      "timeout_seconds": 30,
+      "description": "Input kinds, detached buffers, one-shot options and maximum HKDF output"
+    },
+    {
+      "id": "HASH-004",
+      "status": "runtime",
+      "file": "tests/runtime_crypto.mjs",
+      "task": "M2-03",
+      "timeout_seconds": 30,
+      "description": "BLAKE2b256 independent vectors, RFC vectors and Worker integration"
     }
   ],
   "modules": [
@@ -9328,7 +9360,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -9339,10 +9371,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9368,7 +9400,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -9379,10 +9411,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9408,7 +9440,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -9419,10 +9451,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9448,7 +9480,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -9459,10 +9491,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9488,7 +9520,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -9499,10 +9531,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9528,7 +9560,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -9539,10 +9571,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9568,7 +9600,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -9579,10 +9611,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9608,7 +9640,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -9619,10 +9651,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9648,7 +9680,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -9659,10 +9691,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9688,7 +9720,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -9699,10 +9731,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9728,7 +9760,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -9739,10 +9771,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9768,7 +9800,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -9779,10 +9811,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9808,7 +9840,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -9819,10 +9851,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9848,7 +9880,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -9859,10 +9891,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9888,7 +9920,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -9899,10 +9931,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9928,7 +9960,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -9939,10 +9971,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9968,7 +10000,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -9979,10 +10011,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -10008,7 +10040,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -10019,10 +10051,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -10048,7 +10080,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -10059,10 +10091,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -10088,7 +10120,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -10099,10 +10131,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -10128,7 +10160,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -10139,10 +10171,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -10168,7 +10200,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -10179,10 +10211,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -10208,7 +10240,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -10219,10 +10251,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -10260,7 +10292,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -10271,10 +10303,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -10588,7 +10620,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -10599,10 +10631,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -10628,7 +10660,7 @@
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+              "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
             }
           ],
           "support": {
@@ -10639,10 +10671,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -10922,171 +10954,577 @@
       "entries": [
         {
           "name": "getHashes",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-03",
           "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
           "tests": [
-            "HASH-001"
+            "HASH-001",
+            "HASH-002",
+            "KDF-001",
+            "HASH-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+          ],
+          "evidence": [
+            "tests/node/crypto.mjs",
+            "tests/node/crypto-state.mjs",
+            "tests/node/crypto-kdf-random.mjs",
+            "tests/node/crypto-inputs.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "createHash",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-03",
           "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
           "tests": [
-            "HASH-001"
+            "HASH-001",
+            "HASH-002",
+            "KDF-001",
+            "HASH-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+          ],
+          "evidence": [
+            "tests/node/crypto.mjs",
+            "tests/node/crypto-state.mjs",
+            "tests/node/crypto-kdf-random.mjs",
+            "tests/node/crypto-inputs.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "Hash.update",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-03",
           "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
           "tests": [
-            "HASH-001"
+            "HASH-001",
+            "HASH-002",
+            "KDF-001",
+            "HASH-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+          ],
+          "evidence": [
+            "tests/node/crypto.mjs",
+            "tests/node/crypto-state.mjs",
+            "tests/node/crypto-kdf-random.mjs",
+            "tests/node/crypto-inputs.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "Hash.digest",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-03",
           "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
           "tests": [
-            "HASH-001"
+            "HASH-001",
+            "HASH-002",
+            "KDF-001",
+            "HASH-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+          ],
+          "evidence": [
+            "tests/node/crypto.mjs",
+            "tests/node/crypto-state.mjs",
+            "tests/node/crypto-kdf-random.mjs",
+            "tests/node/crypto-inputs.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "Hash.copy",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-03",
           "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
           "tests": [
-            "HASH-001"
+            "HASH-001",
+            "HASH-002",
+            "KDF-001",
+            "HASH-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+          ],
+          "evidence": [
+            "tests/node/crypto.mjs",
+            "tests/node/crypto-state.mjs",
+            "tests/node/crypto-kdf-random.mjs",
+            "tests/node/crypto-inputs.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "createHmac",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-03",
           "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
           "tests": [
-            "HASH-001"
+            "HASH-001",
+            "HASH-002",
+            "KDF-001",
+            "HASH-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+          ],
+          "evidence": [
+            "tests/node/crypto.mjs",
+            "tests/node/crypto-state.mjs",
+            "tests/node/crypto-kdf-random.mjs",
+            "tests/node/crypto-inputs.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "Hmac.update",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-03",
           "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
           "tests": [
-            "HASH-001"
+            "HASH-001",
+            "HASH-002",
+            "KDF-001",
+            "HASH-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+          ],
+          "evidence": [
+            "tests/node/crypto.mjs",
+            "tests/node/crypto-state.mjs",
+            "tests/node/crypto-kdf-random.mjs",
+            "tests/node/crypto-inputs.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "Hmac.digest",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-03",
           "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
           "tests": [
-            "HASH-001"
+            "HASH-001",
+            "HASH-002",
+            "KDF-001",
+            "HASH-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+          ],
+          "evidence": [
+            "tests/node/crypto.mjs",
+            "tests/node/crypto-state.mjs",
+            "tests/node/crypto-kdf-random.mjs",
+            "tests/node/crypto-inputs.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "hkdfSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-03",
           "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
           "tests": [
-            "HASH-001"
+            "HASH-001",
+            "HASH-002",
+            "KDF-001",
+            "HASH-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+          ],
+          "evidence": [
+            "tests/node/crypto.mjs",
+            "tests/node/crypto-state.mjs",
+            "tests/node/crypto-kdf-random.mjs",
+            "tests/node/crypto-inputs.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "pbkdf2Sync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-03",
           "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
           "tests": [
-            "HASH-001"
+            "HASH-001",
+            "HASH-002",
+            "KDF-001",
+            "HASH-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+          ],
+          "evidence": [
+            "tests/node/crypto.mjs",
+            "tests/node/crypto-state.mjs",
+            "tests/node/crypto-kdf-random.mjs",
+            "tests/node/crypto-inputs.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "randomBytes",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-03",
           "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
           "tests": [
-            "HASH-001"
+            "HASH-001",
+            "HASH-002",
+            "KDF-001",
+            "HASH-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+          ],
+          "evidence": [
+            "tests/node/crypto.mjs",
+            "tests/node/crypto-state.mjs",
+            "tests/node/crypto-kdf-random.mjs",
+            "tests/node/crypto-inputs.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "randomFillSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-03",
           "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
           "tests": [
-            "HASH-001"
+            "HASH-001",
+            "HASH-002",
+            "KDF-001",
+            "HASH-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+          ],
+          "evidence": [
+            "tests/node/crypto.mjs",
+            "tests/node/crypto-state.mjs",
+            "tests/node/crypto-kdf-random.mjs",
+            "tests/node/crypto-inputs.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "randomUUID",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-03",
           "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
           "tests": [
-            "HASH-001"
+            "HASH-001",
+            "HASH-002",
+            "KDF-001",
+            "HASH-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+          ],
+          "evidence": [
+            "tests/node/crypto.mjs",
+            "tests/node/crypto-state.mjs",
+            "tests/node/crypto-kdf-random.mjs",
+            "tests/node/crypto-inputs.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "timingSafeEqual",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-03",
           "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
           "tests": [
-            "HASH-001"
+            "HASH-001",
+            "HASH-002",
+            "KDF-001",
+            "HASH-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+          ],
+          "evidence": [
+            "tests/node/crypto.mjs",
+            "tests/node/crypto-state.mjs",
+            "tests/node/crypto-kdf-random.mjs",
+            "tests/node/crypto-inputs.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "hkdf",
@@ -11327,6 +11765,129 @@
           "differences": [
             "Not implemented; no compatibility claim."
           ]
+        },
+        {
+          "name": "Hash",
+          "status": "partial",
+          "task": "M2-03",
+          "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
+          "tests": [
+            "HASH-001",
+            "HASH-002",
+            "KDF-001",
+            "HASH-003"
+          ],
+          "differences": [
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+          ],
+          "evidence": [
+            "tests/node/crypto.mjs",
+            "tests/node/crypto-state.mjs",
+            "tests/node/crypto-kdf-random.mjs",
+            "tests/node/crypto-inputs.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Hmac",
+          "status": "partial",
+          "task": "M2-03",
+          "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
+          "tests": [
+            "HASH-001",
+            "HASH-002",
+            "KDF-001",
+            "HASH-003"
+          ],
+          "differences": [
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+          ],
+          "evidence": [
+            "tests/node/crypto.mjs",
+            "tests/node/crypto-state.mjs",
+            "tests/node/crypto-kdf-random.mjs",
+            "tests/node/crypto-inputs.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "hash",
+          "status": "partial",
+          "task": "M2-03",
+          "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
+          "tests": [
+            "HASH-001",
+            "HASH-002",
+            "KDF-001",
+            "HASH-003"
+          ],
+          "differences": [
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+          ],
+          "evidence": [
+            "tests/node/crypto.mjs",
+            "tests/node/crypto-state.mjs",
+            "tests/node/crypto-kdf-random.mjs",
+            "tests/node/crypto-inputs.mjs"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         }
       ]
     },
@@ -12303,15 +12864,39 @@
       "entries": [
         {
           "name": "blake2b256",
-          "status": "planned",
-          "task": "M4-02",
-          "parameters": "Only documented extension algorithms and raw-key helpers; not part of Node builtins",
+          "status": "partial",
+          "task": "M2-03",
+          "parameters": "blake2b256(data: string | ArrayBuffer | SharedArrayBuffer | ArrayBufferView): Buffer; unkeyed only",
           "tests": [
-            "HASH-001"
+            "HASH-004"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "HACL BLAKE2b with actual 32-byte output parameter; single data argument only. No Node alias."
+          ],
+          "evidence": [
+            "tests/runtime_crypto.mjs",
+            "tests/native/crypto.c"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         }
       ]
     }

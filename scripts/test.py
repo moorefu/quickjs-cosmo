@@ -104,6 +104,7 @@ def main():
     check("custom/runtime-foundation", [qjs, "-m", ROOT / "tests/runtime_foundation.mjs"], contains="PASS runtime-foundation")
     check("custom/runtime-scheduling", [qjs, "-m", ROOT / "tests/runtime_scheduling.mjs"], contains="PASS runtime-scheduling")
     check("custom/runtime-fs", [qjs, "-m", ROOT / "tests/runtime_fs.mjs"], contains="PASS runtime-fs")
+    check("custom/runtime-crypto", [qjs, "-m", ROOT / "tests/runtime_crypto.mjs"], contains="PASS runtime-crypto")
     check("custom/unknown-builtin", [qjs, "-m", ROOT / "tests/fixtures/unknown-builtin.mjs"],
           expected=1, contains="Unknown builtin module: node:missing")
     check("qjsc/unknown-builtin", [qjsc, "-c", "-m", "-o", scratch / "unknown-builtin.c",
@@ -145,6 +146,14 @@ def main():
         if not valid:
             print("FAIL generated C has no bytecode array", flush=True)
     if args.compile:
+        if check("qjsc/compile-crypto-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/crypto-worker.mjs",
+                 "-o", scratch / "crypto-standalone.exe", ROOT / "tests/runtime_crypto.mjs"], timeout=180):
+            check("qjsc/run-crypto-ape", [scratch / "crypto-standalone.exe"], contains="PASS runtime-crypto")
+        if check("sdk/compile-crypto", [settings.toolchain / "bin/cosmocc", "-O2", "-I" + str(settings.dist),
+                 ROOT / "tests/native/crypto.c", settings.dist / "libquickjs.a", "-lm", "-lpthread", "-ldl",
+                 "-Wl,--wrap=_Exit,-u,__wrap__Exit", "-Wl,--wrap=js_malloc_rt,--wrap=js_malloc,--wrap=js_free_rt,--wrap=getrandom",
+                 "-o", scratch / "crypto-sdk.exe"], timeout=180):
+            check("sdk/run-crypto", [scratch / "crypto-sdk.exe"], contains="PASS crypto-sdk")
         if check("qjsc/compile-fs-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/fs-worker.mjs",
                  "-o", scratch / "fs-standalone.exe", ROOT / "tests/runtime_fs.mjs"], timeout=180):
             check("qjsc/run-fs-ape", [scratch / "fs-standalone.exe"], contains="PASS runtime-fs")
@@ -182,6 +191,8 @@ def main():
                  timeout=180):
             check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
+        check("qjsc/cross-host-crypto", [args.standalone.resolve().parent / "crypto-standalone.exe"], contains="PASS runtime-crypto")
+        check("sdk/cross-host-crypto", [args.standalone.resolve().parent / "crypto-sdk.exe"], contains="PASS crypto-sdk")
         check("qjsc/cross-host-fs", [args.standalone.resolve().parent / "fs-standalone.exe"], contains="PASS runtime-fs")
         check("sdk/cross-host-fs", [args.standalone.resolve().parent / "fs-sdk.exe"], contains="PASS fs-sdk")
         check("qjsc/cross-host-ape", [args.standalone.resolve()], contains="Hello from QuickJS")

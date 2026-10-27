@@ -165,7 +165,7 @@ wsl -d Ubuntu-22.04 --cd /mnt/d/Workspace/dairn/quickjs-cosmo --exec /bin/sh -c 
 
 [构建与验证工作流](.github/workflows/build-ape.yml) 在 push、pull request 和手动运行时触发，采用[参考仓库 CI](https://github.com/moorefu/quickjs-cosmo/blob/main/.github/workflows/build-ape.yml)的单次构建、多主机验收方式，输入始终取自 `versions.json`。
 
-构建任务在 Ubuntu x86_64 执行现有 `scripts/build.sh`、`scripts/test.py --upstream --compile --node-compat` 和 `scripts/package.py`，编译十一份独立 APE 测试程序及两份原生后端探测 APE，覆盖普通脚本、进程、模块、Buffer、公共基础、入口身份与嵌入 SDK。矩阵任务下载同一个产物，执行现有测试、上游快速测试、跨主机独立程序、进程回归和 Node 差分用例。各任务通过 `scripts/prepare_native.py --node` 准备校验过的固定 Node 测试工具；运行 qjs 本身不依赖 Node。构建机另以 `scripts/check_types.py` 调用锁定的官方 QuickJS TypeScript 5.9.3 工具进行 strict/noEmit 验收，该开发工具不进入交付包。
+构建任务在 Ubuntu x86_64 执行现有 `scripts/build.sh`、`scripts/test.py --upstream --compile --node-compat` 和 `scripts/package.py`，编译十三份独立 APE 测试程序及两份原生后端探测 APE，覆盖普通脚本、进程、模块、Buffer、公共基础、入口身份与嵌入 SDK。矩阵任务下载同一个产物，执行现有测试、上游快速测试、跨主机独立程序、进程回归和 Node 差分用例。各任务通过 `scripts/prepare_native.py --node` 准备校验过的固定 Node 测试工具；运行 qjs 本身不依赖 Node。构建机另以 `scripts/check_types.py` 调用锁定的官方 QuickJS TypeScript 5.9.3 工具进行 strict/noEmit 验收，该开发工具不进入交付包。
 
 | Runner | 主机 | APE 执行方式 |
 | --- | --- | --- |
@@ -179,7 +179,7 @@ wsl -d Ubuntu-22.04 --cd /mnt/d/Workspace/dairn/quickjs-cosmo --exec /bin/sh -c 
 
 Runner 标签对应 [GitHub 官方支持列表](https://docs.github.com/en/actions/how-tos/write-workflows/choose-where-workflows-run/choose-the-runner-for-a-job)。测试报告分别记录主机架构、Python 架构和启动策略选择的执行架构。Windows ARM 项会检查实际宿主为 ARM64，单独标明 APE 的 x64 兼容运行。
 
-`scripts/ci_artifact.py` 打包、恢复并校验 SDK、源码归档、十一份独立程序、两份原生探测程序及其构建记录和官方格式发布 ZIP。传输使用 tar 保留执行权限与 `.aarch64` 目录；下载端先验证固定输入、完整文件清单与 SHA-256，再执行测试。矩阵用 `bootstrap.py --source-only --offline` 恢复上游测试源码，无需下载 cosmocc；macOS 的 APE 启动过程可使用 runner 预装的系统 C 编译器。Linux 构建任务包含编译步骤，各矩阵项还运行 API 清单与 Node 差分验收；Windows 保留一个 Unix 专用用例的跳过记录，实际用例数量以报告为准。
+`scripts/ci_artifact.py` 打包、恢复并校验 SDK、源码归档、十三份独立程序、两份原生探测程序及其构建记录和官方格式发布 ZIP。传输使用 tar 保留执行权限与 `.aarch64` 目录；下载端先验证固定输入、完整文件清单与 SHA-256，再执行测试。矩阵用 `bootstrap.py --source-only --offline` 恢复上游测试源码，无需下载 cosmocc；macOS 的 APE 启动过程可使用 runner 预装的系统 C 编译器。Linux 构建任务包含编译步骤，各矩阵项还运行 API 清单与 Node 差分验收；Windows 保留一个 Unix 专用用例的跳过记录，实际用例数量以报告为准。
 
 每个任务保存主测试报告和进程汇总报告，产物名称为 `reports-*`。仅汇总报告会被上传，临时用例配置保留在任务工作目录。全部矩阵通过后，`CI gate` 保存 `quickjs-cosmo-release` Actions 产物，包含 ZIP、外置 SHA-256 与构建清单。构建或任一矩阵项失败、取消或跳过时，门禁不能成功；可将 `CI gate` 设为分支的必需检查。
 
@@ -250,10 +250,12 @@ Windows 上返回**原始退出码**：`std.exit(7)` 为 `7`，语法错误/未�
 
 本机验证范围和结果记录在 `VALIDATION.md`。不能把生成了双架构 APE 等同于已在所有系统上实测。部分 Linux 的 binfmt_misc/Wine 配置会误识别 APE；可先尝试 `sh ./dist/qjs.exe examples/hello.js`，参阅[官方故障说明](https://github.com/jart/cosmopolitan/blob/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/tool/cosmocc/README.md#gotchas)。macOS 可能需要按系统规则处理下载文件的隔离属性，Apple Silicon 的默认启动过程可能需要系统 C 编译器来准备 APE loader。
 
-当前产物提供已声明的 Node 基础模块子集；`fs`、加密/压缩/网络、npm 模块系统和浏览器 DOM 仍按规划推进。运行时 API 同时保留 QuickJS 的 `std`/`os` 及项目元数据模块 `cosmo:runtime`。原生动态模块通常与操作系统和架构相关，不属于这里的跨平台交付范围。QuickJS 和 Cosmopolitan 的许可证保留在上游源码及工具链内，产物中的 Cosmopolitan 许可声明由官方工具链嵌入。
+当前产物提供已声明的 Node 基础、同步文件和同步摘要/KDF 子集；异步、压缩、网络、npm 模块系统和浏览器 DOM 仍按规划推进。运行时 API 同时保留 QuickJS 的 `std`/`os` 及项目元数据模块 `cosmo:runtime`。原生动态模块通常与操作系统和架构相关，不属于这里的跨平台交付范围。QuickJS 和 Cosmopolitan 的许可证保留在上游源码及工具链内，产物中的 Cosmopolitan 许可声明由官方工具链嵌入。
 
 Windows 的原始退出码约定是本项目的兼容修正，与未经修补的 4.0.2 的 `status << 8` 编码不同。测试严格核对返回值，非零错误仍视为失败。
 
 原生算法构建范围、双架构来源锁和 E1/E2 探测见 [M2-01 实施记录](docs/M2_NATIVE_BUILD.md)。构建生成的候选档案保留在 build/native/backends；尚未作为 SDK 通用库导出。CI 同时保留完整原生许可及各平台探测报告。
 
 同步 node:fs 已接入文件/目录/描述符与 Stats/Dirent，支持范围、原生路径适配和 SDK 故障注入见 [M2-02 实施记录](docs/M2_FS.md)。异步 fs/promises 和文件流分别留在 M3-02/M3-05。
+
+同步 node:crypto 提供七种摘要、真实增量复制、HMAC/KDF、随机数和比较，cosmo:crypto 提供 BLAKE2b256；具体算法集合、SDK 内存/符号范围及后续任务见 [M2-03 实施记录](docs/M2_CRYPTO.md)。

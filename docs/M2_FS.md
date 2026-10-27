@@ -67,3 +67,5 @@ python3 scripts/ci_artifact.py verify
 本项完整 CI 通过前不进入 M2-03；最终结果记录在实施状态表。
 
 本地最终验收：Linux 61/61；Windows 同一产物 52/52，另一个既有 Unix 专用用例跳过；Node 差分两端各 17/17，调度生命周期各 19/19；Python 门禁 80 项及两种 TypeScript lib 模式通过。完整跨平台结果以本项提交 CI 为准。
+
+Darwin 修复提交 `3d743bc` 的 [完整 CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40476137441) 已通过构建、七个平台矩阵与最终门禁，包含新增的 flags/errno 与 SDK 故障断言。

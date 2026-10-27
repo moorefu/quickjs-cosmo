@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CORE_SOURCES = ("src/js/internal/errors.js", "src/js/internal/encoding.js", "src/js/node/buffer.js",
                 "src/js/node/events.js", "src/js/node/process.js", "src/js/node/path-adapter.js",
                 "src/js/node/os.js", "src/js/node/util.js", "src/js/node/assert.js", "src/js/node/console.js",
-                "src/js/internal/abort.js", "src/js/node/timers.js", "src/js/node/fs.js")
+                "src/js/internal/abort.js", "src/js/node/timers.js", "src/js/node/fs.js", "src/js/node/crypto.js")
 
 
 def generate(root=ROOT):
@@ -32,6 +32,7 @@ scheduler = createScheduler(native, process, abort);
 path = createPathModule(process);
 const os = createOs(native, process, path);
 const fs = createFs(native, path);
+const crypto = createCrypto(native);
 const console = createConsole(native);
 function fileURL(filename) {
     let name = native.platform === 'win32' ? filename.replace(/\\\\/g, '/') : filename;
@@ -52,6 +53,7 @@ return {
     'node:assert': assertionExports(assert), 'node:assert/strict': assertionExports(strictAssert),
     'node:timers': exportObject(scheduler.api), 'node:timers/promises': exportObject(scheduler.promises),
     'node:fs': exportObject(fs),
+    'node:crypto': exportObject(crypto.api), 'cosmo:crypto': exportObject(crypto.extensions),
     _drainTicks: scheduler.drainTicks,
     _beforeExit: processStates.get(process).beforeExit,
     _exit: processStates.get(process).emitExit,

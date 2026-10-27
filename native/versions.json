@@ -66,10 +66,13 @@
       "notes": [
         "Scoped native probe evidence; no JS support or general SDK archive admission."
       ],
-      "evidence_scope": "getrandom retry/short-read host probe; JS API and failure injection pending M2-03",
+      "evidence_scope": "getrandom retry/short-read host probe; JS API and failure injection pending M2-03; M2-03 production binding uses only the declared digest/KDF/random subset, SDK backends localized; full library admission unchanged",
       "evidence": [
         "native/probes/toolchain.c",
-        "scripts/probe_native.py"
+        "scripts/probe_native.py",
+        "docs/M2_CRYPTO.md",
+        "tests/native/crypto.c",
+        "tests/runtime_crypto.mjs"
       ]
     },
     {
@@ -160,11 +163,14 @@
       "notes": [
         "Scoped native probe evidence; no JS support or general SDK archive admission."
       ],
-      "evidence_scope": "MD5/SHA1/SHA224/256/384/512 self-tests and streaming/copy vectors, HMAC/HKDF/PBKDF2 SHA256 vectors; no TLS/key admission",
+      "evidence_scope": "MD5/SHA1/SHA224/256/384/512 self-tests and streaming/copy vectors, HMAC/HKDF/PBKDF2 SHA256 vectors; no TLS/key admission; M2-03 production binding uses only the declared digest/KDF/random subset, SDK backends localized; full library admission unchanged",
       "evidence": [
         "native/build-inputs.json",
         "native/probes/backends.c",
-        "scripts/probe_backends.py"
+        "scripts/probe_backends.py",
+        "docs/M2_CRYPTO.md",
+        "tests/native/crypto.c",
+        "tests/runtime_crypto.mjs"
       ]
     },
     {
@@ -195,11 +201,14 @@
       "notes": [
         "Scoped native probe evidence; no JS support or general SDK archive admission."
       ],
-      "evidence_scope": "Blake2b512/256/keyed, stream/copy/reset vectors only; other HACL algorithms pending M4",
+      "evidence_scope": "Blake2b512/256/keyed, stream/copy/reset vectors only; other HACL algorithms pending M4; M2-03 production binding uses only the declared digest/KDF/random subset, SDK backends localized; full library admission unchanged",
       "evidence": [
         "native/build-inputs.json",
         "native/probes/backends.c",
-        "scripts/probe_backends.py"
+        "scripts/probe_backends.py",
+        "docs/M2_CRYPTO.md",
+        "tests/native/crypto.c",
+        "tests/runtime_crypto.mjs"
       ]
     },
     {
@@ -292,7 +301,7 @@
     {
       "id": "node-fs-paths",
       "delivery": "private-source",
-      "admission": "E0",
+      "admission": "E2",
       "files": [
         {
           "path": "libc/calls/openat.c",
@@ -318,7 +327,13 @@
       "notes": [
         "Private names reuse fixed Nightly implementations; Node Unix filename creation policy differs from portable libc policy; std/os remain unchanged."
       ],
-      "evidence_scope": "Admission pending M2-02 JS, SDK fault probes and seven-platform CI"
+      "evidence_scope": "Private Node path adapters, POSIX byte paths and partial I/O; full seven-platform CI at 3d743bc (40476137441)",
+      "evidence": [
+        "tests/node/fs.mjs",
+        "tests/node/fs-overloads.mjs",
+        "tests/native/fs.c",
+        "docs/M2_FS.md"
+      ]
     }
   ],
   "deferred": [

@@ -42,6 +42,7 @@ for patch_file in "$ROOT"/patches/*.patch; do
 done
 python3 scripts/prepare_compat.py $OFFLINE
 python3 scripts/build_native.py $OFFLINE --jobs "$JOBS"
+python3 scripts/build_crypto.py
 cp native/module_registry.h "$BUILD/qjs-cosmo.h"
 python3 scripts/generate_runtime_config.py --output "$BUILD/qjs-cosmo-config.h"
 python3 scripts/embed_js.py --output "$BUILD/qjs-builtins.h"
