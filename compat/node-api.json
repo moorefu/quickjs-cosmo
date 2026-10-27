@@ -101,19 +101,19 @@
     },
     {
       "id": "KEY-001",
-      "status": "planned",
-      "file": null,
+      "status": "differential",
+      "file": "tests/node/crypto-keys.mjs",
       "task": "M4-01",
       "description": "KeyObject, DER/PEM, Ed25519 and X25519",
-      "timeout_seconds": 30
+      "timeout_seconds": 60
     },
     {
       "id": "AEAD-001",
-      "status": "planned",
-      "file": null,
+      "status": "differential",
+      "file": "tests/node/crypto-aead.mjs",
       "task": "M4-01",
       "description": "Cipher state, AAD, nonce, tag and authentication",
-      "timeout_seconds": 30
+      "timeout_seconds": 60
     },
     {
       "id": "NET-001",
@@ -426,6 +426,22 @@
       "file": "tests/runtime_file_algorithm_streams.mjs",
       "task": "M3-05",
       "description": "File/algorithm pipelines in source, Worker, qjsc and SDK, quotas, failure and shutdown",
+      "timeout_seconds": 120
+    },
+    {
+      "id": "AEAD-002",
+      "status": "differential",
+      "file": "tests/node/crypto-aead-errors.mjs",
+      "task": "M4-01",
+      "description": "AEAD validation, lifecycle, tampering and stream errors",
+      "timeout_seconds": 120
+    },
+    {
+      "id": "KEY-002",
+      "status": "runtime",
+      "file": "tests/runtime_crypto_advanced.mjs",
+      "task": "M4-01",
+      "description": "Missing-tag and late-AAD safety, Worker and unsupported key formats",
       "timeout_seconds": 120
     }
   ],
@@ -12756,7 +12772,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -12799,7 +12815,7 @@
             "STR-007"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -12840,7 +12856,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -12881,7 +12897,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -12924,7 +12940,7 @@
             "STR-007"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -12964,10 +12980,11 @@
             "KDF-001",
             "HASH-003",
             "STR-006",
-            "STR-007"
+            "STR-007",
+            "KEY-001"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; Secret KeyObject input is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13008,7 +13025,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13049,7 +13066,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13087,10 +13104,11 @@
             "HASH-001",
             "HASH-002",
             "KDF-001",
-            "HASH-003"
+            "HASH-003",
+            "KEY-001"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; Secret KeyObject input is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13131,7 +13149,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13214,7 +13232,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13255,7 +13273,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13296,7 +13314,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13331,7 +13349,8 @@
           "task": "M3-02",
           "parameters": "Callback KDF/random forms; no invented Promise API",
           "tests": [
-            "KDF-002"
+            "KDF-002",
+            "KEY-001"
           ],
           "differences": [
             "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
@@ -13444,206 +13463,676 @@
         },
         {
           "name": "generateKeyPairSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M4-01",
-          "parameters": "Ed25519/X25519 KeyObject and declared DER/PEM formats",
+          "parameters": "Node v24.21.0 Secret/Ed25519/X25519 KeyObject; canonical unencrypted PKCS8/SPKI DER/PEM; sync and callback sign/verify/derive",
           "tests": [
             "KEY-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. No JWK, encrypted PKCS8, general ASN.1, RSA or ECDSA. HACL verification workspace is prepaid and quota-bound."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "KEY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
           ]
         },
         {
           "name": "createPrivateKey",
-          "status": "planned",
+          "status": "partial",
           "task": "M4-01",
-          "parameters": "Ed25519/X25519 KeyObject and declared DER/PEM formats",
+          "parameters": "Node v24.21.0 Secret/Ed25519/X25519 KeyObject; canonical unencrypted PKCS8/SPKI DER/PEM; sync and callback sign/verify/derive",
           "tests": [
             "KEY-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. No JWK, encrypted PKCS8, general ASN.1, RSA or ECDSA. HACL verification workspace is prepaid and quota-bound."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "KEY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
           ]
         },
         {
           "name": "createPublicKey",
-          "status": "planned",
+          "status": "partial",
           "task": "M4-01",
-          "parameters": "Ed25519/X25519 KeyObject and declared DER/PEM formats",
+          "parameters": "Node v24.21.0 Secret/Ed25519/X25519 KeyObject; canonical unencrypted PKCS8/SPKI DER/PEM; sync and callback sign/verify/derive",
           "tests": [
             "KEY-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. No JWK, encrypted PKCS8, general ASN.1, RSA or ECDSA. HACL verification workspace is prepaid and quota-bound."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "KEY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
           ]
         },
         {
           "name": "sign",
-          "status": "planned",
+          "status": "partial",
           "task": "M4-01",
-          "parameters": "Ed25519/X25519 KeyObject and declared DER/PEM formats",
+          "parameters": "Node v24.21.0 Secret/Ed25519/X25519 KeyObject; canonical unencrypted PKCS8/SPKI DER/PEM; sync and callback sign/verify/derive",
           "tests": [
             "KEY-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. No JWK, encrypted PKCS8, general ASN.1, RSA or ECDSA. HACL verification workspace is prepaid and quota-bound."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "KEY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
           ]
         },
         {
           "name": "verify",
-          "status": "planned",
+          "status": "partial",
           "task": "M4-01",
-          "parameters": "Ed25519/X25519 KeyObject and declared DER/PEM formats",
+          "parameters": "Node v24.21.0 Secret/Ed25519/X25519 KeyObject; canonical unencrypted PKCS8/SPKI DER/PEM; sync and callback sign/verify/derive",
           "tests": [
             "KEY-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. No JWK, encrypted PKCS8, general ASN.1, RSA or ECDSA. HACL verification workspace is prepaid and quota-bound."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "KEY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
           ]
         },
         {
           "name": "diffieHellman",
-          "status": "planned",
+          "status": "partial",
           "task": "M4-01",
-          "parameters": "Ed25519/X25519 KeyObject and declared DER/PEM formats",
+          "parameters": "Node v24.21.0 Secret/Ed25519/X25519 KeyObject; canonical unencrypted PKCS8/SPKI DER/PEM; sync and callback sign/verify/derive",
           "tests": [
             "KEY-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. No JWK, encrypted PKCS8, general ASN.1, RSA or ECDSA. HACL verification workspace is prepaid and quota-bound."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "KEY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
           ]
         },
         {
           "name": "createCipheriv",
-          "status": "planned",
+          "status": "partial",
           "task": "M4-01",
-          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "parameters": "Node v24.21.0 AES-128/192/256-GCM and ChaCha20-Poly1305 incremental/Transform API",
           "tests": [
-            "AEAD-001"
+            "AEAD-001",
+            "AEAD-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. Always rejects missing authentication tags and late AAD, including known unsafe ChaCha behavior in the pinned Node/OpenSSL baseline. These intentional safety differences are checked by KEY-002."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "AEAD-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
           ]
         },
         {
           "name": "createDecipheriv",
-          "status": "planned",
+          "status": "partial",
           "task": "M4-01",
-          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "parameters": "Node v24.21.0 AES-128/192/256-GCM and ChaCha20-Poly1305 incremental/Transform API",
           "tests": [
-            "AEAD-001"
+            "AEAD-001",
+            "AEAD-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. Always rejects missing authentication tags and late AAD, including known unsafe ChaCha behavior in the pinned Node/OpenSSL baseline. These intentional safety differences are checked by KEY-002."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "AEAD-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
           ]
         },
         {
           "name": "Cipheriv.update",
-          "status": "planned",
+          "status": "partial",
           "task": "M4-01",
-          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "parameters": "Node v24.21.0 AES-128/192/256-GCM and ChaCha20-Poly1305 incremental/Transform API",
           "tests": [
-            "AEAD-001"
+            "AEAD-001",
+            "AEAD-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. Always rejects missing authentication tags and late AAD, including known unsafe ChaCha behavior in the pinned Node/OpenSSL baseline. These intentional safety differences are checked by KEY-002."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "AEAD-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
           ]
         },
         {
           "name": "Cipheriv.final",
-          "status": "planned",
+          "status": "partial",
           "task": "M4-01",
-          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "parameters": "Node v24.21.0 AES-128/192/256-GCM and ChaCha20-Poly1305 incremental/Transform API",
           "tests": [
-            "AEAD-001"
+            "AEAD-001",
+            "AEAD-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. Always rejects missing authentication tags and late AAD, including known unsafe ChaCha behavior in the pinned Node/OpenSSL baseline. These intentional safety differences are checked by KEY-002."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "AEAD-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
           ]
         },
         {
           "name": "Cipheriv.setAAD",
-          "status": "planned",
+          "status": "partial",
           "task": "M4-01",
-          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "parameters": "Node v24.21.0 AES-128/192/256-GCM and ChaCha20-Poly1305 incremental/Transform API",
           "tests": [
-            "AEAD-001"
+            "AEAD-001",
+            "AEAD-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. Always rejects missing authentication tags and late AAD, including known unsafe ChaCha behavior in the pinned Node/OpenSSL baseline. These intentional safety differences are checked by KEY-002."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "AEAD-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
           ]
         },
         {
           "name": "Cipheriv.getAuthTag",
-          "status": "planned",
+          "status": "partial",
           "task": "M4-01",
-          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "parameters": "Node v24.21.0 AES-128/192/256-GCM and ChaCha20-Poly1305 incremental/Transform API",
           "tests": [
-            "AEAD-001"
+            "AEAD-001",
+            "AEAD-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. Always rejects missing authentication tags and late AAD, including known unsafe ChaCha behavior in the pinned Node/OpenSSL baseline. These intentional safety differences are checked by KEY-002."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "AEAD-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
           ]
         },
         {
           "name": "Decipheriv.update",
-          "status": "planned",
+          "status": "partial",
           "task": "M4-01",
-          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "parameters": "Node v24.21.0 AES-128/192/256-GCM and ChaCha20-Poly1305 incremental/Transform API",
           "tests": [
-            "AEAD-001"
+            "AEAD-001",
+            "AEAD-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. Always rejects missing authentication tags and late AAD, including known unsafe ChaCha behavior in the pinned Node/OpenSSL baseline. These intentional safety differences are checked by KEY-002."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "AEAD-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
           ]
         },
         {
           "name": "Decipheriv.final",
-          "status": "planned",
+          "status": "partial",
           "task": "M4-01",
-          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "parameters": "Node v24.21.0 AES-128/192/256-GCM and ChaCha20-Poly1305 incremental/Transform API",
           "tests": [
-            "AEAD-001"
+            "AEAD-001",
+            "AEAD-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. Always rejects missing authentication tags and late AAD, including known unsafe ChaCha behavior in the pinned Node/OpenSSL baseline. These intentional safety differences are checked by KEY-002."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "AEAD-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
           ]
         },
         {
           "name": "Decipheriv.setAAD",
-          "status": "planned",
+          "status": "partial",
           "task": "M4-01",
-          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "parameters": "Node v24.21.0 AES-128/192/256-GCM and ChaCha20-Poly1305 incremental/Transform API",
           "tests": [
-            "AEAD-001"
+            "AEAD-001",
+            "AEAD-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. Always rejects missing authentication tags and late AAD, including known unsafe ChaCha behavior in the pinned Node/OpenSSL baseline. These intentional safety differences are checked by KEY-002."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "AEAD-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
           ]
         },
         {
           "name": "Decipheriv.setAuthTag",
-          "status": "planned",
+          "status": "partial",
           "task": "M4-01",
-          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "parameters": "Node v24.21.0 AES-128/192/256-GCM and ChaCha20-Poly1305 incremental/Transform API",
           "tests": [
-            "AEAD-001"
+            "AEAD-001",
+            "AEAD-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. Always rejects missing authentication tags and late AAD, including known unsafe ChaCha behavior in the pinned Node/OpenSSL baseline. These intentional safety differences are checked by KEY-002."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "AEAD-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
           ]
         },
         {
           "name": "getCiphers",
-          "status": "planned",
+          "status": "partial",
           "task": "M4-01",
-          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "parameters": "Node v24.21.0 AES-128/192/256-GCM and ChaCha20-Poly1305 incremental/Transform API",
           "tests": [
-            "AEAD-001"
+            "AEAD-001",
+            "AEAD-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. Always rejects missing authentication tags and late AAD, including known unsafe ChaCha behavior in the pinned Node/OpenSSL baseline. These intentional safety differences are checked by KEY-002."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "AEAD-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
           ]
         },
         {
@@ -13660,7 +14149,7 @@
             "STR-007"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13700,10 +14189,11 @@
             "KDF-001",
             "HASH-003",
             "STR-006",
-            "STR-007"
+            "STR-007",
+            "KEY-001"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; Secret KeyObject input is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13744,7 +14234,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13850,6 +14340,402 @@
               "test": "STR-006",
               "report": "build/node-compat/<platform>.json",
               "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
+        },
+        {
+          "name": "KeyObject",
+          "task": "M4-01",
+          "status": "partial",
+          "parameters": "Node v24.21.0 Secret/Ed25519/X25519 KeyObject; canonical unencrypted PKCS8/SPKI DER/PEM; sync and callback sign/verify/derive",
+          "tests": [
+            "KEY-001"
+          ],
+          "differences": [
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. No JWK, encrypted PKCS8, general ASN.1, RSA or ECDSA. HACL verification workspace is prepaid and quota-bound."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "KEY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
+          ]
+        },
+        {
+          "name": "KeyObject.equals",
+          "task": "M4-01",
+          "status": "partial",
+          "parameters": "Node v24.21.0 Secret/Ed25519/X25519 KeyObject; canonical unencrypted PKCS8/SPKI DER/PEM; sync and callback sign/verify/derive",
+          "tests": [
+            "KEY-001"
+          ],
+          "differences": [
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. No JWK, encrypted PKCS8, general ASN.1, RSA or ECDSA. HACL verification workspace is prepaid and quota-bound."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "KEY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
+          ]
+        },
+        {
+          "name": "KeyObject.export",
+          "task": "M4-01",
+          "status": "partial",
+          "parameters": "Node v24.21.0 Secret/Ed25519/X25519 KeyObject; canonical unencrypted PKCS8/SPKI DER/PEM; sync and callback sign/verify/derive",
+          "tests": [
+            "KEY-001"
+          ],
+          "differences": [
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. No JWK, encrypted PKCS8, general ASN.1, RSA or ECDSA. HACL verification workspace is prepaid and quota-bound."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "KEY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
+          ]
+        },
+        {
+          "name": "createSecretKey",
+          "task": "M4-01",
+          "status": "partial",
+          "parameters": "Node v24.21.0 Secret/Ed25519/X25519 KeyObject; canonical unencrypted PKCS8/SPKI DER/PEM; sync and callback sign/verify/derive",
+          "tests": [
+            "KEY-001"
+          ],
+          "differences": [
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. No JWK, encrypted PKCS8, general ASN.1, RSA or ECDSA. HACL verification workspace is prepaid and quota-bound."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "KEY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
+          ]
+        },
+        {
+          "name": "Cipheriv",
+          "task": "M4-01",
+          "status": "partial",
+          "parameters": "Node v24.21.0 AES-128/192/256-GCM and ChaCha20-Poly1305 incremental/Transform API",
+          "tests": [
+            "AEAD-001",
+            "AEAD-002"
+          ],
+          "differences": [
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. Always rejects missing authentication tags and late AAD, including known unsafe ChaCha behavior in the pinned Node/OpenSSL baseline. These intentional safety differences are checked by KEY-002."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "AEAD-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
+          ]
+        },
+        {
+          "name": "Decipheriv",
+          "task": "M4-01",
+          "status": "partial",
+          "parameters": "Node v24.21.0 AES-128/192/256-GCM and ChaCha20-Poly1305 incremental/Transform API",
+          "tests": [
+            "AEAD-001",
+            "AEAD-002"
+          ],
+          "differences": [
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. Always rejects missing authentication tags and late AAD, including known unsafe ChaCha behavior in the pinned Node/OpenSSL baseline. These intentional safety differences are checked by KEY-002."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "AEAD-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
+          ]
+        },
+        {
+          "name": "Cipheriv.setAutoPadding",
+          "task": "M4-01",
+          "status": "partial",
+          "parameters": "Node v24.21.0 AES-128/192/256-GCM and ChaCha20-Poly1305 incremental/Transform API",
+          "tests": [
+            "AEAD-001",
+            "AEAD-002"
+          ],
+          "differences": [
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. Always rejects missing authentication tags and late AAD, including known unsafe ChaCha behavior in the pinned Node/OpenSSL baseline. These intentional safety differences are checked by KEY-002."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "AEAD-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
+          ]
+        },
+        {
+          "name": "Decipheriv.setAutoPadding",
+          "task": "M4-01",
+          "status": "partial",
+          "parameters": "Node v24.21.0 AES-128/192/256-GCM and ChaCha20-Poly1305 incremental/Transform API",
+          "tests": [
+            "AEAD-001",
+            "AEAD-002"
+          ],
+          "differences": [
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. Always rejects missing authentication tags and late AAD, including known unsafe ChaCha behavior in the pinned Node/OpenSSL baseline. These intentional safety differences are checked by KEY-002."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "AEAD-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
+          ]
+        },
+        {
+          "name": "Cipheriv.pipe",
+          "task": "M4-01",
+          "status": "partial",
+          "parameters": "Node v24.21.0 AES-128/192/256-GCM and ChaCha20-Poly1305 incremental/Transform API",
+          "tests": [
+            "AEAD-001",
+            "AEAD-002"
+          ],
+          "differences": [
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. Always rejects missing authentication tags and late AAD, including known unsafe ChaCha behavior in the pinned Node/OpenSSL baseline. These intentional safety differences are checked by KEY-002."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "AEAD-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
+            }
+          ]
+        },
+        {
+          "name": "Decipheriv.pipe",
+          "task": "M4-01",
+          "status": "partial",
+          "parameters": "Node v24.21.0 AES-128/192/256-GCM and ChaCha20-Poly1305 incremental/Transform API",
+          "tests": [
+            "AEAD-001",
+            "AEAD-002"
+          ],
+          "differences": [
+            "Declared M4-01 subset; see docs/M4_KEYS_AEAD.md. Always rejects missing authentication tags and late AAD, including known unsafe ChaCha behavior in the pinned Node/OpenSSL baseline. These intentional safety differences are checked by KEY-002."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "AEAD-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node comparison; KEY-002 source/Worker/qjsc checks and native crypto_advanced.c SDK wiping/OOM/shutdown checks."
             }
           ]
         }

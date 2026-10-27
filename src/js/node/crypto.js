@@ -1,5 +1,6 @@
-function createCrypto(native, streams) {
+function createCrypto(native, streams, decoderFactory) {
     const binding = native.crypto;
+    const keys = createKeys(binding), ciphers = createCiphers(binding,streams,keys,decoderFactory);
     const algorithms = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'blake2b512'];
     const sizes = [16, 20, 28, 32, 48, 64, 64];
     const states = new WeakMap();
@@ -52,7 +53,7 @@ function createCrypto(native, streams) {
         if (!new.target) return new Hmac(name, key, options);
         const id = algorithmId(name, true);
         const encoding = options !== null && typeof options === 'object' ? options.encoding : undefined;
-        const input = bytes(key, 'key', true, true, encoding);
+        const input = keys.has(key)?keys.secretSpan(key):bytes(key, 'key', true, true, encoding);
         streams.Transform.call(this, options);
         states.set(this, {id, handle: binding.create(id, true, ...input), done: false, hmac: true});
     }
@@ -108,7 +109,7 @@ function createCrypto(native, streams) {
     function getHashes() { return algorithms.slice().sort(); }
     function hkdfArguments(digest, ikm, salt, info, keylen) {
         if (typeof digest !== 'string') throw invalidType('digest', 'a string');
-        const key = bytes(ikm, 'ikm'), saltBytes = bytes(salt, 'salt'), infoBytes = bytes(info, 'info');
+        const key = keys.has(ikm)?keys.secretSpan(ikm):bytes(ikm, 'ikm'), saltBytes = bytes(salt, 'salt'), infoBytes = bytes(info, 'info');
         integer(keylen, 'keylen', 0, Number.MAX_SAFE_INTEGER);
         if (infoBytes[2] > 1024) throw outOfRange('info');
         const id = algorithmId(digest, true);
@@ -218,5 +219,5 @@ function createCrypto(native, streams) {
         return Buffer.from(binding.blake256(...bytes(data, 'data')));
     }
     return {api: {Hash, Hmac, createHash, createHmac, getHashes, hkdfSync, pbkdf2Sync, hkdf, pbkdf2, timingSafeEqual,
-        randomBytes, randomFillSync, randomFill, randomUUID, hash}, extensions: {blake2b256}};
+        randomBytes, randomFillSync, randomFill, randomUUID, hash,...keys.api,...ciphers}, extensions: {blake2b256}};
 }

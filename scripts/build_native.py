@@ -81,6 +81,8 @@ def audit_symbols(settings, root, output, archives):
     required = {
         'mbedtls-core.a': {'mbedtls_md_info_from_type', 'mbedtls_md_setup', 'mbedtls_md_hmac', 'mbedtls_hkdf', 'mbedtls_pkcs5_pbkdf2_hmac'},
         'haclstar-blake2b.a': {'Hacl_Hash_Blake2b_hash_with_key', 'Hacl_Hash_Blake2b_copy', 'Hacl_Hash_Blake2b_free'},
+        'mbedtls-aead.a': {'mbedtls_aes_setkey_enc', 'mbedtls_gcm_update', 'mbedtls_chachapoly_update'},
+        'haclstar-25519.a': {'Hacl_Ed25519_sign', 'Hacl_Ed25519_verify', 'Hacl_Curve25519_ecdh'},
         'zstd.a': {'ZSTD_compress', 'ZSTD_decompress'},
         'lz4-frame.a': {'LZ4F_compressFrame', 'LZ4F_decompress'},
         'bzip2.a': {'BZ2_bzBuffToBuffCompress', 'BZ2_bzBuffToBuffDecompress'},

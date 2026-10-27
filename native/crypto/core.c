@@ -13,6 +13,7 @@
 #include "core.h"
 
 static _Thread_local QCryptoAllocator allocator;
+static _Thread_local void *ed_workspace;
 typedef union {
     max_align_t alignment;
     struct { QCryptoAllocator owner; void *raw; size_t total; } value;
@@ -26,6 +27,7 @@ void qcrypto_allocator_leave(QCryptoAllocator previous) { allocator=previous; }
 /* These three names are localized inside the partial-linked crypto object.
    Link wrapping applies only to the selected backend/binding objects. */
 void *__wrap_malloc(size_t size) {
+    if(ed_workspace && size==640*sizeof(uint64_t)){void *data=ed_workspace;ed_workspace=NULL;return data;}
     /* QuickJS's small-block allocator promises only eight-byte alignment.
        Align both our header and backend data independently of that allocator. */
     const size_t alignment=_Alignof(Allocation), overhead=sizeof(Allocation)+alignment-1;
@@ -37,6 +39,11 @@ void *__wrap_malloc(size_t size) {
     return block+1;
 }
 void *__wrap_calloc(size_t count,size_t size) {
+    /* Fixed ed25519.c's verifier has one unchecked calloc(640,8). Its caller
+       prepays this exact workspace, or reports OOM before entering HACL*. */
+    if(ed_workspace && (!count || size<=SIZE_MAX/count) && count*size==640*sizeof(uint64_t)){
+        void *data=ed_workspace;ed_workspace=NULL;return data;
+    }
     if (count && size>SIZE_MAX/count) return NULL;
     size_t length=count*size; void *data=__wrap_malloc(length);
     if (data) memset(data,0,length);
@@ -50,6 +57,8 @@ void __wrap_free(void *data) {
     explicit_bzero(raw,total);
     owner.release(owner.opaque,raw);
 }
+void *qcrypto_ed_workspace_enter(void *next){void *previous=ed_workspace;ed_workspace=next;return previous;}
+void qcrypto_ed_workspace_leave(void *previous){if(ed_workspace)__wrap_free(ed_workspace);ed_workspace=previous;}
 
 struct QCryptoHash {
     int algorithm,hmac,finished;

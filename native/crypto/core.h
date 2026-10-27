@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 enum { QCR_MD5, QCR_SHA1, QCR_SHA224, QCR_SHA256, QCR_SHA384, QCR_SHA512, QCR_BLAKE512, QCR_ALGORITHMS };
-enum { QCR_OK, QCR_ALLOCATION=-1, QCR_ARGUMENT=-2, QCR_BACKEND=-3, QCR_STATE=-4 };
+enum { QCR_OK, QCR_ALLOCATION=-1, QCR_ARGUMENT=-2, QCR_BACKEND=-3, QCR_STATE=-4, QCR_AUTH=-5 };
 typedef struct QCryptoHash QCryptoHash;
 typedef struct {int (*check)(void *);void *opaque;} QCryptoCancellation;
 QCryptoCancellation qcrypto_cancel_enter(QCryptoCancellation);
@@ -19,6 +19,8 @@ typedef struct {
    so GC can release a state after the creation scope has ended. */
 QCryptoAllocator qcrypto_allocator_enter(QCryptoAllocator);
 void qcrypto_allocator_leave(QCryptoAllocator);
+void *qcrypto_ed_workspace_enter(void *);
+void qcrypto_ed_workspace_leave(void *);
 size_t qcrypto_digest_size(int);
 size_t qcrypto_hash_size(const QCryptoHash *);
 int qcrypto_hash_hmac(const QCryptoHash *);

@@ -105,6 +105,7 @@ def main():
     check("custom/runtime-scheduling", [qjs, "-m", ROOT / "tests/runtime_scheduling.mjs"], contains="PASS runtime-scheduling")
     check("custom/runtime-fs", [qjs, "-m", ROOT / "tests/runtime_fs.mjs"], contains="PASS runtime-fs")
     check("custom/runtime-crypto", [qjs, "-m", ROOT / "tests/runtime_crypto.mjs"], contains="PASS runtime-crypto")
+    check("custom/runtime-crypto-advanced", [qjs, "-m", ROOT / "tests/runtime_crypto_advanced.mjs"], contains="PASS runtime-crypto-advanced", timeout=120)
     check("custom/runtime-compression", [qjs, "-m", ROOT / "tests/runtime_compression.mjs"], contains="PASS runtime-compression")
     check("custom/runtime-child-process", [qjs, "-m", ROOT / "tests/runtime_child_process.mjs"], contains="PASS runtime-child-process")
     check("custom/runtime-async", [qjs, "-m", ROOT / "tests/runtime_async.mjs"], contains="PASS runtime-async", timeout=120)
@@ -152,6 +153,14 @@ def main():
         if not valid:
             print("FAIL generated C has no bytecode array", flush=True)
     if args.compile:
+        if check("qjsc/compile-crypto-advanced-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/crypto-advanced-worker.mjs",
+                 "-o", scratch / "crypto-advanced-standalone.exe", ROOT / "tests/runtime_crypto_advanced.mjs"], timeout=180):
+            check("qjsc/run-crypto-advanced-ape", [scratch / "crypto-advanced-standalone.exe"], contains="PASS runtime-crypto-advanced", timeout=120)
+        if check("sdk/compile-crypto-advanced", [settings.toolchain / "bin/cosmocc", "-O2", "-I" + str(settings.dist),
+                 ROOT / "tests/native/crypto_advanced.c", settings.dist / "libquickjs.a", "-lm", "-lpthread", "-ldl",
+                 "-Wl,--wrap=_Exit,-u,__wrap__Exit", "-Wl,--wrap=js_malloc_rt,--wrap=js_malloc,--wrap=js_free_rt",
+                 "-o", scratch / "crypto-advanced-sdk.exe"], timeout=180):
+            check("sdk/run-crypto-advanced", [scratch / "crypto-advanced-sdk.exe"], contains="PASS crypto-advanced-sdk", timeout=120)
         if check("qjsc/compile-file-algorithm-streams-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/file-algorithm-stream-worker.mjs",
                  "-o", scratch / "file-algorithm-streams-standalone.exe", ROOT / "tests/runtime_file_algorithm_streams.mjs"], timeout=180):
             check("qjsc/run-file-algorithm-streams-ape", [scratch / "file-algorithm-streams-standalone.exe"], contains="PASS runtime-file-algorithm-streams", timeout=120)
@@ -250,6 +259,8 @@ def main():
                  timeout=180):
             check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
+        check("qjsc/cross-host-crypto-advanced", [args.standalone.resolve().parent / "crypto-advanced-standalone.exe"], contains="PASS runtime-crypto-advanced", timeout=120)
+        check("sdk/cross-host-crypto-advanced", [args.standalone.resolve().parent / "crypto-advanced-sdk.exe"], contains="PASS crypto-advanced-sdk", timeout=120)
         check("qjsc/cross-host-file-algorithm-streams", [args.standalone.resolve().parent / "file-algorithm-streams-standalone.exe"], contains="PASS runtime-file-algorithm-streams", timeout=120)
         check("sdk/cross-host-file-algorithm-streams", [args.standalone.resolve().parent / "file-algorithm-streams-sdk.exe"], contains="PASS file-algorithm-stream-sdk", timeout=120)
         check("qjsc/cross-host-child-process-async", [args.standalone.resolve().parent / "child-process-async-standalone.exe"], contains="PASS runtime-child-process-async", timeout=120)

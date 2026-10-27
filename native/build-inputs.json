@@ -371,6 +371,105 @@
         }
       ],
       "export_to_sdk": false
+    },
+    {
+      "id": "mbedtls-aead",
+      "scope": [
+        "AES-128/192/256-GCM",
+        "ChaCha20-Poly1305 incremental"
+      ],
+      "license": "Apache-2.0",
+      "license_files": [
+        "third_party/mbedtls/LICENSE"
+      ],
+      "flags": [],
+      "sources": [
+        {
+          "path": "third_party/mbedtls/aes.c",
+          "sha256": "bdfdc57dcfa7a39794a638b4f788d9806585be19f1e3f8285714b0a8c46c90b8",
+          "flags": []
+        },
+        {
+          "path": "third_party/mbedtls/aesni.c",
+          "sha256": "661b150439486911ce63e5a0fade638915f1d66403e4084cdffaebdb4e3ba910",
+          "flags": []
+        },
+        {
+          "path": "third_party/mbedtls/aesce.c",
+          "sha256": "a81c4e65faa47031cb84eb3b04ed089d94b6c8ccc2973cd9a016ebdd1e237730",
+          "flags": []
+        },
+        {
+          "path": "third_party/mbedtls/gcm.c",
+          "sha256": "bbd9cc7e36b40dd23f48f240b909252d5bb4e991a97949363de0f5aa163acaac",
+          "flags": []
+        },
+        {
+          "path": "third_party/mbedtls/chacha20.c",
+          "sha256": "e1562bd4d46a7f87a1852085d0d20e04640fd0e21af73cf03932ba47e4cd2a59",
+          "flags": []
+        },
+        {
+          "path": "third_party/mbedtls/chachapoly.c",
+          "sha256": "72d57d1af83f4be24dbeb2edc0b216792c8b7dadb74fff1ff6cff53661f4ec88",
+          "flags": []
+        },
+        {
+          "path": "third_party/mbedtls/poly1305.c",
+          "sha256": "1eea7dfdd75c26ec7791a2b5042cc87f2bedba923d1cf1e7a86e1733a3fdc3d9",
+          "flags": []
+        }
+      ],
+      "export_to_sdk": false
+    },
+    {
+      "id": "haclstar-25519",
+      "scope": [
+        "Ed25519",
+        "X25519"
+      ],
+      "license": "MIT",
+      "license_files": [
+        "third_party/haclstar/ed25519.c",
+        "third_party/haclstar/curve25519.c"
+      ],
+      "flags": [],
+      "sources": [
+        {
+          "path": "third_party/haclstar/ed25519.c",
+          "sha256": "7b0185d5e2eb05c021f4c1e14483a2f2eb8c915bcfee60df6fdf3fd3f6f293da",
+          "flags": []
+        },
+        {
+          "path": "third_party/haclstar/curve25519.c",
+          "sha256": "6591cae759fbc3ed7155a11ebbb23e18030e86de4fc3a3002fd0fa3eb1337f00",
+          "flags": [
+            "-O3"
+          ]
+        },
+        {
+          "path": "third_party/haclstar/sha512.c",
+          "sha256": "4a085a6363f0d4702995a4b368226e5e2f8ab12b232de37177e2441146a97a3f",
+          "flags": [
+            "-Os",
+            "-fno-sanitize=all"
+          ]
+        },
+        {
+          "path": "third_party/haclstar/sha2.c",
+          "sha256": "3caa45d407e22ee4a97df27eaa7757a1590a887fb069236cedfd7225f8e0f45e",
+          "flags": [
+            "-Os",
+            "-fno-sanitize=all"
+          ]
+        },
+        {
+          "path": "third_party/haclstar/mask.c",
+          "sha256": "7b0ae571bf2bb1865c78db7278296808f6d83c20f7f891b3a01beeb0a56eca37",
+          "flags": []
+        }
+      ],
+      "export_to_sdk": false
     }
   ],
   "notes": [

@@ -6,15 +6,19 @@
 #include "libc/str/str.h"
 #include "binding.h"
 #include "core.h"
+#include "keys.h"
+#include "aead.h"
 #include "../tasks.h"
 
-static JSClassID hash_class;
+static JSClassID hash_class,key_class,cipher_class;
 static pthread_once_t class_once=PTHREAD_ONCE_INIT;
 static uint8_t empty_byte;
-enum { CR_NEW, CR_UPDATE, CR_DIGEST, CR_COPY, CR_HKDF, CR_PBKDF2, CR_FILL, CR_EQUAL, CR_BLAKE256, CR_RANDOM };
+enum { CR_NEW, CR_UPDATE, CR_DIGEST, CR_COPY, CR_HKDF, CR_PBKDF2, CR_FILL, CR_EQUAL, CR_BLAKE256, CR_RANDOM,
+       CR_KEY_NEW,CR_KEY_EXPORT,CR_KEY_PUBLIC,CR_KEY_GENERATE,CR_KEY_SIGN,CR_KEY_VERIFY,CR_KEY_DERIVE,
+       CR_CIPHER_NEW,CR_CIPHER_AAD,CR_CIPHER_UPDATE,CR_CIPHER_FINISH,CR_CIPHER_CLOSE };
 typedef struct { uint8_t *data; size_t length; } Bytes;
 
-static void class_id(void) { JS_NewClassID(&hash_class); }
+static void class_id(void) { JS_NewClassID(&hash_class);JS_NewClassID(&key_class);JS_NewClassID(&cipher_class); }
 static void hash_finalize(JSRuntime *rt,JSValue value) {
     QCryptoHash *state=JS_GetOpaque(value,hash_class); qcrypto_hash_free(state);
 }
@@ -45,7 +49,12 @@ static int span(JSContext *ctx,const JSValueConst *args,Bytes *out) {
     uint64_t offset,length; size_t total=0;
     if (number(ctx,args[1],SIZE_MAX,&offset)<0 || number(ctx,args[2],SIZE_MAX,&length)<0) return -1;
     if (!length) { out->data=&empty_byte; out->length=0; return 0; }
-    uint8_t *data=JS_GetArrayBuffer(ctx,&total,args[0]);
+    QCryptoKey *key=JS_GetOpaque(args[0],key_class);
+    uint8_t *data;
+    if(key){
+        if(qcrypto_key_kind(key)!=QKEY_SYMMETRIC){JS_ThrowTypeError(ctx,"Expected a secret key");return -1;}
+        total=qcrypto_key_length(key);data=(uint8_t *)qcrypto_key_bytes(key);
+    }else data=JS_GetArrayBuffer(ctx,&total,args[0]);
     if (JS_HasException(ctx)) return -1;
     if (!data || offset>total || length>total-offset) { JS_ThrowRangeError(ctx,"Native crypto view exceeds backing store"); return -1; }
     out->data=data+offset; out->length=length; return 0;
@@ -74,8 +83,10 @@ static JSValue wrap_state(JSContext *ctx,QCryptoHash *hash) {
 static JSValue compute_failure(JSContext *ctx,int error) {
     return error==QCR_ALLOCATION?JS_ThrowOutOfMemory(ctx):failure(ctx,"ERR_CRYPTO_OPERATION_FAILED","Native crypto operation failed");
 }
+#include "extended-binding.h"
 
 static JSValue call_impl(JSContext *ctx,int argc,JSValueConst *args,int magic) {
+    if(magic>=CR_KEY_NEW)return extended_call(ctx,argc,args,magic);
     const int needed[]={5,4,1,1,11,9,3,6,3,1};
     if ((unsigned)magic>=sizeof(needed)/sizeof(*needed) || argc<needed[magic])
         return JS_ThrowTypeError(ctx,"Invalid native crypto argument count");
@@ -198,12 +209,17 @@ static JSValue call_async(JSContext *ctx,JSValueConst self,int argc,JSValueConst
     return js_cosmo_task_submit(ctx,task,NULL);
 memory:js_cosmo_task_discard(task);return JS_ThrowOutOfMemory(ctx);
 }
+#include "extended-async.h"
 JSValue js_cosmo_crypto_api(JSContext *ctx) {
     pthread_once(&class_once,class_id);
     if (!JS_IsRegisteredClass(JS_GetRuntime(ctx),hash_class) && JS_NewClass(JS_GetRuntime(ctx),hash_class,&hash_definition)<0)
         return JS_ThrowInternalError(ctx,"Cannot register native crypto state");
+    if((!JS_IsRegisteredClass(JS_GetRuntime(ctx),key_class) && JS_NewClass(JS_GetRuntime(ctx),key_class,&key_definition)<0) ||
+       (!JS_IsRegisteredClass(JS_GetRuntime(ctx),cipher_class) && JS_NewClass(JS_GetRuntime(ctx),cipher_class,&cipher_definition)<0))return JS_ThrowOutOfMemory(ctx);
     JSValue api=JS_NewObject(ctx); if (JS_IsException(api)) return api;
-    const char *names[]={"create","update","digest","copy","hkdf","pbkdf2","fill","equal","blake256","random"};
+    const char *names[]={"create","update","digest","copy","hkdf","pbkdf2","fill","equal","blake256","random",
+        "keyNew","keyExport","keyPublic","keyGenerate","keySign","keyVerify","keyDerive",
+        "cipherNew","cipherAAD","cipherUpdate","cipherFinish","cipherClose"};
     for (size_t i=0;i<sizeof(names)/sizeof(*names);i++) {
         JSValue fn=JS_NewCFunctionMagic(ctx,call,names[i],0,JS_CFUNC_generic_magic,i);
         if (JS_IsException(fn) || JS_SetPropertyStr(ctx,api,names[i],fn)<0) { JS_FreeValue(ctx,api); return JS_EXCEPTION; }
@@ -211,6 +227,8 @@ JSValue js_cosmo_crypto_api(JSContext *ctx) {
     JSValue async=JS_NewObject(ctx);if(JS_IsException(async)){JS_FreeValue(ctx,api);return async;}
     const char *async_names[]={"hkdf","pbkdf2","random"};const int kinds[]={CR_HKDF,CR_PBKDF2,CR_RANDOM};
     for(int i=0;i<3;i++)if(JS_SetPropertyStr(ctx,async,async_names[i],JS_NewCFunctionMagic(ctx,call_async,async_names[i],0,JS_CFUNC_generic_magic,kinds[i]))<0){JS_FreeValue(ctx,async);JS_FreeValue(ctx,api);return JS_EXCEPTION;}
+    const char *key_names[]={"keySign","keyVerify","keyDerive"};const int key_kinds[]={CR_KEY_SIGN,CR_KEY_VERIFY,CR_KEY_DERIVE};
+    for(int i=0;i<3;i++)if(JS_SetPropertyStr(ctx,async,key_names[i],JS_NewCFunctionMagic(ctx,call_key_async,key_names[i],0,JS_CFUNC_generic_magic,key_kinds[i]))<0){JS_FreeValue(ctx,async);JS_FreeValue(ctx,api);return JS_EXCEPTION;}
     if(JS_SetPropertyStr(ctx,api,"async",async)<0){JS_FreeValue(ctx,api);return JS_EXCEPTION;}
     return api;
 }

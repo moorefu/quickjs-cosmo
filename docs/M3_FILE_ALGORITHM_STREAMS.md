@@ -33,6 +33,6 @@ SDK 的 GC 压力测试同时修复了公共 EventEmitter 的状态所有权：�
 
 Python 80 项检查、TypeScript 5.9.3 的 ES2022/ES2022+DOM 正反向声明检查通过。三文件运行包、双架构 SDK 与包含 28 个测试/探针 APE 的 CI 传输包校验通过。清单现有 469 项 API、29 个模块和 52 个测试条目。
 
-本项等待完整 CI；全绿后进入 M4-01。
+本项完整 CI 已通过：`f90d02d`，[运行记录](https://github.com/moorefu/quickjs-cosmo/actions/runs/40581885448)。后续进入 M4-01。
 
 首次 CI 中 macOS ARM 的 STR-005 揭示了上述 close 回调竞态。修复对齐显式 destroy 的 fd 关闭，并以实际 close 事件验证释放；补充了 autoClose:false 的读/写流销毁、WriteStream.close 和提前关闭回调的同源测试。

@@ -1,7 +1,7 @@
 declare module 'node:crypto' {
     import type {Buffer} from 'node:buffer';
     export type CryptoCallback<T>=(error:Error|null,value:T)=>void;
-    export function hkdf(digest:string,ikm:BinaryLike,salt:BinaryLike,info:BinaryLike,keylen:number,callback:CryptoCallback<ArrayBuffer>):void;
+    export function hkdf(digest:string,ikm:BinaryLike|KeyObject,salt:BinaryLike,info:BinaryLike,keylen:number,callback:CryptoCallback<ArrayBuffer>):void;
     export function pbkdf2(password:BinaryLike,salt:BinaryLike,iterations:number,keylen:number,digest:string,callback:CryptoCallback<Buffer>):void;
     export function randomBytes(size:number,callback:CryptoCallback<Buffer>):void;
     export function randomFill<T extends ArrayBuffer|SharedArrayBuffer|ArrayBufferView>(buffer:T,callback:CryptoCallback<T>):void;

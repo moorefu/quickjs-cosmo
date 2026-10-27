@@ -13,16 +13,16 @@ declare module 'node:crypto' {
         copy(options?: HashOptions): Hash;
     }
     export class Hmac extends Transform {
-        constructor(algorithm: string, key: BinaryLike, options?: HmacOptions);
+        constructor(algorithm: string, key: BinaryLike|KeyObject, options?: HmacOptions);
         update(data: string | ArrayBufferView, inputEncoding?: BufferEncoding): this;
         digest(): Buffer;
         digest(encoding: 'buffer'): Buffer;
         digest(encoding: BufferEncoding): string;
     }
     export function createHash(algorithm: string, options?: HashOptions): Hash;
-    export function createHmac(algorithm: string, key: BinaryLike, options?: HmacOptions): Hmac;
+    export function createHmac(algorithm: string, key: BinaryLike|KeyObject, options?: HmacOptions): Hmac;
     export function getHashes(): string[];
-    export function hkdfSync(digest: string, ikm: BinaryLike, salt: BinaryLike, info: BinaryLike, keylen: number): ArrayBuffer;
+    export function hkdfSync(digest: string, ikm: BinaryLike|KeyObject, salt: BinaryLike, info: BinaryLike, keylen: number): ArrayBuffer;
     export function pbkdf2Sync(password: BinaryLike, salt: BinaryLike, iterations: number, keylen: number, digest: string): Buffer;
     export function timingSafeEqual(a: Exclude<BinaryLike, string>, b: Exclude<BinaryLike, string>): boolean;
     export function randomBytes(size: number): Buffer;
@@ -36,7 +36,7 @@ declare module 'node:crypto' {
         getHashes: typeof getHashes; hkdfSync: typeof hkdfSync; pbkdf2Sync: typeof pbkdf2Sync;
         timingSafeEqual: typeof timingSafeEqual; randomBytes: typeof randomBytes;
         randomFillSync: typeof randomFillSync; randomUUID: typeof randomUUID; hash: typeof hash;
-        hkdf:typeof hkdf;pbkdf2:typeof pbkdf2;randomFill:typeof randomFill};
+        hkdf:typeof hkdf;pbkdf2:typeof pbkdf2;randomFill:typeof randomFill} & AdvancedCryptoMethods;
     export default crypto;
 }
 declare module 'crypto' { export * from 'node:crypto'; export {default} from 'node:crypto'; }
