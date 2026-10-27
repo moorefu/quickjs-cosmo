@@ -39,11 +39,15 @@ def main():
     parser.add_argument("--qjsc", type=Path)
     parser.add_argument("--upstream", action="store_true")
     parser.add_argument("--compile", action="store_true", help="Also compile and run a standalone APE (needs cosmocc)")
+    parser.add_argument("--node-compat", action="store_true", help="Run implemented Node differential contracts (requires pinned Node)")
+    parser.add_argument("--node", help="Node oracle executable; used with --node-compat")
     parser.add_argument("--standalone", type=Path, help="Run an existing standalone APE produced on another host")
     parser.add_argument("--expected-platform", choices=("linux", "darwin", "win32"))
     parser.add_argument("--expected-arch", choices=("x86_64", "arm64"))
     parser.add_argument("--expected-execution-arch", choices=("x86_64", "arm64"))
     args = parser.parse_args()
+    if args.node and not args.node_compat:
+        parser.error("--node requires --node-compat")
     settings = load_config("nightly" if args.nightly else None)
     qjs = (args.qjs or settings.dist / "qjs.exe").resolve()
     qjsc = (args.qjsc or settings.dist / "qjsc.exe").resolve()
@@ -85,6 +89,13 @@ def main():
               contains="PASS " + name)
     expected_platform = "win32" if os.name == "nt" else system
     check("custom/platform", [qjs, "-m", ROOT / "tests/platform.js", expected_platform], contains="PASS platform")
+    check("custom/node-contract-inventory", [sys.executable, ROOT / "scripts/test_node_compat.py", "--check-contract"],
+          contains="PASS node-contract")
+    if args.node_compat:
+        node_command = [sys.executable, ROOT / "scripts/test_node_compat.py", "--qjs", qjs]
+        if args.node:
+            node_command += ["--node", str(Path(args.node).resolve())]
+        check("custom/node-differential", node_command, contains="Node/qjs differential:", timeout=180)
     check("example/hello", [qjs, ROOT / "examples/hello.js"], contains="Hello from QuickJS")
     check("example/system-info", [qjs, "-m", ROOT / "examples/system-info.js", "hello"], contains='"workerAvailable": true')
     check("cli/explicit-exit", [qjs, "--std", "-e", "std.exit(7)"], expected=7)

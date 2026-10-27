@@ -1,0 +1,244 @@
+{
+  "format": 1,
+  "cosmopolitan": {
+    "commit": "aefad27c09ffda64c6ac64bd69f758e9f9c7b91d",
+    "url": "https://codeload.github.com/jart/cosmopolitan/tar.gz/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d",
+    "archive": "cosmopolitan-nightly-source.tar.gz",
+    "sha256": "2ad113d1735280479183fee0a6b65159ca1999005a69b6d06cd5ec945e3fa32c"
+  },
+  "node_baseline": "compat/node-baseline.json",
+  "libraries": [
+    {
+      "id": "zlib",
+      "delivery": "toolchain",
+      "admission": "E0",
+      "files": [
+        {
+          "path": "third_party/zlib/zlib.h",
+          "sha256": "3f57ee8b2d1ee048b53d421fe4a6fc3547c6134d22dfef4afaf6909e032a72b7"
+        },
+        {
+          "path": "third_party/zlib/zconf.h",
+          "sha256": "ce56143745eea9ef12c54c04f5640055b963f830e7b096b125f7d32a232d8049"
+        },
+        {
+          "path": "third_party/zlib/BUILD.mk",
+          "sha256": "0c045095365e9a41f8a3c390ad8f29eae99cbd3014b8c6c8580886e44131df02"
+        },
+        {
+          "path": "test/libc/str/crc32z_test.c",
+          "sha256": "859f7d8807b1c3f0cc2bd7c13b8f82a5f71002268df1909393d81f2f7eed74c3"
+        }
+      ],
+      "tests": [
+        "test/libc/str/crc32z_test.c"
+      ],
+      "notes": []
+    },
+    {
+      "id": "random",
+      "delivery": "toolchain",
+      "admission": "E0",
+      "files": [
+        {
+          "path": "libc/calls/getrandom.c",
+          "sha256": "e627a1c9896f2b8a4d3a3bb9e3662ac5e76592ee8cef5f9ea2fb0cc268f69f10"
+        },
+        {
+          "path": "libc/calls/getentropy.c",
+          "sha256": "cbd6bba05bae13634d764cd7e6ffcd5294f0d420604d1d97960a1e591661b5dd"
+        },
+        {
+          "path": "test/libc/calls/getrandom_test.c",
+          "sha256": "87042f5db20d2655473e9ccd0d6e4933e10367db625da873267d9101a93f0e34"
+        }
+      ],
+      "tests": [
+        "test/libc/calls/getrandom_test.c"
+      ],
+      "notes": []
+    },
+    {
+      "id": "sockets",
+      "delivery": "toolchain",
+      "admission": "E0",
+      "files": [
+        {
+          "path": "libc/sock/socket.c",
+          "sha256": "6a95b3552b2b1883de9adc0127649be349ad192d35a9fa67286fddb070b8b10d"
+        },
+        {
+          "path": "test/libc/sock/socket_test.c",
+          "sha256": "763a18ab1446ebc551b2c4d4850f48653966647f36fa63c86540c6ca61b0e92e"
+        },
+        {
+          "path": "third_party/musl/getaddrinfo.c",
+          "sha256": "8bc1953556f7a476d80adaaa7f95c538e35748ac9bdb3e304e5b9c046838bc3f"
+        }
+      ],
+      "tests": [
+        "test/libc/sock/socket_test.c"
+      ],
+      "notes": []
+    },
+    {
+      "id": "blake2b256",
+      "delivery": "toolchain",
+      "admission": "E0",
+      "files": [
+        {
+          "path": "libc/str/blake2.h",
+          "sha256": "24e4aaca7ff872e051acf063263f1f694fbcdea556876387af447357b61aafa0"
+        },
+        {
+          "path": "test/libc/str/blake2_test.c",
+          "sha256": "a8ff6e7df705ce6627b32fd5cc0dd9cc61a79232ddb114015020722d5bc5072e"
+        },
+        {
+          "path": "libc/str/blake2.c",
+          "sha256": "7f6a53a522b403cc1c64b4af9f00fb6fee91c0bce2c42cfbc51326a77b208f33"
+        }
+      ],
+      "tests": [
+        "test/libc/str/blake2_test.c"
+      ],
+      "notes": []
+    },
+    {
+      "id": "mbedtls",
+      "delivery": "source",
+      "admission": "E0",
+      "files": [
+        {
+          "path": "third_party/mbedtls/config.h",
+          "sha256": "c445ecfb3451bc6acb27f092e000a5bd459b50515fa5c395059dea844344eefc"
+        },
+        {
+          "path": "third_party/mbedtls/BUILD.mk",
+          "sha256": "eb52479ea1d508812c1c51936201165cc486911292069cd499891488707b35ee"
+        },
+        {
+          "path": "third_party/mbedtls/LICENSE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        },
+        {
+          "path": "third_party/mbedtls/test/BUILD.mk",
+          "sha256": "8936d46356a3012460425e617d514b49921f17c05a47b7e3d51acf8e2ae786ae"
+        }
+      ],
+      "tests": [
+        "third_party/mbedtls/test/BUILD.mk"
+      ],
+      "notes": []
+    },
+    {
+      "id": "haclstar",
+      "delivery": "source",
+      "admission": "E0",
+      "files": [
+        {
+          "path": "third_party/haclstar/haclstar.h",
+          "sha256": "7a93c26f145646480bc3fa8694cd4f1e971ae0aa1ac6157522dc18abb817860a"
+        },
+        {
+          "path": "third_party/haclstar/BUILD.mk",
+          "sha256": "a481371c164b1c525c155206d6e8fffc581d7593cbcbc053d860b0fa245df5bf"
+        },
+        {
+          "path": "third_party/haclstar/README.cosmo",
+          "sha256": "e5d38cb7e685be38ec040ec2e0f368958d32e08c3024618fd31717cde7abaf4a"
+        },
+        {
+          "path": "test/net/https/mbedtls_test.c",
+          "sha256": "be3642f3ad48e7bac0dff43cde0a0cd4f3f5d5b76abe18968b96fcef4fd9adc1"
+        }
+      ],
+      "tests": [
+        "test/net/https/mbedtls_test.c"
+      ],
+      "notes": []
+    },
+    {
+      "id": "zstd",
+      "delivery": "source",
+      "admission": "E0",
+      "files": [
+        {
+          "path": "third_party/zstd/zstd.h",
+          "sha256": "9b7156ea9ebe37ea4cc566e80a3dafa7e3fb4816dbc6ebf8cea64875d38ef755"
+        },
+        {
+          "path": "third_party/zstd/BUILD.mk",
+          "sha256": "5c7a8ed19ac38d1ac8e09768d229768446223e8d324b755a5a264b9ef8952608"
+        },
+        {
+          "path": "third_party/zstd/LICENSE",
+          "sha256": "7055266497633c9025b777c78eb7235af13922117480ed5c674677adc381c9d8"
+        }
+      ],
+      "tests": [],
+      "notes": [
+        "Upstream test coverage must be established before admission."
+      ]
+    },
+    {
+      "id": "lz4",
+      "delivery": "source",
+      "admission": "E0",
+      "files": [
+        {
+          "path": "third_party/lz4cli/lz4frame.h",
+          "sha256": "d4370cf1947cc7615faa6c940f4336bcbdbb0394eeebb33e06436ce0b84a710d"
+        },
+        {
+          "path": "third_party/lz4cli/BUILD.mk",
+          "sha256": "3ccb51ea3d06d2778fc8e58af4957d01e458cf9bdf159c503f9dd5809d60fc46"
+        },
+        {
+          "path": "third_party/lz4cli/lz4.c",
+          "sha256": "296ca4d3a68850748c669fca45e11f2a87a566c34956b4bba9a880c33f65b2f7"
+        }
+      ],
+      "tests": [],
+      "notes": [
+        "Upstream test coverage must be established before admission."
+      ]
+    },
+    {
+      "id": "bzip2",
+      "delivery": "source",
+      "admission": "E0",
+      "files": [
+        {
+          "path": "third_party/bzip2/bzlib.h",
+          "sha256": "d5b23ec559bd50e410df0532b1bf97af8815843d7d7d836d3904d42cffe64dfe"
+        },
+        {
+          "path": "third_party/bzip2/BUILD.mk",
+          "sha256": "a04be658b31180f0b4e545a9a523dc03f7dd52c82916121809959df968391774"
+        },
+        {
+          "path": "third_party/bzip2/LICENSE",
+          "sha256": "c6dbbf828498be844a89eaa3b84adbab3199e342eb5cb2ed2f0d4ba7ec0f38a3"
+        }
+      ],
+      "tests": [],
+      "notes": [
+        "Upstream test coverage must be established before admission."
+      ]
+    }
+  ],
+  "deferred": [
+    {
+      "id": "sha3-shake-blake2s",
+      "reference_commit": "c27a168be0527a8a6916af5457fa293b65ab88ec",
+      "status": "candidate",
+      "reason": "Check Nightly coverage first; no external HACL source admitted yet."
+    },
+    {
+      "id": "tls",
+      "status": "blocked",
+      "reason": "Nightly source/configuration and SDK reachability audit required; historical report is not inherited."
+    }
+  ]
+}

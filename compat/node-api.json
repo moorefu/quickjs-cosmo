@@ -1,0 +1,3824 @@
+{
+  "format": 1,
+  "plan": "docs/NODE_COMPAT_RUNTIME_PLAN.md",
+  "entry_contract": "docs/NODE_ENTRY_CONTRACT.md",
+  "node_baseline": "compat/node-baseline.json",
+  "legacy_modules": {
+    "std": "qjs:std",
+    "os": "qjs:os"
+  },
+  "excluded_namespaces": [
+    "@runtime/"
+  ],
+  "tests": [
+    {
+      "id": "LANG-001",
+      "status": "differential",
+      "file": "tests/node/esm.mjs",
+      "task": "M0-03",
+      "description": "ESM identity, relative and dynamic imports, top-level await",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "LANG-002",
+      "status": "differential",
+      "file": "tests/node/bytes.mjs",
+      "task": "M0-03",
+      "description": "ECMAScript byte views, Unicode and errors",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "BUF-001",
+      "status": "reference",
+      "file": "tests/node/buffer.mjs",
+      "task": "M1-02",
+      "description": "Buffer encoding, type, copying and shared slices",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "HASH-001",
+      "status": "reference",
+      "file": "tests/node/crypto.mjs",
+      "task": "M2-03",
+      "description": "Hash copy/finalization, HMAC, KDF return types and comparison errors",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "ZIP-001",
+      "status": "reference",
+      "file": "tests/node/compression.mjs",
+      "task": "M2-04",
+      "description": "Compression formats, concatenated gzip and CRC32",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "ENTRY-001",
+      "status": "reference",
+      "file": "tests/node/entry.mjs",
+      "task": "M0-04",
+      "description": "Source entry and process/global identity",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "MOD-001",
+      "status": "planned",
+      "file": null,
+      "task": "M1-01",
+      "description": "Module aliases, exports, rejected builtins and retired names",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "EVT-001",
+      "status": "planned",
+      "file": null,
+      "task": "M1-04",
+      "description": "Microtask/timer ordering, callback events and liveness",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "FS-001",
+      "status": "planned",
+      "file": null,
+      "task": "M2-02",
+      "description": "Paths, file IO, descriptors, metadata and error contracts",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "PROC-001",
+      "status": "planned",
+      "file": null,
+      "task": "M2-05",
+      "description": "Process options, stdio, shell and status mapping",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "STR-001",
+      "status": "planned",
+      "file": null,
+      "task": "M3-03",
+      "description": "Stream backpressure, termination and error propagation",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "KEY-001",
+      "status": "planned",
+      "file": null,
+      "task": "M4-01",
+      "description": "KeyObject, DER/PEM, Ed25519 and X25519",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "AEAD-001",
+      "status": "planned",
+      "file": null,
+      "task": "M4-01",
+      "description": "Cipher state, AAD, nonce, tag and authentication",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "NET-001",
+      "status": "planned",
+      "file": null,
+      "task": "M5-01",
+      "description": "DNS/TCP client lifecycle and URL handling",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "TLS-001",
+      "status": "planned",
+      "file": null,
+      "task": "M5-03",
+      "description": "TLS verification, protocols, trust roots and failure cleanup",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "HTTP-001",
+      "status": "planned",
+      "file": null,
+      "task": "M5-04",
+      "description": "Node HTTP client and Fetch semantics",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "APE-001",
+      "status": "planned",
+      "file": null,
+      "task": "M6-01",
+      "description": "Workers, qjsc and SDK delivery",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "MOD-002",
+      "status": "reference",
+      "file": "tests/node/module-paths.mjs",
+      "task": "M1-01",
+      "description": "Internal parent segments must normalize to one module instance; current QuickJS gap",
+      "timeout_seconds": 30
+    }
+  ],
+  "modules": [
+    {
+      "specifier": "node:buffer",
+      "aliases": [
+        "buffer"
+      ],
+      "entries": [
+        {
+          "name": "Buffer.from",
+          "status": "planned",
+          "task": "M1-02",
+          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "tests": [
+            "BUF-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Buffer.alloc",
+          "status": "planned",
+          "task": "M1-02",
+          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "tests": [
+            "BUF-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Buffer.allocUnsafe",
+          "status": "planned",
+          "task": "M1-02",
+          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "tests": [
+            "BUF-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Buffer.isBuffer",
+          "status": "planned",
+          "task": "M1-02",
+          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "tests": [
+            "BUF-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Buffer.isEncoding",
+          "status": "planned",
+          "task": "M1-02",
+          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "tests": [
+            "BUF-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Buffer.byteLength",
+          "status": "planned",
+          "task": "M1-02",
+          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "tests": [
+            "BUF-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Buffer.concat",
+          "status": "planned",
+          "task": "M1-02",
+          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "tests": [
+            "BUF-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Buffer.compare",
+          "status": "planned",
+          "task": "M1-02",
+          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "tests": [
+            "BUF-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Buffer.prototype.toString",
+          "status": "planned",
+          "task": "M1-02",
+          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "tests": [
+            "BUF-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Buffer.prototype.equals",
+          "status": "planned",
+          "task": "M1-02",
+          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "tests": [
+            "BUF-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Buffer.prototype.copy",
+          "status": "planned",
+          "task": "M1-02",
+          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "tests": [
+            "BUF-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Buffer.prototype.fill",
+          "status": "planned",
+          "task": "M1-02",
+          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "tests": [
+            "BUF-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Buffer.prototype.slice",
+          "status": "planned",
+          "task": "M1-02",
+          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "tests": [
+            "BUF-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Buffer.prototype.subarray",
+          "status": "planned",
+          "task": "M1-02",
+          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "tests": [
+            "BUF-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:process",
+      "aliases": [
+        "process"
+      ],
+      "entries": [
+        {
+          "name": "argv",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Main-context properties; source/compiled/worker differences defined in NODE_ENTRY_CONTRACT.md",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "execArgv",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Main-context properties; source/compiled/worker differences defined in NODE_ENTRY_CONTRACT.md",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "execPath",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Main-context properties; source/compiled/worker differences defined in NODE_ENTRY_CONTRACT.md",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "env",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Main-context properties; source/compiled/worker differences defined in NODE_ENTRY_CONTRACT.md",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "pid",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Main-context properties; source/compiled/worker differences defined in NODE_ENTRY_CONTRACT.md",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "ppid",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Main-context properties; source/compiled/worker differences defined in NODE_ENTRY_CONTRACT.md",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "platform",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Main-context properties; source/compiled/worker differences defined in NODE_ENTRY_CONTRACT.md",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "arch",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Main-context properties; source/compiled/worker differences defined in NODE_ENTRY_CONTRACT.md",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "versions",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Main-context properties; source/compiled/worker differences defined in NODE_ENTRY_CONTRACT.md",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "cwd",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Main-context properties; source/compiled/worker differences defined in NODE_ENTRY_CONTRACT.md",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "chdir",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Main-context properties; source/compiled/worker differences defined in NODE_ENTRY_CONTRACT.md",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "exitCode",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Main-context properties; source/compiled/worker differences defined in NODE_ENTRY_CONTRACT.md",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "exit",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Main-context properties; source/compiled/worker differences defined in NODE_ENTRY_CONTRACT.md",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "uptime",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Main-context properties; source/compiled/worker differences defined in NODE_ENTRY_CONTRACT.md",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "hrtime.bigint",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Main-context properties; source/compiled/worker differences defined in NODE_ENTRY_CONTRACT.md",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:path",
+      "aliases": [
+        "path"
+      ],
+      "entries": [
+        {
+          "name": "resolve",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "String paths; default host rules and explicit posix/win32 variants",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "normalize",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "String paths; default host rules and explicit posix/win32 variants",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "join",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "String paths; default host rules and explicit posix/win32 variants",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "relative",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "String paths; default host rules and explicit posix/win32 variants",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "dirname",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "String paths; default host rules and explicit posix/win32 variants",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "basename",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "String paths; default host rules and explicit posix/win32 variants",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "extname",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "String paths; default host rules and explicit posix/win32 variants",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "parse",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "String paths; default host rules and explicit posix/win32 variants",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "format",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "String paths; default host rules and explicit posix/win32 variants",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "isAbsolute",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "String paths; default host rules and explicit posix/win32 variants",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "sep",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "String paths; default host rules and explicit posix/win32 variants",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "delimiter",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "String paths; default host rules and explicit posix/win32 variants",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "posix",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "String paths; default host rules and explicit posix/win32 variants",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "win32",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "String paths; default host rules and explicit posix/win32 variants",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:path/posix",
+      "aliases": [
+        "path/posix"
+      ],
+      "entries": [
+        {
+          "name": "resolve",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "POSIX path rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "normalize",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "POSIX path rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "join",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "POSIX path rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "relative",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "POSIX path rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "dirname",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "POSIX path rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "basename",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "POSIX path rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "extname",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "POSIX path rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "parse",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "POSIX path rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "format",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "POSIX path rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "isAbsolute",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "POSIX path rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "sep",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "POSIX path rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "delimiter",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "POSIX path rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:path/win32",
+      "aliases": [
+        "path/win32"
+      ],
+      "entries": [
+        {
+          "name": "resolve",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Windows drive, UNC and separator rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "normalize",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Windows drive, UNC and separator rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "join",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Windows drive, UNC and separator rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "relative",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Windows drive, UNC and separator rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "dirname",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Windows drive, UNC and separator rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "basename",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Windows drive, UNC and separator rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "extname",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Windows drive, UNC and separator rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "parse",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Windows drive, UNC and separator rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "format",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Windows drive, UNC and separator rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "isAbsolute",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Windows drive, UNC and separator rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "sep",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Windows drive, UNC and separator rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "delimiter",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Windows drive, UNC and separator rules independently of the host",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:os",
+      "aliases": [],
+      "entries": [
+        {
+          "name": "platform",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Function-based Node OS API; execution architecture reported separately from host architecture",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "arch",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Function-based Node OS API; execution architecture reported separately from host architecture",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "tmpdir",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Function-based Node OS API; execution architecture reported separately from host architecture",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "homedir",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Function-based Node OS API; execution architecture reported separately from host architecture",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "hostname",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Function-based Node OS API; execution architecture reported separately from host architecture",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "type",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Function-based Node OS API; execution architecture reported separately from host architecture",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "release",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Function-based Node OS API; execution architecture reported separately from host architecture",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "EOL",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Function-based Node OS API; execution architecture reported separately from host architecture",
+          "tests": [
+            "ENTRY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:events",
+      "aliases": [
+        "events"
+      ],
+      "entries": [
+        {
+          "name": "EventEmitter",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "EventEmitter listener identity, once and unhandled error rules",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "EventEmitter.prototype.on",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "EventEmitter listener identity, once and unhandled error rules",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "EventEmitter.prototype.once",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "EventEmitter listener identity, once and unhandled error rules",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "EventEmitter.prototype.off",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "EventEmitter listener identity, once and unhandled error rules",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "EventEmitter.prototype.emit",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "EventEmitter listener identity, once and unhandled error rules",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "EventEmitter.prototype.removeListener",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "EventEmitter listener identity, once and unhandled error rules",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "EventEmitter.prototype.removeAllListeners",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "EventEmitter listener identity, once and unhandled error rules",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "EventEmitter.prototype.listeners",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "EventEmitter listener identity, once and unhandled error rules",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "EventEmitter.prototype.listenerCount",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "EventEmitter listener identity, once and unhandled error rules",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:util",
+      "aliases": [
+        "util"
+      ],
+      "entries": [
+        {
+          "name": "promisify",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "promisify callbacks including exec/execFile custom results; encoding constructors",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "promisify.custom",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "promisify callbacks including exec/execFile custom results; encoding constructors",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "TextEncoder",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "promisify callbacks including exec/execFile custom results; encoding constructors",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "TextDecoder",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "promisify callbacks including exec/execFile custom results; encoding constructors",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:assert",
+      "aliases": [
+        "assert"
+      ],
+      "entries": [
+        {
+          "name": "ok",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Basic assertions only; full deep comparison is a separate support item",
+          "tests": [
+            "LANG-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "equal",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Basic assertions only; full deep comparison is a separate support item",
+          "tests": [
+            "LANG-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "strictEqual",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Basic assertions only; full deep comparison is a separate support item",
+          "tests": [
+            "LANG-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "notStrictEqual",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Basic assertions only; full deep comparison is a separate support item",
+          "tests": [
+            "LANG-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "throws",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Basic assertions only; full deep comparison is a separate support item",
+          "tests": [
+            "LANG-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "rejects",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Basic assertions only; full deep comparison is a separate support item",
+          "tests": [
+            "LANG-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:assert/strict",
+      "aliases": [
+        "assert/strict"
+      ],
+      "entries": [
+        {
+          "name": "ok",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Strict assertion counterparts; no relaxed comparison alias",
+          "tests": [
+            "LANG-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "equal",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Strict assertion counterparts; no relaxed comparison alias",
+          "tests": [
+            "LANG-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "strictEqual",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Strict assertion counterparts; no relaxed comparison alias",
+          "tests": [
+            "LANG-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "notStrictEqual",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Strict assertion counterparts; no relaxed comparison alias",
+          "tests": [
+            "LANG-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "throws",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Strict assertion counterparts; no relaxed comparison alias",
+          "tests": [
+            "LANG-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "rejects",
+          "status": "planned",
+          "task": "M1-03",
+          "parameters": "Strict assertion counterparts; no relaxed comparison alias",
+          "tests": [
+            "LANG-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:timers",
+      "aliases": [
+        "timers"
+      ],
+      "entries": [
+        {
+          "name": "setTimeout",
+          "status": "planned",
+          "task": "M1-04",
+          "parameters": "Callback arguments, cancellation, ordering and Timer ref/unref capabilities",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "clearTimeout",
+          "status": "planned",
+          "task": "M1-04",
+          "parameters": "Callback arguments, cancellation, ordering and Timer ref/unref capabilities",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "setInterval",
+          "status": "planned",
+          "task": "M1-04",
+          "parameters": "Callback arguments, cancellation, ordering and Timer ref/unref capabilities",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "clearInterval",
+          "status": "planned",
+          "task": "M1-04",
+          "parameters": "Callback arguments, cancellation, ordering and Timer ref/unref capabilities",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "setImmediate",
+          "status": "planned",
+          "task": "M1-04",
+          "parameters": "Callback arguments, cancellation, ordering and Timer ref/unref capabilities",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "clearImmediate",
+          "status": "planned",
+          "task": "M1-04",
+          "parameters": "Callback arguments, cancellation, ordering and Timer ref/unref capabilities",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:timers/promises",
+      "aliases": [
+        "timers/promises"
+      ],
+      "entries": [
+        {
+          "name": "setTimeout",
+          "status": "planned",
+          "task": "M1-04",
+          "parameters": "Promise timers; supported options, cancellation and liveness",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "setInterval",
+          "status": "planned",
+          "task": "M1-04",
+          "parameters": "Promise timers; supported options, cancellation and liveness",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "setImmediate",
+          "status": "planned",
+          "task": "M1-04",
+          "parameters": "Promise timers; supported options, cancellation and liveness",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:fs",
+      "aliases": [
+        "fs"
+      ],
+      "entries": [
+        {
+          "name": "readFileSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "writeFileSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "appendFileSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "existsSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "accessSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "mkdirSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "readdirSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "statSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "lstatSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "renameSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "unlinkSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "rmdirSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "rmSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "realpathSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "copyFileSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "mkdtempSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "openSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "closeSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "readSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "writeSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "fstatSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "ftruncateSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "fsyncSync",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "promises",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "constants",
+          "status": "planned",
+          "task": "M2-02",
+          "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "readFile",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "writeFile",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "appendFile",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "access",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "mkdir",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "readdir",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "stat",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "lstat",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "rename",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "unlink",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "rmdir",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "rm",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "realpath",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "copyFile",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "mkdtemp",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "open",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "close",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "read",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "write",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "fstat",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "ftruncate",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "fsync",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms of supported synchronous file operations",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "createReadStream",
+          "status": "planned",
+          "task": "M3-05",
+          "parameters": "File streams, inclusive ranges, encoding and autoClose",
+          "tests": [
+            "STR-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "createWriteStream",
+          "status": "planned",
+          "task": "M3-05",
+          "parameters": "File streams, inclusive ranges, encoding and autoClose",
+          "tests": [
+            "STR-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:fs/promises",
+      "aliases": [
+        "fs/promises"
+      ],
+      "entries": [
+        {
+          "name": "readFile",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "writeFile",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "appendFile",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "access",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "mkdir",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "readdir",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "stat",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "lstat",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "rename",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "unlink",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "rmdir",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "rm",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "realpath",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "copyFile",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "mkdtemp",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "open",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "FileHandle.read",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "FileHandle.write",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "FileHandle.stat",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "FileHandle.sync",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "FileHandle.close",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
+          "tests": [
+            "FS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:crypto",
+      "aliases": [
+        "crypto"
+      ],
+      "entries": [
+        {
+          "name": "getHashes",
+          "status": "planned",
+          "task": "M2-03",
+          "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
+          "tests": [
+            "HASH-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "createHash",
+          "status": "planned",
+          "task": "M2-03",
+          "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
+          "tests": [
+            "HASH-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Hash.update",
+          "status": "planned",
+          "task": "M2-03",
+          "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
+          "tests": [
+            "HASH-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Hash.digest",
+          "status": "planned",
+          "task": "M2-03",
+          "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
+          "tests": [
+            "HASH-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Hash.copy",
+          "status": "planned",
+          "task": "M2-03",
+          "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
+          "tests": [
+            "HASH-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "createHmac",
+          "status": "planned",
+          "task": "M2-03",
+          "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
+          "tests": [
+            "HASH-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Hmac.update",
+          "status": "planned",
+          "task": "M2-03",
+          "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
+          "tests": [
+            "HASH-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Hmac.digest",
+          "status": "planned",
+          "task": "M2-03",
+          "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
+          "tests": [
+            "HASH-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "hkdfSync",
+          "status": "planned",
+          "task": "M2-03",
+          "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
+          "tests": [
+            "HASH-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "pbkdf2Sync",
+          "status": "planned",
+          "task": "M2-03",
+          "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
+          "tests": [
+            "HASH-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "randomBytes",
+          "status": "planned",
+          "task": "M2-03",
+          "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
+          "tests": [
+            "HASH-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "randomFillSync",
+          "status": "planned",
+          "task": "M2-03",
+          "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
+          "tests": [
+            "HASH-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "randomUUID",
+          "status": "planned",
+          "task": "M2-03",
+          "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
+          "tests": [
+            "HASH-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "timingSafeEqual",
+          "status": "planned",
+          "task": "M2-03",
+          "parameters": "SHA-2, MD5/SHA-1 compatibility and BLAKE2b candidate set; fixed per-method Node signatures and types",
+          "tests": [
+            "HASH-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "hkdf",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback KDF/random forms; no invented Promise API",
+          "tests": [
+            "HASH-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "pbkdf2",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback KDF/random forms; no invented Promise API",
+          "tests": [
+            "HASH-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "randomFill",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback KDF/random forms; no invented Promise API",
+          "tests": [
+            "HASH-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "generateKeyPairSync",
+          "status": "planned",
+          "task": "M4-01",
+          "parameters": "Ed25519/X25519 KeyObject and declared DER/PEM formats",
+          "tests": [
+            "KEY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "createPrivateKey",
+          "status": "planned",
+          "task": "M4-01",
+          "parameters": "Ed25519/X25519 KeyObject and declared DER/PEM formats",
+          "tests": [
+            "KEY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "createPublicKey",
+          "status": "planned",
+          "task": "M4-01",
+          "parameters": "Ed25519/X25519 KeyObject and declared DER/PEM formats",
+          "tests": [
+            "KEY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "sign",
+          "status": "planned",
+          "task": "M4-01",
+          "parameters": "Ed25519/X25519 KeyObject and declared DER/PEM formats",
+          "tests": [
+            "KEY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "verify",
+          "status": "planned",
+          "task": "M4-01",
+          "parameters": "Ed25519/X25519 KeyObject and declared DER/PEM formats",
+          "tests": [
+            "KEY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "diffieHellman",
+          "status": "planned",
+          "task": "M4-01",
+          "parameters": "Ed25519/X25519 KeyObject and declared DER/PEM formats",
+          "tests": [
+            "KEY-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "createCipheriv",
+          "status": "planned",
+          "task": "M4-01",
+          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "tests": [
+            "AEAD-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "createDecipheriv",
+          "status": "planned",
+          "task": "M4-01",
+          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "tests": [
+            "AEAD-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Cipheriv.update",
+          "status": "planned",
+          "task": "M4-01",
+          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "tests": [
+            "AEAD-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Cipheriv.final",
+          "status": "planned",
+          "task": "M4-01",
+          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "tests": [
+            "AEAD-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Cipheriv.setAAD",
+          "status": "planned",
+          "task": "M4-01",
+          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "tests": [
+            "AEAD-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Cipheriv.getAuthTag",
+          "status": "planned",
+          "task": "M4-01",
+          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "tests": [
+            "AEAD-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Decipheriv.update",
+          "status": "planned",
+          "task": "M4-01",
+          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "tests": [
+            "AEAD-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Decipheriv.final",
+          "status": "planned",
+          "task": "M4-01",
+          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "tests": [
+            "AEAD-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Decipheriv.setAAD",
+          "status": "planned",
+          "task": "M4-01",
+          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "tests": [
+            "AEAD-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Decipheriv.setAuthTag",
+          "status": "planned",
+          "task": "M4-01",
+          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "tests": [
+            "AEAD-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "getCiphers",
+          "status": "planned",
+          "task": "M4-01",
+          "parameters": "AEAD cipher state machines and per-algorithm IV/tag/encoding contracts",
+          "tests": [
+            "AEAD-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:zlib",
+      "aliases": [
+        "zlib"
+      ],
+      "entries": [
+        {
+          "name": "gzipSync",
+          "status": "planned",
+          "task": "M2-04",
+          "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "gunzipSync",
+          "status": "planned",
+          "task": "M2-04",
+          "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "deflateSync",
+          "status": "planned",
+          "task": "M2-04",
+          "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "inflateSync",
+          "status": "planned",
+          "task": "M2-04",
+          "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "deflateRawSync",
+          "status": "planned",
+          "task": "M2-04",
+          "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "inflateRawSync",
+          "status": "planned",
+          "task": "M2-04",
+          "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "unzipSync",
+          "status": "planned",
+          "task": "M2-04",
+          "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "zstdCompressSync",
+          "status": "planned",
+          "task": "M2-04",
+          "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "zstdDecompressSync",
+          "status": "planned",
+          "task": "M2-04",
+          "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "crc32",
+          "status": "planned",
+          "task": "M2-04",
+          "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "constants",
+          "status": "planned",
+          "task": "M2-04",
+          "parameters": "gzip/zlib/raw formats, Node options and frame rules; Zstd remains version-specific experimental API",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "gzip",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms with error-first completion, exact Node options",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "gunzip",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms with error-first completion, exact Node options",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "deflate",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms with error-first completion, exact Node options",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "inflate",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms with error-first completion, exact Node options",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "deflateRaw",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms with error-first completion, exact Node options",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "inflateRaw",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms with error-first completion, exact Node options",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "unzip",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms with error-first completion, exact Node options",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "zstdCompress",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms with error-first completion, exact Node options",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "zstdDecompress",
+          "status": "planned",
+          "task": "M3-02",
+          "parameters": "Callback forms with error-first completion, exact Node options",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "createGzip",
+          "status": "planned",
+          "task": "M3-05",
+          "parameters": "Transform streams with state, flush and backpressure",
+          "tests": [
+            "STR-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "createGunzip",
+          "status": "planned",
+          "task": "M3-05",
+          "parameters": "Transform streams with state, flush and backpressure",
+          "tests": [
+            "STR-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "createDeflate",
+          "status": "planned",
+          "task": "M3-05",
+          "parameters": "Transform streams with state, flush and backpressure",
+          "tests": [
+            "STR-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "createInflate",
+          "status": "planned",
+          "task": "M3-05",
+          "parameters": "Transform streams with state, flush and backpressure",
+          "tests": [
+            "STR-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "createDeflateRaw",
+          "status": "planned",
+          "task": "M3-05",
+          "parameters": "Transform streams with state, flush and backpressure",
+          "tests": [
+            "STR-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "createInflateRaw",
+          "status": "planned",
+          "task": "M3-05",
+          "parameters": "Transform streams with state, flush and backpressure",
+          "tests": [
+            "STR-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "createUnzip",
+          "status": "planned",
+          "task": "M3-05",
+          "parameters": "Transform streams with state, flush and backpressure",
+          "tests": [
+            "STR-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "createZstdCompress",
+          "status": "planned",
+          "task": "M3-05",
+          "parameters": "Transform streams with state, flush and backpressure",
+          "tests": [
+            "STR-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "createZstdDecompress",
+          "status": "planned",
+          "task": "M3-05",
+          "parameters": "Transform streams with state, flush and backpressure",
+          "tests": [
+            "STR-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:stream",
+      "aliases": [
+        "stream"
+      ],
+      "entries": [
+        {
+          "name": "Readable",
+          "status": "planned",
+          "task": "M3-03",
+          "parameters": "Readable/Writable/Duplex/Transform lifecycle, backpressure and asynchronous iteration",
+          "tests": [
+            "STR-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Writable",
+          "status": "planned",
+          "task": "M3-03",
+          "parameters": "Readable/Writable/Duplex/Transform lifecycle, backpressure and asynchronous iteration",
+          "tests": [
+            "STR-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Duplex",
+          "status": "planned",
+          "task": "M3-03",
+          "parameters": "Readable/Writable/Duplex/Transform lifecycle, backpressure and asynchronous iteration",
+          "tests": [
+            "STR-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Transform",
+          "status": "planned",
+          "task": "M3-03",
+          "parameters": "Readable/Writable/Duplex/Transform lifecycle, backpressure and asynchronous iteration",
+          "tests": [
+            "STR-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "pipeline",
+          "status": "planned",
+          "task": "M3-03",
+          "parameters": "Readable/Writable/Duplex/Transform lifecycle, backpressure and asynchronous iteration",
+          "tests": [
+            "STR-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "finished",
+          "status": "planned",
+          "task": "M3-03",
+          "parameters": "Readable/Writable/Duplex/Transform lifecycle, backpressure and asynchronous iteration",
+          "tests": [
+            "STR-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:stream/promises",
+      "aliases": [
+        "stream/promises"
+      ],
+      "entries": [
+        {
+          "name": "pipeline",
+          "status": "planned",
+          "task": "M3-03",
+          "parameters": "Promise pipeline and finished; cancellation and close/error semantics",
+          "tests": [
+            "STR-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "finished",
+          "status": "planned",
+          "task": "M3-03",
+          "parameters": "Promise pipeline and finished; cancellation and close/error semantics",
+          "tests": [
+            "STR-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:child_process",
+      "aliases": [
+        "child_process"
+      ],
+      "entries": [
+        {
+          "name": "spawnSync",
+          "status": "planned",
+          "task": "M2-05",
+          "parameters": "Synchronous execution first; platform shell/argv/cwd/env/stdio/status rules",
+          "tests": [
+            "PROC-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "execFileSync",
+          "status": "planned",
+          "task": "M2-05",
+          "parameters": "Synchronous execution first; platform shell/argv/cwd/env/stdio/status rules",
+          "tests": [
+            "PROC-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "execSync",
+          "status": "planned",
+          "task": "M2-05",
+          "parameters": "Synchronous execution first; platform shell/argv/cwd/env/stdio/status rules",
+          "tests": [
+            "PROC-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "spawn",
+          "status": "planned",
+          "task": "M3-04",
+          "parameters": "ChildProcess with streams, events, timeout/maxBuffer, kill and cancellation",
+          "tests": [
+            "PROC-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "execFile",
+          "status": "planned",
+          "task": "M3-04",
+          "parameters": "ChildProcess with streams, events, timeout/maxBuffer, kill and cancellation",
+          "tests": [
+            "PROC-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "exec",
+          "status": "planned",
+          "task": "M3-04",
+          "parameters": "ChildProcess with streams, events, timeout/maxBuffer, kill and cancellation",
+          "tests": [
+            "PROC-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:url",
+      "aliases": [
+        "url"
+      ],
+      "entries": [
+        {
+          "name": "URL",
+          "status": "planned",
+          "task": "M5-01",
+          "parameters": "WHATWG URL subset and platform-aware file URL conversion",
+          "tests": [
+            "NET-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "URLSearchParams",
+          "status": "planned",
+          "task": "M5-01",
+          "parameters": "WHATWG URL subset and platform-aware file URL conversion",
+          "tests": [
+            "NET-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "fileURLToPath",
+          "status": "planned",
+          "task": "M5-01",
+          "parameters": "WHATWG URL subset and platform-aware file URL conversion",
+          "tests": [
+            "NET-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "pathToFileURL",
+          "status": "planned",
+          "task": "M5-01",
+          "parameters": "WHATWG URL subset and platform-aware file URL conversion",
+          "tests": [
+            "NET-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:dns",
+      "aliases": [
+        "dns"
+      ],
+      "entries": [
+        {
+          "name": "lookup",
+          "status": "planned",
+          "task": "M5-01",
+          "parameters": "lookup only initially; resolve protocols are distinct later work",
+          "tests": [
+            "NET-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:dns/promises",
+      "aliases": [
+        "dns/promises"
+      ],
+      "entries": [
+        {
+          "name": "lookup",
+          "status": "planned",
+          "task": "M5-01",
+          "parameters": "Promise lookup; same host address selection contract as callback form",
+          "tests": [
+            "NET-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:net",
+      "aliases": [
+        "net"
+      ],
+      "entries": [
+        {
+          "name": "createConnection",
+          "status": "planned",
+          "task": "M5-01",
+          "parameters": "TCP clients only initially; no server or UDP claim",
+          "tests": [
+            "NET-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "connect",
+          "status": "planned",
+          "task": "M5-01",
+          "parameters": "TCP clients only initially; no server or UDP claim",
+          "tests": [
+            "NET-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Socket",
+          "status": "planned",
+          "task": "M5-01",
+          "parameters": "TCP clients only initially; no server or UDP claim",
+          "tests": [
+            "NET-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:tls",
+      "aliases": [
+        "tls"
+      ],
+      "entries": [
+        {
+          "name": "connect",
+          "status": "planned",
+          "task": "M5-03",
+          "parameters": "TLS1.2 client scope, verified CA/identity rules and audited suites",
+          "tests": [
+            "TLS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "TLSSocket",
+          "status": "planned",
+          "task": "M5-03",
+          "parameters": "TLS1.2 client scope, verified CA/identity rules and audited suites",
+          "tests": [
+            "TLS-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:http",
+      "aliases": [
+        "http"
+      ],
+      "entries": [
+        {
+          "name": "request",
+          "status": "planned",
+          "task": "M5-04",
+          "parameters": "HTTP1.1 client request/response streams; redirects and decoding distinct from Fetch",
+          "tests": [
+            "HTTP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "get",
+          "status": "planned",
+          "task": "M5-04",
+          "parameters": "HTTP1.1 client request/response streams; redirects and decoding distinct from Fetch",
+          "tests": [
+            "HTTP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "ClientRequest",
+          "status": "planned",
+          "task": "M5-04",
+          "parameters": "HTTP1.1 client request/response streams; redirects and decoding distinct from Fetch",
+          "tests": [
+            "HTTP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "IncomingMessage",
+          "status": "planned",
+          "task": "M5-04",
+          "parameters": "HTTP1.1 client request/response streams; redirects and decoding distinct from Fetch",
+          "tests": [
+            "HTTP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Agent",
+          "status": "planned",
+          "task": "M5-04",
+          "parameters": "HTTP1.1 client request/response streams; redirects and decoding distinct from Fetch",
+          "tests": [
+            "HTTP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:https",
+      "aliases": [
+        "https"
+      ],
+      "entries": [
+        {
+          "name": "request",
+          "status": "planned",
+          "task": "M5-05",
+          "parameters": "HTTP client contract on an admitted TLS transport",
+          "tests": [
+            "HTTP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "get",
+          "status": "planned",
+          "task": "M5-05",
+          "parameters": "HTTP client contract on an admitted TLS transport",
+          "tests": [
+            "HTTP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "Agent",
+          "status": "planned",
+          "task": "M5-05",
+          "parameters": "HTTP client contract on an admitted TLS transport",
+          "tests": [
+            "HTTP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "cosmo:runtime",
+      "aliases": [],
+      "entries": [
+        {
+          "name": "runtimeInfo",
+          "status": "planned",
+          "task": "M1-01",
+          "parameters": "Actual versions, per-platform/per-entry API support, backend and quota information",
+          "tests": [
+            "MOD-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "cosmo:compression",
+      "aliases": [],
+      "entries": [
+        {
+          "name": "lz4CompressSync",
+          "status": "planned",
+          "task": "M2-04",
+          "parameters": "LZ4 Frame and bzip2; explicit synchronous Node-style extension APIs",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "lz4DecompressSync",
+          "status": "planned",
+          "task": "M2-04",
+          "parameters": "LZ4 Frame and bzip2; explicit synchronous Node-style extension APIs",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "bzip2CompressSync",
+          "status": "planned",
+          "task": "M2-04",
+          "parameters": "LZ4 Frame and bzip2; explicit synchronous Node-style extension APIs",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "bzip2DecompressSync",
+          "status": "planned",
+          "task": "M2-04",
+          "parameters": "LZ4 Frame and bzip2; explicit synchronous Node-style extension APIs",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "crc32c",
+          "status": "planned",
+          "task": "M2-04",
+          "parameters": "LZ4 Frame and bzip2; explicit synchronous Node-style extension APIs",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "adler32",
+          "status": "planned",
+          "task": "M2-04",
+          "parameters": "LZ4 Frame and bzip2; explicit synchronous Node-style extension APIs",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        },
+        {
+          "name": "codecInfo",
+          "status": "planned",
+          "task": "M2-04",
+          "parameters": "LZ4 Frame and bzip2; explicit synchronous Node-style extension APIs",
+          "tests": [
+            "ZIP-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "cosmo:crypto",
+      "aliases": [],
+      "entries": [
+        {
+          "name": "blake2b256",
+          "status": "planned",
+          "task": "M4-02",
+          "parameters": "Only documented extension algorithms and raw-key helpers; not part of Node builtins",
+          "tests": [
+            "HASH-001"
+          ],
+          "differences": [
+            "Not implemented; no compatibility claim."
+          ]
+        }
+      ]
+    }
+  ],
+  "unsupported": [
+    "CommonJS require/module.exports",
+    "npm package resolution",
+    "Node-API addons",
+    "node:worker_threads",
+    "child_process.fork/IPC",
+    "Brotli",
+    "RSA/ECDSA/scrypt/Argon2",
+    "HTTP2/UDP/server APIs"
+  ],
+  "support_defaults": {
+    "linux": {
+      "qjs": "planned",
+      "worker": "planned",
+      "qjsc": "planned",
+      "sdk": "planned"
+    },
+    "darwin": {
+      "qjs": "planned",
+      "worker": "planned",
+      "qjsc": "planned",
+      "sdk": "planned"
+    },
+    "win32": {
+      "qjs": "planned",
+      "worker": "planned",
+      "qjsc": "planned",
+      "sdk": "planned"
+    }
+  },
+  "native_lock": "native/versions.json"
+}
