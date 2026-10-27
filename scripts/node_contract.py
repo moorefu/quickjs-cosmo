@@ -42,7 +42,7 @@ def validate(inventory, root=ROOT):
         identifier = test["id"]
         if identifier in tests or not re.fullmatch(r"[A-Z]+-[0-9]{3}", identifier):
             raise ValueError("Invalid or duplicate test ID: " + identifier)
-        if test["status"] not in {"planned", "reference", "differential"}:
+        if test["status"] not in {"planned", "reference", "differential", "runtime"}:
             raise ValueError("Invalid test status: " + identifier)
         if test["task"] not in tasks:
             raise ValueError("Unknown test task: " + test["task"])
@@ -83,7 +83,8 @@ def validate(inventory, root=ROOT):
                     raise ValueError("Invalid execution target coverage: " + identifier)
             claims = [entry["status"], *(s for targets in support.values() for s in targets.values())]
             if any(s in {"partial", "supported"} for s in claims):
-                if any(tests[t]["status"] != "differential" for t in entry["tests"]):
+                accepted = {"differential", "runtime"} if name.startswith("cosmo:") else {"differential"}
+                if any(tests[t]["status"] not in accepted for t in entry["tests"]):
                     raise ValueError("Supported API requires differential tests: " + identifier)
                 if not entry.get("evidence"):
                     raise ValueError("Supported API requires evidence: " + identifier)
@@ -103,6 +104,9 @@ def validate(inventory, root=ROOT):
             if not re.fullmatch(r"[0-9a-f]{64}", record["sha256"]):
                 raise ValueError("Invalid native source anchor checksum")
     return dict(modules=len(inventory["modules"]), apis=len(identifiers), tests=len(tests),
+                implemented_node_apis=sum(e["status"] in {"partial", "supported"}
+                                         for m in inventory["modules"] if m["specifier"].startswith("node:")
+                                         for e in m["entries"]),
                 implemented=sum(e["status"] in {"partial", "supported"}
                                 for m in inventory["modules"] for e in m["entries"]))
 

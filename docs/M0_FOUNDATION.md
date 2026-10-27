@@ -2,7 +2,7 @@
 
 实施日期：2026-10-27。对应 [运行时实施规划](NODE_COMPAT_RUNTIME_PLAN.md) 的 M0-01—M0-04。
 
-本批交付 API 清单、可信的 Node 行为基线、原生探针和入口合同，不增加公开 Node 模块。`compat/node-api.json` 当前列出 29 个模块、284 个接口项，全部为 `planned`，已实现数量为 0。两端基础 ESM 用例通过不代表这些 Node API 已实现。
+本文件记录 M0 提交 `d8536e7` 与修正提交 `17204b6` 的交付状态：API 清单、可信的 Node 行为基线、原生探针和入口合同，不增加公开 Node 模块。M0 时 `compat/node-api.json` 列出 29 个模块、284 个接口项，全部为 `planned`，已实现数量为 0。两端基础 ESM 用例通过不代表这些 Node API 已实现。后续模块注册进度见 [M1-01 实施记录](M1_MODULE_REGISTRY.md)。
 
 ## 1. 已交付内容
 
@@ -30,7 +30,7 @@ Python 辅助与合同门禁测试共 66 项，覆盖旧 CI/发布逻辑以及�
 
 原生探针使用项目现有退出/进程/信号文件兼容对象，覆盖 zlib 往返、CRC32、BLAKE2b-256 标准向量、系统随机数调用、数值地址解析、socket 创建与 stdio。它不验证实际 DNS 查询或 TCP 数据交换，也不代表对应 JS 绑定可用。x86_64 与 AArch64 的 ELF machine 均在构建时检查；本地未运行 ARM64 代码。
 
-GitHub Actions 已配置安装校验过的 Node 工具、运行差分入口并上传报告。首轮 CI 的构建及六个平台已通过；Windows ARM64 暴露了将 Python 架构误用于 Node 工具选择的问题。已改为按 APE 实际执行架构选择 Node，并加入四项回归：Windows ARM 宿主即使使用 ARM64 Python，也选择 x64 Node，与 APE 的 x64 兼容执行保持一致。完整矩阵仍以修正提交的 CI 结果为准。
+GitHub Actions 已配置安装校验过的 Node 工具、运行差分入口并上传报告。首轮 Windows ARM64 暴露了将 Python 架构误用于 Node 工具选择的问题。已改为按 APE 实际执行架构选择 Node，并加入四项回归：Windows ARM 宿主即使使用 ARM64 Python，也选择 x64 Node，与 APE 的 x64 兼容执行保持一致。修正提交 `17204b6` 的构建、七个平台矩阵与 CI gate 已[全部通过](https://github.com/moorefu/quickjs-cosmo/actions/runs/40426810729)。
 
 ## 3. 命令
 
@@ -81,12 +81,12 @@ python scripts/probe_native.py
 
 报告记录运行工具、fixture、输入锁、入口合同与产物摘要。差分驱动检查进程退出码、唯一结构化结果及 JSON 类型；成功标记不能掩盖非零退出，布尔值与数字不能被当作同一结果。
 
-测试状态 `reference` 只表示 Node 上的行为观察，`differential` 才会在两个运行时执行。当前 LANG-001/002 为 differential；Buffer、hash/KDF、压缩、源码入口和路径归一化保留参考基线。尚无 fixture 的测试组为 planned，不能成为 API 支持证据。
+测试状态 `reference` 只表示 Node 上的行为观察，`differential` 才会在两个运行时执行。M0 时 LANG-001/002 为 differential；Buffer、hash/KDF、压缩、源码入口和路径归一化保留参考基线。尚无 fixture 的测试组为 planned，不能成为 API 支持证据。
 
 ## 5. 下一批明确工作
 
 进入 M1-01/M1-02：统一模块注册、别名与错误、qjs/qjsc/Worker 接入，以及 Buffer/编码。
 
-M0 实测发现现有 QuickJS 对 `fixtures/value.mjs` 与 `fixtures/../fixtures/value.mjs` 创建了不同模块实例，Node 将它们归一化。`MOD-002` 保留此失败合同，当前为 Node 参考用例；M1 必须修复实际加载器，并通过差分后再晋升该用例。基础 LANG-001 只检验相同 specifier 重复导入，未掩盖该差异。
+M0 实测发现原有 QuickJS 对 `fixtures/value.mjs` 与 `fixtures/../fixtures/value.mjs` 创建了不同模块实例，Node 将它们归一化。M0 将 `MOD-002` 保留为参考用例，后续 M1-01 已修复实际加载器并将该用例晋升为差分。基础 LANG-001 只检验相同 specifier 重复导入，未掩盖该差异。
 
 后续新增 API 时，先增加真实 fixture、明确支持范围与证据，再修改清单状态；不能只把 `planned` 改成 `supported`。本批没有启用 `@runtime/*`、CommonJS、npm 包解析、TS/Babel 工具或任何新原生算法后端。

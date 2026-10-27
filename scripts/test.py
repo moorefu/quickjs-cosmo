@@ -91,6 +91,24 @@ def main():
     check("custom/platform", [qjs, "-m", ROOT / "tests/platform.js", expected_platform], contains="PASS platform")
     check("custom/node-contract-inventory", [sys.executable, ROOT / "scripts/test_node_compat.py", "--check-contract"],
           contains="PASS node-contract")
+    check("custom/runtime-modules", [qjs, "-m", ROOT / "tests/runtime_modules.mjs"], contains="PASS runtime-modules")
+    check("custom/unknown-builtin", [qjs, "-m", ROOT / "tests/fixtures/unknown-builtin.mjs"],
+          expected=1, contains="Unknown builtin module: node:fs")
+    check("qjsc/unknown-builtin", [qjsc, "-c", "-m", "-o", scratch / "unknown-builtin.c",
+          ROOT / "tests/fixtures/unknown-builtin.mjs"], expected=1, contains="Unknown builtin module: node:fs")
+    check("custom/runtime-metadata-oom", [qjs, "--memory-limit", "8M", "-m", ROOT / "tests/runtime_metadata_oom.mjs"],
+          contains="PASS runtime-metadata-oom")
+    identity = dict(engine="quickjs", quickjsVersion=settings.data["quickjs"]["version"],
+                    quickjsCommit=settings.data["quickjs"]["commit"],
+                    cosmopolitanVersion=settings.data["cosmopolitan"]["version"],
+                    cosmopolitanCommit=settings.data["cosmopolitan"]["commit"],
+                    nodeApiTarget="v24.21.0", platform=expected_platform,
+                    arch="x64" if host["execution_arch"] == "x86_64" else host["execution_arch"])
+    identity_script = ("import {runtimeInfo} from 'cosmo:runtime'; const actual=runtimeInfo(); "
+                       "for(const [key,value] of Object.entries(" + json.dumps(identity) + ")) "
+                       "if(actual[key]!==value) throw Error('Runtime identity mismatch: '+key); "
+                       "console.log('PASS runtime-identity')")
+    check("custom/runtime-identity", [qjs, "-m", "-e", identity_script], contains="PASS runtime-identity")
     if args.node_compat:
         node_command = [sys.executable, ROOT / "scripts/test_node_compat.py", "--qjs", qjs]
         if args.node:
@@ -116,8 +134,20 @@ def main():
             check("qjsc/run-ape", [standalone], contains="Hello from QuickJS")
         check("qjsc/compile-process-ape", [qjsc, "-m", "-o", scratch / "runtime-standalone.exe",
               ROOT / "tests/runtime_process.js"], timeout=180)
+        if check("qjsc/compile-registry-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/registry-worker.mjs",
+                 "-o", scratch / "registry-standalone.exe", ROOT / "tests/runtime_modules.mjs"], timeout=180):
+            check("qjsc/run-registry-ape", [scratch / "registry-standalone.exe"], contains="PASS runtime-modules")
+        if check("sdk/compile-registry", [settings.toolchain / "bin/cosmocc", "-O2", "-I" + str(settings.dist),
+                 ROOT / "tests/native/module_registry.c", settings.dist / "libquickjs.a",
+                 "-Wl,--wrap=_Exit,-u,__wrap__Exit", "-lm", "-lpthread", "-ldl", "-o", scratch / "registry-sdk.exe"],
+                 timeout=180):
+            check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
         check("qjsc/cross-host-ape", [args.standalone.resolve()], contains="Hello from QuickJS")
+        check("qjsc/cross-host-registry", [args.standalone.resolve().parent / "registry-standalone.exe"],
+              contains="PASS runtime-modules")
+        check("sdk/cross-host-registry", [args.standalone.resolve().parent / "registry-sdk.exe"],
+              contains="PASS module-registry-sdk")
     runtime = [sys.executable, ROOT / "scripts/audit_runtime.py", "--verify", "--label", "regression",
                "--qjs", qjs, "--qjsc", qjsc]
     compiled_process = (args.standalone.resolve().parent if args.standalone else scratch) / "runtime-standalone.exe"

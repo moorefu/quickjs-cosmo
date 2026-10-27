@@ -6,13 +6,13 @@ QuickJS 固定为提交 [`1ec58aaa769a992213ec2b871b0228074169904b`](https://git
 
 后续 Node 风格运行时扩展的模块命名、接口范围、算法来源、实施任务与验收标准见 [实施规划](docs/NODE_COMPAT_RUNTIME_PLAN.md)。该文档是未来开发依据，不代表当前产物已提供这些扩展。
 
-目前已完成 [M0 合同清单与验收基础](docs/M0_FOUNDATION.md)：锁定 Node 行为基线、建立 API 清单和差分驱动，并验证原生工具链探针；公开 Node API 仍待后续阶段实现。
+已完成 [M0 合同清单与验收基础](docs/M0_FOUNDATION.md)，并接入 [M1-01 统一模块注册层](docs/M1_MODULE_REGISTRY.md)：提供 `qjs:std`、`qjs:os` 别名与 `cosmo:runtime` 元数据，统一 qjs、qjsc、Worker 和嵌入 SDK。公开 Node API 仍待后续阶段实现。
 
 ## 直接运行
 
 构建产物位于 `dist/`：
 
-- `qjs.exe`：解释器，支持 REPL、`std`、`os`、Worker、BigInt；通过 `--experimental` 启用 Temporal/Intl。
+- `qjs.exe`：解释器，支持 REPL、`std`/`qjs:std`、`os`/`qjs:os`、`cosmo:runtime`、Worker、BigInt；通过 `--experimental` 启用 Temporal/Intl。
 - `qjsc.exe`：把 JS 编译为 C 字节码数组或独立 APE 程序。
 - `run-test262.exe`：上游 Test262 测试工具；完整 Test262 数据集需另外获取。
 - `libquickjs.a`、`.aarch64/libquickjs.a`、头文件：两种架构的嵌入开发文件；请保留目录结构。
@@ -66,7 +66,7 @@ qjs
 7f8a0bfd991401e027f794d516bf52a5184b5089e5dd1a50cf9e9ade54b5bb06
 ```
 
-默认构建直接使用该快照，保留四项 QuickJS 补丁、运行时兼容修复、Temporal/Intl、`-O2` 和双架构 APE。
+默认构建直接使用该快照，应用项目 QuickJS 补丁与运行时兼容修复，保留 Temporal/Intl、`-O2` 和双架构 APE。
 
 | 内容 | 路径 |
 | --- | --- |
@@ -110,7 +110,7 @@ sh scripts/build.sh
 JOBS=4 sh scripts/build.sh --offline
 ```
 
-`bootstrap.py` 下载官方源码与固定版本工具链，先验证 SHA-256，再保留执行权限和符号链接解包。`upstream/` 中的源码保持原样；构建副本应用 `patches/` 下的四个兼容补丁，使用自带的 `CONFIG_COSMO=y`，保留 Temporal/Intl。补丁修正运行时 `os.platform`、Windows `poll` 句柄边界、异步唤醒器索引、入口模块路径和进程调用。
+`bootstrap.py` 下载官方源码与固定版本工具链，先验证 SHA-256，再保留执行权限和符号链接解包。`upstream/` 中的源码保持原样；构建副本应用 `patches/` 下的兼容补丁，使用自带的 `CONFIG_COSMO=y`，保留 Temporal/Intl。补丁修正运行时 `os.platform`、Windows `poll` 句柄边界、异步唤醒器索引、入口模块路径和进程调用，并接入统一模块注册层。
 
 `prepare_compat.py` 另外获取所选工具链**同一版本**的少量 Cosmopolitan 源文件，按 `compat/versions.json` 验证原始文件、补丁及修改后文件的 SHA-256，再将修复对象链接到程序和开发库中。没有新增第三方库，也不修改工具链归档。离线构建还需预先缓存这些文件到 `.cache/cosmo-compat/nightly/`，目录结构按锁文件中的 `path` 保留。
 
@@ -152,6 +152,9 @@ wsl -d Ubuntu-22.04 --cd /mnt/d/Workspace/dairn/quickjs-cosmo --exec /bin/sh -c 
 | `tests/worker.js` | Worker 消息、BigInt/TypedArray 传递、SharedArrayBuffer、Atomics |
 | `tests/experimental.js` | Intl 数字/日期/复数、Temporal 日期/时长/时间戳 |
 | `tests/platform.js` | 同一个二进制返回实际运行系统 |
+| `tests/runtime_modules.mjs` | 模块别名身份、具名导出、路径归一化、未知内建错误与 Worker 注册 |
+| `tests/runtime_metadata_oom.mjs` | 元数据分配失败后的异常与恢复 |
+| `tests/native/module_registry.c` | SDK 多 runtime/context 生命周期、Unix/Windows 路径与模块导入 |
 | `tests/runtime_process.js` | 阻塞/异步进程、WNOHANG、原生退出码、PATH、工作目录、环境变量、标准流重定向、APE 调用链；由 Python 驱动并严格断言结果 |
 
 还运行上游语言、内建对象、循环、BigInt、循环模块、Worker、I/O 回调、Intl 等测试。Windows 下仅跳过依赖 Unix `/bin/sh`、`true`、`cat` 的上游 `test_std.js`，该测试在 WSL 内运行；自编的跨平台文件 I/O 测试在两端运行。
@@ -160,7 +163,7 @@ wsl -d Ubuntu-22.04 --cd /mnt/d/Workspace/dairn/quickjs-cosmo --exec /bin/sh -c 
 
 [构建与验证工作流](.github/workflows/build-ape.yml) 在 push、pull request 和手动运行时触发，采用[参考仓库 CI](https://github.com/moorefu/quickjs-cosmo/blob/main/.github/workflows/build-ape.yml)的单次构建、多主机验收方式，输入始终取自 `versions.json`。
 
-构建任务在 Ubuntu x86_64 执行现有 `scripts/build.sh`、`scripts/test.py --upstream --compile --node-compat` 和 `scripts/package.py`，编译两份独立 APE 测试程序。矩阵任务下载同一个产物，执行现有测试、上游快速测试、跨主机独立程序、进程回归和 Node 差分用例。各任务通过 `scripts/prepare_native.py --node` 准备校验过的固定 Node 测试工具；运行 qjs 本身不依赖 Node。
+构建任务在 Ubuntu x86_64 执行现有 `scripts/build.sh`、`scripts/test.py --upstream --compile --node-compat` 和 `scripts/package.py`，编译四份独立 APE 测试程序，覆盖普通脚本、进程、模块与嵌入 SDK。矩阵任务下载同一个产物，执行现有测试、上游快速测试、跨主机独立程序、进程回归和 Node 差分用例。各任务通过 `scripts/prepare_native.py --node` 准备校验过的固定 Node 测试工具；运行 qjs 本身不依赖 Node。
 
 | Runner | 主机 | APE 执行方式 |
 | --- | --- | --- |
@@ -174,7 +177,7 @@ wsl -d Ubuntu-22.04 --cd /mnt/d/Workspace/dairn/quickjs-cosmo --exec /bin/sh -c 
 
 Runner 标签对应 [GitHub 官方支持列表](https://docs.github.com/en/actions/how-tos/write-workflows/choose-where-workflows-run/choose-the-runner-for-a-job)。测试报告分别记录主机架构、Python 架构和启动策略选择的执行架构。Windows ARM 项会检查实际宿主为 ARM64，单独标明 APE 的 x64 兼容运行。
 
-`scripts/ci_artifact.py` 打包、恢复并校验 SDK、源码归档、两份独立程序和官方格式发布 ZIP。传输使用 tar 保留执行权限与 `.aarch64` 目录；下载端先验证固定输入、完整文件清单与 SHA-256，再执行测试。矩阵用 `bootstrap.py --source-only --offline` 恢复上游测试源码，无需下载 cosmocc；macOS 的 APE 启动过程可使用 runner 预装的系统 C 编译器。Linux 构建任务包含编译步骤，各矩阵项还运行 API 清单与 Node 差分验收；Windows 保留一个 Unix 专用用例的跳过记录，实际用例数量以报告为准。
+`scripts/ci_artifact.py` 打包、恢复并校验 SDK、源码归档、四份独立程序和官方格式发布 ZIP。传输使用 tar 保留执行权限与 `.aarch64` 目录；下载端先验证固定输入、完整文件清单与 SHA-256，再执行测试。矩阵用 `bootstrap.py --source-only --offline` 恢复上游测试源码，无需下载 cosmocc；macOS 的 APE 启动过程可使用 runner 预装的系统 C 编译器。Linux 构建任务包含编译步骤，各矩阵项还运行 API 清单与 Node 差分验收；Windows 保留一个 Unix 专用用例的跳过记录，实际用例数量以报告为准。
 
 每个任务保存主测试报告和进程汇总报告，产物名称为 `reports-*`。仅汇总报告会被上传，临时用例配置保留在任务工作目录。全部矩阵通过后，`CI gate` 保存 `quickjs-cosmo-release` Actions 产物，包含 ZIP、外置 SHA-256 与构建清单。构建或任一矩阵项失败、取消或跳过时，门禁不能成功；可将 `CI gate` 设为分支的必需检查。
 
@@ -227,6 +230,8 @@ export PATH="$PWD/toolchains/cosmocc-nightly-2026-10-26-aefad27c09ff/bin:$PATH"
 
 `qjsc` 会自动为独立程序链接兼容对象。手动使用本项目 `libquickjs.a` 嵌入 QuickJS 时，还需传入链接参数 `-Wl,--wrap=_Exit,-u,__wrap__Exit`，使 Windows 的退出和进程修复同样生效。
 
+嵌入时保留 SDK 的 `qjs-cosmo.h`，每个新 context 调用一次 `js_cosmo_init_modules(ctx)`，并在 runtime 上安装 `js_cosmo_module_normalize`。Worker 的 context 工厂也采用同样初始化步骤。完整调用方式见 [M1 实施记录](docs/M1_MODULE_REGISTRY.md)与 [SDK 测试](tests/native/module_registry.c)。
+
 ## Windows 进程行为
 
 Windows 使用 `posix_spawn` 启动子进程，避免 Windows `fork/exec` 故障；系统无法返回描述符上限时使用有限回退值。启动失败会抛出异常，等待失败只对 `EINTR` 重试；Windows 不支持的 `uid/gid` 参数明确报错。显式跟踪 `options.env` 数组的所有权，继承环境通过 `NULL` 交给运行时处理，避免 `posix_spawn` 更新 `environ` 后 QuickJS 误释放或使用旧数组。
@@ -243,6 +248,6 @@ Windows 上返回**原始退出码**：`std.exit(7)` 为 `7`，语法错误/未�
 
 本机验证范围和结果记录在 `VALIDATION.md`。不能把生成了双架构 APE 等同于已在所有系统上实测。部分 Linux 的 binfmt_misc/Wine 配置会误识别 APE；可先尝试 `sh ./dist/qjs.exe examples/hello.js`，参阅[官方故障说明](https://github.com/jart/cosmopolitan/blob/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/tool/cosmocc/README.md#gotchas)。macOS 可能需要按系统规则处理下载文件的隔离属性，Apple Silicon 的默认启动过程可能需要系统 C 编译器来准备 APE loader。
 
-QuickJS 不提供 Node.js 的 `fs`、`process`、npm 模块系统或浏览器 DOM。这里的运行时 API 是 QuickJS 的 `std`/`os`。原生动态模块通常与操作系统和架构相关，不属于这里的跨平台交付范围。QuickJS 和 Cosmopolitan 的许可证保留在上游源码及工具链内，产物中的 Cosmopolitan 许可声明由官方工具链嵌入。
+当前产物尚未提供 Node.js 的 `fs`、`process`、npm 模块系统或浏览器 DOM。运行时 API 包括 QuickJS 的 `std`/`os` 及项目元数据模块 `cosmo:runtime`。原生动态模块通常与操作系统和架构相关，不属于这里的跨平台交付范围。QuickJS 和 Cosmopolitan 的许可证保留在上游源码及工具链内，产物中的 Cosmopolitan 许可声明由官方工具链嵌入。
 
 Windows 的原始退出码约定是本项目的兼容修正，与未经修补的 4.0.2 的 `status << 8` 编码不同。测试严格核对返回值，非零错误仍视为失败。

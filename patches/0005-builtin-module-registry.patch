@@ -1,0 +1,111 @@
+--- a/qjs.c
++++ b/qjs.c
+@@ -86,7 +86,7 @@
+     size_t buf_len;
+     char *normalized_filename;
+ 
+-    normalized_filename = js_std_normalize_filename(ctx, filename);
++    normalized_filename = js_cosmo_normalize_path(ctx, filename);
+     if (!normalized_filename) {
+         js_std_dump_error(ctx);
+         return -1;
+@@ -123,8 +123,10 @@
+     if (!ctx)
+         return NULL;
+     /* system modules */
+-    js_init_module_std(ctx, "std");
+-    js_init_module_os(ctx, "os");
++    if (js_cosmo_init_modules(ctx) < 0) {
++        JS_FreeContext(ctx);
++        return NULL;
++    }
+ #ifdef CONFIG_TEMPORAL_INTL
+     if (enable_experimental) {
+         JS_AddIntrinsicTemporal(ctx);
+@@ -501,7 +503,7 @@
+     }
+ 
+     /* loader for ES6 modules */
+-    JS_SetModuleLoaderFunc2(rt, NULL, js_module_loader, js_module_check_attributes, NULL);
++    JS_SetModuleLoaderFunc2(rt, js_cosmo_module_normalize, js_module_loader, js_module_check_attributes, NULL);
+ 
+     if (dump_unhandled_promise_rejection) {
+         JS_SetHostPromiseRejectionTracker(rt, js_std_promise_rejection_tracker,
+--- a/qjsc.c
++++ b/qjsc.c
+@@ -248,7 +248,9 @@
+ 
+     /* check if it is a declared C or system module */
+     e = namelist_find(&cmodule_list, module_name);
+-    if (e) {
++    if (js_cosmo_is_builtin(module_name)) {
++        m = js_cosmo_load_builtin(ctx, module_name);
++    } else if (e) {
+         /* add in the static init module list */
+         namelist_add(&init_module_list, e->name, e->short_name, 0);
+         /* create a dummy module */
+@@ -342,7 +344,7 @@
+     size_t buf_len;
+     char *normalized_filename;
+ 
+-    normalized_filename = js_std_normalize_filename(ctx, filename);
++    normalized_filename = js_cosmo_normalize_path(ctx, filename);
+     if (!normalized_filename) {
+         js_std_dump_error(ctx);
+         exit(1);
+@@ -790,7 +792,7 @@
+     JS_SetStripInfo(rt, strip_flags);
+ 
+     /* loader for ES6 modules */
+-    JS_SetModuleLoaderFunc2(rt, NULL, jsc_module_loader, NULL, NULL);
++    JS_SetModuleLoaderFunc2(rt, js_cosmo_module_normalize, jsc_module_loader, NULL, NULL);
+ 
+     fprintf(fo, "/* File generated automatically by the QuickJS compiler. */\n"
+             "\n"
+@@ -843,6 +845,7 @@
+             fprintf(fo, "  JS_AddIntrinsicIntl(ctx);\n");
+         }
+ #endif
++        fprintf(fo, "  if (js_cosmo_init_modules(ctx) < 0) { JS_FreeContext(ctx); return NULL; }\n");
+         /* add the precompiled modules (XXX: could modify the module
+            loader instead) */
+         for(i = 0; i < init_module_list.count; i++) {
+@@ -879,7 +882,7 @@
+ 
+         /* add the module loader if necessary */
+         if (feature_bitmap & (1 << FE_MODULE_LOADER)) {
+-            fprintf(fo, "  JS_SetModuleLoaderFunc2(rt, NULL, js_module_loader, js_module_check_attributes, NULL);\n");
++            fprintf(fo, "  JS_SetModuleLoaderFunc2(rt, js_cosmo_module_normalize, js_module_loader, js_module_check_attributes, NULL);\n");
+         }
+ 
+         fprintf(fo,
+--- a/quickjs-libc.c
++++ b/quickjs-libc.c
+@@ -718,6 +718,8 @@
+                               const char *module_name, void *opaque,
+                               JSValueConst attributes)
+ {
++    if (js_cosmo_is_builtin(module_name))
++        return js_cosmo_load_builtin(ctx, module_name);
+     JSModuleDef *m;
+     int res;
+     
+@@ -3872,7 +3874,7 @@
+     JS_SetStripInfo(rt, args->strip_flags);
+     js_std_init_handlers(rt);
+ 
+-    JS_SetModuleLoaderFunc2(rt, NULL, js_module_loader, js_module_check_attributes, NULL);
++    JS_SetModuleLoaderFunc2(rt, js_cosmo_module_normalize, js_module_loader, js_module_check_attributes, NULL);
+ 
+     /* set the pipe to communicate with the parent */
+     ts = JS_GetRuntimeOpaque(rt);
+--- a/quickjs-libc.h
++++ b/quickjs-libc.h
+@@ -28,6 +28,7 @@
+ #include <stdlib.h>
+ 
+ #include "quickjs.h"
++#include "qjs-cosmo.h"
+ 
+ #ifdef __cplusplus
+ extern "C" {

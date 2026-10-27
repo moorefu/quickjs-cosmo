@@ -61,8 +61,8 @@
     },
     {
       "id": "MOD-001",
-      "status": "planned",
-      "file": null,
+      "status": "runtime",
+      "file": "tests/runtime_modules.mjs",
       "task": "M1-01",
       "description": "Module aliases, exports, rejected builtins and retired names",
       "timeout_seconds": 30
@@ -149,10 +149,10 @@
     },
     {
       "id": "MOD-002",
-      "status": "reference",
+      "status": "differential",
       "file": "tests/node/module-paths.mjs",
       "task": "M1-01",
-      "description": "Internal parent segments must normalize to one module instance; current QuickJS gap",
+      "description": "Internal parent segments normalize to one module instance",
       "timeout_seconds": 30
     }
   ],
@@ -3669,14 +3669,41 @@
       "entries": [
         {
           "name": "runtimeInfo",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-01",
-          "parameters": "Actual versions, per-platform/per-entry API support, backend and quota information",
+          "parameters": "runtimeInfo() returns fresh version/platform/architecture metadata and available builtin module names; full quota/backend/API detail remains planned",
           "tests": [
             "MOD-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Project extension, not a Node API. Local Windows/Linux entry tests; full cross-platform status awaits M1 CI."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "MOD-001",
+              "report": "build/test-results/<platform>.json",
+              "scope": "qjs, Worker, qjsc and SDK local acceptance; cross-platform CI pending"
+            }
           ]
         }
       ]

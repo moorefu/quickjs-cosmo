@@ -15,7 +15,8 @@ from release_version import bundle_release, release_info
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = "build/ci/bundle-manifest.json"
-STANDALONES = ("build/test-linux/hello-standalone.exe", "build/test-linux/runtime-standalone.exe")
+STANDALONES = ("build/test-linux/hello-standalone.exe", "build/test-linux/runtime-standalone.exe",
+               "build/test-linux/registry-standalone.exe", "build/test-linux/registry-sdk.exe")
 SOURCE = ".cache/quickjs-source.tar.gz"
 
 
@@ -58,8 +59,12 @@ def verify_dist(settings):
     expected = {p.relative_to(root).as_posix(): sha256(p) for p in (root / "compat").iterdir() if p.is_file()}
     if manifest["compatibility_sources"] != expected:
         raise ValueError("Artifact compatibility helpers do not match this checkout")
+    expected = {name: sha256(root / name) for name in
+                ("native/module_registry.c", "native/module_registry.h", "scripts/generate_runtime_config.py")}
+    if manifest.get("runtime_sources") != expected:
+        raise ValueError("Artifact runtime sources do not match this checkout")
     required = {"qjs.exe", "qjsc.exe", "run-test262.exe", "libquickjs.a", ".aarch64/libquickjs.a",
-                "quickjs.h", "quickjs-libc.h", "ape-x86_64.elf", "ape-aarch64.elf",
+                "quickjs.h", "quickjs-libc.h", "qjs-cosmo.h", "ape-x86_64.elf", "ape-aarch64.elf",
                 "qjs", "qjsc", "run-test262", "versions.json", "QUICKJS-LICENSE"}
     if not required.issubset(manifest["files"]):
         raise ValueError("Incomplete SDK in CI artifact")

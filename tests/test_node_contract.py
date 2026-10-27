@@ -43,6 +43,14 @@ class InventoryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "differential tests"):
             node_contract.validate(self.inventory)
 
+    def test_project_runtime_fixture_cannot_back_node_api_claim(self):
+        entry = self.inventory["modules"][0]["entries"][0]
+        entry["status"] = "partial"
+        entry["tests"] = ["MOD-001"]
+        entry["evidence"] = ["project-only fixture"]
+        with self.assertRaisesRegex(ValueError, "differential tests"):
+            node_contract.validate(self.inventory)
+
     def test_per_platform_support_also_needs_evidence(self):
         entry = self.inventory["modules"][0]["entries"][0]
         entry["support"] = copy.deepcopy(self.inventory["support_defaults"])

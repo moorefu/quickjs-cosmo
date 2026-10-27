@@ -1,6 +1,6 @@
 # Node 兼容入口与行为合同
 
-本文件落实实施规划的 M0-04。状态为目标合同；当前 qjs 尚未提供 `node:process` 或这些新入口规则。Node 基线为 v24.21.0，方法状态由 `compat/node-api.json` 管理。
+本文件落实实施规划的 M0-04。状态为目标合同；当前 qjs 尚未提供 `node:process` 或新的进程/资源身份规则。M1-01 已实现模块注册与内部 `.`/`..` 路径归一化，见 [实施记录](M1_MODULE_REGISTRY.md)。Node 基线为 v24.21.0，方法状态由 `compat/node-api.json` 管理。
 
 ## 1. 源码解释模式
 
@@ -55,7 +55,7 @@ Worker 保持 QuickJS 的启动和消息协议；这不等于实现 Node Worker 
 ## 5. 本批基线证据与后续验收
 
 - `ENTRY-001` 在 Node 记录源码入口身份；当前只保存参考结果，不宣称 qjs 已支持。
-- `MOD-002` 保留内部父路径归一化用例；现有 QuickJS 的模块实例行为与 Node 不同，目标在 M1-01 修复。
+- `MOD-002` 验证内部父路径归一化；M1-01 已修复原有模块实例差异，晋升为两端实际执行的差分用例。当前采用语法归一化，不声明 realpath、符号链接或 Node URL 解析兼容。
 - `LANG-001/LANG-002` 是两端共用的 ESM/语言测试，不计入已实现的 Node 内建 API 数量。
 - qjsc 与 Worker 新身份规则在 M1/M6 中增加实际 fixture 后才能提升支持状态。
 
