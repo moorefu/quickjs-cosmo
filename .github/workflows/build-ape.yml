@@ -38,7 +38,8 @@ jobs:
             .cache/cosmocc-*.zip
             .cache/quickjs-source.tar.gz
             .cache/cosmo-compat/nightly/
-          key: ape-inputs-${{ hashFiles('versions.json', 'compat/versions.json') }}
+            .cache/dev-tools/
+          key: ape-inputs-${{ hashFiles('versions.json', 'compat/versions.json', 'compat/dev-tools.json') }}
       - name: Build locked QuickJS and cosmocc inputs
         env:
           GH_TOKEN: ${{ secrets.COSMOCC_ARTIFACT_TOKEN || github.token }}
@@ -51,6 +52,8 @@ jobs:
           export PATH="$TOOLCHAIN/bin:$PATH"
           python scripts/prepare_native.py --node
           python scripts/test.py --upstream --compile --node-compat --expected-platform linux --expected-arch x86_64 --expected-execution-arch x86_64
+      - name: Check implemented API declarations
+        run: python scripts/check_types.py
       - name: Create official release ZIP
         run: python scripts/package.py
       - name: Pack tested SDK, sources and standalone programs

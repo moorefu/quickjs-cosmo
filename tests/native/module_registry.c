@@ -34,7 +34,11 @@ int main(void) {
         js_free(ctx, relative);
         const char script[] = "import * as a from 'std'; import * as b from 'qjs:std';"
                               "import {runtimeInfo} from 'cosmo:runtime';"
-                              "if(a!==b || runtimeInfo().engine!=='quickjs') throw Error('SDK registry');";
+                              "import buffer, {Buffer} from 'node:buffer'; import * as alias from 'buffer';"
+                              "if(a!==b || runtimeInfo().engine!=='quickjs') throw Error('SDK registry');"
+                              "if(Buffer!==globalThis.Buffer || buffer.Buffer!==alias.Buffer) throw Error('SDK Buffer');"
+                              "if(Buffer.from('\\ud83d\\ude00').toString('hex')!=='f09f9880') throw Error('SDK encoding');"
+                              "if(new TextDecoder().decode(new TextEncoder().encode('abc'))!=='abc') throw Error('SDK text');";
         JSValue value = JS_Eval(ctx, script, strlen(script), "<sdk-registry>", JS_EVAL_TYPE_MODULE);
         if (JS_IsException(value)) { js_std_dump_error(ctx); return 1; }
         JSValue settled = js_std_await(ctx, value);

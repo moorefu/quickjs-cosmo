@@ -1,0 +1,11 @@
+{
+  "format": 1,
+  "typescript": {
+    "version": "5.9.3",
+    "url": "https://bellard.org/quickjs/quickjs-typescript-5.9.3-linux-x86.tar.xz",
+    "archive": "quickjs-typescript-5.9.3-linux-x86.tar.xz",
+    "root": "quickjs-typescript-5.9.3-linux-x86",
+    "sha256": "40d7284dc88a6a0685d52f8e50f11bb2a821960be59b0f9d2ed9bdf6615e186c",
+    "scope": "Linux x86_64 build-host declaration checks only; never linked or shipped"
+  }
+}

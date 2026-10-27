@@ -30,7 +30,7 @@ std.puts(JSON.stringify(runtimeInfo()) + '\n');
 | `nodeApiTarget` | `v24.21.0`，表示目标合同版本 |
 | `platform` | 实际运行系统，使用 `win32`、`linux`、`darwin` 等名称 |
 | `arch` | 实际执行架构 `x64` 或 `arm64`；Windows ARM 上经兼容层执行时为 `x64` |
-| `builtinModules` | 当前为 `['std', 'os', 'cosmo:runtime']`，只列正式入口 |
+| `builtinModules` | M1-01 时为 `['std', 'os', 'cosmo:runtime']`；后续随实际启用模块增加，只列正式入口 |
 
 修改返回值不会修改注册清单。目标 Node 版本与可导入模块列表不代表完整 Node 兼容；逐方法状态仍查 `compat/node-api.json`。完整后端、配额及逐 API 能力报告尚待后续阶段。
 
@@ -97,4 +97,4 @@ python3 scripts/ci_artifact.py verify
 
 Windows 使用 `python scripts/test.py --upstream --node-compat --standalone build/test-linux/hello-standalone.exe` 验收同一产物。报告位于 `build/test-results/`、`build/node-compat/`；CI 将同一批测试程序传到七个平台。
 
-清单中的 `MOD-001` 为项目运行时测试，不能替代 Node API 差分证据。当前已实现的 Node API 数仍为 0；仅 `cosmo:runtime.runtimeInfo` 声明局部实现。下一项为 M1-02 Buffer/编码，之后推进公共基础与调度合同。
+清单中的 `MOD-001` 为项目运行时测试，不能替代 Node API 差分证据。M1-01 交付时已实现的 Node API 数为 0，仅 `cosmo:runtime.runtimeInfo` 声明局部实现。后续 [M1-02](M1_BUFFER_ENCODING.md) 已增加 Buffer/编码；当前进度查[实施状态](RUNTIME_IMPLEMENTATION_STATUS.md)。

@@ -92,6 +92,7 @@ def main():
     check("custom/node-contract-inventory", [sys.executable, ROOT / "scripts/test_node_compat.py", "--check-contract"],
           contains="PASS node-contract")
     check("custom/runtime-modules", [qjs, "-m", ROOT / "tests/runtime_modules.mjs"], contains="PASS runtime-modules")
+    check("custom/runtime-buffer", [qjs, "-m", ROOT / "tests/runtime_buffer.mjs"], contains="PASS runtime-buffer")
     check("custom/unknown-builtin", [qjs, "-m", ROOT / "tests/fixtures/unknown-builtin.mjs"],
           expected=1, contains="Unknown builtin module: node:fs")
     check("qjsc/unknown-builtin", [qjsc, "-c", "-m", "-o", scratch / "unknown-builtin.c",
@@ -137,6 +138,9 @@ def main():
         if check("qjsc/compile-registry-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/registry-worker.mjs",
                  "-o", scratch / "registry-standalone.exe", ROOT / "tests/runtime_modules.mjs"], timeout=180):
             check("qjsc/run-registry-ape", [scratch / "registry-standalone.exe"], contains="PASS runtime-modules")
+        if check("qjsc/compile-buffer-ape", [qjsc, "-m", "-o", scratch / "buffer-standalone.exe",
+                 ROOT / "tests/runtime_buffer.mjs"], timeout=180):
+            check("qjsc/run-buffer-ape", [scratch / "buffer-standalone.exe"], contains="PASS runtime-buffer")
         if check("sdk/compile-registry", [settings.toolchain / "bin/cosmocc", "-O2", "-I" + str(settings.dist),
                  ROOT / "tests/native/module_registry.c", settings.dist / "libquickjs.a",
                  "-Wl,--wrap=_Exit,-u,__wrap__Exit", "-lm", "-lpthread", "-ldl", "-o", scratch / "registry-sdk.exe"],
@@ -148,6 +152,8 @@ def main():
               contains="PASS runtime-modules")
         check("sdk/cross-host-registry", [args.standalone.resolve().parent / "registry-sdk.exe"],
               contains="PASS module-registry-sdk")
+        check("qjsc/cross-host-buffer", [args.standalone.resolve().parent / "buffer-standalone.exe"],
+              contains="PASS runtime-buffer")
     runtime = [sys.executable, ROOT / "scripts/audit_runtime.py", "--verify", "--label", "regression",
                "--qjs", qjs, "--qjsc", qjsc]
     compiled_process = (args.standalone.resolve().parent if args.standalone else scratch) / "runtime-standalone.exe"

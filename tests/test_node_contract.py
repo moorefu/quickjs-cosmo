@@ -40,6 +40,8 @@ class InventoryTests(unittest.TestCase):
     def test_reference_only_case_cannot_back_support_claim(self):
         entry = self.inventory["modules"][0]["entries"][0]
         entry["status"] = "supported"
+        self.inventory["tests"][0]["status"] = "reference"
+        entry["tests"] = [self.inventory["tests"][0]["id"]]
         with self.assertRaisesRegex(ValueError, "differential tests"):
             node_contract.validate(self.inventory)
 
@@ -56,6 +58,7 @@ class InventoryTests(unittest.TestCase):
         entry["support"] = copy.deepcopy(self.inventory["support_defaults"])
         entry["support"]["win32"]["qjs"] = "partial"
         entry["tests"] = ["LANG-001"]
+        entry.pop("evidence", None)
         with self.assertRaisesRegex(ValueError, "requires evidence"):
             node_contract.validate(self.inventory)
 
@@ -77,6 +80,13 @@ class InventoryTests(unittest.TestCase):
 class ResultProtocolTests(unittest.TestCase):
     def result(self, stdout, code=0, failure=None):
         return dict(stdout=stdout, exit_code=code, failure=failure, stderr="")
+
+    def test_report_preserves_unpaired_utf16_from_js(self):
+        value = runner.result_value(self.result('NODE_COMPAT_RESULT {"text":"\\ud800"}\n'))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "report.json"
+            runner.write_report(path, value)
+            self.assertEqual(json.loads(path.read_text(encoding="utf-8")), {"text": "\ud800"})
 
     def test_false_success_marker_cannot_hide_nonzero_exit(self):
         with self.assertRaisesRegex(ValueError, "nonzero_exit"):

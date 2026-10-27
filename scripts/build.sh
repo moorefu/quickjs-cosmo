@@ -43,6 +43,7 @@ done
 python3 scripts/prepare_compat.py $OFFLINE
 cp native/module_registry.h "$BUILD/qjs-cosmo.h"
 python3 scripts/generate_runtime_config.py --output "$BUILD/qjs-cosmo-config.h"
+python3 scripts/embed_js.py --output "$BUILD/qjs-builtins.h"
 QJSC=./qjsc.exe
 if [ "$(uname -s)" = Linux ]; then
     case "$(uname -m)" in
@@ -64,6 +65,7 @@ for program in qjs qjsc run-test262; do
     chmod +x "$DIST/$program"
 done
 cp "$BUILD/quickjs.h" "$BUILD/quickjs-libc.h" "$BUILD/qjs-cosmo.h" "$DIST/"
+cp types/*.d.ts "$DIST/"
 cp "$BUILD/libquickjs.a" "$DIST/"
 mkdir -p "$DIST/.aarch64"
 cp "$BUILD/.aarch64/libquickjs.a" "$DIST/.aarch64/"

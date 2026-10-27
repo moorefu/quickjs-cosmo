@@ -19,9 +19,11 @@ equal(info.platform, os.platform);
 assert(info.arch === 'x64' || info.arch === 'arm64');
 assert(/^[a-f0-9]{40}$/.test(info.quickjsCommit));
 assert(/^[a-f0-9]{40}$/.test(info.cosmopolitanCommit));
-equal(info.builtinModules.join(','), 'std,os,cosmo:runtime');
+equal(info.builtinModules.slice(0, 3).join(','), 'std,os,cosmo:runtime');
+assert(info.builtinModules.includes('node:buffer'), 'Implemented Buffer module is registered');
+const moduleCount = info.builtinModules.length;
 info.builtinModules.push('node:not-implemented');
-equal(runtimeInfo().builtinModules.length, 3, 'Metadata cannot mutate the native registry');
+equal(runtimeInfo().builtinModules.length, moduleCount, 'Metadata cannot mutate the native registry');
 for (const name of ['node:no-such-builtin', 'node:fs', 'cosmo:missing', 'qjs:missing', '@runtime/crypto']) {
     let failure;
     try { await import(name); } catch (error) { failure = error; }
@@ -44,7 +46,8 @@ try {
     equal(response.arch, runtimeInfo().arch);
     assert(response.aliases, 'Worker aliases');
     equal(response.unknownCode, 'ERR_UNKNOWN_BUILTIN_MODULE');
-    equal(response.modules.join(','), 'std,os,cosmo:runtime');
+    equal(response.modules.join(','), runtimeInfo().builtinModules.join(','));
+    assert(response.buffer, 'Worker Buffer and encoding globals');
 } finally {
     os.clearTimeout(watchdog);
     worker.onmessage = null;

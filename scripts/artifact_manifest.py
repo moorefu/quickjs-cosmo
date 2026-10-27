@@ -3,6 +3,7 @@ import hashlib
 import json
 from pathlib import Path
 from build_config import load_config
+from runtime_inputs import runtime_source_names
 
 ROOT = Path(__file__).resolve().parents[1]
 settings = load_config()
@@ -12,14 +13,13 @@ manifest = {
     "quickjs": config["quickjs"],
     "cosmopolitan": config["cosmopolitan"],
     "format": "Actually Portable Executable (APE), x86_64 + aarch64",
-    "features": ["std", "os", "qjs:std", "qjs:os", "cosmo:runtime", "Worker", "BigInt", "experimental Temporal/Intl"],
+    "features": ["std", "os", "qjs:std", "qjs:os", "cosmo:runtime", "node:buffer", "TextEncoder", "TextDecoder", "Worker", "BigInt", "experimental Temporal/Intl"],
     "windows_exit_status": "raw uint32; Unix retains POSIX wait status",
     "compatibility": json.loads((ROOT / "compat/versions.json").read_text()),
     "compatibility_sources": {p.relative_to(ROOT).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
                               for p in sorted((ROOT / "compat").glob("*")) if p.is_file()},
     "files": {},
-    "runtime_sources": {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in
-                        ("native/module_registry.c", "native/module_registry.h", "scripts/generate_runtime_config.py")},
+    "runtime_sources": {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in runtime_source_names(ROOT)},
     "patches": {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
                 for p in sorted((ROOT / "patches").glob("*.patch"))},
 }

@@ -29,7 +29,7 @@
     },
     {
       "id": "BUF-001",
-      "status": "reference",
+      "status": "differential",
       "file": "tests/node/buffer.mjs",
       "task": "M1-02",
       "description": "Buffer encoding, type, copying and shared slices",
@@ -154,6 +154,30 @@
       "task": "M1-01",
       "description": "Internal parent segments normalize to one module instance",
       "timeout_seconds": 30
+    },
+    {
+      "id": "BUF-002",
+      "status": "differential",
+      "file": "tests/node/buffer-operations.mjs",
+      "task": "M1-02",
+      "description": "Buffer overloads, numeric operations, search, encoding, errors and descriptor matrix",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "BUF-003",
+      "status": "differential",
+      "file": "tests/node/buffer-utf8.mjs",
+      "task": "M1-02",
+      "description": "Exhaustive two-byte UTF-8 and all UTF-16 code units",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "ENC-001",
+      "status": "differential",
+      "file": "tests/node/text-encoding.mjs",
+      "task": "M1-02",
+      "description": "Global TextEncoder/TextDecoder, streaming, BOM, fatal and input validation",
+      "timeout_seconds": 30
     }
   ],
   "modules": [
@@ -165,171 +189,3734 @@
       "entries": [
         {
           "name": "Buffer.from",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-02",
-          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
           "tests": [
-            "BUF-001"
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "Buffer.alloc",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-02",
-          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
           "tests": [
-            "BUF-001"
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "Buffer.allocUnsafe",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-02",
-          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
           "tests": [
-            "BUF-001"
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "Buffer.isBuffer",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-02",
-          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
           "tests": [
-            "BUF-001"
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "Buffer.isEncoding",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-02",
-          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
           "tests": [
-            "BUF-001"
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "Buffer.byteLength",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-02",
-          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
           "tests": [
-            "BUF-001"
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "Buffer.concat",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-02",
-          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
           "tests": [
-            "BUF-001"
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "Buffer.compare",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-02",
-          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
           "tests": [
-            "BUF-001"
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "Buffer.prototype.toString",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-02",
-          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
           "tests": [
-            "BUF-001"
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "Buffer.prototype.equals",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-02",
-          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
           "tests": [
-            "BUF-001"
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "Buffer.prototype.copy",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-02",
-          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
           "tests": [
-            "BUF-001"
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "Buffer.prototype.fill",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-02",
-          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
           "tests": [
-            "BUF-001"
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "Buffer.prototype.slice",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-02",
-          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
           "tests": [
-            "BUF-001"
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "Buffer.prototype.subarray",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-02",
-          "parameters": "Per-method Node Buffer overloads; encodings and copy/shared-view semantics",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
           "tests": [
-            "BUF-001"
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.allocUnsafeSlow",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.copyBytesFrom",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.compare",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.write",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.toJSON",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.indexOf",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.lastIndexOf",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.includes",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.swap16",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.swap32",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.swap64",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "SlowBuffer",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "constants",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "kMaxLength",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "kStringMaxLength",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readUInt8",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readUint8",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeUInt8",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeUint8",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readInt8",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeInt8",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readUInt16LE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readUint16LE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeUInt16LE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeUint16LE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readUInt16BE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readUint16BE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeUInt16BE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeUint16BE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readInt16LE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeInt16LE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readInt16BE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeInt16BE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readUInt32LE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readUint32LE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeUInt32LE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeUint32LE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readUInt32BE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readUint32BE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeUInt32BE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeUint32BE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readInt32LE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeInt32LE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readInt32BE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeInt32BE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readFloatLE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeFloatLE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readFloatBE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeFloatBE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readDoubleLE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeDoubleLE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readDoubleBE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeDoubleBE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readBigUInt64LE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readBigUint64LE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeBigUInt64LE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeBigUint64LE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readBigUInt64BE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readBigUint64BE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeBigUInt64BE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeBigUint64BE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readBigInt64LE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeBigInt64LE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readBigInt64BE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeBigInt64BE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readUIntLE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeUIntLE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readUIntBE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeUIntBE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readUintLE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeUintLE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readUintBE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeUintBE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readIntLE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeIntLE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.readIntBE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Buffer.prototype.writeIntBE",
+          "task": "M1-02",
+          "status": "partial",
+          "parameters": "Node v24.21.0 declared Buffer overloads, encodings, copy/view and numeric contracts; maximum buffer length 2^31-1 bytes",
+          "tests": [
+            "BUF-001",
+            "BUF-002",
+            "BUF-003"
+          ],
+          "differences": [
+            "Runtime allocation limit is 2^31-1 bytes; allocUnsafe/allocUnsafeSlow zero memory and do not use a shared slab. Cross-realm vm objects and resizable buffers are outside the declared initial subset."
+          ],
+          "evidence": [
+            {
+              "test": "BUF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs matrix; representative Worker/qjsc/SDK entry fixtures in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         }
       ]
     },
@@ -3676,7 +7263,7 @@
             "MOD-001"
           ],
           "differences": [
-            "Project extension, not a Node API. Local Windows/Linux entry tests; full cross-platform status awaits M1 CI."
+            "Project extension, not a Node API. Base metadata passed the full seven-platform CI at commit 33ea75f; detailed quota/backend/API reports remain planned."
           ],
           "support": {
             "linux": {
@@ -3686,10 +7273,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",

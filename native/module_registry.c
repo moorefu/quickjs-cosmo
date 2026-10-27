@@ -4,6 +4,7 @@
 #include "quickjs-libc.h"
 #include "module_registry.h"
 #include "qjs-cosmo-config.h"
+#include "qjs-builtins.h"
 
 typedef JSModuleDef *(*BuiltinInit)(JSContext *, const char *);
 typedef struct {
@@ -12,12 +13,14 @@ typedef struct {
 } Builtin;
 
 static JSModuleDef *runtime_module(JSContext *, const char *);
+static JSModuleDef *buffer_module(JSContext *, const char *);
 
 /* Only real implementations belong here. There are no planned Node stubs. */
 static const Builtin builtins[] = {
     { "std", js_init_module_std },
     { "os", js_init_module_os },
     { "cosmo:runtime", runtime_module },
+    { "node:buffer", buffer_module },
 };
 
 static const char *canonical_builtin(const char *name) {
@@ -221,4 +224,46 @@ static JSModuleDef *runtime_module(JSContext *ctx, const char *name) {
     JSModuleDef *module = JS_NewCModule(ctx, name, runtime_init);
     if (!module || JS_AddModuleExport(ctx, module, "runtimeInfo") < 0) return NULL;
     return module;
+}
+
+/* JSModuleDef owns the API object, so every context keeps its own constructors.
+   The global aliases can be rebound without changing the module's exports. */
+static int source_module_exports(JSContext *ctx, JSModuleDef *module, JSValueConst api, int declare) {
+    JSPropertyEnum *properties;
+    uint32_t count;
+    int result = 0;
+    if (JS_GetOwnPropertyNames(ctx, &properties, &count, api, JS_GPN_STRING_MASK | JS_GPN_ENUM_ONLY) < 0)
+        return -1;
+    for (uint32_t i = 0; i < count; i++) {
+        const char *key = JS_AtomToCString(ctx, properties[i].atom);
+        if (!key) { result = -1; break; }
+        if (declare) result = JS_AddModuleExport(ctx, module, key);
+        else {
+            JSValue value = JS_GetProperty(ctx, api, properties[i].atom);
+            result = JS_IsException(value) ? -1 : JS_SetModuleExport(ctx, module, key, value);
+        }
+        JS_FreeCString(ctx, key);
+        if (result < 0) break;
+    }
+    for (uint32_t i = 0; i < count; i++) JS_FreeAtom(ctx, properties[i].atom);
+    js_free(ctx, properties);
+    return result;
+}
+
+static int source_module_init(JSContext *ctx, JSModuleDef *module) {
+    JSValue api = JS_GetModulePrivateValue(ctx, module);
+    int result = source_module_exports(ctx, module, api, 0);
+    JS_FreeValue(ctx, api);
+    return result;
+}
+
+static JSModuleDef *buffer_module(JSContext *ctx, const char *name) {
+    JSModuleDef *module = JS_NewCModule(ctx, name, source_module_init);
+    if (!module) return NULL;
+    JSValue api = JS_Eval(ctx, qjs_buffer_source, sizeof(qjs_buffer_source) - 1,
+                         "<builtin:node:buffer>", JS_EVAL_TYPE_GLOBAL);
+    if (JS_IsException(api)) return NULL;
+    int result = source_module_exports(ctx, module, api, 1);
+    JS_SetModulePrivateValue(ctx, module, api);
+    return result < 0 ? NULL : module;
 }

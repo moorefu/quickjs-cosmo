@@ -31,6 +31,12 @@ def sha256(path):
     return digest.hexdigest()
 
 
+def write_report(path, report):
+    # ECMAScript strings can contain unpaired UTF-16 surrogates. Escape those
+    # code units in JSON rather than failing or replacing them during UTF-8 I/O.
+    path.write_text(json.dumps(report, ensure_ascii=True, indent=2) + "\n", encoding="utf-8")
+
+
 def run_command(command, cwd, timeout=30, output_limit=OUTPUT_LIMIT):
     """Bound time and combined output without buffering arbitrary output in RAM."""
     start = time.monotonic()
@@ -189,7 +195,7 @@ def main():
         results.append(result)
         print(("PASS " if result["passed"] else "FAIL ") + case["id"] + " " + result["mode"], flush=True)
         if not result["passed"]:
-            print(json.dumps(result, ensure_ascii=False), flush=True)
+            print(json.dumps(result, ensure_ascii=True), flush=True)
     failed = sum(not r["passed"] for r in results)
     report = dict(format=1, mode="reference_only" if args.reference_only else "differential",
                   host=host_info(), node=identity, inventory_sha256=sha256(ROOT / "compat/node-api.json"),
@@ -206,7 +212,7 @@ def main():
     name = ("reference-" if args.reference_only else "") + host_info()["system"] + ".json"
     path = args.report or ROOT / "build/node-compat" / name
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    write_report(path, report)
     label = "Node reference only" if args.reference_only else "Node/qjs differential"
     print(f"{label}: {report['passed']}/{len(results)} passed; report: {path}")
     return int(bool(failed))

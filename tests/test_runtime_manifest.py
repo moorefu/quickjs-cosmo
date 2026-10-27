@@ -20,7 +20,8 @@ class RuntimeManifestTests(unittest.TestCase):
         self.compat = {"ref": "toolchain-pin"}
         self.data = {"quickjs": {"commit": "quickjs-pin"}, "cosmopolitan": {"commit": "toolchain-pin"}}
         (self.root / "compat/versions.json").write_text(json.dumps(self.compat))
-        names = ("native/module_registry.c", "native/module_registry.h", "scripts/generate_runtime_config.py")
+        names = ("native/module_registry.c", "native/module_registry.h", "scripts/generate_runtime_config.py",
+                 "scripts/embed_js.py", "scripts/runtime_inputs.py")
         for name in names:
             (self.root / name).write_text("original")
         self.manifest = dict(self.data, compatibility=self.compat, patches={}, files={},
@@ -43,10 +44,18 @@ class RuntimeManifestTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "runtime sources"):
             ci_artifact.verify_dist(self.settings)
 
+    def test_new_javascript_source_after_build_is_rejected(self):
+        self.write_manifest()
+        source = self.root / "src/js/node/buffer.js"
+        source.parent.mkdir(parents=True)
+        source.write_text("modified")
+        with self.assertRaisesRegex(ValueError, "runtime sources"):
+            ci_artifact.verify_dist(self.settings)
+
     def test_missing_public_registry_header_rejects_sdk(self):
         required = {"qjs.exe", "qjsc.exe", "run-test262.exe", "libquickjs.a", ".aarch64/libquickjs.a",
                     "quickjs.h", "quickjs-libc.h", "ape-x86_64.elf", "ape-aarch64.elf", "qjs", "qjsc",
-                    "run-test262", "versions.json", "QUICKJS-LICENSE"}
+                    "run-test262", "versions.json", "QUICKJS-LICENSE", "node-compat.d.ts", "cosmo.d.ts"}
         self.manifest["files"] = {name: {} for name in required}
         self.write_manifest()
         with self.assertRaisesRegex(ValueError, "Incomplete SDK"):
