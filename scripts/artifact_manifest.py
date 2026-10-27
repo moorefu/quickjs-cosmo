@@ -13,7 +13,9 @@ manifest = {
     "quickjs": config["quickjs"],
     "cosmopolitan": config["cosmopolitan"],
     "format": "Actually Portable Executable (APE), x86_64 + aarch64",
-    "features": ["std", "os", "qjs:std", "qjs:os", "cosmo:runtime", "node:buffer", "TextEncoder", "TextDecoder", "Worker", "BigInt", "experimental Temporal/Intl"],
+    "features": ["std", "os", "qjs:std", "qjs:os", "cosmo:runtime", "node:buffer", "node:process", "node:path",
+                 "node:path/posix", "node:path/win32", "node:os", "node:events", "node:util", "node:assert", "node:assert/strict",
+                 "Buffer", "process", "console", "TextEncoder", "TextDecoder", "Worker", "BigInt", "experimental Temporal/Intl"],
     "windows_exit_status": "raw uint32; Unix retains POSIX wait status",
     "compatibility": json.loads((ROOT / "compat/versions.json").read_text()),
     "compatibility_sources": {p.relative_to(ROOT).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()

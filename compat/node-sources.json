@@ -1,0 +1,12 @@
+{
+  "format": 1,
+  "version": "v24.21.0",
+  "files": [
+    {
+      "path": "src/js/vendor/node/path.js",
+      "url": "https://raw.githubusercontent.com/nodejs/node/v24.21.0/lib/path.js",
+      "sha256": "dd326ecdc2d6ad2025c4991f4b480d76a9f1d52b7f6d0988a5dc0a1d02de5209",
+      "license": "MIT; original notice retained in the source and LICENSE"
+    }
+  ]
+}

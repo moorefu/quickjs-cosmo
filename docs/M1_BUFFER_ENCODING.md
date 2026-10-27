@@ -56,4 +56,4 @@ python3 scripts/ci_artifact.py pack
 python3 scripts/ci_artifact.py verify
 ```
 
-首次类型工具准备需移除 `--offline`，官方归档经 SHA-256 验证后缓存到 `.cache/dev-tools/`；已准备文件每次从校验过的归档恢复。远端结果以本项提交的完整 CI 为准，全绿后才进入 M1-03。
+首次类型工具准备需移除 `--offline`，官方归档经 SHA-256 验证后缓存到 `.cache/dev-tools/`；已准备文件每次从校验过的归档恢复。提交 `c41097f` 已通过[完整 CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40434897922)，随后进入 M1-03。

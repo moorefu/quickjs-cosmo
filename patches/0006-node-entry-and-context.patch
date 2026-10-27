@@ -1,0 +1,241 @@
+--- a/qjs.c
++++ b/qjs.c
+@@ -62,8 +62,10 @@
+         val = JS_Eval(ctx, buf, buf_len, filename,
+                       eval_flags | JS_EVAL_FLAG_COMPILE_ONLY);
+         if (!JS_IsException(val)) {
+-            js_module_set_import_meta(ctx, val, TRUE, TRUE);
+-            val = JS_EvalFunction(ctx, val);
++            if (js_module_set_import_meta(ctx, val, TRUE, TRUE) < 0) {
++                JS_FreeValue(ctx, val);
++                val = JS_EXCEPTION;
++            } else val = JS_EvalFunction(ctx, val);
+         }
+         val = js_std_await(ctx, val);
+     } else {
+@@ -103,6 +105,10 @@
+                   JS_DetectModule((const char *)buf, buf_len));
+     }
+     if (module) {
++        char *absolute = js_cosmo_absolute_filename(ctx, filename);
++        if (!absolute) { js_free(ctx, buf); js_free(ctx, normalized_filename); return -1; }
++        js_free(ctx, normalized_filename);
++        filename = normalized_filename = absolute;
+         eval_flags = JS_EVAL_TYPE_MODULE;
+     } else {
+         eval_flags = JS_EVAL_TYPE_GLOBAL;
+@@ -512,6 +518,8 @@
+ 
+     if (!empty_run) {
+         js_std_add_helpers(ctx, argc - optind, argv + optind);
++        if (js_cosmo_set_cli(ctx, argc, argv, optind, expr ? 1 : 0) < 0)
++            goto fail;
+ 
+         /* make 'std' and 'os' visible to non module code */
+         if (load_std) {
+@@ -560,6 +568,7 @@
+         JS_ComputeMemoryUsage(rt, &stats);
+         JS_DumpMemoryUsage(stdout, &stats, rt);
+     }
++    int exit_code = js_cosmo_exit_code(ctx);
+     js_std_free_handlers(rt);
+     JS_FreeContext(ctx);
+     JS_FreeRuntime(rt);
+@@ -588,7 +597,7 @@
+                best[1] + best[2] + best[3] + best[4],
+                best[1], best[2], best[3], best[4]);
+     }
+-    return 0;
++    return exit_code;
+  fail:
+     js_std_free_handlers(rt);
+     JS_FreeContext(ctx);
+--- a/qjsc.c
++++ b/qjsc.c
+@@ -344,7 +344,7 @@
+     size_t buf_len;
+     char *normalized_filename;
+ 
+-    normalized_filename = js_cosmo_normalize_path(ctx, filename);
++    normalized_filename = js_cosmo_absolute_filename(ctx, filename);
+     if (!normalized_filename) {
+         js_std_dump_error(ctx);
+         exit(1);
+@@ -395,10 +395,11 @@
+ 
+ static const char main_c_template2[] =
+     "  js_std_loop(ctx);\n"
++    "  int exit_code = js_cosmo_exit_code(ctx);\n"
+     "  js_std_free_handlers(rt);\n"
+     "  JS_FreeContext(ctx);\n"
+     "  JS_FreeRuntime(rt);\n"
+-    "  return 0;\n"
++    "  return exit_code;\n"
+     "}\n";
+ 
+ #define PROG_NAME "qjsc"
+@@ -846,6 +847,16 @@
+         }
+ #endif
+         fprintf(fo, "  if (js_cosmo_init_modules(ctx) < 0) { JS_FreeContext(ctx); return NULL; }\n");
++        {
++            char *entry = js_cosmo_absolute_filename(ctx, argv[optind]);
++            if (!entry) { js_std_dump_error(ctx); exit(1); }
++            char *slash = strrchr(entry, '/');
++            if (slash) slash[1] = '\0';
++            fprintf(fo, "  const char compiled_root[] = {");
++            dump_hex(fo, (const uint8_t *)entry, strlen(entry) + 1);
++            fprintf(fo, "  };\n  if (js_cosmo_set_compiled_root(ctx, compiled_root) < 0) { JS_FreeContext(ctx); return NULL; }\n");
++            js_free(ctx, entry);
++        }
+         /* add the precompiled modules (XXX: could modify the module
+            loader instead) */
+         for(i = 0; i < init_module_list.count; i++) {
+@@ -887,7 +898,9 @@
+ 
+         fprintf(fo,
+                 "  ctx = JS_NewCustomContext(rt);\n"
+-                "  js_std_add_helpers(ctx, argc, argv);\n");
++                "  if (!ctx) { JS_FreeRuntime(rt); return 1; }\n"
++                "  js_std_add_helpers(ctx, argc, argv);\n"
++                "  if (js_cosmo_set_cli(ctx, argc, argv, 1, 2) < 0) { js_std_dump_error(ctx); return 1; }\n");
+ 
+         for(i = 0; i < cname_list.count; i++) {
+             namelist_entry_t *e = &cname_list.array[i];
+--- a/quickjs-libc.c
++++ b/quickjs-libc.c
+@@ -581,6 +581,8 @@
+ int js_module_set_import_meta(JSContext *ctx, JSValueConst func_val,
+                               JS_BOOL use_realpath, JS_BOOL is_main)
+ {
++    int custom = js_cosmo_import_meta(ctx, func_val, use_realpath, is_main);
++    if (custom <= 0) return custom;
+     JSModuleDef *m;
+     char buf[PATH_MAX + 16];
+     JSValue meta_obj;
+@@ -786,12 +788,12 @@
+     name = JS_ToCString(ctx, argv[0]);
+     if (!name)
+         return JS_EXCEPTION;
++    js_cosmo_env_lock();
+     str = getenv(name);
++    JSValue value = str ? JS_NewString(ctx, str) : JS_UNDEFINED;
++    js_cosmo_env_unlock();
+     JS_FreeCString(ctx, name);
+-    if (!str)
+-        return JS_UNDEFINED;
+-    else
+-        return JS_NewString(ctx, str);
++    return value;
+ }
+ 
+ #if defined(_WIN32)
+@@ -828,7 +830,9 @@
+         JS_FreeCString(ctx, name);
+         return JS_EXCEPTION;
+     }
++    js_cosmo_env_lock();
+     setenv(name, value, TRUE);
++    js_cosmo_env_unlock();
+     JS_FreeCString(ctx, name);
+     JS_FreeCString(ctx, value);
+     return JS_UNDEFINED;
+@@ -841,7 +845,9 @@
+     name = JS_ToCString(ctx, argv[0]);
+     if (!name)
+         return JS_EXCEPTION;
++    js_cosmo_env_lock();
+     unsetenv(name);
++    js_cosmo_env_unlock();
+     JS_FreeCString(ctx, name);
+     return JS_UNDEFINED;
+ }
+@@ -862,13 +868,14 @@
+     obj = JS_NewObject(ctx);
+     if (JS_IsException(obj))
+         return JS_EXCEPTION;
+-    envp = environ;
++    envp = js_cosmo_copy_environment();
++    if (!envp) { JS_FreeValue(ctx, obj); return JS_ThrowOutOfMemory(ctx); }
+     for(idx = 0; envp[idx] != NULL; idx++) {
+         name = envp[idx];
+         p = strchr(name, '=');
+-        name_len = p - name;
+         if (!p)
+             continue;
++        name_len = p - name;
+         value = p + 1;
+         atom = JS_NewAtomLen(ctx, name, name_len);
+         if (atom == JS_ATOM_NULL)
+@@ -879,8 +886,10 @@
+         if (ret < 0)
+             goto fail;
+     }
++    js_cosmo_free_environment(envp);
+     return obj;
+  fail:
++    js_cosmo_free_environment(envp);
+     JS_FreeValue(ctx, obj);
+     return JS_EXCEPTION;
+ }
+@@ -3714,6 +3723,8 @@
+ typedef struct {
+     char *filename; /* module filename */
+     char *basename; /* module base name */
++    uint8_t *process_state;
++    size_t process_state_size;
+     JSWorkerMessagePipe *recv_pipe, *send_pipe;
+     int strip_flags;
+ } WorkerFuncArgs;
+@@ -3883,9 +3894,15 @@
+ 
+     /* function pointer to avoid linking the whole JS_NewContext() if
+        not needed */
++    js_cosmo_worker_enter(args->process_state, args->process_state_size, args->basename, args->filename);
+     ctx = js_worker_new_context_func(rt);
++    js_cosmo_worker_enter(NULL, 0, NULL, NULL);
+     if (ctx == NULL) {
+-        fprintf(stderr, "JS_NewContext failure");
++        fprintf(stderr, "JS_NewContext failure\n");
++        free(args->filename); free(args->basename); free(args->process_state); free(args);
++        js_std_free_handlers(rt);
++        JS_FreeRuntime(rt);
++        return NULL;
+     }
+ 
+     JS_SetCanBlock(rt, TRUE);
+@@ -3895,6 +3912,7 @@
+     val = JS_LoadModule(ctx, args->basename, args->filename);
+     free(args->filename);
+     free(args->basename);
++    free(args->process_state);
+     free(args);
+     val = js_std_await(ctx, val);
+     if (JS_IsException(val))
+@@ -3980,6 +3998,9 @@
+     memset(args, 0, sizeof(*args));
+     args->filename = strdup(filename);
+     args->basename = strdup(basename);
++    if (!args->filename || !args->basename) goto oom_fail;
++    args->process_state = js_cosmo_worker_snapshot(ctx, &args->process_state_size);
++    if (!args->process_state) goto fail;
+ 
+     /* ports */
+     args->recv_pipe = js_new_message_pipe();
+@@ -4016,6 +4037,7 @@
+     if (args) {
+         free(args->filename);
+         free(args->basename);
++        free(args->process_state);
+         js_free_message_pipe(args->recv_pipe);
+         js_free_message_pipe(args->send_pipe);
+         free(args);
+@@ -4380,6 +4402,8 @@
+     JS_SetPropertyStr(ctx, global_obj, "__loadScript",
+                       JS_NewCFunction(ctx, js_loadScript, "__loadScript", 1));
+ 
++    js_cosmo_install_helpers(ctx);
++
+     JS_FreeValue(ctx, global_obj);
+ }
+ 

@@ -19,4 +19,6 @@ std.gc();
 if (!caught || (failure !== null && failure.name !== 'InternalError'))
     throw Error('Expected an allocation failure, got ' + failure);
 if (runtimeInfo().engine !== 'quickjs') throw Error('Metadata failed after releasing retained objects');
+if (Buffer.from('abc').toString() !== 'abc' || process.cwd().length === 0)
+    throw Error('Native context state was lost across memory recovery');
 print('PASS runtime-metadata-oom');

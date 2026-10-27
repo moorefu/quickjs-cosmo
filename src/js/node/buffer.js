@@ -308,4 +308,4 @@ Object.defineProperties(globalThis, {
     TextEncoder: { value: TextEncoder, writable: true, configurable: true },
     TextDecoder: { value: TextDecoder, writable: true, configurable: true }
 });
-return { ...bufferAPI, default: bufferAPI };
+const bufferExports = { ...bufferAPI, default: bufferAPI };

@@ -140,8 +140,11 @@ def compare_case(case, node, qjs, scratch, reference_only=False):
             result["actual"] = actual
             # Serialized comparison keeps JS booleans distinct from numbers.
             result["passed"] = json.dumps(actual, sort_keys=True) == json.dumps(reference, sort_keys=True)
+            if case.get("compare_output"):
+                result["output_equal"] = all(result["node"][key] == result["qjs"][key] for key in ("stdout", "stderr"))
+                result["passed"] &= result["output_equal"]
             if not result["passed"]:
-                result["error"] = "structured_result_mismatch"
+                result["error"] = "output_mismatch" if result.get("output_equal") is False else "structured_result_mismatch"
     except (ValueError, OSError) as error:
         result.update(passed=False, error=str(error))
     return result

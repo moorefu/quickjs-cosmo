@@ -93,6 +93,7 @@ def main():
           contains="PASS node-contract")
     check("custom/runtime-modules", [qjs, "-m", ROOT / "tests/runtime_modules.mjs"], contains="PASS runtime-modules")
     check("custom/runtime-buffer", [qjs, "-m", ROOT / "tests/runtime_buffer.mjs"], contains="PASS runtime-buffer")
+    check("custom/runtime-foundation", [qjs, "-m", ROOT / "tests/runtime_foundation.mjs"], contains="PASS runtime-foundation")
     check("custom/unknown-builtin", [qjs, "-m", ROOT / "tests/fixtures/unknown-builtin.mjs"],
           expected=1, contains="Unknown builtin module: node:fs")
     check("qjsc/unknown-builtin", [qjsc, "-c", "-m", "-o", scratch / "unknown-builtin.c",
@@ -141,6 +142,11 @@ def main():
         if check("qjsc/compile-buffer-ape", [qjsc, "-m", "-o", scratch / "buffer-standalone.exe",
                  ROOT / "tests/runtime_buffer.mjs"], timeout=180):
             check("qjsc/run-buffer-ape", [scratch / "buffer-standalone.exe"], contains="PASS runtime-buffer")
+        if check("qjsc/compile-foundation-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/foundation-worker.mjs",
+                 "-o", scratch / "foundation-standalone.exe", ROOT / "tests/runtime_foundation.mjs"], timeout=180):
+            check("qjsc/run-foundation-ape", [scratch / "foundation-standalone.exe"], contains="PASS runtime-foundation")
+        check("qjsc/compile-entry-ape", [qjsc, "-m", "-o", scratch / "entry-standalone.exe",
+              ROOT / "tests/fixtures/process-entry.mjs"], timeout=180)
         if check("sdk/compile-registry", [settings.toolchain / "bin/cosmocc", "-O2", "-I" + str(settings.dist),
                  ROOT / "tests/native/module_registry.c", settings.dist / "libquickjs.a",
                  "-Wl,--wrap=_Exit,-u,__wrap__Exit", "-lm", "-lpthread", "-ldl", "-o", scratch / "registry-sdk.exe"],
@@ -154,6 +160,13 @@ def main():
               contains="PASS module-registry-sdk")
         check("qjsc/cross-host-buffer", [args.standalone.resolve().parent / "buffer-standalone.exe"],
               contains="PASS runtime-buffer")
+        check("qjsc/cross-host-foundation", [args.standalone.resolve().parent / "foundation-standalone.exe"],
+              contains="PASS runtime-foundation")
+    foundation = [sys.executable, ROOT / "scripts/test_foundation.py"]
+    compiled_entry = (args.standalone.resolve().parent if args.standalone else scratch) / "entry-standalone.exe"
+    if (args.compile or args.standalone) and compiled_entry.is_file():
+        foundation += ["--standalone", compiled_entry]
+    check("custom/foundation-entry", foundation, contains="PASS foundation-entry")
     runtime = [sys.executable, ROOT / "scripts/audit_runtime.py", "--verify", "--label", "regression",
                "--qjs", qjs, "--qjsc", qjsc]
     compiled_process = (args.standalone.resolve().parent if args.standalone else scratch) / "runtime-standalone.exe"
@@ -178,7 +191,18 @@ def main():
                 print("SKIP " + skipped[-1], flush=True)
                 continue
             flags = ["--std"] if name == "test_builtin" else ["--experimental"] if name == "test_intl" else []
-            check("upstream/" + name, [qjs, *flags, Path(f"tests/{name}.js")], cwd=source, timeout=120)
+            fixture = Path(f"tests/{name}.js")
+            if name == "test_std":
+                # The Node entry contract canonicalizes ESM filenames. Preserve
+                # upstream's formatting checks, adapting only its two literal
+                # relative stack filenames in a generated fixture copy.
+                original = (source / fixture).read_text(encoding="utf-8")
+                expected = "(tests/test_std.js)"
+                if original.count(expected) != 2:
+                    raise ValueError("Upstream stack fixture changed; review entry adaptation")
+                fixture = scratch / "upstream-test_std.js"
+                fixture.write_text(original.replace(expected, "(" + fixture.as_posix() + ")"), encoding="utf-8")
+            check("upstream/" + name, [qjs, *flags, fixture], cwd=source, timeout=120)
 
     failed = sum(not result["passed"] for result in results)
     report = dict(platform=platform.platform(), host=host, python=sys.version.split()[0], build_profile=settings.profile,

@@ -122,3 +122,177 @@ declare module 'buffer' {
 }
 declare var Buffer: import('node:buffer').BufferConstructor;
 type Buffer = import('node:buffer').Buffer;
+
+interface TextEncoderEncodeIntoResult { read: number; written: number; }
+interface TextDecodeOptions { stream?: boolean; }
+interface TextDecoderOptions { fatal?: boolean; ignoreBOM?: boolean; }
+interface TextEncoder {
+    readonly encoding: string;
+    encode(input?: string): Uint8Array<ArrayBuffer>;
+    encodeInto(source: string, destination: Uint8Array<ArrayBufferLike>): TextEncoderEncodeIntoResult;
+}
+declare var TextEncoder: { prototype: TextEncoder; new(): TextEncoder; };
+interface TextDecoder {
+    readonly encoding: string;
+    readonly fatal: boolean;
+    readonly ignoreBOM: boolean;
+    decode(input?: ArrayBufferLike | ArrayBufferView, options?: TextDecodeOptions): string;
+}
+declare var TextDecoder: { prototype: TextDecoder; new(label?: string, options?: TextDecoderOptions): TextDecoder; };
+
+declare module 'node:events' {
+    export type Listener = (...args: any[]) => void;
+    export class EventEmitter {
+        constructor(options?: { captureRejections?: false });
+        static EventEmitter: typeof EventEmitter;
+        static errorMonitor: typeof errorMonitor;
+        static listenerCount(emitter: EventEmitter, eventName: string | symbol): number;
+        on(eventName: string | symbol, listener: Listener): this;
+        addListener(eventName: string | symbol, listener: Listener): this;
+        once(eventName: string | symbol, listener: Listener): this;
+        prependListener(eventName: string | symbol, listener: Listener): this;
+        prependOnceListener(eventName: string | symbol, listener: Listener): this;
+        off(eventName: string | symbol, listener: Listener): this;
+        removeListener(eventName: string | symbol, listener: Listener): this;
+        removeAllListeners(eventName?: string | symbol): this;
+        emit(eventName: string | symbol, ...args: any[]): boolean;
+        listeners(eventName: string | symbol): Listener[];
+        rawListeners(eventName: string | symbol): Listener[];
+        listenerCount(eventName: string | symbol, listener?: Listener): number;
+        eventNames(): (string | symbol)[];
+    }
+    export const errorMonitor: unique symbol;
+    export const listenerCount: typeof EventEmitter.listenerCount;
+    export default EventEmitter;
+}
+declare module 'events' { export * from 'node:events'; export { default } from 'node:events'; }
+
+declare module 'node:process' {
+    import { EventEmitter } from 'node:events';
+    export interface ProcessEnv { [name: string]: string | undefined; }
+    export interface Process extends EventEmitter {
+        argv: string[];
+        execArgv: string[];
+        execPath: string;
+        env: ProcessEnv;
+        pid: number;
+        ppid: number;
+        platform: string;
+        arch: string;
+        versions: { quickjs: string; cosmopolitan: string; quickjsCommit: string; cosmopolitanCommit: string; };
+        exitCode: number | string | undefined;
+        cwd(): string;
+        chdir(directory: string): void;
+        exit(code?: number | string): never;
+        uptime(): number;
+        hrtime: { (previous?: [number, number]): [number, number]; bigint(): bigint; };
+    }
+    export const argv: Process['argv'], execArgv: Process['execArgv'], execPath: string, env: ProcessEnv;
+    export const pid: number, ppid: number, platform: string, arch: string, versions: Process['versions'];
+    export let exitCode: Process['exitCode'];
+    export const cwd: Process['cwd'], chdir: Process['chdir'], exit: Process['exit'];
+    export const uptime: Process['uptime'], hrtime: Process['hrtime'];
+    const process: Process;
+    export default process;
+}
+declare module 'process' { export * from 'node:process'; export { default } from 'node:process'; }
+declare var process: import('node:process').Process;
+
+declare module 'node:path' {
+    export interface ParsedPath { root: string; dir: string; base: string; ext: string; name: string; }
+    export interface PlatformPath {
+        resolve(...paths: string[]): string;
+        normalize(path: string): string;
+        join(...paths: string[]): string;
+        relative(from: string, to: string): string;
+        dirname(path: string): string;
+        basename(path: string, suffix?: string): string;
+        extname(path: string): string;
+        parse(path: string): ParsedPath;
+        format(pathObject: Partial<ParsedPath>): string;
+        isAbsolute(path: string): boolean;
+        toNamespacedPath(path: string): string;
+        _makeLong(path: string): string;
+        sep: string;
+        delimiter: string;
+        posix: PlatformPath;
+        win32: PlatformPath;
+    }
+    export const resolve: PlatformPath['resolve'], normalize: PlatformPath['normalize'], join: PlatformPath['join'];
+    export const relative: PlatformPath['relative'], dirname: PlatformPath['dirname'], basename: PlatformPath['basename'];
+    export const extname: PlatformPath['extname'], parse: PlatformPath['parse'], format: PlatformPath['format'];
+    export const isAbsolute: PlatformPath['isAbsolute'], toNamespacedPath: PlatformPath['toNamespacedPath'];
+    export const _makeLong: PlatformPath['_makeLong'];
+    export const sep: string, delimiter: string, posix: PlatformPath, win32: PlatformPath;
+    const path: PlatformPath;
+    export default path;
+}
+declare module 'path' { export * from 'node:path'; export { default } from 'node:path'; }
+declare module 'node:path/posix' { export * from 'node:path'; export { default } from 'node:path'; }
+declare module 'node:path/win32' { export * from 'node:path'; export { default } from 'node:path'; }
+declare module 'path/posix' { export * from 'node:path/posix'; export { default } from 'node:path/posix'; }
+declare module 'path/win32' { export * from 'node:path/win32'; export { default } from 'node:path/win32'; }
+
+declare module 'node:os' {
+    export function platform(): string;
+    export function arch(): string;
+    export function tmpdir(): string;
+    export function homedir(): string;
+    export function hostname(): string;
+    export function type(): string;
+    export function release(): string;
+    export const EOL: string;
+    const os: { platform: typeof platform; arch: typeof arch; tmpdir: typeof tmpdir; homedir: typeof homedir;
+                hostname: typeof hostname; type: typeof type; release: typeof release; EOL: string; };
+    export default os;
+}
+// Bare 'os' remains the upstream QuickJS module.
+
+declare module 'node:util' {
+    export function promisify<T>(original: (callback: (error: any, result: T) => void) => void): () => Promise<T>;
+    export function promisify<A, T>(original: (a: A, callback: (error: any, result: T) => void) => void): (a: A) => Promise<T>;
+    export function promisify<A, B, T>(original: (a: A, b: B, callback: (error: any, result: T) => void) => void): (a: A, b: B) => Promise<T>;
+    export function promisify(original: (...args: any[]) => any): (...args: any[]) => Promise<any>;
+    export namespace promisify { const custom: unique symbol; }
+    export const TextEncoder: typeof globalThis.TextEncoder, TextDecoder: typeof globalThis.TextDecoder;
+    const util: { promisify: typeof promisify; TextEncoder: typeof TextEncoder; TextDecoder: typeof TextDecoder; };
+    export default util;
+}
+declare module 'util' { export * from 'node:util'; export { default } from 'node:util'; }
+
+declare module 'node:assert' {
+    export class AssertionError extends Error {
+        constructor(options: { message?: string; actual?: unknown; expected?: unknown; operator?: string; });
+        code: 'ERR_ASSERTION'; actual: unknown; expected: unknown; operator: string | undefined; generatedMessage: boolean;
+    }
+    export type ErrorCriteria = RegExp | (new(...args: any[]) => Error) | ((error: any) => boolean) | Record<string, unknown>;
+    export function ok(value: unknown, message?: string | Error): asserts value;
+    export function equal(actual: unknown, expected: unknown, message?: string | Error): void;
+    export function notEqual(actual: unknown, expected: unknown, message?: string | Error): void;
+    export function strictEqual<T>(actual: unknown, expected: T, message?: string | Error): asserts actual is T;
+    export function notStrictEqual(actual: unknown, expected: unknown, message?: string | Error): void;
+    export function throws(block: () => unknown, error?: ErrorCriteria | string, message?: string | Error): void;
+    export function rejects(block: PromiseLike<unknown> | (() => PromiseLike<unknown>), error?: ErrorCriteria | string, message?: string | Error): Promise<void>;
+    export function fail(message?: string | Error): never;
+    export interface Assert {
+        (value: unknown, message?: string | Error): asserts value;
+        ok: typeof ok; equal: typeof equal; notEqual: typeof notEqual; strictEqual: typeof strictEqual;
+        notStrictEqual: typeof notStrictEqual; throws: typeof throws; rejects: typeof rejects; fail: typeof fail;
+        AssertionError: typeof AssertionError; strict: Assert;
+    }
+    export const strict: Assert;
+    const assert: Assert;
+    export default assert;
+}
+declare module 'assert' { export * from 'node:assert'; export { default } from 'node:assert'; }
+declare module 'node:assert/strict' { export * from 'node:assert'; export { default } from 'node:assert'; }
+declare module 'assert/strict' { export * from 'node:assert/strict'; export { default } from 'node:assert/strict'; }
+
+interface Console {
+    log(...args: any[]): void; info(...args: any[]): void; debug(...args: any[]): void;
+    error(...args: any[]): void; warn(...args: any[]): void;
+    assert(condition?: boolean, ...data: any[]): void;
+    dir(item?: any, options?: { depth?: number }): void;
+    trace(...args: any[]): void;
+}
+declare var console: Console;

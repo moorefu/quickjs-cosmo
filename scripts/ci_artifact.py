@@ -18,7 +18,8 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = "build/ci/bundle-manifest.json"
 STANDALONES = ("build/test-linux/hello-standalone.exe", "build/test-linux/runtime-standalone.exe",
                "build/test-linux/registry-standalone.exe", "build/test-linux/registry-sdk.exe",
-               "build/test-linux/buffer-standalone.exe")
+               "build/test-linux/buffer-standalone.exe", "build/test-linux/foundation-standalone.exe",
+               "build/test-linux/entry-standalone.exe")
 SOURCE = ".cache/quickjs-source.tar.gz"
 
 
@@ -66,7 +67,7 @@ def verify_dist(settings):
         raise ValueError("Artifact runtime sources do not match this checkout")
     required = {"qjs.exe", "qjsc.exe", "run-test262.exe", "libquickjs.a", ".aarch64/libquickjs.a",
                 "quickjs.h", "quickjs-libc.h", "qjs-cosmo.h", "node-compat.d.ts", "cosmo.d.ts", "ape-x86_64.elf", "ape-aarch64.elf",
-                "qjs", "qjsc", "run-test262", "versions.json", "QUICKJS-LICENSE"}
+                "qjs", "qjsc", "run-test262", "versions.json", "QUICKJS-LICENSE", "NODE-MODULES-LICENSE"}
     if not required.issubset(manifest["files"]):
         raise ValueError("Incomplete SDK in CI artifact")
     for name, record in manifest["files"].items():
@@ -118,6 +119,8 @@ def verify_package(settings, release=None):
                     raise ValueError("Release readme is missing the upstream text")
         if any(settings.data[key]["commit"].encode() not in readme for key in ("quickjs", "cosmopolitan")):
             raise ValueError("Release readme is missing pinned commits")
+        if (settings.dist / "NODE-MODULES-LICENSE").read_bytes() not in readme:
+            raise ValueError("Release readme is missing Node module notices")
 
 
 def bundle_metadata(settings):

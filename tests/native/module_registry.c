@@ -17,7 +17,10 @@ int main(void) {
         assert(rt);
         js_std_init_handlers(rt);
         JSContext *ctx = JS_NewContext(rt);
-        assert(ctx && js_cosmo_init_modules(ctx) == 0);
+        assert(ctx);
+        JS_SetContextOpaque(ctx, (void *)(uintptr_t)0x1234);
+        assert(js_cosmo_init_modules(ctx) == 0 && js_cosmo_init_modules(ctx) == 0);
+        assert(JS_GetContextOpaque(ctx) == (void *)(uintptr_t)0x1234);
         JS_SetModuleLoaderFunc2(rt, js_cosmo_module_normalize, js_module_loader, js_module_check_attributes, NULL);
         check_path(ctx, "", ".");
         check_path(ctx, ".", ".");
@@ -44,6 +47,29 @@ int main(void) {
         JSValue settled = js_std_await(ctx, value);
         if (JS_IsException(settled)) { js_std_dump_error(ctx); return 1; }
         JS_FreeValue(ctx, settled);
+        JSContext *other = JS_NewContext(rt);
+        assert(other && js_cosmo_init_modules(other) == 0);
+        JSValue global = JS_GetGlobalObject(ctx), other_global = JS_GetGlobalObject(other);
+        JSValue buffer = JS_GetPropertyStr(ctx, global, "Buffer"), other_buffer = JS_GetPropertyStr(other, other_global, "Buffer");
+        assert(JS_VALUE_GET_PTR(buffer) != JS_VALUE_GET_PTR(other_buffer));
+        JS_FreeValue(ctx, buffer); JS_FreeValue(other, other_buffer);
+        JS_FreeValue(ctx, global); JS_FreeValue(other, other_global);
+        const char host[] = "import process from 'node:process'; import path from 'node:path';"
+                            "import {EventEmitter} from 'node:events'; import assert from 'node:assert/strict';"
+                            "assert.equal(process,globalThis.process); assert(process instanceof EventEmitter);"
+                            "assert(path.isAbsolute(process.execPath)); assert.equal(process.argv.length,1);"
+                            "globalThis.sdkIsolatedMarker=1;";
+        value = JS_Eval(ctx, host, strlen(host), "<sdk-foundation>", JS_EVAL_TYPE_MODULE);
+        if (JS_IsException(value)) { js_std_dump_error(ctx); return 1; }
+        settled = js_std_await(ctx, value);
+        if (JS_IsException(settled)) { js_std_dump_error(ctx); return 1; }
+        JS_FreeValue(ctx, settled);
+        const char isolation[] = "if(globalThis.sdkIsolatedMarker!==undefined) throw Error('Context leaked');";
+        value = JS_Eval(other, isolation, strlen(isolation),
+                        "<sdk-isolation>", JS_EVAL_TYPE_GLOBAL);
+        if (JS_IsException(value)) { js_std_dump_error(other); return 1; }
+        JS_FreeValue(other, value);
+        JS_FreeContext(other);
         JS_FreeContext(ctx);
         js_std_free_handlers(rt);
         JS_FreeRuntime(rt);

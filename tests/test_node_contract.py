@@ -120,6 +120,16 @@ class ResultProtocolTests(unittest.TestCase):
         self.assertNotIn("qjs", result)
         self.assertEqual(result["mode"], "reference")
 
+    def test_console_output_is_checked_beyond_result_marker(self):
+        case = dict(id="CON-001", file="tests/node/console.mjs", timeout_seconds=1, compare_output=True)
+        node = self.result("expected\nNODE_COMPAT_RESULT {}\n")
+        qjs = self.result("wrong\nNODE_COMPAT_RESULT {}\n")
+        with mock.patch.object(runner, "run_command", side_effect=[node, qjs]), \
+             mock.patch.object(runner, "ape_command", return_value=["qjs"]):
+            result = runner.compare_case(case, "node", ROOT / "dist/qjs.exe", ROOT)
+        self.assertFalse(result["passed"])
+        self.assertEqual(result["error"], "output_mismatch")
+
     def test_wrong_node_version_is_rejected_before_tests(self):
         result = self.result(json.dumps(dict(version="v22.0.0")))
         with mock.patch.object(runner, "run_command", return_value=result):

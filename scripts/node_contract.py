@@ -54,6 +54,8 @@ def validate(inventory, root=ROOT):
             raise ValueError("Planned test must not claim an executable fixture: " + identifier)
         if not 0 < test.get("timeout_seconds", 0) <= 120:
             raise ValueError("Invalid test timeout: " + identifier)
+        if "compare_output" in test and type(test["compare_output"]) is not bool:
+            raise ValueError("Invalid output comparison flag: " + identifier)
         tests[identifier] = test
     names, identifiers = set(), set()
     for module in inventory["modules"]:

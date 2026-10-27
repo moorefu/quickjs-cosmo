@@ -3,6 +3,7 @@
 #include <cosmo.h>
 #include "quickjs-libc.h"
 #include "module_registry.h"
+#include "runtime_state.h"
 #include "qjs-cosmo-config.h"
 #include "qjs-builtins.h"
 
@@ -13,14 +14,23 @@ typedef struct {
 } Builtin;
 
 static JSModuleDef *runtime_module(JSContext *, const char *);
-static JSModuleDef *buffer_module(JSContext *, const char *);
+static JSModuleDef *core_module(JSContext *, const char *);
 
 /* Only real implementations belong here. There are no planned Node stubs. */
 static const Builtin builtins[] = {
     { "std", js_init_module_std },
     { "os", js_init_module_os },
     { "cosmo:runtime", runtime_module },
-    { "node:buffer", buffer_module },
+    { "node:buffer", core_module },
+    { "node:process", core_module },
+    { "node:path", core_module },
+    { "node:path/posix", core_module },
+    { "node:path/win32", core_module },
+    { "node:os", core_module },
+    { "node:events", core_module },
+    { "node:util", core_module },
+    { "node:assert", core_module },
+    { "node:assert/strict", core_module },
 };
 
 static const char *canonical_builtin(const char *name) {
@@ -131,7 +141,7 @@ char *js_cosmo_module_normalize(JSContext *ctx, const char *base,
     relative = js_std_normalize_filename(ctx, name);
     if (!relative) return NULL;
     if (relative[0] != '.') {
-        result = js_cosmo_normalize_path(ctx, relative);
+        result = js_cosmo_absolute_filename(ctx, relative);
         js_free(ctx, relative);
         return result;
     }
@@ -154,7 +164,7 @@ char *js_cosmo_module_normalize(JSContext *ctx, const char *base,
     }
     memcpy(joined, normalized_base, directory);
     memcpy(joined + directory, relative, length + 1);
-    result = js_cosmo_normalize_path(ctx, joined);
+    result = js_cosmo_absolute_filename(ctx, joined);
     js_free(ctx, joined);
     js_free(ctx, relative);
     js_free(ctx, normalized_base);
@@ -168,8 +178,13 @@ int js_cosmo_is_builtin(const char *name) {
 JSModuleDef *js_cosmo_load_builtin(JSContext *ctx, const char *name) {
     const char *canonical = canonical_builtin(name);
     if (canonical) {
+        CosmoRuntimeState *state = js_cosmo_state(ctx);
+        if (!state) return NULL;
         for (size_t i = 0; i < sizeof(builtins) / sizeof(*builtins); i++)
-            if (!strcmp(canonical, builtins[i].name)) return builtins[i].init(ctx, canonical);
+            if (!strcmp(canonical, builtins[i].name)) {
+                if (!state->modules[i]) state->modules[i] = builtins[i].init(ctx, canonical);
+                return state->modules[i];
+            }
     }
     unknown_builtin(ctx, name);
     return NULL;
@@ -177,7 +192,7 @@ JSModuleDef *js_cosmo_load_builtin(JSContext *ctx, const char *name) {
 
 int js_cosmo_init_modules(JSContext *ctx) {
     for (size_t i = 0; i < sizeof(builtins) / sizeof(*builtins); i++)
-        if (!builtins[i].init(ctx, builtins[i].name)) return -1;
+        if (!js_cosmo_load_builtin(ctx, builtins[i].name)) return -1;
     return 0;
 }
 
@@ -257,11 +272,22 @@ static int source_module_init(JSContext *ctx, JSModuleDef *module) {
     return result;
 }
 
-static JSModuleDef *buffer_module(JSContext *ctx, const char *name) {
+static JSModuleDef *core_module(JSContext *ctx, const char *name) {
+    CosmoRuntimeState *state = js_cosmo_state(ctx);
+    if (!state) return NULL;
+    if (JS_IsUndefined(state->apis)) {
+        JSValue factory = JS_Eval(ctx, qjs_core_source, sizeof(qjs_core_source) - 1,
+                                  "<builtin:node-core>", JS_EVAL_TYPE_GLOBAL);
+        if (JS_IsException(factory)) return NULL;
+        JSValue arguments[] = {js_cosmo_native_api(ctx, state), state->data};
+        if (JS_IsException(arguments[0])) { JS_FreeValue(ctx, factory); return NULL; }
+        state->apis = JS_Call(ctx, factory, JS_UNDEFINED, 2, arguments);
+        JS_FreeValue(ctx, arguments[0]); JS_FreeValue(ctx, factory);
+        if (JS_IsException(state->apis)) { state->apis = JS_UNDEFINED; return NULL; }
+    }
     JSModuleDef *module = JS_NewCModule(ctx, name, source_module_init);
     if (!module) return NULL;
-    JSValue api = JS_Eval(ctx, qjs_buffer_source, sizeof(qjs_buffer_source) - 1,
-                         "<builtin:node:buffer>", JS_EVAL_TYPE_GLOBAL);
+    JSValue api = JS_GetPropertyStr(ctx, state->apis, name);
     if (JS_IsException(api)) return NULL;
     int result = source_module_exports(ctx, module, api, 1);
     JS_SetModulePrivateValue(ctx, module, api);

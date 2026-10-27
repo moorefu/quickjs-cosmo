@@ -66,6 +66,7 @@ for program in qjs qjsc run-test262; do
 done
 cp "$BUILD/quickjs.h" "$BUILD/quickjs-libc.h" "$BUILD/qjs-cosmo.h" "$DIST/"
 cp types/*.d.ts "$DIST/"
+cp src/js/vendor/node/LICENSE "$DIST/NODE-MODULES-LICENSE"
 cp "$BUILD/libquickjs.a" "$DIST/"
 mkdir -p "$DIST/.aarch64"
 cp "$BUILD/.aarch64/libquickjs.a" "$DIST/.aarch64/"

@@ -6,8 +6,8 @@
 | --- | --- | --- |
 | M0-01—M0-04 | 完成，CI 全绿 | `17204b6`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40426810729)，[记录](M0_FOUNDATION.md) |
 | M1-01 模块注册 | 完成，CI 全绿 | `33ea75f`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40430982438)，[记录](M1_MODULE_REGISTRY.md) |
-| M1-02 Buffer/编码 | 本地验收完成，等待本项提交的 CI | [记录](M1_BUFFER_ENCODING.md)；本项通过前不开始 M1-03 |
-| M1-03 公共基础 | 待实现 | process/path/os、console、EventEmitter、util/assert |
+| M1-02 Buffer/编码 | 完成，CI 全绿 | `c41097f`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40434897922)，[记录](M1_BUFFER_ENCODING.md) |
+| M1-03 公共基础 | 本地验收通过，待完整 CI | Linux 48/48、Windows 43/43、差分各 13/13；[记录](M1_FOUNDATION.md) |
 | M1-04 调度合同 | 待实现 | 任务/微任务顺序、定时器、存活与 ref/unref |
 | M2-01 原生构建 | 待实现 | 固定同提交后端，双架构 E1/E2 |
 | M2-02 同步 fs | 待实现 | 高层、目录、描述符、元数据 |
@@ -28,6 +28,6 @@
 | M5-05 HTTPS | 待实现 | TLS/HTTP 集成与故障清理 |
 | M6-01 全入口交付 | 待实现 | 全部已启用能力的 Worker/qjsc/SDK/包验收 |
 | M6-02 CI 与发布 | 待实现 | 全目标矩阵、能力清单与发布产物 |
-| M6-03 文档与类型 | 持续更新，最终验收待完成 | 已增加 Buffer 与 cosmo:runtime 类型 |
+| M6-03 文档与类型 | 持续更新，最终验收待完成 | 已增加 Buffer、公共基础与 cosmo:runtime 类型 |
 
 局部实现与平台差异由 `compat/node-api.json` 描述；本表不以“已有同名导出”替代任务退出条件。未完成任务继续保持待实现，TLS 如遇真实准入阻碍需按规划记录并解决，不能伪造通过。

@@ -1,6 +1,6 @@
 # Node 兼容入口与行为合同
 
-本文件落实实施规划的 M0-04。状态为目标合同；当前 qjs 尚未提供 `node:process` 或新的进程/资源身份规则。M1-01 已实现模块注册与内部 `.`/`..` 路径归一化，见 [实施记录](M1_MODULE_REGISTRY.md)。Node 基线为 v24.21.0，方法状态由 `compat/node-api.json` 管理。
+本文件落实实施规划的 M0-04；M1-03 已实现初始 process 与入口身份合同，范围及后续调度缺口见 [公共基础记录](M1_FOUNDATION.md)。Node 基线为 v24.21.0，方法状态由 `compat/node-api.json` 管理。
 
 ## 1. 源码解释模式
 
@@ -54,9 +54,9 @@ Worker 保持 QuickJS 的启动和消息协议；这不等于实现 Node Worker 
 
 ## 5. 本批基线证据与后续验收
 
-- `ENTRY-001` 在 Node 记录源码入口身份；当前只保存参考结果，不宣称 qjs 已支持。
+- `ENTRY-001` 已晋升 Node/qjs 同源差分，记录源码入口身份与全局别名。
 - `MOD-002` 验证内部父路径归一化；M1-01 已修复原有模块实例差异，晋升为两端实际执行的差分用例。当前采用语法归一化，不声明 realpath、符号链接或 Node URL 解析兼容。
 - `LANG-001/LANG-002` 是两端共用的 ESM/语言测试，不计入已实现的 Node 内建 API 数量。
-- qjsc 与 Worker 新身份规则在 M1/M6 中增加实际 fixture 后才能提升支持状态。
+- qjsc 与 Worker 的初始身份规则由 runtime_foundation、独立 entry APE 和 test_foundation.py 验证；全资源、异步销毁与取消继续在 M3/M6 扩展。
 
 差分报告保存到 `build/node-compat/`。`reference_only` 报告只证明 Node 基线 fixture 可执行，不是 QuickJS 验收报告。
