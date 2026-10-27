@@ -32,7 +32,7 @@ def build(root=ROOT):
     output = root / 'build/native/compression'
     output.mkdir(parents=True, exist_ok=True)
     objects, commands = [], []
-    for name in ('allocator', 'core', 'binding', 'bzip2-huffman', 'bzip2-blocksort'):
+    for name in ('allocator', 'core', 'stream', 'binding', 'bzip2-huffman', 'bzip2-blocksort'):
         target = output / (name + '.o')
         command = [settings.toolchain / 'bin/cosmocc', '-std=gnu23', '-D_COSMO_SOURCE', '-D_GNU_SOURCE',
                    '-DBZ_NO_STDIO', '-O2', '-Wall', '-Werror=implicit-function-declaration',
@@ -68,7 +68,7 @@ def build(root=ROOT):
         if any(line.split()[0] in {'malloc', 'calloc', 'realloc', 'free', '_gc_free', '__defer'} for line in undefined):
             raise ValueError('Compression closure bypasses the runtime allocator')
         reports[arch] = dict(elf_machine=machine, sha256=sha256(target), exported=[ROOT_SYMBOL], undefined=undefined)
-    sources = ['native/compression/' + name for name in ('core.c', 'core.h', 'binding.c', 'binding.h', 'allocator.c',
+    sources = ['native/compression/' + name for name in ('core.c', 'core.h', 'stream.c', 'stream.h', 'stream-binding.h', 'binding.c', 'binding.h', 'allocator.c',
         'bzip2-huffman.c', 'bzip2-blocksort.c', 'bzip2-workspace.h')]
     sources += ['scripts/build_compression.py', 'native/build-inputs.json', 'native/tasks.h']
     (output / 'build.json').write_text(json.dumps(dict(format=1,

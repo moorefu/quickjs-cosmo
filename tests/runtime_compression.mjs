@@ -38,7 +38,9 @@ for (const [compress,decompress,options] of [[c.lz4CompressSync,c.lz4DecompressS
     assert.throws(()=>decompress(corrupt),{code:'ERR_COMPRESSION_DATA'});
 }
 assert.throws(()=>z.zstdCompressSync('x',{params:{400:1}}),{code:'ERR_NOT_SUPPORTED'});
-assert.throws(()=>z.gzipSync('x',{info:true}),{code:'ERR_NOT_SUPPORTED'});
+const info=z.gzipSync('x',{info:true});
+assert(info.engine instanceof z.Gzip);assert.equal(info.engine.bytesWritten,1);
+assert.equal(z.gunzipSync(info.buffer).toString(),'x');
 const names=c.codecInfo().map(record=>record.name);assert.equal(names.join(','),'zlib,zstd,lz4,bzip2');
 assert(c.codecInfo('lz4').version.length>0);
 const worker=new os.Worker('./fixtures/compression-worker.mjs');

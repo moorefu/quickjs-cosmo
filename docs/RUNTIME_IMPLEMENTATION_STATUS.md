@@ -17,8 +17,8 @@
 | M3-01 原生任务调度 | 完成，CI 全绿 | `d413b69`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40516679598)，[记录](M3_TASK_POOL.md) |
 | M3-02 异步 fs/算法 | 完成，CI 全绿 | `5877ce7`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777)，[记录](M3_ASYNC.md) |
 | M3-03 Stream | 完成，CI 全绿 | `362a2af`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176)，[记录](M3_STREAMS.md) |
-| M3-04 异步子进程 | 已实现，等待完整 CI | ChildProcess、stdio、exec/promisify、取消与资源回收；[记录](M3_CHILD_PROCESS_ASYNC.md) |
-| M3-05 文件/算法流 | 待实现 | 文件、Hash/Hmac、压缩 Transform |
+| M3-04 异步子进程 | 完成，CI 全绿 | `dab3a8a`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40569582305)，[记录](M3_CHILD_PROCESS_ASYNC.md) |
+| M3-05 文件/算法流 | 已实现，等待完整 CI | 文件、Hash/Hmac、压缩 Transform；[记录](M3_FILE_ALGORITHM_STREAMS.md) |
 | M4-01 密钥与 AEAD | 待实现 | KeyObject/DER/PEM、Ed/X25519、Cipher |
 | M4-02 扩展摘要 | 待实现 | SHA3/SHAKE/BLAKE2s |
 | M5-01 DNS/TCP/URL | 待实现 | lookup、Socket 与 URL |
@@ -31,3 +31,5 @@
 | M6-03 文档与类型 | 持续更新，最终验收待完成 | 已增加 Buffer、公共基础、调度/取消与 cosmo:runtime 类型 |
 
 局部实现与平台差异由 `compat/node-api.json` 描述；本表不以“已有同名导出”替代任务退出条件。未完成任务继续保持待实现，TLS 如遇真实准入阻碍需按规划记录并解决，不能伪造通过。
+
+M6 另需复核私有状态表的循环引用：Timer 的 WeakMap 值持有 handle，存在与本次 EventEmitter 相同的回指模式；应以循环 GC 用例确认并修复，避免只验证 Runtime 整体销毁。

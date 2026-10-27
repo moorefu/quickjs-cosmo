@@ -237,6 +237,8 @@ function createFsAsync(native, path, helpers, sync) {
         stat(...args){return this._run('fstat',args);}
         truncate(...args){return this._run('ftruncate',args);}
         sync(){return this._run('fsync',[]);}
+        createReadStream(options){return sync.createReadStream(undefined,{...options,fd:this});}
+        createWriteStream(options){return sync.createWriteStream(undefined,{...options,fd:this});}
         close(){
             const state=handles.get(this);if(state.closePromise)return state.closePromise;state.closing=true;
             const finish=()=>closeGuard(state.guard);

@@ -173,10 +173,11 @@ static JSValue versions(JSContext *ctx,JSValueConst self,int argc,JSValueConst *
     if (JS_SetPropertyStr(ctx,object,"zlibVernum",JS_NewInt32(ctx,ZLIB_VERNUM))<0) { JS_FreeValue(ctx,object); return JS_EXCEPTION; }
     return object;
 }
+#include "stream-binding.h"
 JSValue js_cosmo_compression_api(JSContext *ctx) {
     JSValue api=JS_NewObject(ctx); if (JS_IsException(api)) return api;
-    const char *names[]={"run","checksum","versions","runAsync","cancel"};
-    JSCFunction *functions[]={run,checksum,versions,run_async,cancel};
-    for (int i=0;i<5;i++) if (put(ctx,api,names[i],JS_NewCFunction(ctx,functions[i],names[i],0))<0) { JS_FreeValue(ctx,api); return JS_EXCEPTION; }
+    const char *names[]={"run","checksum","versions","runAsync","cancel","streamCreate","streamStep","streamClose","streamReset"};
+    JSCFunction *functions[]={run,checksum,versions,run_async,cancel,stream_create,stream_step,stream_close,stream_reset};
+    for (int i=0;i<9;i++) if (put(ctx,api,names[i],JS_NewCFunction(ctx,functions[i],names[i],0))<0) { JS_FreeValue(ctx,api); return JS_EXCEPTION; }
     return api;
 }

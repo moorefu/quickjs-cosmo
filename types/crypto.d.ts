@@ -1,9 +1,10 @@
 declare module 'node:crypto' {
     import { Buffer, BufferEncoding } from 'node:buffer';
+    import {Transform, TransformOptions} from 'node:stream';
     export type BinaryLike = string | ArrayBuffer | SharedArrayBuffer | ArrayBufferView;
-    export interface HashOptions { outputLength?: number; }
-    /** Stream methods are enabled at the stream milestone. */
-    export class Hash {
+    export interface HashOptions extends TransformOptions { outputLength?: number; }
+    export interface HmacOptions extends TransformOptions {encoding?: BufferEncoding;}
+    export class Hash extends Transform {
         constructor(algorithm: string, options?: HashOptions);
         update(data: string | ArrayBufferView, inputEncoding?: BufferEncoding): this;
         digest(): Buffer;
@@ -11,15 +12,15 @@ declare module 'node:crypto' {
         digest(encoding: BufferEncoding): string;
         copy(options?: HashOptions): Hash;
     }
-    export class Hmac {
-        constructor(algorithm: string, key: BinaryLike, options?: {encoding?: BufferEncoding});
+    export class Hmac extends Transform {
+        constructor(algorithm: string, key: BinaryLike, options?: HmacOptions);
         update(data: string | ArrayBufferView, inputEncoding?: BufferEncoding): this;
         digest(): Buffer;
         digest(encoding: 'buffer'): Buffer;
         digest(encoding: BufferEncoding): string;
     }
     export function createHash(algorithm: string, options?: HashOptions): Hash;
-    export function createHmac(algorithm: string, key: BinaryLike, options?: {encoding?: BufferEncoding}): Hmac;
+    export function createHmac(algorithm: string, key: BinaryLike, options?: HmacOptions): Hmac;
     export function getHashes(): string[];
     export function hkdfSync(digest: string, ikm: BinaryLike, salt: BinaryLike, info: BinaryLike, keylen: number): ArrayBuffer;
     export function pbkdf2Sync(password: BinaryLike, salt: BinaryLike, iterations: number, keylen: number, digest: string): Buffer;

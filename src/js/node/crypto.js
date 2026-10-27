@@ -1,4 +1,4 @@
-function createCrypto(native) {
+function createCrypto(native, streams) {
     const binding = native.crypto;
     const algorithms = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'blake2b512'];
     const sizes = [16, 20, 28, 32, 48, 64, 64];
@@ -45,6 +45,7 @@ function createCrypto(native) {
         if (!new.target) return new Hash(name, options);
         const id = algorithmId(name);
         outputLength(options, id);
+        streams.Transform.call(this, options);
         states.set(this, {id, handle: binding.create(id, false, empty, 0, 0), done: false, hmac: false});
     }
     function Hmac(name, key, options) {
@@ -52,6 +53,7 @@ function createCrypto(native) {
         const id = algorithmId(name, true);
         const encoding = options !== null && typeof options === 'object' ? options.encoding : undefined;
         const input = bytes(key, 'key', true, true, encoding);
+        streams.Transform.call(this, options);
         states.set(this, {id, handle: binding.create(id, true, ...input), done: false, hmac: true});
     }
     Hash.prototype.update = function update(data, encoding) {
@@ -78,12 +80,29 @@ function createCrypto(native) {
     Hash.prototype.copy = function copy(options) {
         const state = active(this);
         outputLength(options, state.id);
-        const value = Object.create(Hash.prototype);
+        const value = new streams.Transform(options);
+        Object.setPrototypeOf(value, Hash.prototype);
         states.set(value, {id: state.id, handle: binding.copy(state.handle), done: false, hmac: false});
         return value;
     };
     Hmac.prototype.update = Hash.prototype.update;
     Hmac.prototype.digest = Hash.prototype.digest;
+    for (const Constructor of [Hash, Hmac]) {
+        Object.setPrototypeOf(Constructor.prototype, streams.Transform.prototype);
+        Object.setPrototypeOf(Constructor, streams.Transform);
+        Constructor.prototype._transform = function(data, encoding, callback) {
+            try {
+                if (receiver(this).done) throw codedError(Error, 'ERR_CRYPTO_HASH_UPDATE_FAILED', 'Hash update failed');
+                this.update(data, encoding); callback();
+            } catch (error) { callback(error); }
+        };
+        Constructor.prototype._flush = function(callback) {
+            try { this.push(this.digest()); callback(); } catch (error) { callback(error); }
+        };
+        Constructor.prototype._destroy = function(error, callback) {
+            callback(error);
+        };
+    }
     function createHash(algorithm, options) { return new Hash(algorithm, options); }
     function createHmac(algorithm, key, options) { return new Hmac(algorithm, key, options); }
     function getHashes() { return algorithms.slice().sort(); }

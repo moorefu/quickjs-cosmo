@@ -395,6 +395,38 @@
       "task": "M3-04",
       "description": "Async children in Worker/qjsc/SDK with native failure and shutdown probes",
       "timeout_seconds": 120
+    },
+    {
+      "id": "STR-005",
+      "status": "differential",
+      "file": "tests/node/file-streams.mjs",
+      "task": "M3-05",
+      "description": "File streams, inclusive ranges, fd/FileHandle ownership, short IO, hash/compression file pipelines",
+      "timeout_seconds": 120
+    },
+    {
+      "id": "STR-006",
+      "status": "differential",
+      "file": "tests/node/algorithm-streams.mjs",
+      "task": "M3-05",
+      "description": "Incremental Hash/Hmac and nine compression streams, backpressure, dictionary, concat, flush and info",
+      "timeout_seconds": 120
+    },
+    {
+      "id": "STR-007",
+      "status": "differential",
+      "file": "tests/node/algorithm-stream-errors.mjs",
+      "task": "M3-05",
+      "description": "Algorithm stream corruption, truncation, finalization, abort, destroy, params and reset",
+      "timeout_seconds": 120
+    },
+    {
+      "id": "STR-008",
+      "status": "runtime",
+      "file": "tests/runtime_file_algorithm_streams.mjs",
+      "task": "M3-05",
+      "description": "File/algorithm pipelines in source, Worker, qjsc and SDK, quotas, failure and shutdown",
+      "timeout_seconds": 120
     }
   ],
   "modules": [
@@ -11331,26 +11363,80 @@
         },
         {
           "name": "createReadStream",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-05",
-          "parameters": "File streams, inclusive ranges, encoding and autoClose",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
           "tests": [
-            "STR-001"
+            "STR-005"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "File streams use existing async fs tasks and retain fd guards. Inclusive start/end, autoClose, FileHandle, encoding, abort and flush are covered. URL and Windows realpath gaps remain assigned to M5/M6. Custom fs callbacks own their resource behavior; private Node stream fields are not implemented."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-005",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
           ]
         },
         {
           "name": "createWriteStream",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-05",
-          "parameters": "File streams, inclusive ranges, encoding and autoClose",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
           "tests": [
-            "STR-001"
+            "STR-005"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "File streams use existing async fs tasks and retain fd guards. Inclusive start/end, autoClose, FileHandle, encoding, abort and flush are covered. URL and Windows realpath gaps remain assigned to M5/M6. Custom fs callbacks own their resource behavior; private Node stream fields are not implemented."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-005",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
           ]
         },
         {
@@ -11432,6 +11518,162 @@
               "sdk": "partial"
             }
           }
+        },
+        {
+          "name": "ReadStream",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-005"
+          ],
+          "differences": [
+            "File streams use existing async fs tasks and retain fd guards. Inclusive start/end, autoClose, FileHandle, encoding, abort and flush are covered. URL and Windows realpath gaps remain assigned to M5/M6. Custom fs callbacks own their resource behavior; private Node stream fields are not implemented."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-005",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
+        },
+        {
+          "name": "WriteStream",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-005"
+          ],
+          "differences": [
+            "File streams use existing async fs tasks and retain fd guards. Inclusive start/end, autoClose, FileHandle, encoding, abort and flush are covered. URL and Windows realpath gaps remain assigned to M5/M6. Custom fs callbacks own their resource behavior; private Node stream fields are not implemented."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-005",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
+        },
+        {
+          "name": "FileHandle.createReadStream",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-005"
+          ],
+          "differences": [
+            "File streams use existing async fs tasks and retain fd guards. Inclusive start/end, autoClose, FileHandle, encoding, abort and flush are covered. URL and Windows realpath gaps remain assigned to M5/M6. Custom fs callbacks own their resource behavior; private Node stream fields are not implemented."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-005",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
+        },
+        {
+          "name": "FileHandle.createWriteStream",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-005"
+          ],
+          "differences": [
+            "File streams use existing async fs tasks and retain fd guards. Inclusive start/end, autoClose, FileHandle, encoding, abort and flush are covered. URL and Windows realpath gaps remain assigned to M5/M6. Custom fs callbacks own their resource behavior; private Node stream fields are not implemented."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-005",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
         }
       ]
     },
@@ -12514,7 +12756,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -12552,10 +12794,12 @@
             "HASH-001",
             "HASH-002",
             "KDF-001",
-            "HASH-003"
+            "HASH-003",
+            "STR-006",
+            "STR-007"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -12596,7 +12840,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -12637,7 +12881,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -12675,10 +12919,12 @@
             "HASH-001",
             "HASH-002",
             "KDF-001",
-            "HASH-003"
+            "HASH-003",
+            "STR-006",
+            "STR-007"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -12716,10 +12962,12 @@
             "HASH-001",
             "HASH-002",
             "KDF-001",
-            "HASH-003"
+            "HASH-003",
+            "STR-006",
+            "STR-007"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -12760,7 +13008,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -12801,7 +13049,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -12842,7 +13090,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -12883,7 +13131,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -12966,7 +13214,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13007,7 +13255,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13048,7 +13296,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13407,10 +13655,12 @@
             "HASH-001",
             "HASH-002",
             "KDF-001",
-            "HASH-003"
+            "HASH-003",
+            "STR-006",
+            "STR-007"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13448,10 +13698,12 @@
             "HASH-001",
             "HASH-002",
             "KDF-001",
-            "HASH-003"
+            "HASH-003",
+            "STR-006",
+            "STR-007"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13492,7 +13744,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject remains M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13520,6 +13772,86 @@
               "sdk": "partial"
             }
           }
+        },
+        {
+          "name": "Hash.pipe",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-006",
+            "STR-007"
+          ],
+          "differences": [
+            "Transform integration uses the same incremental native hash state, supports encoded output and copy before finalization. Digest algorithms remain the declared M2 subset until M4-02."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
+        },
+        {
+          "name": "Hmac.pipe",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-006",
+            "STR-007"
+          ],
+          "differences": [
+            "Transform integration uses the same incremental native hash state, supports encoded output and copy before finalization. Digest algorithms remain the declared M2 subset until M4-02."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
         }
       ]
     },
@@ -13540,7 +13872,7 @@
             "ZIP-003"
           ],
           "differences": [
-            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+            "Synchronous subset only. Backend versions follow fixed Nightly. info returns buffer/engine metadata; nonzero Zstd nbWorkers remain unsupported."
           ],
           "evidence": [
             "tests/node/compression.mjs",
@@ -13579,7 +13911,7 @@
             "ZIP-003"
           ],
           "differences": [
-            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+            "Synchronous subset only. Backend versions follow fixed Nightly. info returns buffer/engine metadata; nonzero Zstd nbWorkers remain unsupported."
           ],
           "evidence": [
             "tests/node/compression.mjs",
@@ -13618,7 +13950,7 @@
             "ZIP-003"
           ],
           "differences": [
-            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+            "Synchronous subset only. Backend versions follow fixed Nightly. info returns buffer/engine metadata; nonzero Zstd nbWorkers remain unsupported."
           ],
           "evidence": [
             "tests/node/compression.mjs",
@@ -13657,7 +13989,7 @@
             "ZIP-003"
           ],
           "differences": [
-            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+            "Synchronous subset only. Backend versions follow fixed Nightly. info returns buffer/engine metadata; nonzero Zstd nbWorkers remain unsupported."
           ],
           "evidence": [
             "tests/node/compression.mjs",
@@ -13696,7 +14028,7 @@
             "ZIP-003"
           ],
           "differences": [
-            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+            "Synchronous subset only. Backend versions follow fixed Nightly. info returns buffer/engine metadata; nonzero Zstd nbWorkers remain unsupported."
           ],
           "evidence": [
             "tests/node/compression.mjs",
@@ -13735,7 +14067,7 @@
             "ZIP-003"
           ],
           "differences": [
-            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+            "Synchronous subset only. Backend versions follow fixed Nightly. info returns buffer/engine metadata; nonzero Zstd nbWorkers remain unsupported."
           ],
           "evidence": [
             "tests/node/compression.mjs",
@@ -13774,7 +14106,7 @@
             "ZIP-003"
           ],
           "differences": [
-            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+            "Synchronous subset only. Backend versions follow fixed Nightly. info returns buffer/engine metadata; nonzero Zstd nbWorkers remain unsupported."
           ],
           "evidence": [
             "tests/node/compression.mjs",
@@ -13813,7 +14145,7 @@
             "ZIP-003"
           ],
           "differences": [
-            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+            "Synchronous subset only. Backend versions follow fixed Nightly. info returns buffer/engine metadata; nonzero Zstd nbWorkers remain unsupported."
           ],
           "evidence": [
             "tests/node/compression.mjs",
@@ -13852,7 +14184,7 @@
             "ZIP-003"
           ],
           "differences": [
-            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+            "Synchronous subset only. Backend versions follow fixed Nightly. info returns buffer/engine metadata; nonzero Zstd nbWorkers remain unsupported."
           ],
           "evidence": [
             "tests/node/compression.mjs",
@@ -13891,7 +14223,7 @@
             "ZIP-003"
           ],
           "differences": [
-            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+            "Synchronous subset only. Backend versions follow fixed Nightly. info returns buffer/engine metadata; nonzero Zstd nbWorkers remain unsupported."
           ],
           "evidence": [
             "tests/node/compression.mjs",
@@ -13930,7 +14262,7 @@
             "ZIP-003"
           ],
           "differences": [
-            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+            "Synchronous subset only. Backend versions follow fixed Nightly. info returns buffer/engine metadata; nonzero Zstd nbWorkers remain unsupported."
           ],
           "evidence": [
             "tests/node/compression.mjs",
@@ -13967,7 +14299,7 @@
             "ZIP-005"
           ],
           "differences": [
-            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath boundaries are documented in docs/M3_ASYNC.md."
           ],
           "support": {
             "linux": {
@@ -14006,7 +14338,7 @@
             "ZIP-005"
           ],
           "differences": [
-            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath boundaries are documented in docs/M3_ASYNC.md."
           ],
           "support": {
             "linux": {
@@ -14045,7 +14377,7 @@
             "ZIP-005"
           ],
           "differences": [
-            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath boundaries are documented in docs/M3_ASYNC.md."
           ],
           "support": {
             "linux": {
@@ -14084,7 +14416,7 @@
             "ZIP-005"
           ],
           "differences": [
-            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath boundaries are documented in docs/M3_ASYNC.md."
           ],
           "support": {
             "linux": {
@@ -14123,7 +14455,7 @@
             "ZIP-005"
           ],
           "differences": [
-            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath boundaries are documented in docs/M3_ASYNC.md."
           ],
           "support": {
             "linux": {
@@ -14162,7 +14494,7 @@
             "ZIP-005"
           ],
           "differences": [
-            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath boundaries are documented in docs/M3_ASYNC.md."
           ],
           "support": {
             "linux": {
@@ -14201,7 +14533,7 @@
             "ZIP-005"
           ],
           "differences": [
-            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath boundaries are documented in docs/M3_ASYNC.md."
           ],
           "support": {
             "linux": {
@@ -14240,7 +14572,7 @@
             "ZIP-005"
           ],
           "differences": [
-            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath boundaries are documented in docs/M3_ASYNC.md."
           ],
           "support": {
             "linux": {
@@ -14279,7 +14611,7 @@
             "ZIP-005"
           ],
           "differences": [
-            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath boundaries are documented in docs/M3_ASYNC.md."
           ],
           "support": {
             "linux": {
@@ -14311,110 +14643,362 @@
         },
         {
           "name": "createGzip",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-05",
-          "parameters": "Transform streams with state, flush and backpressure",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
           "tests": [
-            "STR-001"
+            "STR-006",
+            "STR-007"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
           ]
         },
         {
           "name": "createGunzip",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-05",
-          "parameters": "Transform streams with state, flush and backpressure",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
           "tests": [
-            "STR-001"
+            "STR-006",
+            "STR-007"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
           ]
         },
         {
           "name": "createDeflate",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-05",
-          "parameters": "Transform streams with state, flush and backpressure",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
           "tests": [
-            "STR-001"
+            "STR-006",
+            "STR-007"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
           ]
         },
         {
           "name": "createInflate",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-05",
-          "parameters": "Transform streams with state, flush and backpressure",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
           "tests": [
-            "STR-001"
+            "STR-006",
+            "STR-007"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
           ]
         },
         {
           "name": "createDeflateRaw",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-05",
-          "parameters": "Transform streams with state, flush and backpressure",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
           "tests": [
-            "STR-001"
+            "STR-006",
+            "STR-007"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
           ]
         },
         {
           "name": "createInflateRaw",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-05",
-          "parameters": "Transform streams with state, flush and backpressure",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
           "tests": [
-            "STR-001"
+            "STR-006",
+            "STR-007"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
           ]
         },
         {
           "name": "createUnzip",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-05",
-          "parameters": "Transform streams with state, flush and backpressure",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
           "tests": [
-            "STR-001"
+            "STR-006",
+            "STR-007"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
           ]
         },
         {
           "name": "createZstdCompress",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-05",
-          "parameters": "Transform streams with state, flush and backpressure",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
           "tests": [
-            "STR-001"
+            "STR-006",
+            "STR-007"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
           ]
         },
         {
           "name": "createZstdDecompress",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-05",
-          "parameters": "Transform streams with state, flush and backpressure",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
           "tests": [
-            "STR-001"
+            "STR-006",
+            "STR-007"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
           ]
         },
         {
@@ -14428,7 +15012,7 @@
             "ZIP-003"
           ],
           "differences": [
-            "Synchronous subset only. Backend versions follow fixed Nightly. info engine objects and nonzero Zstd nbWorkers await stream/task support."
+            "Synchronous subset only. Backend versions follow fixed Nightly. info returns buffer/engine metadata; nonzero Zstd nbWorkers remain unsupported."
           ],
           "evidence": [
             "tests/node/compression.mjs",
@@ -14455,6 +15039,606 @@
               "sdk": "partial"
             }
           }
+        },
+        {
+          "name": "Deflate",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-006",
+            "STR-007"
+          ],
+          "differences": [
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
+        },
+        {
+          "name": "Inflate",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-006",
+            "STR-007"
+          ],
+          "differences": [
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
+        },
+        {
+          "name": "Gzip",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-006",
+            "STR-007"
+          ],
+          "differences": [
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
+        },
+        {
+          "name": "Gunzip",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-006",
+            "STR-007"
+          ],
+          "differences": [
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
+        },
+        {
+          "name": "DeflateRaw",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-006",
+            "STR-007"
+          ],
+          "differences": [
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
+        },
+        {
+          "name": "InflateRaw",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-006",
+            "STR-007"
+          ],
+          "differences": [
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
+        },
+        {
+          "name": "Unzip",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-006",
+            "STR-007"
+          ],
+          "differences": [
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
+        },
+        {
+          "name": "ZstdCompress",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-006",
+            "STR-007"
+          ],
+          "differences": [
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
+        },
+        {
+          "name": "ZstdDecompress",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-006",
+            "STR-007"
+          ],
+          "differences": [
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
+        },
+        {
+          "name": "Gzip.flush",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-006",
+            "STR-007"
+          ],
+          "differences": [
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
+        },
+        {
+          "name": "Gzip.reset",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-006",
+            "STR-007"
+          ],
+          "differences": [
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
+        },
+        {
+          "name": "Gzip.close",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-006",
+            "STR-007"
+          ],
+          "differences": [
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
+        },
+        {
+          "name": "Deflate.params",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-006",
+            "STR-007"
+          ],
+          "differences": [
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
+        },
+        {
+          "name": "Gzip.params",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-006",
+            "STR-007"
+          ],
+          "differences": [
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
+        },
+        {
+          "name": "DeflateRaw.params",
+          "status": "partial",
+          "task": "M3-05",
+          "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
+          "tests": [
+            "STR-006",
+            "STR-007"
+          ],
+          "differences": [
+            "Gzip/zlib/raw-deflate and Zstd use persistent pinned codec state; each task copies at most 64 KiB input/output. Prepaid codec arenas are 1 MiB for zlib and 16 MiB for Zstd and count against the runtime quota; large Zstd workspaces can fail with OOM. No backend workers, Brotli or extension Transform constructors. See docs/M3_FILE_ALGORITHM_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            }
+          ]
         }
       ]
     },

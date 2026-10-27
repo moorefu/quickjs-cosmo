@@ -1,4 +1,4 @@
-function createCompression(native) {
+function createCompression(native, streams) {
     const binding = native.compression;
     const versions = binding.versions();
     const empty = new ArrayBuffer(0);
@@ -30,7 +30,7 @@ function createCompression(native) {
         /* Node's zlib constructors read options by property access. */
         return value;
     }
-    function perform(mode, input, supplied, asynchronous=false) {
+    function perform(mode, input, supplied, asynchronous=false, preparing=false) {
         const options = optionsObject(supplied);
         const zstd = mode === 7 || mode === 8, extension = mode >= 9;
         let window = 15, level = -1, memory = 8, strategy = 0;
@@ -77,26 +77,106 @@ function createCompression(native) {
         const finish = range(options.finishFlush, 'options.finishFlush', 0, zstd ? 2 : 5, zstd ? 2 : 4);
         const maximum = range(options.maxOutputLength, 'options.maxOutputLength', 1, 0x7fffffff, 0x7fffffff);
         const reject = boolean(options.rejectGarbageAfterEnd, 'options.rejectGarbageAfterEnd', false);
-        if (options.info) throw codedError(Error, 'ERR_NOT_SUPPORTED', 'Compression engine objects are enabled with streams');
         const checksum = mode === 9 || mode === 10 ? boolean(options.checksum, 'options.checksum', false) : false;
         const blockSize = mode === 9 || mode === 10 ? integer(options.blockSize ?? 0, 'options.blockSize', 0, 7) : 0;
         if (extension && blockSize !== 0 && blockSize < 4) throw outOfRange('options.blockSize');
         const small = mode >= 11 ? boolean(options.small, 'options.small', false) : false;
         const data = bytes(input);
         const args=[mode,...data,[maximum,chunk,window,level,memory,strategy,finish,+reject,+checksum,blockSize,+small],...dictionary,params,pledged];
-        if(!asynchronous)return Buffer.from(binding.run(...args));
+        if(preparing)return args;
+        const complete=value=>{
+            const buffer=Buffer.from(value);
+            if(!options.info)return buffer;
+            if(mode>=9)throw codedError(Error,'ERR_NOT_SUPPORTED','Extension engine objects are not enabled');
+            const engine=new constructors[mode]({...options,info:false});engine.bytesWritten=data[2];engine.destroy();
+            return {buffer,engine};
+        };
+        if(!asynchronous)return complete(binding.run(...args));
         const signal=options.signal;
         if(signal!==undefined && (signal===null || typeof signal!=='object' || typeof signal.aborted!=='boolean' || typeof signal.addEventListener!=='function'))throw invalidType('options.signal','an AbortSignal');
         const aborted=()=>{const e=codedError(Error,'ABORT_ERR','The operation was aborted');e.name='AbortError';e.cause=signal.reason;return e;};
         if(signal?.aborted)return Promise.reject(aborted());
         const job=binding.runAsync(...args),cancel=()=>binding.cancel(job.id);
         signal?.addEventListener('abort',cancel,{once:true});
-        return job.promise.then(value=>Buffer.from(value),error=>{if(signal?.aborted)throw aborted();throw error;}).finally(()=>signal?.removeEventListener('abort',cancel));
+        return job.promise.then(complete,error=>{if(signal?.aborted)throw aborted();throw error;}).finally(()=>signal?.removeEventListener('abort',cancel));
     }
     const api = {constants, codes};
     const names = ['deflateSync','inflateSync','gzipSync','gunzipSync','deflateRawSync','inflateRawSync','unzipSync',
         'zstdCompressSync','zstdDecompressSync','lz4CompressSync','lz4DecompressSync','bzip2CompressSync','bzip2DecompressSync'];
     const extensions = {};
+    const streamStates=new WeakMap(),markers=new WeakMap(),constructors=[];
+    const constructorNames=['Deflate','Inflate','Gzip','Gunzip','DeflateRaw','InflateRaw','Unzip','ZstdCompress','ZstdDecompress'];
+    function Codec() {}
+    Object.setPrototypeOf(Codec.prototype,streams.Transform.prototype);Object.setPrototypeOf(Codec,streams.Transform);
+    Codec.prototype._read=function(size){
+        const state=streamStates.get(this),resume=state?.resume;
+        if(resume){state.resume=null;resume();}
+        streams.Transform.prototype._read.call(this,size);
+    };
+    async function processBlock(stream,data,flush,parameters) {
+        const state=streamStates.get(stream);let offset=0,more=true,first=true;
+        while(more && !stream.destroyed){
+            const take=data.subarray(offset,offset+65536);
+            const result=await binding.streamStep(state.handle,...bytes(take),state.chunk,offset+take.length<data.length?state.flush:flush,
+                first&&parameters?parameters[0]:-100,first&&parameters?parameters[1]:0);
+            first=false;offset+=result.consumed;stream.bytesWritten+=result.consumed;
+            const output=Buffer.from(result.buffer);
+            if(output.length && !stream.destroyed && !stream.push(output))await new Promise(resolve=>{state.resume=resolve;});
+            if(!result.consumed && !output.length)break;
+            more=offset<data.length || output.length===state.chunk && !result.ended;
+        }
+    }
+    Codec.prototype._transform=function(data,encoding,callback){
+        const state=streamStates.get(this),marker=markers.get(data.buffer);
+        state.active=processBlock(this,data,marker?.flush??state.flush);
+        if(marker?.params)state.active=state.active.then(()=>processBlock(this,Buffer.alloc(0),constants.Z_NO_FLUSH,marker.params));
+        state.active.then(()=>{state.active=null;callback();},error=>{state.active=null;callback(error);});
+    };
+    Codec.prototype._flush=function(callback){
+        const state=streamStates.get(this);state.active=processBlock(this,Buffer.alloc(0),state.finish);
+        state.active.then(()=>{state.active=null;callback();},error=>{state.active=null;callback(error);});
+    };
+    Codec.prototype._destroy=function(error,callback){
+        const state=streamStates.get(this);
+        if(!state){callback(error);return;}
+        if(state.resume){const resume=state.resume;state.resume=null;resume();}
+        const close=()=>{binding.streamClose(state.handle);callback(error);};
+        if(state.active)state.active.then(close,close);else close();
+    };
+    Codec.prototype.flush=function(kind,callback){
+        const state=streamStates.get(this);
+        if(typeof kind==='function'){callback=kind;kind=undefined;}
+        kind=range(kind,'kind',0,state.mode<7?5:2,state.mode<7?3:1);
+        if(callback!==undefined && typeof callback!=='function')throw invalidType('callback','a function');
+        if(this.writableFinished){if(callback)queueMicrotask(callback);return;}
+        const marker=Buffer.alloc(0);markers.set(marker.buffer,{flush:kind});this.write(marker,callback);
+    };
+    Codec.prototype.close=function(callback){
+        if(callback!==undefined && typeof callback!=='function')throw invalidType('callback','a function');
+        if(callback){if(this.closed)queueMicrotask(callback);else this.once('close',callback);}this.destroy();
+    };
+    Codec.prototype.reset=function(){const state=streamStates.get(this);binding.streamReset(state.handle);};
+    Codec.prototype.params=function(level,strategy,callback){
+        const state=streamStates.get(this);
+        if(![0,2,4].includes(state.mode))throw codedError(Error,'ERR_NOT_SUPPORTED','params applies to deflate streams');
+        level=range(level,'level',-1,9,-1);strategy=range(strategy,'strategy',0,4,0);
+        if(typeof callback!=='function')throw invalidType('callback','a function');
+        const marker=Buffer.alloc(0);markers.set(marker.buffer,{flush:constants.Z_SYNC_FLUSH,params:[level,strategy]});this.write(marker,callback);
+    };
+    for(let mode=0;mode<9;mode++){
+        const name=constructorNames[mode];
+        const Constructor={[name]:function(options){
+            if(!(this instanceof Constructor))return new Constructor(options);
+            const opts=optionsObject(options),args=perform(mode,Buffer.alloc(0),opts,false,true);
+            const streamOptions={...opts};delete streamOptions.flush;
+            streams.Transform.call(this,streamOptions);
+            const handle=binding.streamCreate(...args);
+            streamStates.set(this,{mode,handle,chunk:Math.min(65536,args[4][1]),flush:range(opts.flush,'options.flush',0,mode<7?5:2,0),finish:args[4][6],active:null,resume:null});
+            this.bytesWritten=0;
+        }}[name];
+        Object.setPrototypeOf(Constructor.prototype,Codec.prototype);Object.setPrototypeOf(Constructor,Codec);
+        constructors.push(Constructor);api[name]=Constructor;api['create'+name]=options=>new Constructor(options);
+    }
     for (let mode=0;mode<names.length;mode++) {
         const name = names[mode];
         const fn = {[name](input, options) { return perform(mode, input, options); }}[name];

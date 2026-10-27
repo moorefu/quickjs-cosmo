@@ -76,6 +76,7 @@ declare module 'node:stream' {
     export function finished(stream:Stream,options:FinishedOptions,callback:StreamCallback):()=>void;
     export function pipeline<T extends Writable>(source:Readable|Iterable<any>|AsyncIterable<any>,destination:T,callback:StreamCallback):T;
     export function pipeline<T extends Writable>(source:Readable|Iterable<any>|AsyncIterable<any>,transform:Duplex,destination:T,callback:StreamCallback):T;
+    export function pipeline<T extends Writable>(source:Readable|Iterable<any>|AsyncIterable<any>,...streams:[...Duplex[],T,StreamCallback]):T;
     export function pipeline(streams:Stream[],callback:StreamCallback):Writable;
     export function addAbortSignal<T extends Stream>(signal:AbortSignal,stream:T):T;
     export const promises:typeof import('node:stream/promises');
@@ -87,6 +88,8 @@ declare module 'node:stream/promises' {
     export function finished(stream:Stream,options?:FinishedOptions):Promise<void>;
     export function pipeline(source:Readable|Iterable<any>|AsyncIterable<any>,destination:Writable,options?:PipelineOptions):Promise<void>;
     export function pipeline(source:Readable|Iterable<any>|AsyncIterable<any>,transform:Duplex,destination:Writable,options?:PipelineOptions):Promise<void>;
+    export function pipeline(source:Readable|Iterable<any>|AsyncIterable<any>,...streams:[...Duplex[],Writable]):Promise<void>;
+    export function pipeline(source:Readable|Iterable<any>|AsyncIterable<any>,...streams:[...Duplex[],Writable,PipelineOptions]):Promise<void>;
     export function pipeline(streams:Stream[],options?:PipelineOptions):Promise<void>;
     const promises:{finished:typeof finished;pipeline:typeof pipeline};export default promises;
 }

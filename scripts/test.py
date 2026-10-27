@@ -108,6 +108,7 @@ def main():
     check("custom/runtime-compression", [qjs, "-m", ROOT / "tests/runtime_compression.mjs"], contains="PASS runtime-compression")
     check("custom/runtime-child-process", [qjs, "-m", ROOT / "tests/runtime_child_process.mjs"], contains="PASS runtime-child-process")
     check("custom/runtime-async", [qjs, "-m", ROOT / "tests/runtime_async.mjs"], contains="PASS runtime-async", timeout=120)
+    check("custom/runtime-file-algorithm-streams", [qjs, "-m", ROOT / "tests/runtime_file_algorithm_streams.mjs"], contains="PASS runtime-file-algorithm-streams", timeout=120)
     check("custom/runtime-stream", [qjs, "-m", ROOT / "tests/runtime_stream.mjs"], contains="PASS runtime-stream", timeout=120)
     check("custom/runtime-child-process-async", [qjs, "-m", ROOT / "tests/runtime_child_process_async.mjs"], contains="PASS runtime-child-process-async", timeout=120)
     check("custom/unknown-builtin", [qjs, "-m", ROOT / "tests/fixtures/unknown-builtin.mjs"],
@@ -151,6 +152,14 @@ def main():
         if not valid:
             print("FAIL generated C has no bytecode array", flush=True)
     if args.compile:
+        if check("qjsc/compile-file-algorithm-streams-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/file-algorithm-stream-worker.mjs",
+                 "-o", scratch / "file-algorithm-streams-standalone.exe", ROOT / "tests/runtime_file_algorithm_streams.mjs"], timeout=180):
+            check("qjsc/run-file-algorithm-streams-ape", [scratch / "file-algorithm-streams-standalone.exe"], contains="PASS runtime-file-algorithm-streams", timeout=120)
+        if check("sdk/compile-file-algorithm-streams", [settings.toolchain / "bin/cosmocc", "-O2", "-I" + str(settings.dist),
+                 ROOT / "tests/native/file_algorithm_streams.c", settings.dist / "libquickjs.a", "-lm", "-lpthread", "-ldl",
+                 "-Wl,--wrap=_Exit,-u,__wrap__Exit", "-Wl,--wrap=js_malloc_rt,--wrap=js_malloc",
+                 "-o", scratch / "file-algorithm-streams-sdk.exe"], timeout=180):
+            check("sdk/run-file-algorithm-streams", [scratch / "file-algorithm-streams-sdk.exe"], contains="PASS file-algorithm-stream-sdk", timeout=120)
         if check("qjsc/compile-child-process-async-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/child-process-async-worker.mjs",
                  "-o", scratch / "child-process-async-standalone.exe", ROOT / "tests/runtime_child_process_async.mjs"], timeout=180):
             check("qjsc/run-child-process-async-ape", [scratch / "child-process-async-standalone.exe"], contains="PASS runtime-child-process-async", timeout=120)
@@ -241,6 +250,8 @@ def main():
                  timeout=180):
             check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
+        check("qjsc/cross-host-file-algorithm-streams", [args.standalone.resolve().parent / "file-algorithm-streams-standalone.exe"], contains="PASS runtime-file-algorithm-streams", timeout=120)
+        check("sdk/cross-host-file-algorithm-streams", [args.standalone.resolve().parent / "file-algorithm-streams-sdk.exe"], contains="PASS file-algorithm-stream-sdk", timeout=120)
         check("qjsc/cross-host-child-process-async", [args.standalone.resolve().parent / "child-process-async-standalone.exe"], contains="PASS runtime-child-process-async", timeout=120)
         check("sdk/cross-host-child-process-async", [args.standalone.resolve().parent / "child-process-async-sdk.exe"], contains="PASS child-process-async-sdk", timeout=120)
         check("qjsc/cross-host-stream", [args.standalone.resolve().parent / "stream-standalone.exe"], contains="PASS runtime-stream", timeout=120)

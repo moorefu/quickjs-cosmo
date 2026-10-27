@@ -1,10 +1,12 @@
-const emitterStates = new WeakMap();
+// QuickJS marks WeakMap values strongly. Listener closures can point back to
+// the emitter, so keep the map on its owner instead of rooting that cycle.
+const emitterStateKey = Symbol('events.state');
 const errorMonitor = Symbol('events.errorMonitor');
 function emitterState(emitter) {
     if ((typeof emitter !== 'object' && typeof emitter !== 'function') || emitter === null)
         throw invalidType('this', 'an EventEmitter');
-    let state = emitterStates.get(emitter);
-    if (!state) emitterStates.set(emitter, state = new Map());
+    let state = Object.prototype.hasOwnProperty.call(emitter, emitterStateKey) ? emitter[emitterStateKey] : undefined;
+    if (!state) Object.defineProperty(emitter, emitterStateKey, {value: state = new Map()});
     return state;
 }
 function EventEmitter(options) {

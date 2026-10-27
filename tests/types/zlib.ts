@@ -10,8 +10,8 @@ const version:string=compression.codecInfo('lz4').version;
 const check:number=zlib.crc32(new Uint8Array(4));
 void [zipped,restored,zstd,lz4,bz,version,check];
 zlib.gzip('abc',()=>{});
-// @ts-expect-error Engine stream objects belong to M3-05.
-gzipSync('abc',{info:true});
+const info:Buffer=gzipSync('abc',{info:true}).buffer;
+const engine:import('node:zlib').Gzip=gzipSync('abc',{info:true}).engine;
 // @ts-expect-error CRC32 accepts views but no plain ArrayBuffer.
 zlib.crc32(new ArrayBuffer(1));
 // @ts-expect-error Brotli is outside this plan.

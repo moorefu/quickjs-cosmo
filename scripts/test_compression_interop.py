@@ -114,6 +114,13 @@ def main():
                     execute('qjs','compress',codec,source,encoded,options)
                     if decompress(encoded.read_bytes())!=data: raise ValueError(codec+' failed independent encode')
                 cases.append(dict(codec=codec,length=len(data),directions=['external-to-qjs','qjs-to-external'],passed=True))
+                if codec in ('gzip','zlib','raw'):
+                    encoded.write_bytes(compress(data))
+                    execute('qjs','decompress',codec,encoded,decoded,{'stream':True})
+                    if decoded.read_bytes()!=data: raise ValueError(codec+' stream failed independent decode')
+                    execute('qjs','compress',codec,source,encoded,{'stream':True})
+                    if decompress(encoded.read_bytes())!=data: raise ValueError(codec+' stream failed independent encode')
+                    cases.append(dict(codec=codec,stream=True,length=len(data),directions=['external-to-qjs','qjs-to-external'],passed=True))
         for data in payloads:
             source.write_bytes(data)
             for encoder,decoder in (('node','qjs'),('qjs','node')):
@@ -121,6 +128,11 @@ def main():
                 execute(decoder,'decompress','zstd',encoded,decoded)
                 if decoded.read_bytes()!=data: raise ValueError('Zstd cross-runtime mismatch')
             cases.append(dict(codec='zstd',length=len(data),directions=['node-to-qjs','qjs-to-node'],passed=True))
+            for encoder,decoder in (('node','qjs'),('qjs','node')):
+                execute(encoder,'compress','zstd',source,encoded,{'stream':True,'params':{'201':1}})
+                execute(decoder,'decompress','zstd',encoded,decoded,{'stream':True})
+                if decoded.read_bytes()!=data: raise ValueError('Zstd stream cross-runtime mismatch')
+            cases.append(dict(codec='zstd',stream=True,length=len(data),directions=['node-to-qjs','qjs-to-node'],passed=True))
     path=ROOT/'build/interop/compression.json'
     write_report(path,dict(format=1,passed=True,node=identity,lz4=lz4_identity,
         python=dict(version=platform.python_version(),zlib=zlib.ZLIB_RUNTIME_VERSION),cases=cases))

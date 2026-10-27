@@ -1,4 +1,4 @@
-function createFs(native, path) {
+function createFs(native, path, streams) {
     const binding = native.fs, windows = native.platform === 'win32';
     const constants = Object.freeze({...binding.constants});
     const maxIO = 0x7fffffff, types = new WeakMap();
@@ -378,5 +378,7 @@ function createFs(native, path) {
         ftruncateSync(number,length=0) { number=fd(number); integer(length,'len',-Number.MAX_SAFE_INTEGER,Number.MAX_SAFE_INTEGER); binding.truncate(number,Math.max(0,length)); },
         fsyncSync(number) { binding.sync(fd(number)); }
     };
-    return Object.assign(api,createFsAsync(native,path,{options,encoding,fd,isFd,mode,flags,bytes,display,join,parent,view,position,makeStats,Dirent,boolean},api));
+    Object.assign(api,createFsAsync(native,path,{options,encoding,fd,isFd,mode,flags,bytes,display,join,parent,view,position,makeStats,Dirent,boolean},api));
+    Object.assign(api, createFileStreams(api, streams, {options, bytes, display, fd, mode, flags}));
+    return api;
 }
