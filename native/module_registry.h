@@ -29,6 +29,15 @@ void js_cosmo_env_lock(void);
 void js_cosmo_env_unlock(void);
 char **js_cosmo_copy_environment(void);
 void js_cosmo_free_environment(char **snapshot);
+/* Host event-loop bridge. Timer flags: ref=1, immediate=2, Node timer=4. */
+JSValue js_cosmo_start_timer(JSContext *ctx, JSValueConst callback, int64_t delay, int flags);
+void js_cosmo_cancel_timer(JSContext *ctx, int timer_id);
+int js_cosmo_ref_timer(JSContext *ctx, int timer_id, int referenced);
+int js_cosmo_checkpoint(JSContext *ctx, int ticks_first);
+int js_cosmo_scheduler_stopped(JSContext *ctx);
+int js_cosmo_before_exit(JSContext *ctx);
+void js_cosmo_finish_loop(JSContext *ctx, int unsettled);
+void js_cosmo_check_rejections(JSContext *ctx);
 
 #ifdef __cplusplus
 }

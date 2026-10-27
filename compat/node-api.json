@@ -69,8 +69,8 @@
     },
     {
       "id": "EVT-001",
-      "status": "planned",
-      "file": null,
+      "status": "differential",
+      "file": "tests/node/event-loop.mjs",
       "task": "M1-04",
       "description": "Microtask/timer ordering, callback events and liveness",
       "timeout_seconds": 30
@@ -219,6 +219,14 @@
       "description": "stdout/stderr formatting, assertion output and UTF-8 replacement",
       "timeout_seconds": 30,
       "compare_output": true
+    },
+    {
+      "id": "ABORT-001",
+      "status": "differential",
+      "file": "tests/node/abort.mjs",
+      "task": "M1-04",
+      "description": "AbortController/Signal, cancellation, EventTarget dispatch and errors",
+      "timeout_seconds": 30
     }
   ],
   "modules": [
@@ -3977,7 +3985,7 @@
             "ENTRY-001"
           ],
           "differences": [
-            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Natural beforeExit/exit events and nextTick are M1-04."
+            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Scheduling and exit events are provided by M1-04; uncaughtException/unhandledRejection event interception is outside the subset."
           ],
           "support": {
             "linux": {
@@ -3987,10 +3995,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4017,7 +4025,7 @@
             "ENTRY-001"
           ],
           "differences": [
-            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Natural beforeExit/exit events and nextTick are M1-04."
+            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Scheduling and exit events are provided by M1-04; uncaughtException/unhandledRejection event interception is outside the subset."
           ],
           "support": {
             "linux": {
@@ -4027,10 +4035,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4057,7 +4065,7 @@
             "ENTRY-001"
           ],
           "differences": [
-            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Natural beforeExit/exit events and nextTick are M1-04."
+            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Scheduling and exit events are provided by M1-04; uncaughtException/unhandledRejection event interception is outside the subset."
           ],
           "support": {
             "linux": {
@@ -4067,10 +4075,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4097,7 +4105,7 @@
             "ENTRY-001"
           ],
           "differences": [
-            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Natural beforeExit/exit events and nextTick are M1-04."
+            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Scheduling and exit events are provided by M1-04; uncaughtException/unhandledRejection event interception is outside the subset."
           ],
           "support": {
             "linux": {
@@ -4107,10 +4115,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4137,7 +4145,7 @@
             "ENTRY-001"
           ],
           "differences": [
-            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Natural beforeExit/exit events and nextTick are M1-04."
+            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Scheduling and exit events are provided by M1-04; uncaughtException/unhandledRejection event interception is outside the subset."
           ],
           "support": {
             "linux": {
@@ -4147,10 +4155,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4177,7 +4185,7 @@
             "ENTRY-001"
           ],
           "differences": [
-            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Natural beforeExit/exit events and nextTick are M1-04."
+            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Scheduling and exit events are provided by M1-04; uncaughtException/unhandledRejection event interception is outside the subset."
           ],
           "support": {
             "linux": {
@@ -4187,10 +4195,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4217,7 +4225,7 @@
             "ENTRY-001"
           ],
           "differences": [
-            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Natural beforeExit/exit events and nextTick are M1-04."
+            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Scheduling and exit events are provided by M1-04; uncaughtException/unhandledRejection event interception is outside the subset."
           ],
           "support": {
             "linux": {
@@ -4227,10 +4235,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4257,7 +4265,7 @@
             "ENTRY-001"
           ],
           "differences": [
-            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Natural beforeExit/exit events and nextTick are M1-04."
+            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Scheduling and exit events are provided by M1-04; uncaughtException/unhandledRejection event interception is outside the subset."
           ],
           "support": {
             "linux": {
@@ -4267,10 +4275,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4297,7 +4305,7 @@
             "ENTRY-001"
           ],
           "differences": [
-            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Natural beforeExit/exit events and nextTick are M1-04."
+            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Scheduling and exit events are provided by M1-04; uncaughtException/unhandledRejection event interception is outside the subset."
           ],
           "support": {
             "linux": {
@@ -4307,10 +4315,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4337,7 +4345,7 @@
             "ENTRY-001"
           ],
           "differences": [
-            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Natural beforeExit/exit events and nextTick are M1-04."
+            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Scheduling and exit events are provided by M1-04; uncaughtException/unhandledRejection event interception is outside the subset."
           ],
           "support": {
             "linux": {
@@ -4347,10 +4355,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4377,7 +4385,7 @@
             "ENTRY-001"
           ],
           "differences": [
-            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Natural beforeExit/exit events and nextTick are M1-04."
+            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Scheduling and exit events are provided by M1-04; uncaughtException/unhandledRejection event interception is outside the subset."
           ],
           "support": {
             "linux": {
@@ -4387,10 +4395,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4417,7 +4425,7 @@
             "ENTRY-001"
           ],
           "differences": [
-            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Natural beforeExit/exit events and nextTick are M1-04."
+            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Scheduling and exit events are provided by M1-04; uncaughtException/unhandledRejection event interception is outside the subset."
           ],
           "support": {
             "linux": {
@@ -4427,10 +4435,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4457,7 +4465,7 @@
             "ENTRY-001"
           ],
           "differences": [
-            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Natural beforeExit/exit events and nextTick are M1-04."
+            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Scheduling and exit events are provided by M1-04; uncaughtException/unhandledRejection event interception is outside the subset."
           ],
           "support": {
             "linux": {
@@ -4467,10 +4475,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4497,7 +4505,7 @@
             "ENTRY-001"
           ],
           "differences": [
-            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Natural beforeExit/exit events and nextTick are M1-04."
+            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Scheduling and exit events are provided by M1-04; uncaughtException/unhandledRejection event interception is outside the subset."
           ],
           "support": {
             "linux": {
@@ -4507,10 +4515,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4537,7 +4545,7 @@
             "ENTRY-001"
           ],
           "differences": [
-            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Natural beforeExit/exit events and nextTick are M1-04."
+            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Scheduling and exit events are provided by M1-04; uncaughtException/unhandledRejection event interception is outside the subset."
           ],
           "support": {
             "linux": {
@@ -4547,10 +4555,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4577,7 +4585,53 @@
             "ENTRY-001"
           ],
           "differences": [
-            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Natural beforeExit/exit events and nextTick are M1-04."
+            "Real QuickJS/Cosmopolitan versions; Worker env/argv snapshots and restricted exit/chdir. Scheduling and exit events are provided by M1-04; uncaughtException/unhandledRejection event interception is outside the subset."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "ENV-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source fixed Node oracle; representative Worker/qjsc/SDK and real PID/entry checks in build/test-results/<platform>.json"
+            }
+          ]
+        },
+        {
+          "name": "nextTick",
+          "status": "partial",
+          "task": "M1-04",
+          "parameters": "Separate nextTick queue; ESM entry and callback microtask checkpoints",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
           ],
           "support": {
             "linux": {
@@ -4598,14 +4652,7 @@
               "qjsc": "partial",
               "sdk": "partial"
             }
-          },
-          "evidence": [
-            {
-              "test": "ENV-001",
-              "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source fixed Node oracle; representative Worker/qjsc/SDK and real PID/entry checks in build/test-results/<platform>.json"
-            }
-          ]
+          }
         }
       ]
     },
@@ -4634,10 +4681,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4673,10 +4720,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4712,10 +4759,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4751,10 +4798,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4790,10 +4837,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4829,10 +4876,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4868,10 +4915,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4907,10 +4954,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4946,10 +4993,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -4985,10 +5032,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5024,10 +5071,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5063,10 +5110,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5102,10 +5149,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5141,10 +5188,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5180,10 +5227,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5219,10 +5266,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5266,10 +5313,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5305,10 +5352,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5344,10 +5391,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5383,10 +5430,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5422,10 +5469,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5461,10 +5508,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5500,10 +5547,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5539,10 +5586,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5578,10 +5625,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5617,10 +5664,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5656,10 +5703,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5695,10 +5742,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5734,10 +5781,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5773,10 +5820,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5812,10 +5859,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5851,10 +5898,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5898,10 +5945,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5937,10 +5984,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -5976,10 +6023,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6015,10 +6062,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6054,10 +6101,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6093,10 +6140,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6132,10 +6179,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6171,10 +6218,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6210,10 +6257,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6249,10 +6296,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6288,10 +6335,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6327,10 +6374,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6366,10 +6413,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6405,10 +6452,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6444,10 +6491,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6483,10 +6530,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6528,10 +6575,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6567,10 +6614,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6606,10 +6653,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6646,10 +6693,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6685,10 +6732,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6724,10 +6771,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6763,10 +6810,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6802,10 +6849,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6849,10 +6896,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6888,10 +6935,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6927,10 +6974,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -6966,10 +7013,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7005,10 +7052,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7044,10 +7091,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7083,10 +7130,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7122,10 +7169,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7161,10 +7208,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7200,10 +7247,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7239,10 +7286,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7278,10 +7325,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7317,10 +7364,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7356,10 +7403,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7395,10 +7442,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7434,10 +7481,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7481,10 +7528,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7520,10 +7567,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7559,10 +7606,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7598,10 +7645,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7645,10 +7692,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7684,10 +7731,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7723,10 +7770,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7762,10 +7809,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7801,10 +7848,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7840,10 +7887,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7879,10 +7926,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7918,10 +7965,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7957,10 +8004,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -7996,10 +8043,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8043,10 +8090,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8082,10 +8129,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8121,10 +8168,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8160,10 +8207,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8199,10 +8246,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8238,10 +8285,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8277,10 +8324,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8316,10 +8363,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8355,10 +8402,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8394,10 +8441,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8424,75 +8471,705 @@
       "entries": [
         {
           "name": "setTimeout",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-04",
           "parameters": "Callback arguments, cancellation, ordering and Timer ref/unref capabilities",
           "tests": [
             "EVT-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "clearTimeout",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-04",
           "parameters": "Callback arguments, cancellation, ordering and Timer ref/unref capabilities",
           "tests": [
             "EVT-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "setInterval",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-04",
           "parameters": "Callback arguments, cancellation, ordering and Timer ref/unref capabilities",
           "tests": [
             "EVT-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "clearInterval",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-04",
           "parameters": "Callback arguments, cancellation, ordering and Timer ref/unref capabilities",
           "tests": [
             "EVT-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "setImmediate",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-04",
           "parameters": "Callback arguments, cancellation, ordering and Timer ref/unref capabilities",
           "tests": [
             "EVT-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "clearImmediate",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-04",
           "parameters": "Callback arguments, cancellation, ordering and Timer ref/unref capabilities",
           "tests": [
             "EVT-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Timeout.prototype.ref",
+          "status": "partial",
+          "task": "M1-04",
+          "parameters": "Returned Timeout/Immediate handle methods and promises namespace identity; see M1_SCHEDULING.md",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Timeout.prototype.unref",
+          "status": "partial",
+          "task": "M1-04",
+          "parameters": "Returned Timeout/Immediate handle methods and promises namespace identity; see M1_SCHEDULING.md",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Timeout.prototype.hasRef",
+          "status": "partial",
+          "task": "M1-04",
+          "parameters": "Returned Timeout/Immediate handle methods and promises namespace identity; see M1_SCHEDULING.md",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Timeout.prototype.refresh",
+          "status": "partial",
+          "task": "M1-04",
+          "parameters": "Returned Timeout/Immediate handle methods and promises namespace identity; see M1_SCHEDULING.md",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Timeout.prototype.close",
+          "status": "partial",
+          "task": "M1-04",
+          "parameters": "Returned Timeout/Immediate handle methods and promises namespace identity; see M1_SCHEDULING.md",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Timeout.prototype[Symbol.toPrimitive]",
+          "status": "partial",
+          "task": "M1-04",
+          "parameters": "Returned Timeout/Immediate handle methods and promises namespace identity; see M1_SCHEDULING.md",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Timeout.prototype[Symbol.dispose]",
+          "status": "partial",
+          "task": "M1-04",
+          "parameters": "Returned Timeout/Immediate handle methods and promises namespace identity; see M1_SCHEDULING.md",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Immediate.prototype.ref",
+          "status": "partial",
+          "task": "M1-04",
+          "parameters": "Returned Timeout/Immediate handle methods and promises namespace identity; see M1_SCHEDULING.md",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Immediate.prototype.unref",
+          "status": "partial",
+          "task": "M1-04",
+          "parameters": "Returned Timeout/Immediate handle methods and promises namespace identity; see M1_SCHEDULING.md",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Immediate.prototype.hasRef",
+          "status": "partial",
+          "task": "M1-04",
+          "parameters": "Returned Timeout/Immediate handle methods and promises namespace identity; see M1_SCHEDULING.md",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Immediate.prototype[Symbol.dispose]",
+          "status": "partial",
+          "task": "M1-04",
+          "parameters": "Returned Timeout/Immediate handle methods and promises namespace identity; see M1_SCHEDULING.md",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "promises",
+          "status": "partial",
+          "task": "M1-04",
+          "parameters": "Returned Timeout/Immediate handle methods and promises namespace identity; see M1_SCHEDULING.md",
+          "tests": [
+            "EVT-001"
+          ],
+          "differences": [
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         }
       ]
     },
@@ -8504,39 +9181,120 @@
       "entries": [
         {
           "name": "setTimeout",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-04",
           "parameters": "Promise timers; supported options, cancellation and liveness",
           "tests": [
             "EVT-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "setInterval",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-04",
           "parameters": "Promise timers; supported options, cancellation and liveness",
           "tests": [
             "EVT-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "setImmediate",
-          "status": "planned",
+          "status": "partial",
           "task": "M1-04",
           "parameters": "Promise timers; supported options, cancellation and liveness",
           "tests": [
             "EVT-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Same QuickJS event loop; declared ESM/script/callback checkpoints, ref/unref and cancellation. Warning text, exception interception and multi-Context SDK scheduling are outside the initial subset; see docs/M1_SCHEDULING.md."
+          ],
+          "evidence": [
+            {
+              "test": "EVT-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         }
       ]
     },

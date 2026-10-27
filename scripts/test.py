@@ -94,6 +94,7 @@ def main():
     check("custom/runtime-modules", [qjs, "-m", ROOT / "tests/runtime_modules.mjs"], contains="PASS runtime-modules")
     check("custom/runtime-buffer", [qjs, "-m", ROOT / "tests/runtime_buffer.mjs"], contains="PASS runtime-buffer")
     check("custom/runtime-foundation", [qjs, "-m", ROOT / "tests/runtime_foundation.mjs"], contains="PASS runtime-foundation")
+    check("custom/runtime-scheduling", [qjs, "-m", ROOT / "tests/runtime_scheduling.mjs"], contains="PASS runtime-scheduling")
     check("custom/unknown-builtin", [qjs, "-m", ROOT / "tests/fixtures/unknown-builtin.mjs"],
           expected=1, contains="Unknown builtin module: node:fs")
     check("qjsc/unknown-builtin", [qjsc, "-c", "-m", "-o", scratch / "unknown-builtin.c",
@@ -116,6 +117,10 @@ def main():
         if args.node:
             node_command += ["--node", str(Path(args.node).resolve())]
         check("custom/node-differential", node_command, contains="Node/qjs differential:", timeout=180)
+        scheduling = [sys.executable, ROOT / "scripts/test_scheduling.py", "--qjs", qjs]
+        if args.node:
+            scheduling += ["--node", str(Path(args.node).resolve())]
+        check("custom/scheduler-lifecycle", scheduling, contains="Scheduler lifecycle:", timeout=180)
     check("example/hello", [qjs, ROOT / "examples/hello.js"], contains="Hello from QuickJS")
     check("example/system-info", [qjs, "-m", ROOT / "examples/system-info.js", "hello"], contains='"workerAvailable": true')
     check("cli/explicit-exit", [qjs, "--std", "-e", "std.exit(7)"], expected=7)
@@ -147,6 +152,13 @@ def main():
             check("qjsc/run-foundation-ape", [scratch / "foundation-standalone.exe"], contains="PASS runtime-foundation")
         check("qjsc/compile-entry-ape", [qjsc, "-m", "-o", scratch / "entry-standalone.exe",
               ROOT / "tests/fixtures/process-entry.mjs"], timeout=180)
+        if check("qjsc/compile-scheduling-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/scheduling-worker.mjs",
+                 "-o", scratch / "scheduling-standalone.exe", ROOT / "tests/runtime_scheduling.mjs"], timeout=180):
+            check("qjsc/run-scheduling-ape", [scratch / "scheduling-standalone.exe"], contains="PASS runtime-scheduling")
+        if check("sdk/compile-scheduler", [settings.toolchain / "bin/cosmocc", "-O2", "-I" + str(settings.dist),
+                 ROOT / "tests/native/scheduler.c", settings.dist / "libquickjs.a", "-Wl,--wrap=_Exit,-u,__wrap__Exit",
+                 "-lm", "-lpthread", "-ldl", "-o", scratch / "scheduler-sdk.exe"], timeout=180):
+            check("sdk/run-scheduler", [scratch / "scheduler-sdk.exe"], contains="PASS scheduler-sdk")
         if check("sdk/compile-registry", [settings.toolchain / "bin/cosmocc", "-O2", "-I" + str(settings.dist),
                  ROOT / "tests/native/module_registry.c", settings.dist / "libquickjs.a",
                  "-Wl,--wrap=_Exit,-u,__wrap__Exit", "-lm", "-lpthread", "-ldl", "-o", scratch / "registry-sdk.exe"],
@@ -162,6 +174,9 @@ def main():
               contains="PASS runtime-buffer")
         check("qjsc/cross-host-foundation", [args.standalone.resolve().parent / "foundation-standalone.exe"],
               contains="PASS runtime-foundation")
+        check("qjsc/cross-host-scheduling", [args.standalone.resolve().parent / "scheduling-standalone.exe"],
+              contains="PASS runtime-scheduling")
+        check("sdk/cross-host-scheduler", [args.standalone.resolve().parent / "scheduler-sdk.exe"], contains="PASS scheduler-sdk")
     foundation = [sys.executable, ROOT / "scripts/test_foundation.py"]
     compiled_entry = (args.standalone.resolve().parent if args.standalone else scratch) / "entry-standalone.exe"
     if (args.compile or args.standalone) and compiled_entry.is_file():

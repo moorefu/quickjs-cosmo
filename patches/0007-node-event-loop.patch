@@ -1,0 +1,375 @@
+--- a/qjs.c
++++ b/qjs.c
+@@ -599,6 +599,7 @@
+     }
+     return exit_code;
+  fail:
++    js_cosmo_finish_loop(ctx, -1);
+     js_std_free_handlers(rt);
+     JS_FreeContext(ctx);
+     JS_FreeRuntime(rt);
+--- a/quickjs-libc.c
++++ b/quickjs-libc.c
+@@ -107,6 +107,7 @@
+ typedef struct {
+     struct list_head link;
+     int timer_id;
++    int cosmo_flags; /* ref=1, immediate=2, Node timer=4 */
+     int64_t timeout;
+     JSValue func;
+ } JSOSTimer;
+@@ -159,6 +160,7 @@
+     struct list_head rejected_promise_list; /* list of JSRejectedPromiseEntry.link */
+     int eval_script_recurse; /* only used in the main thread */
+     int next_timer_id; /* for setTimeout() */
++    int prefer_immediates;
+     /* not used in the main thread */
+     JSWorkerMessagePipe *recv_pipe, *send_pipe;
+     /* used by Atomics.notify to wake up other JSRuntimes for
+@@ -172,6 +174,7 @@
+ 
+ static uint64_t os_pending_signals;
+ static int (*os_poll_func)(JSContext *ctx);
++static int js_os_poll(JSContext *ctx);
+ 
+ static void js_std_dbuf_init(JSContext *ctx, DynBuf *s)
+ {
+@@ -2265,6 +2268,7 @@
+     else
+         ts->next_timer_id++;
+     th->timeout = get_time_ms() + delay;
++    th->cosmo_flags = 1;
+     th->func = JS_DupValue(ctx, func);
+     list_add_tail(&th->link, &ts->os_timers);
+     return JS_NewInt32(ctx, th->timer_id);
+@@ -2324,6 +2328,7 @@
+         return JS_EXCEPTION;
+     }
+     th->timer_id = -1;
++    th->cosmo_flags = 1;
+     th->timeout = get_time_ms() + delay;
+     th->func = JS_DupValue(ctx, resolving_funcs[0]);
+     list_add_tail(&th->link, &ts->os_timers);
+@@ -2343,6 +2348,77 @@
+     if (JS_IsException(ret))
+         js_std_dump_error(ctx);
+     JS_FreeValue(ctx, ret);
++    js_cosmo_checkpoint(ctx, 1);
++}
++
++JSValue js_cosmo_start_timer(JSContext *ctx, JSValueConst callback, int64_t delay, int flags)
++{
++    JSThreadState *ts = JS_GetRuntimeOpaque(JS_GetRuntime(ctx));
++    if (!ts) return JS_ThrowInternalError(ctx, "Initialize js_std_init_handlers before using timers");
++    os_poll_func = js_os_poll;
++    JSValue args[] = {callback, JS_NewInt64(ctx, delay)};
++    JSValue value = js_os_setTimeout(ctx, JS_UNDEFINED, 2, args);
++    JS_FreeValue(ctx, args[1]);
++    if (!JS_IsException(value)) {
++        int32_t identifier;
++        if (JS_ToInt32(ctx, &identifier, value) < 0) { JS_FreeValue(ctx, value); return JS_EXCEPTION; }
++        JSOSTimer *timer = find_timer_by_id(ts, identifier);
++        if (timer) timer->cosmo_flags = flags;
++    }
++    return value;
++}
++
++void js_cosmo_cancel_timer(JSContext *ctx, int identifier)
++{
++    JSThreadState *ts = JS_GetRuntimeOpaque(JS_GetRuntime(ctx));
++    JSOSTimer *timer = ts ? find_timer_by_id(ts, identifier) : NULL;
++    if (timer) free_timer(JS_GetRuntime(ctx), timer);
++}
++
++int js_cosmo_ref_timer(JSContext *ctx, int identifier, int referenced)
++{
++    JSThreadState *ts = JS_GetRuntimeOpaque(JS_GetRuntime(ctx));
++    JSOSTimer *timer = ts ? find_timer_by_id(ts, identifier) : NULL;
++    if (!timer) return 0;
++    timer->cosmo_flags = (timer->cosmo_flags & ~1) | !!referenced;
++    return 1;
++}
++
++static int has_referenced_timer(JSThreadState *ts)
++{
++    struct list_head *item;
++    list_for_each(item, &ts->os_timers) {
++        JSOSTimer *timer = list_entry(item, JSOSTimer, link);
++        if (timer->cosmo_flags & 1) return 1;
++    }
++    return 0;
++}
++
++static int poll_timer(JSContext *ctx, int *min_delay)
++{
++    JSRuntime *rt = JS_GetRuntime(ctx);
++    JSThreadState *ts = JS_GetRuntimeOpaque(rt);
++    struct list_head *item;
++    JSOSTimer *ready = NULL;
++    int64_t now = get_time_ms();
++    list_for_each(item, &ts->os_timers) {
++        JSOSTimer *timer = list_entry(item, JSOSTimer, link);
++        int64_t delay = timer->timeout - now;
++        if (delay <= 0) {
++            if (!ready) ready = timer;
++            if (ts->prefer_immediates && (timer->cosmo_flags & 2)) { ready = timer; break; }
++        } else if (delay < *min_delay) *min_delay = delay;
++    }
++    if (!ready) return 0;
++    int flags = ready->cosmo_flags;
++    JSValue function = ready->func;
++    ready->func = JS_UNDEFINED;
++    free_timer(rt, ready);
++    if (flags & 4) ts->prefer_immediates = 1;
++    else if (flags & 2) ts->prefer_immediates = 0;
++    call_handler(ctx, function);
++    JS_FreeValue(ctx, function);
++    return 1;
+ }
+ 
+ #ifdef USE_WORKER
+@@ -2472,6 +2548,7 @@
+         } else {
+             JS_FreeValue(ctx, retval);
+         }
++        js_cosmo_checkpoint(ctx, 1);
+         ret = 1;
+     } else {
+         pthread_mutex_unlock(&ps->mutex);
+@@ -2494,7 +2571,7 @@
+     JSRuntime *rt = JS_GetRuntime(ctx);
+     JSThreadState *ts = JS_GetRuntimeOpaque(rt);
+     int min_delay, count;
+-    int64_t cur_time, delay;
++    int64_t delay;
+     JSOSRWHandler *rh;
+     struct list_head *el;
+     HANDLE handles[MAXIMUM_WAIT_OBJECTS]; // 64
+@@ -2503,7 +2580,7 @@
+ 
+     delay = JS_AtomicsPollWaiters(ctx);
+ 
+-    if (list_empty(&ts->os_rw_handlers) && list_empty(&ts->os_timers) &&
++    if (list_empty(&ts->os_rw_handlers) && !has_referenced_timer(ts) &&
+         list_empty(&ts->port_list) && delay < 0) {
+         return -1; /* no more events */
+     }
+@@ -2512,25 +2589,7 @@
+     if (delay >= 0 && delay < min_delay)
+         min_delay = delay;
+ 
+-    if (!list_empty(&ts->os_timers)) {
+-        cur_time = get_time_ms();
+-        list_for_each(el, &ts->os_timers) {
+-            JSOSTimer *th = list_entry(el, JSOSTimer, link);
+-            delay = th->timeout - cur_time;
+-            if (delay <= 0) {
+-                JSValue func;
+-                /* the timer expired */
+-                func = th->func;
+-                th->func = JS_UNDEFINED;
+-                free_timer(rt, th);
+-                call_handler(ctx, func);
+-                JS_FreeValue(ctx, func);
+-                return 0;
+-            } else if (delay < min_delay) {
+-                min_delay = delay;
+-            }
+-        }
+-    }
++    if (poll_timer(ctx, &min_delay)) return 0;
+ 
+     count = 0;
+     list_for_each(el, &ts->os_rw_handlers) {
+@@ -2662,7 +2721,7 @@
+     JSRuntime *rt = JS_GetRuntime(ctx);
+     JSThreadState *ts = JS_GetRuntimeOpaque(rt);
+     int min_delay, nfds, atomics_poll_fd_index;
+-    int64_t cur_time, delay;
++    int64_t delay;
+     JSOSRWHandler *rh;
+     struct list_head *el;
+ 
+@@ -2685,7 +2744,7 @@
+ 
+     delay = JS_AtomicsPollWaiters(ctx);
+ 
+-    if (list_empty(&ts->os_rw_handlers) && list_empty(&ts->os_timers) &&
++    if (list_empty(&ts->os_rw_handlers) && !has_referenced_timer(ts) &&
+         list_empty(&ts->port_list) && delay < 0)
+         return -1; /* no more events */
+ 
+@@ -2693,25 +2752,7 @@
+     if (delay >= 0 && delay < min_delay)
+         min_delay = delay;
+     
+-    if (!list_empty(&ts->os_timers)) {
+-        cur_time = get_time_ms();
+-        list_for_each(el, &ts->os_timers) {
+-            JSOSTimer *th = list_entry(el, JSOSTimer, link);
+-            delay = th->timeout - cur_time;
+-            if (delay <= 0) {
+-                JSValue func;
+-                /* the timer expired */
+-                func = th->func;
+-                th->func = JS_UNDEFINED;
+-                free_timer(rt, th);
+-                call_handler(ctx, func);
+-                JS_FreeValue(ctx, func);
+-                return 0;
+-            } else if (delay < min_delay) {
+-                min_delay = delay;
+-            }
+-        }
+-    }
++    if (poll_timer(ctx, &min_delay)) return 0;
+     
+     nfds = 0;
+     list_for_each(el, &ts->os_rw_handlers) {
+@@ -3884,6 +3925,7 @@
+     }
+     JS_SetStripInfo(rt, args->strip_flags);
+     js_std_init_handlers(rt);
++    JS_SetHostPromiseRejectionTracker(rt, js_std_promise_rejection_tracker, NULL);
+ 
+     JS_SetModuleLoaderFunc2(rt, js_cosmo_module_normalize, js_module_loader, js_module_check_attributes, NULL);
+ 
+@@ -4417,6 +4459,7 @@
+ 
+ void js_std_init_handlers(JSRuntime *rt)
+ {
++    os_poll_func = js_os_poll;
+     JSThreadState *ts;
+ 
+     ts = malloc(sizeof(*ts));
+@@ -4578,31 +4621,30 @@
+             fprintf(stderr, "Possibly unhandled promise rejection: ");
+             js_std_dump_error1(ctx, rp->reason);
+         }
++        js_cosmo_finish_loop(ctx, -1);
++        if (ts->recv_pipe && js_cosmo_scheduler_stopped(ctx)) return;
+         exit(1);
+     }
+ }
+ 
+ /* main loop which calls the user JS callbacks */
++void js_cosmo_check_rejections(JSContext *ctx)
++{
++    js_std_promise_rejection_check(ctx);
++}
++
+ void js_std_loop(JSContext *ctx)
+ {
+-    int err;
+-
+-    for(;;) {
+-        /* execute the pending jobs */
+-        for(;;) {
+-            err = JS_ExecutePendingJob(JS_GetRuntime(ctx), NULL);
+-            if (err <= 0) {
+-                if (err < 0)
+-                    js_std_dump_error(ctx);
+-                break;
+-            }
+-        }
+-
++    for (;;) {
++        if (js_cosmo_checkpoint(ctx, 1) < 0) break;
+         js_std_promise_rejection_check(ctx);
+-        
+-        if (!os_poll_func || os_poll_func(ctx))
+-            break;
+-    }
++        if (js_cosmo_scheduler_stopped(ctx)) break;
++        if (!os_poll_func || os_poll_func(ctx)) {
++            if (js_cosmo_before_exit(ctx) < 0) break;
++            if (!os_poll_func || os_poll_func(ctx)) break;
++        }
++    }
++    js_cosmo_finish_loop(ctx, 0);
+ }
+ 
+ /* Wait for a promise and execute pending jobs while waiting for
+@@ -4611,37 +4653,32 @@
+ JSValue js_std_await(JSContext *ctx, JSValue obj)
+ {
+     JSValue ret;
+-    int state;
+-
+-    for(;;) {
+-        state = JS_PromiseState(ctx, obj);
++    for (;;) {
++        if (js_cosmo_checkpoint(ctx, 0) < 0) { JS_FreeValue(ctx, obj); return JS_UNDEFINED; }
++        int state = JS_PromiseState(ctx, obj);
+         if (state == JS_PROMISE_FULFILLED) {
+             ret = JS_PromiseResult(ctx, obj);
+             JS_FreeValue(ctx, obj);
+-            break;
++            return ret;
+         } else if (state == JS_PROMISE_REJECTED) {
+             ret = JS_Throw(ctx, JS_PromiseResult(ctx, obj));
+             JS_FreeValue(ctx, obj);
+-            break;
+-        } else if (state == JS_PROMISE_PENDING) {
+-            int err;
+-            err = JS_ExecutePendingJob(JS_GetRuntime(ctx), NULL);
+-            if (err < 0) {
+-                js_std_dump_error(ctx);
++            return ret;
++        } else if (state != JS_PROMISE_PENDING) {
++            return obj;
++        }
++        js_std_promise_rejection_check(ctx);
++        if (js_cosmo_scheduler_stopped(ctx)) { JS_FreeValue(ctx, obj); return JS_UNDEFINED; }
++        if (!os_poll_func || os_poll_func(ctx)) {
++            if (js_cosmo_before_exit(ctx) < 0) { JS_FreeValue(ctx, obj); return JS_UNDEFINED; }
++            if (JS_PromiseState(ctx, obj) != JS_PROMISE_PENDING) continue;
++            if (!os_poll_func || os_poll_func(ctx)) {
++                js_cosmo_finish_loop(ctx, 1);
++                JS_FreeValue(ctx, obj);
++                return JS_UNDEFINED;
+             }
+-            if (err == 0) {
+-                js_std_promise_rejection_check(ctx);
+-
+-                if (os_poll_func)
+-                    os_poll_func(ctx);
+-            }
+-        } else {
+-            /* not a promise */
+-            ret = obj;
+-            break;
+-        }
+-    }
+-    return ret;
++        }
++    }
+ }
+ 
+ void js_std_eval_binary(JSContext *ctx, const uint8_t *buf, size_t buf_len,
+@@ -4671,6 +4708,7 @@
+         if (JS_IsException(val)) {
+         exception:
+             js_std_dump_error(ctx);
++            js_cosmo_finish_loop(ctx, -1);
+             exit(1);
+         }
+         JS_FreeValue(ctx, val);
+@@ -4691,6 +4729,7 @@
+     if (!m) {
+     exception:
+         js_std_dump_error(ctx);
++        js_cosmo_finish_loop(ctx, -1);
+         exit(1);
+     }
+ }
+--- a/qjsc.c
++++ b/qjsc.c
+@@ -391,6 +391,7 @@
+     "  rt = JS_NewRuntime();\n"
+     "  js_std_set_worker_new_context_func(JS_NewCustomContext);\n"
+     "  js_std_init_handlers(rt);\n"
++    "  JS_SetHostPromiseRejectionTracker(rt, js_std_promise_rejection_tracker, NULL);\n"
+     ;
+ 
+ static const char main_c_template2[] =

@@ -5,6 +5,7 @@ function exportObject(object) {
     exported.default = object;
     return exported;
 }
+const processStates = new WeakMap();
 function createProcess(native, data, getPath) {
     const process = new EventEmitter();
     data.env = Object.assign(Object.create(null), data.env);
@@ -89,10 +90,12 @@ function createProcess(native, data, getPath) {
         catch (error) { if (error && error.syscall === 'chdir') error.dest = directory; throw error; }
     };
     let exiting = false;
+    const emitExit = () => { if (!exiting) { exiting = true; process.emit('exit', data.exitCode ?? 0); } };
+    processStates.set(process, { emitExit, beforeExit: () => process.emit('beforeExit', data.exitCode ?? 0) });
     process.exit = code => {
         if (data.worker) workerFailure();
         if (code !== undefined) process.exitCode = code;
-        if (!exiting) { exiting = true; process.emit('exit', data.exitCode ?? 0); }
+        emitExit();
         native.exit(data.exitCode ?? 0);
     };
     process.uptime = () => native.uptime();

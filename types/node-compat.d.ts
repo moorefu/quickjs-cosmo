@@ -296,3 +296,103 @@ interface Console {
     trace(...args: any[]): void;
 }
 declare var console: Console;
+
+interface SymbolConstructor { readonly dispose: unique symbol; readonly asyncDispose: unique symbol; }
+interface EventListener { (event: Event): void; }
+interface EventListenerObject { handleEvent(event: Event): void; }
+interface EventListenerOptions { capture?: boolean; }
+interface AddEventListenerOptions extends EventListenerOptions { once?: boolean; passive?: boolean; signal?: AbortSignal; }
+interface EventInit { bubbles?: boolean; cancelable?: boolean; composed?: boolean; }
+interface EventConstants { readonly NONE: 0; readonly CAPTURING_PHASE: 1; readonly AT_TARGET: 2; readonly BUBBLING_PHASE: 3; }
+interface Event extends EventConstants {
+    readonly type: string; readonly target: EventTarget | null; readonly currentTarget: EventTarget | null;
+    readonly srcElement: EventTarget | null; readonly bubbles: boolean; readonly cancelable: boolean;
+    readonly composed: boolean; readonly defaultPrevented: boolean; readonly isTrusted: boolean;
+    readonly timeStamp: number; readonly eventPhase: number;
+    cancelBubble: boolean; returnValue: boolean;
+    preventDefault(): void; stopPropagation(): void; stopImmediatePropagation(): void;
+    composedPath(): EventTarget[];
+    initEvent(type: string, bubbles?: boolean, cancelable?: boolean): void;
+}
+declare var Event: { prototype: Event; new(type: string, eventInitDict?: EventInit): Event;
+    readonly NONE: 0; readonly CAPTURING_PHASE: 1; readonly AT_TARGET: 2; readonly BUBBLING_PHASE: 3;
+};
+interface EventTarget {
+    addEventListener(type: string, callback: EventListener | EventListenerObject | null, options?: AddEventListenerOptions | boolean): void;
+    removeEventListener(type: string, callback: EventListener | EventListenerObject | null, options?: EventListenerOptions | boolean): void;
+    dispatchEvent(event: Event): boolean;
+}
+declare var EventTarget: { prototype: EventTarget; new(): EventTarget; };
+interface DOMExceptionConstants {
+    readonly INDEX_SIZE_ERR: 1; readonly DOMSTRING_SIZE_ERR: 2; readonly HIERARCHY_REQUEST_ERR: 3;
+    readonly WRONG_DOCUMENT_ERR: 4; readonly INVALID_CHARACTER_ERR: 5; readonly NO_DATA_ALLOWED_ERR: 6;
+    readonly NO_MODIFICATION_ALLOWED_ERR: 7; readonly NOT_FOUND_ERR: 8; readonly NOT_SUPPORTED_ERR: 9;
+    readonly INUSE_ATTRIBUTE_ERR: 10; readonly INVALID_STATE_ERR: 11; readonly SYNTAX_ERR: 12;
+    readonly INVALID_MODIFICATION_ERR: 13; readonly NAMESPACE_ERR: 14; readonly INVALID_ACCESS_ERR: 15;
+    readonly VALIDATION_ERR: 16; readonly TYPE_MISMATCH_ERR: 17; readonly SECURITY_ERR: 18;
+    readonly NETWORK_ERR: 19; readonly ABORT_ERR: 20; readonly URL_MISMATCH_ERR: 21;
+    readonly QUOTA_EXCEEDED_ERR: 22; readonly TIMEOUT_ERR: 23; readonly INVALID_NODE_TYPE_ERR: 24; readonly DATA_CLONE_ERR: 25;
+}
+interface DOMException extends Error, DOMExceptionConstants { readonly code: number; readonly message: string; readonly name: string; }
+declare var DOMException: { prototype: DOMException; new(message?: string, name?: string): DOMException;
+    readonly INDEX_SIZE_ERR: 1; readonly DOMSTRING_SIZE_ERR: 2; readonly HIERARCHY_REQUEST_ERR: 3;
+    readonly WRONG_DOCUMENT_ERR: 4; readonly INVALID_CHARACTER_ERR: 5; readonly NO_DATA_ALLOWED_ERR: 6;
+    readonly NO_MODIFICATION_ALLOWED_ERR: 7; readonly NOT_FOUND_ERR: 8; readonly NOT_SUPPORTED_ERR: 9;
+    readonly INUSE_ATTRIBUTE_ERR: 10; readonly INVALID_STATE_ERR: 11; readonly SYNTAX_ERR: 12;
+    readonly INVALID_MODIFICATION_ERR: 13; readonly NAMESPACE_ERR: 14; readonly INVALID_ACCESS_ERR: 15;
+    readonly VALIDATION_ERR: 16; readonly TYPE_MISMATCH_ERR: 17; readonly SECURITY_ERR: 18;
+    readonly NETWORK_ERR: 19; readonly ABORT_ERR: 20; readonly URL_MISMATCH_ERR: 21;
+    readonly QUOTA_EXCEEDED_ERR: 22; readonly TIMEOUT_ERR: 23; readonly INVALID_NODE_TYPE_ERR: 24; readonly DATA_CLONE_ERR: 25;
+};
+interface AbortSignal extends EventTarget {
+    readonly aborted: boolean; readonly reason: any;
+    onabort: ((this: AbortSignal, ev: Event) => any) | null;
+    throwIfAborted(): void;
+}
+declare var AbortSignal: {
+    prototype: AbortSignal; new(): AbortSignal;
+    abort(reason?: any): AbortSignal; any(signals: AbortSignal[]): AbortSignal; timeout(milliseconds: number): AbortSignal;
+};
+interface AbortController { readonly signal: AbortSignal; abort(reason?: any): void; }
+declare var AbortController: { prototype: AbortController; new(): AbortController; };
+
+declare module 'node:timers' {
+    export interface Timeout {
+        ref(): this; unref(): this; hasRef(): boolean; refresh(): this; close(): this;
+        [Symbol.toPrimitive](): number; [Symbol.dispose](): void;
+    }
+    export interface Immediate { ref(): this; unref(): this; hasRef(): boolean; [Symbol.dispose](): void; }
+    export function setTimeout<T extends any[]>(callback: (...args: T) => void, delay?: number, ...args: T): Timeout;
+    export function setInterval<T extends any[]>(callback: (...args: T) => void, delay?: number, ...args: T): Timeout;
+    export function clearTimeout(timeout: Timeout | number | string | undefined): void;
+    export const clearInterval: typeof clearTimeout;
+    export function setImmediate<T extends any[]>(callback: (...args: T) => void, ...args: T): Immediate;
+    export function clearImmediate(immediate: Immediate | undefined): void;
+    export const promises: typeof import('node:timers/promises').default;
+    const timers: { setTimeout: typeof setTimeout; clearTimeout: typeof clearTimeout;
+        setInterval: typeof setInterval; clearInterval: typeof clearInterval;
+        setImmediate: typeof setImmediate; clearImmediate: typeof clearImmediate; promises: typeof promises; };
+    export default timers;
+}
+declare module 'timers' { export * from 'node:timers'; export { default } from 'node:timers'; }
+declare module 'node:timers/promises' {
+    export interface TimerOptions { ref?: boolean; signal?: AbortSignal; }
+    export function setTimeout<T = void>(delay?: number, value?: T, options?: TimerOptions): Promise<T>;
+    export function setImmediate<T = void>(value?: T, options?: TimerOptions): Promise<T>;
+    export function setInterval<T = void>(delay?: number, value?: T, options?: TimerOptions): AsyncGenerator<T, void, unknown>;
+    const timers: { setTimeout: typeof setTimeout; setImmediate: typeof setImmediate; setInterval: typeof setInterval; };
+    export default timers;
+}
+declare module 'timers/promises' { export * from 'node:timers/promises'; export { default } from 'node:timers/promises'; }
+declare function setTimeout<T extends any[]>(callback: (...args: T) => void, delay?: number, ...args: T): import('node:timers').Timeout;
+declare function setInterval<T extends any[]>(callback: (...args: T) => void, delay?: number, ...args: T): import('node:timers').Timeout;
+declare function clearTimeout(timeout: import('node:timers').Timeout | number | string | undefined): void;
+declare function clearInterval(timeout: import('node:timers').Timeout | number | string | undefined): void;
+declare function setImmediate<T extends any[]>(callback: (...args: T) => void, ...args: T): import('node:timers').Immediate;
+declare function clearImmediate(immediate: import('node:timers').Immediate | undefined): void;
+declare function queueMicrotask(callback: VoidFunction): void;
+interface VoidFunction { (): void; }
+declare module 'node:process' {
+    export interface Process { nextTick<T extends any[]>(callback: (...args: T) => void, ...args: T): void; }
+    export const nextTick: Process['nextTick'];
+}

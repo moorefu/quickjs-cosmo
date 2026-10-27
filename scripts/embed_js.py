@@ -8,7 +8,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CORE_SOURCES = ("src/js/internal/errors.js", "src/js/internal/encoding.js", "src/js/node/buffer.js",
                 "src/js/node/events.js", "src/js/node/process.js", "src/js/node/path-adapter.js",
-                "src/js/node/os.js", "src/js/node/util.js", "src/js/node/assert.js", "src/js/node/console.js")
+                "src/js/node/os.js", "src/js/node/util.js", "src/js/node/assert.js", "src/js/node/console.js",
+                "src/js/internal/abort.js", "src/js/node/timers.js")
 
 
 def generate(root=ROOT):
@@ -25,6 +26,9 @@ def generate(root=ROOT):
     finish = """
 let path;
 const process = createProcess(native, data, () => path);
+let scheduler;
+const abort = createAbortPrimitives(() => scheduler);
+scheduler = createScheduler(native, process, abort);
 path = createPathModule(process);
 const os = createOs(native, process, path);
 const console = createConsole(native);
@@ -45,6 +49,10 @@ return {
     'node:path/win32': exportObject(path.win32), 'node:os': exportObject(os),
     'node:events': eventsAPI, 'node:util': exportObject(utilAPI),
     'node:assert': assertionExports(assert), 'node:assert/strict': assertionExports(strictAssert),
+    'node:timers': exportObject(scheduler.api), 'node:timers/promises': exportObject(scheduler.promises),
+    _drainTicks: scheduler.drainTicks,
+    _beforeExit: processStates.get(process).beforeExit,
+    _exit: processStates.get(process).emitExit,
     _console: console,
     _importMeta: (name, main, mode, root) => name.startsWith('<') ? 'qjs:internal' : mode === 1 && main ? 'qjs:eval' : mode === 2 ? main ? fileURL(native.executablePath) :
         'qjs:embedded/' + path.posix.relative(root ?? '.', name).split('/').map(encodeURIComponent).join('/') : fileURL(name),

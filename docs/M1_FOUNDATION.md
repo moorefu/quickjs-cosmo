@@ -1,6 +1,6 @@
 # M1-03 公共基础
 
-本项接续已全绿的 M1-02 提交 `c41097f`（[完整 CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40434897922)）。实现范围由 `compat/node-api.json` 与 `types/node-compat.d.ts` 描述，模块仍标为 `partial`。本项完整 CI 全绿后进入 M1-04。
+本项接续已全绿的 M1-02 提交 `c41097f`（[完整 CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40434897922)）。实现范围由 `compat/node-api.json` 与 `types/node-compat.d.ts` 描述，模块仍标为 `partial`。本项 `0bd7b38` 已通过[完整 CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40448736721)，随后进入 M1-04。
 
 ## 模块与全局
 
@@ -63,4 +63,4 @@ python3 scripts/ci_artifact.py verify
 
 本地验收：Linux 48/48；Windows 同一产物 43/43，通过七份独立 APE 的相关检查，保留一个原有 Unix 专用跳过；两端 Node 差分各 13/13；Python 门禁 73 项；两种 lib 配置的严格类型检查通过；三文件包、SDK 和 CI 传输完整性校验通过。
 
-首轮提交 `acdc541` 的 [CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40447882717) 中，Linux x64/ARM64、Windows 2022/2025/ARM64 通过；两个 macOS 行暴露上述目录身份与 HOME 回退问题。修复后重新通过本地全回归及包校验，等待完整 CI 重跑；没有开始 M1-04。
+首轮提交 `acdc541` 的 [CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40447882717) 中，Linux x64/ARM64、Windows 2022/2025/ARM64 通过；两个 macOS 行暴露上述目录身份与 HOME 回退问题。修复提交 `0bd7b38` 的构建、七平台矩阵及最终门禁已全部通过。

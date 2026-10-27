@@ -7,6 +7,8 @@ typedef struct {
     JSModuleDef *modules[64];
     int worker;
     int mode;
+    int scheduler_failed;
+    int scheduler_finished;
     char *compiled_root;
     char *worker_entry;
 } CosmoRuntimeState;

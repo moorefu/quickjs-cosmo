@@ -286,13 +286,56 @@ fail:
 }
 
 enum { HOST_CWD, HOST_CHDIR, HOST_SETENV, HOST_UNSETENV, HOST_EXIT, HOST_CLOCK, HOST_UPTIME,
-       HOST_HOSTNAME, HOST_RELEASE, HOST_HOMEDIR, HOST_STDOUT, HOST_STDERR, HOST_GETENV, HOST_ENVIRONMENT };
+       HOST_HOSTNAME, HOST_RELEASE, HOST_HOMEDIR, HOST_STDOUT, HOST_STDERR, HOST_GETENV, HOST_ENVIRONMENT,
+       HOST_TIMER_START, HOST_TIMER_CANCEL, HOST_CHECKPOINT, HOST_MICROTASK, HOST_FAIL, HOST_TIMER_REF };
+
+static void scheduler_failure(JSContext *ctx) {
+    CosmoRuntimeState *state;
+    if (js_cosmo_lookup_state(ctx, &state) <= 0) return;
+    state->scheduler_failed = 1;
+    JS_SetPropertyStr(ctx, state->data, "exitCode", JS_NewInt32(ctx, 1));
+}
+
+static JSValue microtask_job(JSContext *ctx, int argc, JSValueConst *argv) {
+    (void)argc;
+    if (js_cosmo_scheduler_stopped(ctx)) return JS_UNDEFINED;
+    return JS_Call(ctx, argv[0], JS_UNDEFINED, 0, NULL);
+}
 
 static JSValue host_call(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv,
                          int magic, JSValue *data) {
     CosmoRuntimeState *state = JS_GetOpaque2(ctx, data[0], state_class);
     (void)this_val; (void)argc;
     if (!state) return JS_EXCEPTION;
+    if (magic == HOST_TIMER_START) {
+        int64_t delay;
+        if (JS_ToInt64(ctx, &delay, argv[1])) return JS_EXCEPTION;
+        int flags = (JS_ToBool(ctx, argv[2]) ? 1 : 0) | (JS_ToBool(ctx, argv[3]) ? 2 : 4);
+        return js_cosmo_start_timer(ctx, argv[0], delay, flags);
+    }
+    if (magic == HOST_TIMER_CANCEL) {
+        int32_t identifier;
+        if (JS_ToInt32(ctx, &identifier, argv[0])) return JS_EXCEPTION;
+        js_cosmo_cancel_timer(ctx, identifier); return JS_UNDEFINED;
+    }
+    if (magic == HOST_TIMER_REF) {
+        int32_t identifier;
+        if (JS_ToInt32(ctx, &identifier, argv[0])) return JS_EXCEPTION;
+        return JS_NewBool(ctx, js_cosmo_ref_timer(ctx, identifier, JS_ToBool(ctx, argv[1])));
+    }
+    if (magic == HOST_CHECKPOINT) {
+        int result = js_cosmo_checkpoint(ctx, 1);
+        if (!result) js_cosmo_check_rejections(ctx);
+        return JS_NewBool(ctx, result == 0 && !js_cosmo_scheduler_stopped(ctx));
+    }
+    if (magic == HOST_MICROTASK) {
+        if (JS_EnqueueJob(ctx, microtask_job, 1, argv) < 0) return JS_EXCEPTION;
+        return JS_UNDEFINED;
+    }
+    if (magic == HOST_FAIL) {
+        JS_Throw(ctx, JS_DupValue(ctx, argv[0])); js_std_dump_error(ctx);
+        scheduler_failure(ctx); return JS_UNDEFINED;
+    }
     if ((magic == HOST_CHDIR || magic == HOST_EXIT) && state->worker)
         return coded_failure(ctx, "ERR_WORKER_UNSUPPORTED_OPERATION", "This operation is not available in a QuickJS Worker");
     if (magic == HOST_CWD) {
@@ -408,7 +451,8 @@ JSValue js_cosmo_native_api(JSContext *ctx, CosmoRuntimeState *state) {
     JSValue api = JS_NewObject(ctx);
     if (JS_IsException(api)) return api;
     const char *keys[] = {"cwd", "chdir", "setenv", "unsetenv", "exit", "clock", "uptime",
-                          "hostname", "release", "homedir", "stdout", "stderr", "getenv", "environment"};
+                          "hostname", "release", "homedir", "stdout", "stderr", "getenv", "environment",
+                          "timerStart", "timerCancel", "checkpoint", "enqueueMicrotask", "fail", "timerRef"};
     for (size_t i = 0; i < sizeof(keys) / sizeof(*keys); i++) {
         JSValue fn = JS_NewCFunctionData(ctx, host_call, 0, i, 1, &state->holder);
         if (JS_IsException(fn) || JS_SetPropertyStr(ctx, api, keys[i], fn) < 0) goto fail;
@@ -562,4 +606,73 @@ int js_cosmo_import_meta(JSContext *ctx, JSValueConst value, int use_realpath, i
     if (result >= 0) result = JS_DefinePropertyValueStr(ctx, meta, "main", JS_NewBool(ctx, main), JS_PROP_C_W_E);
     JS_FreeValue(ctx, meta);
     return result < 0 ? -1 : 0;
+}
+
+static int scheduler_hook(JSContext *ctx, const char *name) {
+    CosmoRuntimeState *state;
+    int found = js_cosmo_lookup_state(ctx, &state);
+    if (found <= 0) return found;
+    if (JS_IsUndefined(state->apis)) return 0;
+    JSValue function = JS_GetPropertyStr(ctx, state->apis, name);
+    if (JS_IsException(function)) return -1;
+    if (JS_IsUndefined(function)) { JS_FreeValue(ctx, function); return 0; }
+    JSValue value = JS_Call(ctx, function, JS_UNDEFINED, 0, NULL);
+    JS_FreeValue(ctx, function);
+    if (JS_IsException(value)) { js_std_dump_error(ctx); scheduler_failure(ctx); return -1; }
+    int32_t count = 0;
+    int result = JS_IsUndefined(value) ? 0 : JS_ToInt32(ctx, &count, value);
+    JS_FreeValue(ctx, value);
+    return result < 0 ? -1 : count;
+}
+
+int js_cosmo_scheduler_stopped(JSContext *ctx) {
+    CosmoRuntimeState *state;
+    int found = js_cosmo_lookup_state(ctx, &state);
+    return found < 0 || (found && (state->scheduler_failed || state->scheduler_finished));
+}
+
+/* A native callback drains nextTick before ECMAScript jobs. ESM entry uses
+   jobs first. Ticks created by a job run after that entire microtask drain. */
+int js_cosmo_checkpoint(JSContext *ctx, int ticks_first) {
+    if (js_cosmo_scheduler_stopped(ctx)) return -1;
+    if (ticks_first && scheduler_hook(ctx, "_drainTicks") < 0) return -1;
+    for (;;) {
+        int result;
+        JSContext *job_context = ctx;
+        while ((result = JS_ExecutePendingJob(JS_GetRuntime(ctx), &job_context)) > 0) {
+            if (js_cosmo_scheduler_stopped(ctx)) return -1;
+        }
+        if (result < 0) {
+            js_std_dump_error(job_context ? job_context : ctx);
+            scheduler_failure(ctx); return -1;
+        }
+        int count = scheduler_hook(ctx, "_drainTicks");
+        if (count < 0 || js_cosmo_scheduler_stopped(ctx)) return -1;
+        if (!count && !JS_IsJobPending(JS_GetRuntime(ctx))) return 0;
+    }
+}
+
+int js_cosmo_before_exit(JSContext *ctx) {
+    if (js_cosmo_scheduler_stopped(ctx)) return -1;
+    CosmoRuntimeState *state;
+    if (js_cosmo_lookup_state(ctx, &state) > 0 && state->mode == 3 && !state->worker)
+        return js_cosmo_checkpoint(ctx, 1); /* The SDK host owns its lifetime. */
+    if (scheduler_hook(ctx, "_beforeExit") < 0) return -1;
+    int result = js_cosmo_checkpoint(ctx, 1);
+    if (!result) js_cosmo_check_rejections(ctx);
+    return result < 0 || js_cosmo_scheduler_stopped(ctx) ? -1 : 0;
+}
+
+void js_cosmo_finish_loop(JSContext *ctx, int unsettled) {
+    CosmoRuntimeState *state;
+    if (js_cosmo_lookup_state(ctx, &state) <= 0 || state->scheduler_finished) return;
+    if (!unsettled && state->mode == 3 && !state->worker) return;
+    if (unsettled < 0) scheduler_failure(ctx);
+    if (unsettled > 0 && !state->worker) {
+        JSValue code = JS_GetPropertyStr(ctx, state->data, "exitCode");
+        if (JS_IsUndefined(code)) JS_SetPropertyStr(ctx, state->data, "exitCode", JS_NewInt32(ctx, 13));
+        JS_FreeValue(ctx, code);
+    }
+    state->scheduler_finished = 1;
+    scheduler_hook(ctx, "_exit");
 }

@@ -19,7 +19,8 @@ MANIFEST = "build/ci/bundle-manifest.json"
 STANDALONES = ("build/test-linux/hello-standalone.exe", "build/test-linux/runtime-standalone.exe",
                "build/test-linux/registry-standalone.exe", "build/test-linux/registry-sdk.exe",
                "build/test-linux/buffer-standalone.exe", "build/test-linux/foundation-standalone.exe",
-               "build/test-linux/entry-standalone.exe")
+               "build/test-linux/entry-standalone.exe", "build/test-linux/scheduling-standalone.exe",
+               "build/test-linux/scheduler-sdk.exe")
 SOURCE = ".cache/quickjs-source.tar.gz"
 
 
