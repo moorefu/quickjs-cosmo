@@ -24,7 +24,7 @@ assert(info.builtinModules.includes('node:buffer'), 'Implemented Buffer module i
 const moduleCount = info.builtinModules.length;
 info.builtinModules.push('node:not-implemented');
 equal(runtimeInfo().builtinModules.length, moduleCount, 'Metadata cannot mutate the native registry');
-for (const name of ['node:no-such-builtin', 'node:fs', 'cosmo:missing', 'qjs:missing', '@runtime/crypto']) {
+for (const name of ['node:no-such-builtin', 'node:missing', 'cosmo:missing', 'qjs:missing', '@runtime/crypto']) {
     let failure;
     try { await import(name); } catch (error) { failure = error; }
     assert(failure instanceof Error, name + ' must reject');

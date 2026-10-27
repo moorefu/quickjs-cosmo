@@ -33,6 +33,7 @@ static const Builtin builtins[] = {
     { "node:assert/strict", core_module },
     { "node:timers", core_module },
     { "node:timers/promises", core_module },
+    { "node:fs", core_module },
 };
 
 static const char *canonical_builtin(const char *name) {

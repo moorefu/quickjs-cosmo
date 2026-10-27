@@ -31,8 +31,8 @@ const failure: AssertionError = new AssertionError({ actual: 1, expected: 2, ope
 void [pending, rejected, failure];
 // @ts-expect-error Process environment only stores strings.
 process.env.QJS_TYPES = 42;
-// @ts-expect-error Synchronous fs is a later task.
-import fs from 'node:fs';
+// @ts-expect-error Unknown builtins have no declarations.
+import missing from 'node:missing';
 // @ts-expect-error captureRejections is not enabled before M1-04.
 new EventEmitter({ captureRejections: true });
 // @ts-expect-error path operations reject non-strings.

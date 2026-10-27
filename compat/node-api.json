@@ -77,8 +77,8 @@
     },
     {
       "id": "FS-001",
-      "status": "planned",
-      "file": null,
+      "status": "differential",
+      "file": "tests/node/fs.mjs",
       "task": "M2-02",
       "description": "Paths, file IO, descriptors, metadata and error contracts",
       "timeout_seconds": 30
@@ -227,6 +227,14 @@
       "task": "M1-04",
       "description": "AbortController/Signal, cancellation, EventTarget dispatch and errors",
       "timeout_seconds": 30
+    },
+    {
+      "id": "FS-002",
+      "task": "M2-02",
+      "status": "differential",
+      "file": "tests/node/fs-overloads.mjs",
+      "timeout_seconds": 30,
+      "description": "Synchronous file overloads, flags, byte paths and failure shapes"
     }
   ],
   "modules": [
@@ -9306,284 +9314,928 @@
       "entries": [
         {
           "name": "readFileSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "writeFileSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "appendFileSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "existsSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "accessSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "mkdirSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "readdirSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "statSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "lstatSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "renameSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "unlinkSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "rmdirSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "rmSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "realpathSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "copyFileSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "mkdtempSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "openSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "closeSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "readSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "writeSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "fstatSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "ftruncateSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "fsyncSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "promises",
           "status": "planned",
-          "task": "M2-02",
+          "task": "M3-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
             "FS-001"
@@ -9594,15 +10246,43 @@
         },
         {
           "name": "constants",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-001",
+            "FS-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "readFile",
@@ -9891,6 +10571,86 @@
           "differences": [
             "Not implemented; no compatibility claim."
           ]
+        },
+        {
+          "name": "Stats",
+          "task": "M2-02",
+          "status": "partial",
+          "parameters": "File metadata objects and type predicates",
+          "tests": [
+            "FS-001",
+            "FS-002"
+          ],
+          "differences": [
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "Dirent",
+          "task": "M2-02",
+          "status": "partial",
+          "parameters": "File metadata objects and type predicates",
+          "tests": [
+            "FS-001",
+            "FS-002"
+          ],
+          "differences": [
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+          ],
+          "evidence": [
+            {
+              "test": "FS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source FS-001/FS-002, Worker/qjsc and SDK fault injection; full cross-platform CI pending"
+            }
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "planned",
+              "worker": "planned",
+              "qjsc": "planned",
+              "sdk": "planned"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         }
       ]
     },

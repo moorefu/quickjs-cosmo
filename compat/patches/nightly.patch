@@ -259,3 +259,14 @@
    p = __itoa16(p, (pid & 0x000ff800) >> 11);
    *p++ = '\\';
    p = __itoa16(p, pid);
+--- a/libc/calls/openat.c
++++ b/libc/calls/openat.c
+@@ -206,7 +206,7 @@
+     } else {
+       rc = enotsup();  // TODO
+     }
+-  } else if ((flags & O_ACCMODE) == O_RDONLY && (flags & O_TRUNC)) {
++  } else if (IsWindows() && (flags & O_ACCMODE) == O_RDONLY && (flags & O_TRUNC)) {
+     // Every operating system we've tested (with the notable exception
+     // of OpenBSD) will gladly truncate files opened in read-only mode
+     rc = einval();

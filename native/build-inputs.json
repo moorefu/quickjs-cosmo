@@ -378,5 +378,17 @@
     "Per-file flags follow actual upstream BUILD.mk rules for selected objects.",
     "Private build archives only in M2-01; SDK dependency export requires a separate reviewed scope.",
     "Zstd follows the Nightly C-only object list; the toolchain OS macros disable its optional external assembly path."
+  ],
+  "host_licenses": [
+    {
+      "id": "node-fs-private-paths",
+      "license": "ISC",
+      "license_files": [
+        "libc/calls/openat.c",
+        "libc/calls/mkdirat.c",
+        "libc/calls/renameat.c",
+        "libc/calls/mkdtemp.c"
+      ]
+    }
   ]
 }

@@ -41,6 +41,7 @@ for path, relative, mode in files:
                  "cosmocc commit: " + lock["cosmopolitan"]["commit"] + "\n"
                  "cosmocc Nightly run: " + str(lock["cosmopolitan"]["run_number"]) + "\n").encode("ascii")
         data += b"\nNode.js JavaScript modules (MIT)\n" + (settings.dist / "NODE-MODULES-LICENSE").read_bytes()
+        data += b"\nNative library and source notices (runtime adapters and build probes)\n" + (settings.dist / "NATIVE-MODULES-LICENSES").read_bytes()
     if mode & 0o111 and not data.startswith(b"MZ"):
         raise ValueError(f"Expected an APE binary, not a shell launcher: {path}")
     contents.append((relative, mode, data))

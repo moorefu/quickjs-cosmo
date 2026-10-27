@@ -103,10 +103,11 @@ def main():
     check("custom/runtime-buffer", [qjs, "-m", ROOT / "tests/runtime_buffer.mjs"], contains="PASS runtime-buffer")
     check("custom/runtime-foundation", [qjs, "-m", ROOT / "tests/runtime_foundation.mjs"], contains="PASS runtime-foundation")
     check("custom/runtime-scheduling", [qjs, "-m", ROOT / "tests/runtime_scheduling.mjs"], contains="PASS runtime-scheduling")
+    check("custom/runtime-fs", [qjs, "-m", ROOT / "tests/runtime_fs.mjs"], contains="PASS runtime-fs")
     check("custom/unknown-builtin", [qjs, "-m", ROOT / "tests/fixtures/unknown-builtin.mjs"],
-          expected=1, contains="Unknown builtin module: node:fs")
+          expected=1, contains="Unknown builtin module: node:missing")
     check("qjsc/unknown-builtin", [qjsc, "-c", "-m", "-o", scratch / "unknown-builtin.c",
-          ROOT / "tests/fixtures/unknown-builtin.mjs"], expected=1, contains="Unknown builtin module: node:fs")
+          ROOT / "tests/fixtures/unknown-builtin.mjs"], expected=1, contains="Unknown builtin module: node:missing")
     check("custom/runtime-metadata-oom", [qjs, "--memory-limit", "8M", "-m", ROOT / "tests/runtime_metadata_oom.mjs"],
           contains="PASS runtime-metadata-oom")
     identity = dict(engine="quickjs", quickjsVersion=settings.data["quickjs"]["version"],
@@ -144,6 +145,14 @@ def main():
         if not valid:
             print("FAIL generated C has no bytecode array", flush=True)
     if args.compile:
+        if check("qjsc/compile-fs-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/fs-worker.mjs",
+                 "-o", scratch / "fs-standalone.exe", ROOT / "tests/runtime_fs.mjs"], timeout=180):
+            check("qjsc/run-fs-ape", [scratch / "fs-standalone.exe"], contains="PASS runtime-fs")
+        if check("sdk/compile-fs", [settings.toolchain / "bin/cosmocc", "-O2", "-I" + str(settings.dist),
+                 ROOT / "tests/native/fs.c", settings.dist / "libquickjs.a", "-lm", "-lpthread", "-ldl",
+                 "-Wl,--wrap=_Exit,-u,__wrap__Exit", "-Wl,--wrap=qjs_cosmo_fs_openat,--wrap=read,--wrap=write,--wrap=pread,--wrap=pwrite,--wrap=close,--wrap=fstat",
+                 "-o", scratch / "fs-sdk.exe"], timeout=180):
+            check("sdk/run-fs", [scratch / "fs-sdk.exe"], contains="PASS fs-sdk")
         standalone = scratch / "hello-standalone.exe"
         if check("qjsc/compile-ape", [qjsc, "-o", standalone, ROOT / "examples/hello.js"], timeout=180):
             check("qjsc/run-ape", [standalone], contains="Hello from QuickJS")
@@ -173,6 +182,8 @@ def main():
                  timeout=180):
             check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
+        check("qjsc/cross-host-fs", [args.standalone.resolve().parent / "fs-standalone.exe"], contains="PASS runtime-fs")
+        check("sdk/cross-host-fs", [args.standalone.resolve().parent / "fs-sdk.exe"], contains="PASS fs-sdk")
         check("qjsc/cross-host-ape", [args.standalone.resolve()], contains="Hello from QuickJS")
         check("qjsc/cross-host-registry", [args.standalone.resolve().parent / "registry-standalone.exe"],
               contains="PASS runtime-modules")

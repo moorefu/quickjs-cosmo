@@ -23,6 +23,7 @@ def load_config(profile=None):
         toolchain=ROOT / "toolchains" / ("cosmocc-" + cosmo["version"]),
         archive=ROOT / ".cache" / cosmo.get("archive_name", "cosmocc-" + cosmo["version"] + ".zip"),
         build=ROOT / "build/quickjs-nightly",
+        native_source=ROOT / "upstream" / ("cosmopolitan-native-" + cosmo["commit"][:12]),
         dist=ROOT / "dist",
         reports=ROOT / "build/test-results",
         releases=ROOT / "releases",

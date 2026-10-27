@@ -47,4 +47,4 @@ Windows 本地验收还发现探测链接命令的 include 顺序错误：原生
 
 Nightly 实际目录缺少 SHA3/SHAKE/BLAKE2s，BUILD.mk 的 SHA3 陈旧规则没有对应源文件。按规划保留 M4-02 的最小补充源码准入；不能用存在的规则宣称算法已存在。本项完整 CI 通过前不开始 M2-02。
 
-本地最终验收：Linux 56/56；Windows 同一产物 49/49，另保留一个既有 Unix 专用跳过；两端 Node 差分各 15/15、调度生命周期各 19/19；Python 门禁 80 项、TypeScript 两种 lib 模式、11 个 APE 的 CI 传输及三文件发布包完整性均通过。完整平台准入以提交后的 CI 为准。
+本地最终验收：Linux 56/56；Windows 同一产物 49/49，另保留一个既有 Unix 专用跳过；两端 Node 差分各 15/15、调度生命周期各 19/19；Python 门禁 80 项、TypeScript 两种 lib 模式、11 个 APE 的 CI 传输及三文件发布包完整性均通过。提交 `d2fdfc2` 的 [完整 CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40462993919) 已通过构建、七个平台与最终门禁。

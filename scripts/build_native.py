@@ -64,7 +64,7 @@ def run(command, root, timeout=180):
 
 def write_licenses(config, source, destination):
     sections = []
-    for library in config['libraries']:
+    for library in config['libraries'] + config.get('host_licenses', []):
         sections.append(library['id'] + ' (' + library['license'] + ')\n')
         for name in library['license_files']:
             content = (source / name).read_text(encoding='utf-8')

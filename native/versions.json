@@ -288,6 +288,37 @@
         "native/probes/backends.c",
         "scripts/probe_backends.py"
       ]
+    },
+    {
+      "id": "node-fs-paths",
+      "delivery": "private-source",
+      "admission": "E0",
+      "files": [
+        {
+          "path": "libc/calls/openat.c",
+          "sha256": "9a12a1ff6b62d04b34e24c38664dd8f87e794c280b41828c592fe7c05275ea34"
+        },
+        {
+          "path": "libc/calls/mkdirat.c",
+          "sha256": "1c46d1986d7a1dd4b6cb1fcf0acb849a6335ba532ee1db26ec1004dfa92c1d47"
+        },
+        {
+          "path": "libc/calls/renameat.c",
+          "sha256": "ba4ac4f0a5c0073016d0bef92416e1ca7cdf6f8859a7f4afb171a5b3093a0d67"
+        },
+        {
+          "path": "libc/calls/mkdtemp.c",
+          "sha256": "87c85d695d73629dfc05f1ef2e6df21fb918d336057e42127a2a85775fd79de4"
+        }
+      ],
+      "tests": [
+        "test/libc/calls/open_test.c",
+        "test/libc/calls/mkdir_test.c"
+      ],
+      "notes": [
+        "Private names reuse fixed Nightly implementations; Node Unix filename creation policy differs from portable libc policy; std/os remain unchanged."
+      ],
+      "evidence_scope": "Admission pending M2-02 JS, SDK fault probes and seven-platform CI"
     }
   ],
   "deferred": [

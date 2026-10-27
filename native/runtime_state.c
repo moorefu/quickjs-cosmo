@@ -14,6 +14,7 @@
 #include "module_registry.h"
 #include "runtime_state.h"
 #include "common/windows_host.h"
+#include "fs/sync.h"
 #include "qjs-cosmo-config.h"
 
 extern char **environ;
@@ -466,6 +467,8 @@ JSValue js_cosmo_native_api(JSContext *ctx, CosmoRuntimeState *state) {
         JS_SetPropertyStr(ctx, api, "ppid", JS_NewUint32(ctx, IsWindows() ? js_cosmo_windows_ppid() : getppid())) < 0) goto fail;
     JSValue exe = executable_path(ctx);
     if (JS_IsException(exe) || JS_SetPropertyStr(ctx, api, "executablePath", exe) < 0) goto fail;
+    JSValue fs = js_cosmo_fs_api(ctx);
+    if (JS_IsException(fs) || JS_SetPropertyStr(ctx, api, "fs", fs) < 0) goto fail;
     return api;
 fail:
     JS_FreeValue(ctx, api); return JS_EXCEPTION;

@@ -31,7 +31,13 @@
       "url": "https://raw.githubusercontent.com/jart/cosmopolitan/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/libc/intrin/sigproc.c",
       "sha256": "48be3f0e08fe6640aaae21d5c2b9baecda0fecf7d1ab990a2bb4dbef711f4444",
       "patched_sha256": "ca0e9e841a55bcce8ab2226e36d5b2e5beea7ea66685758fd44c9e2c345f7727"
+    },
+    {
+      "path": "libc/calls/openat.c",
+      "url": "https://raw.githubusercontent.com/jart/cosmopolitan/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/libc/calls/openat.c",
+      "sha256": "9a12a1ff6b62d04b34e24c38664dd8f87e794c280b41828c592fe7c05275ea34",
+      "patched_sha256": "b89bb8bc25db55d571ceea85d267946ec851f30eb28151c2a0f3ca29c002b3e2"
     }
   ],
-  "patch_sha256": "aa13e2d0767c8903fead3fad8c62cbc5498be9516d9f13ec14c041c0a8b4cfc0"
+  "patch_sha256": "0bfa61d8e9fdd5826e0acc2f0b3736e63cabccc48476a3892437a005c30e8a5f"
 }

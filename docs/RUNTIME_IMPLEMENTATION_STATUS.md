@@ -9,8 +9,8 @@
 | M1-02 Buffer/编码 | 完成，CI 全绿 | `c41097f`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40434897922)，[记录](M1_BUFFER_ENCODING.md) |
 | M1-03 公共基础 | 完成，CI 全绿 | `0bd7b38`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40448736721)，[记录](M1_FOUNDATION.md) |
 | M1-04 调度合同 | 完成，CI 全绿 | `1f467a4`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40454177787)，[记录](M1_SCHEDULING.md) |
-| M2-01 原生构建 | 本地验收完成，待完整 CI | 固定同提交 53 个 C 文件、双架构 E1/E2、11 个 APE；[记录](M2_NATIVE_BUILD.md) |
-| M2-02 同步 fs | 待实现 | 高层、目录、描述符、元数据 |
+| M2-01 原生构建 | 完成，CI 全绿 | `d2fdfc2`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40462993919)，[记录](M2_NATIVE_BUILD.md) |
+| M2-02 同步 fs | 本地验收完成，待完整 CI | 同步高层/目录/fd/Stats/Dirent、Worker/qjsc、SDK 故障注入；[记录](M2_FS.md) |
 | M2-03 摘要与 KDF | 待实现 | 哈希、HMAC、派生、随机与比较 |
 | M2-04 同步压缩 | 待实现 | zlib、Zstd、LZ4、bzip2 与校验和 |
 | M2-05 同步子进程 | 待实现 | spawnSync/execFileSync/execSync |
