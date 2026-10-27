@@ -13,6 +13,7 @@ from unittest import mock
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 import node_contract
+import host_runtime
 import prepare_native
 import test_node_compat as runner
 
@@ -149,7 +150,7 @@ class NativeInputTests(unittest.TestCase):
             node = Path(directory) / "node.exe"
             node.write_bytes(b"not the official executable")
             baseline = dict(artifacts={"win32-x64":dict(file="win-x64/node.exe", sha256="0" * 64)})
-            with mock.patch.object(runner, "host_info", return_value=dict(platform="win32", python_arch="x86_64")):
+            with mock.patch.object(runner, "host_info", return_value=dict(platform="win32", python_arch="x86_64", execution_arch="x86_64")):
                 with self.assertRaisesRegex(ValueError, "pinned official"):
                     runner.verify_node(node, baseline)
 
@@ -181,6 +182,31 @@ class NativeInputTests(unittest.TestCase):
             (root / "versions.json").write_text(json.dumps(dict(cosmopolitan=dict(commit="toolchain"))))
             with self.assertRaisesRegex(ValueError, "must match"):
                 prepare_native.prepare_source(root, offline=True)
+
+
+class OracleArchitectureTests(unittest.TestCase):
+    def test_native_arm_python_on_windows_still_selects_x64_node(self):
+        info = dict(platform="win32", host_arch="arm64", python_arch="arm64", execution_arch="x86_64")
+        self.assertEqual(host_runtime.node_oracle_key(info), "win32-x64")
+
+    def test_linux_arm_selects_native_arm_node(self):
+        info = dict(platform="linux", host_arch="arm64", python_arch="arm64", execution_arch="arm64")
+        self.assertEqual(host_runtime.node_oracle_key(info), "linux-arm64")
+
+    def test_installer_uses_ape_architecture_for_destination(self):
+        with mock.patch.object(prepare_native, "node_oracle_key", return_value="win32-x64"):
+            self.assertEqual(prepare_native.node_destination(Path("project")),
+                             Path("project/toolchains/node-v24.21.0-win32-x64"))
+
+    def test_reference_accepts_x64_node_with_native_arm_python(self):
+        info = dict(platform="win32", host_arch="arm64", python_arch="arm64", execution_arch="x86_64")
+        observation = dict(version="v24.21.0", platform="win32", arch="x64", execPath="node.exe")
+        with mock.patch.object(runner, "host_info", return_value=info), \
+             mock.patch.object(runner, "run_command", return_value=dict(failure=None, exit_code=0, stdout=json.dumps(observation))), \
+             mock.patch.object(runner, "sha256", return_value="verified"), \
+             mock.patch.object(runner, "verify_node", return_value={"verified": True}):
+            result = runner.node_identity("node.exe", ROOT, dict(version="v24.21.0"))
+        self.assertEqual(result["arch"], "x64")
 
 
 if __name__ == "__main__":

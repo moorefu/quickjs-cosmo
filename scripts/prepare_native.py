@@ -12,7 +12,7 @@ import shutil
 import subprocess
 import tarfile
 
-from host_runtime import host_info
+from host_runtime import node_oracle_key
 from node_contract import ROOT, read_json
 
 SOURCE_PREFIXES = ("ape/", "libc/", "net/", "third_party/zlib/", "third_party/mbedtls/", "third_party/haclstar/",
@@ -112,16 +112,12 @@ def prepare_source(root=ROOT, offline=False):
 
 
 def node_destination(root=ROOT):
-    info = host_info()
-    arch = "x64" if info["python_arch"] == "x86_64" else info["python_arch"]
-    return root / "toolchains" / ("node-v24.21.0-" + info["platform"] + "-" + arch)
+    return root / "toolchains" / ("node-v24.21.0-" + node_oracle_key())
 
 
 def prepare_node(root=ROOT, offline=False):
     lock = read_json(root / "compat/node-baseline.json")
-    info = host_info()
-    arch = "x64" if info["python_arch"] == "x86_64" else info["python_arch"]
-    key = info["platform"] + "-" + arch
+    key = node_oracle_key()
     if key not in lock["artifacts"]:
         raise ValueError("No pinned Node artifact for " + key)
     record = lock["artifacts"][key]

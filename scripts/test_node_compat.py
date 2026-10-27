@@ -16,7 +16,7 @@ import tarfile
 import tempfile
 import time
 
-from host_runtime import ape_command, host_info, normalize_arch
+from host_runtime import ape_command, host_info, normalize_arch, node_oracle_key
 from node_contract import ROOT, checked_file, load_contract, read_json, validate
 
 PREFIX = "NODE_COMPAT_RESULT "
@@ -86,8 +86,8 @@ def node_identity(node, cwd, baseline):
     if identity["version"] != baseline["version"]:
         raise ValueError(f"Node version mismatch: expected {baseline['version']}, got {identity['version']}")
     host = host_info()
-    if identity["platform"] != host["platform"] or normalize_arch(identity["arch"]) != host["python_arch"]:
-        raise ValueError("Node must run on the same platform and execution architecture as the test driver")
+    if identity["platform"] != host["platform"] or normalize_arch(identity["arch"]) != host["execution_arch"]:
+        raise ValueError("Node must match the APE platform and execution architecture")
     identity["sha256"] = sha256(identity["execPath"])
     identity["verification"] = verify_node(node, baseline)
     return identity
@@ -96,8 +96,7 @@ def node_identity(node, cwd, baseline):
 def verify_node(node, baseline, root=ROOT):
     """Verify the oracle against the locked official executable/archive."""
     host = host_info()
-    arch = "x64" if host["python_arch"] == "x86_64" else host["python_arch"]
-    record = baseline["artifacts"][host["platform"] + "-" + arch]
+    record = baseline["artifacts"][node_oracle_key(host)]
     if record["file"].endswith(".exe"):
         expected = record["sha256"]
     else:
@@ -160,8 +159,7 @@ def main():
             print("PASS node-contract " + json.dumps(counts))
             return 0
         host = host_info()
-        arch = "x64" if host["python_arch"] == "x86_64" else host["python_arch"]
-        local = ROOT / "toolchains" / ("node-v24.21.0-" + host["platform"] + "-" + arch) / (
+        local = ROOT / "toolchains" / ("node-v24.21.0-" + node_oracle_key(host)) / (
             "node.exe" if host["platform"] == "win32" else "bin/node")
         node = args.node or (str(local) if local.is_file() else shutil.which("node"))
         if not node:

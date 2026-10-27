@@ -36,6 +36,15 @@ def host_info():
                 execution_arch="x86_64" if system == "windows" else process)
 
 
+def node_oracle_key(info=None):
+    """The Node oracle must match APE execution, including x64 on ARM Windows."""
+    info = info or host_info()
+    arches = {"x86_64": "x64", "arm64": "arm64"}
+    if info["execution_arch"] not in arches:
+        raise ValueError("Unsupported Node oracle execution architecture: " + info["execution_arch"])
+    return info["platform"] + "-" + arches[info["execution_arch"]]
+
+
 def ape_command(binary, arguments, dist, *, system=None, arch=None, loader=None):
     """Linux uses its matching ELF loader; other Unix hosts use APE's shell entry."""
     system = system or platform.system().lower()
