@@ -389,6 +389,14 @@
         "libc/calls/renameat.c",
         "libc/calls/mkdtemp.c"
       ]
+    },
+    {
+      "id": "node-child-process-private-spawn",
+      "license": "ISC",
+      "license_files": [
+        "libc/proc/posix_spawn.c",
+        "libc/calls/ntspawn.c"
+      ]
     }
   ]
 }

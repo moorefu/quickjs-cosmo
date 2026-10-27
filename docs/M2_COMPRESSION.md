@@ -48,4 +48,4 @@ Nightly 的 huffman.c 和 blocksort.c 将六个固定小数组改成 gc(calloc(.
 
 参考：[Node v24.21.0 zlib](https://nodejs.org/download/release/v24.21.0/docs/api/zlib.html)、[相同版本原生适配](https://github.com/nodejs/node/blob/v24.21.0/src/node_zlib.cc)、[独立 LZ4 1.10.0](https://github.com/lz4/lz4/releases/tag/v1.10.0)。异步接口留在 M3-02，流留在 M3-05；完整 CI 通过后才进入 M2-05。
 
-本地最终验收：Linux 72/72；Windows 同一批产物 58/58，另保留一个既有 Unix 专用跳过；两端 Node 差分各 24/24。独立互操作 30 组双向通过，80 项 Python 门禁、TypeScript 两种 lib 配置、17 个 APE 的传输清单和三文件发布 ZIP 校验通过。完整 CI 待确认。
+本地最终验收：Linux 72/72；Windows 同一批产物 58/58，另保留一个既有 Unix 专用跳过；两端 Node 差分各 24/24。独立互操作 30 组双向通过，80 项 Python 门禁、TypeScript 两种 lib 配置、17 个 APE 的传输清单和三文件发布 ZIP 校验通过。提交 `af6ddca` 的[完整 CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40493866543)已通过构建、七个平台和最终门禁。

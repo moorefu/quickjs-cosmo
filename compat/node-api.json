@@ -85,11 +85,11 @@
     },
     {
       "id": "PROC-001",
-      "status": "planned",
-      "file": null,
+      "status": "differential",
+      "file": "tests/node/child-process.mjs",
       "task": "M2-05",
       "description": "Process options, stdio, shell and status mapping",
-      "timeout_seconds": 30
+      "timeout_seconds": 60
     },
     {
       "id": "STR-001",
@@ -291,6 +291,14 @@
       "task": "M2-04",
       "timeout_seconds": 30,
       "description": "LZ4 Frame/bzip2 boundaries, concatenation, skippable frames, corruption, checksums and Worker"
+    },
+    {
+      "id": "PROC-002",
+      "status": "differential",
+      "file": "tests/node/child-process-limits.mjs",
+      "task": "M2-05",
+      "timeout_seconds": 60,
+      "description": "Concurrent stdin/stdout/stderr, aggregate maxBuffer, zero limit, timeout and kill signal"
     }
   ],
   "modules": [
@@ -12727,38 +12735,122 @@
       "entries": [
         {
           "name": "spawnSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-05",
-          "parameters": "Synchronous execution first; platform shell/argv/cwd/env/stdio/status rules",
+          "parameters": "Node v24.21.0 sync overloads, shell/argv/cwd/env/PATH, three stdio descriptors, aggregate maxBuffer, timeout, killSignal and raw exit status",
           "tests": [
-            "PROC-001"
+            "PROC-001",
+            "PROC-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Synchronous subset documented in docs/M2_PROCESS.md; detached/IPC/extra stdio descriptors and URL cwd are deferred. Windows uid/gid unsupported."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "PROC-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "PROC-001/002 plus source/Worker/qjsc and SDK allocation/pipe/thread/I/O failures; full CI pending"
+            }
           ]
         },
         {
           "name": "execFileSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-05",
-          "parameters": "Synchronous execution first; platform shell/argv/cwd/env/stdio/status rules",
+          "parameters": "Node v24.21.0 sync overloads, shell/argv/cwd/env/PATH, three stdio descriptors, aggregate maxBuffer, timeout, killSignal and raw exit status",
           "tests": [
-            "PROC-001"
+            "PROC-001",
+            "PROC-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Synchronous subset documented in docs/M2_PROCESS.md; detached/IPC/extra stdio descriptors and URL cwd are deferred. Windows uid/gid unsupported."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "PROC-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "PROC-001/002 plus source/Worker/qjsc and SDK allocation/pipe/thread/I/O failures; full CI pending"
+            }
           ]
         },
         {
           "name": "execSync",
-          "status": "planned",
+          "status": "partial",
           "task": "M2-05",
-          "parameters": "Synchronous execution first; platform shell/argv/cwd/env/stdio/status rules",
+          "parameters": "Node v24.21.0 sync overloads, shell/argv/cwd/env/PATH, three stdio descriptors, aggregate maxBuffer, timeout, killSignal and raw exit status",
           "tests": [
-            "PROC-001"
+            "PROC-001",
+            "PROC-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Synchronous subset documented in docs/M2_PROCESS.md; detached/IPC/extra stdio descriptors and URL cwd are deferred. Windows uid/gid unsupported."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "PROC-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "PROC-001/002 plus source/Worker/qjsc and SDK allocation/pipe/thread/I/O failures; full CI pending"
+            }
           ]
         },
         {

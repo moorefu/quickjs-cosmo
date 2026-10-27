@@ -12,8 +12,8 @@
 | M2-01 原生构建 | 完成，CI 全绿 | `d2fdfc2`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40462993919)，[记录](M2_NATIVE_BUILD.md) |
 | M2-02 同步 fs | 完成，CI 全绿 | `3d743bc`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40476137441)，[记录](M2_FS.md) |
 | M2-03 摘要与 KDF | 完成，CI 全绿 | `4b19b83`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40487013603)，[记录](M2_CRYPTO.md) |
-| M2-04 同步压缩 | 本地验收通过，等待完整 CI | [记录](M2_COMPRESSION.md)，Linux 72/72、Windows 58/58，Node 各 24/24，独立互操作 30 组 |
-| M2-05 同步子进程 | 待实现 | spawnSync/execFileSync/execSync |
+| M2-04 同步压缩 | 完成，CI 全绿 | `af6ddca`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40493866543)，[记录](M2_COMPRESSION.md) |
+| M2-05 同步子进程 | 本地通过，待完整 CI | spawnSync/execFileSync/execSync，[记录](M2_PROCESS.md) |
 | M3-01 原生任务调度 | 待实现 | 有界队列、唤醒、取消与销毁 |
 | M3-02 异步 fs/算法 | 待实现 | callback、Promise 与非阻塞验收 |
 | M3-03 Stream | 待实现 | 流对象、背压、pipeline/finished |

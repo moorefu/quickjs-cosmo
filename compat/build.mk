@@ -7,6 +7,7 @@ QJS_COMPAT_OBJS += $(OBJDIR)/qjs-fs-sync.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-fs-paths.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-crypto.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-compression.o
+QJS_COMPAT_OBJS += $(OBJDIR)/qjs-child-process.o $(OBJDIR)/qjs-process-core.o $(OBJDIR)/qjs-process-posix.o $(OBJDIR)/qjs-process-windows.o
 QJS_COSMO_NATIVE ?= $(shell python3 "$(QJS_COSMO_ROOT)/scripts/build_config.py" native_source)
 ifneq ($(wildcard $(QJS_COSMO_COMPAT)/libc/intrin/sigproc.c),)
 QJS_COMPAT_CFLAGS = -DQJS_COSMO_SIGPROC
@@ -28,8 +29,20 @@ $(OBJDIR)/qjs-module-registry.o: $(QJS_COSMO_ROOT)/native/module_registry.c \
     $(QJS_COSMO_ROOT)/native/module_registry.h $(QJS_COSMO_ROOT)/native/runtime_state.h qjs-cosmo-config.h qjs-builtins.h quickjs.h quickjs-libc.h | $(OBJDIR)
 	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -c -o $@ $<
 
+$(OBJDIR)/qjs-child-process.o: $(QJS_COSMO_ROOT)/native/process/binding.c $(QJS_COSMO_ROOT)/native/process/binding.h $(QJS_COSMO_ROOT)/native/process/core.h quickjs.h | $(OBJDIR)
+	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -I$(QJS_COSMO_NATIVE) -c -o $@ $<
+
+$(OBJDIR)/qjs-process-core.o: $(QJS_COSMO_ROOT)/native/process/core.c $(QJS_COSMO_ROOT)/native/process/core.h | $(OBJDIR)
+	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -c -o $@ $<
+
+$(OBJDIR)/qjs-process-posix.o: $(QJS_COSMO_ROOT)/native/process/posix.c $(QJS_COSMO_ROOT)/native/process/core.h $(QJS_COSMO_NATIVE)/libc/proc/posix_spawn.c | $(OBJDIR)
+	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -I$(QJS_COSMO_COMPAT) -I$(QJS_COSMO_NATIVE) -c -o $@ $<
+
+$(OBJDIR)/qjs-process-windows.o: $(QJS_COSMO_ROOT)/native/process/windows.c $(QJS_COSMO_ROOT)/native/process/core.h $(QJS_COSMO_COMPAT)/libc/calls/ntspawn.c | $(OBJDIR)
+	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -I$(QJS_COSMO_COMPAT) -I$(QJS_COSMO_NATIVE) -c -o $@ $<
+
 $(OBJDIR)/qjs-runtime-state.o: $(QJS_COSMO_ROOT)/native/runtime_state.c \
-    $(QJS_COSMO_ROOT)/native/runtime_state.h $(QJS_COSMO_ROOT)/native/common/windows_host.h $(QJS_COSMO_ROOT)/native/fs/sync.h $(QJS_COSMO_ROOT)/native/crypto/binding.h $(QJS_COSMO_ROOT)/native/compression/binding.h $(QJS_COSMO_ROOT)/native/module_registry.h qjs-cosmo-config.h quickjs.h quickjs-libc.h | $(OBJDIR)
+    $(QJS_COSMO_ROOT)/native/runtime_state.h $(QJS_COSMO_ROOT)/native/common/windows_host.h $(QJS_COSMO_ROOT)/native/fs/sync.h $(QJS_COSMO_ROOT)/native/crypto/binding.h $(QJS_COSMO_ROOT)/native/compression/binding.h $(QJS_COSMO_ROOT)/native/process/binding.h $(QJS_COSMO_ROOT)/native/module_registry.h qjs-cosmo-config.h quickjs.h quickjs-libc.h | $(OBJDIR)
 	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -c -o $@ $<
 
 $(OBJDIR)/qjs-fs-sync.o: $(QJS_COSMO_ROOT)/native/fs/sync.c $(QJS_COSMO_ROOT)/native/fs/sync.h $(QJS_COSMO_ROOT)/native/common/windows_host.h quickjs.h | $(OBJDIR)

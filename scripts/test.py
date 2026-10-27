@@ -106,6 +106,7 @@ def main():
     check("custom/runtime-fs", [qjs, "-m", ROOT / "tests/runtime_fs.mjs"], contains="PASS runtime-fs")
     check("custom/runtime-crypto", [qjs, "-m", ROOT / "tests/runtime_crypto.mjs"], contains="PASS runtime-crypto")
     check("custom/runtime-compression", [qjs, "-m", ROOT / "tests/runtime_compression.mjs"], contains="PASS runtime-compression")
+    check("custom/runtime-child-process", [qjs, "-m", ROOT / "tests/runtime_child_process.mjs"], contains="PASS runtime-child-process")
     check("custom/unknown-builtin", [qjs, "-m", ROOT / "tests/fixtures/unknown-builtin.mjs"],
           expected=1, contains="Unknown builtin module: node:missing")
     check("qjsc/unknown-builtin", [qjsc, "-c", "-m", "-o", scratch / "unknown-builtin.c",
@@ -147,6 +148,14 @@ def main():
         if not valid:
             print("FAIL generated C has no bytecode array", flush=True)
     if args.compile:
+        if check("qjsc/compile-child-process-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/child-process-worker.mjs",
+                 "-o", scratch / "child-process-standalone.exe", ROOT / "tests/runtime_child_process.mjs"], timeout=180):
+            check("qjsc/run-child-process-ape", [scratch / "child-process-standalone.exe"], contains="PASS runtime-child-process")
+        if check("sdk/compile-child-process", [settings.toolchain / "bin/cosmocc", "-O2", "-I" + str(settings.dist),
+                 ROOT / "tests/native/child_process.c", settings.dist / "libquickjs.a", "-lm", "-lpthread", "-ldl",
+                 "-Wl,--wrap=_Exit,-u,__wrap__Exit", "-Wl,--wrap=js_malloc_rt,--wrap=js_free_rt,--wrap=pipe2,--wrap=poll,--wrap=read,--wrap=write,--wrap=pthread_create",
+                 "-o", scratch / "child-process-sdk.exe"], timeout=180):
+            check("sdk/run-child-process", [scratch / "child-process-sdk.exe"], contains="PASS child-process-sdk", timeout=180)
         check("custom/compression-interoperability", [sys.executable, ROOT / "scripts/test_compression_interop.py"],
               contains="PASS compression interoperability", timeout=180)
         if check("qjsc/compile-compression-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/compression-worker.mjs",
@@ -202,6 +211,8 @@ def main():
                  timeout=180):
             check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
+        check("qjsc/cross-host-child-process", [args.standalone.resolve().parent / "child-process-standalone.exe"], contains="PASS runtime-child-process")
+        check("sdk/cross-host-child-process", [args.standalone.resolve().parent / "child-process-sdk.exe"], contains="PASS child-process-sdk", timeout=180)
         check("qjsc/cross-host-compression", [args.standalone.resolve().parent / "compression-standalone.exe"], contains="PASS runtime-compression")
         check("sdk/cross-host-compression", [args.standalone.resolve().parent / "compression-sdk.exe"], contains="PASS compression-sdk")
         check("qjsc/cross-host-crypto", [args.standalone.resolve().parent / "crypto-standalone.exe"], contains="PASS runtime-crypto")

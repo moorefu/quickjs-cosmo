@@ -37,10 +37,12 @@ def write_report(path, report):
     path.write_text(json.dumps(report, ensure_ascii=True, indent=2) + "\n", encoding="utf-8")
 
 
-def run_command(command, cwd, timeout=30, output_limit=OUTPUT_LIMIT):
+def run_command(command, cwd, timeout=30, output_limit=OUTPUT_LIMIT, env_overrides=None):
     """Bound time and combined output without buffering arbitrary output in RAM."""
     start = time.monotonic()
     environment = dict(os.environ, TZ="UTC", LC_ALL="C", NO_COLOR="1")
+    if env_overrides:
+        environment.update(env_overrides)
     with tempfile.TemporaryFile() as stdout, tempfile.TemporaryFile() as stderr:
         process = subprocess.Popen(list(map(str, command)), cwd=cwd, env=environment,
                                    stdout=stdout, stderr=stderr)
@@ -128,14 +130,15 @@ def compare_case(case, node, qjs, scratch, reference_only=False):
     fixture = checked_file(ROOT, case["file"])
     result = dict(id=case["id"], file=case["file"], mode="reference" if reference_only else "differential")
     try:
-        result["node"] = run_command([node, fixture], scratch, case["timeout_seconds"])
+        child_environment = {"NODE_COMPAT_CHILD_EXECUTABLE": str(node)} if case['id'].startswith('PROC-') else None
+        result["node"] = run_command([node, fixture], scratch, case["timeout_seconds"], env_overrides=child_environment)
         reference = result_value(result["node"])
         result["reference"] = reference
         if reference_only:
             result["passed"] = True
         else:
             result["qjs"] = run_command(ape_command(qjs, ["-m", fixture], ROOT / "dist"),
-                                        scratch, case["timeout_seconds"])
+                                        scratch, case["timeout_seconds"], env_overrides=child_environment)
             actual = result_value(result["qjs"])
             result["actual"] = actual
             # Serialized comparison keeps JS booleans distinct from numbers.

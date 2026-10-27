@@ -375,6 +375,49 @@
         "tests/native/compression.c",
         "scripts/test_compression_interop.py"
       ]
+    },
+    {
+      "id": "node-child-process",
+      "delivery": "private-source",
+      "admission": "E2",
+      "files": [
+        {
+          "path": "libc/proc/posix_spawn.c",
+          "sha256": "50cd57487c1c3c4e3ccdb87c8c7b18182f9c6d6ab45ca940452ae5e3e245a3e2"
+        },
+        {
+          "path": "libc/calls/ntspawn.c",
+          "sha256": "c7d29e7e36094b81d54269eda58837582b39b52a9cebcda2874edcd7244b79e7"
+        },
+        {
+          "path": "libc/calls/mkntenvblock.c",
+          "sha256": "abfb69e0ea293a93aff0ba5a12e21276f46e9c55a3c56515dcf773a8aebbbaf3"
+        },
+        {
+          "path": "libc/calls/pipe.c",
+          "sha256": "80bbfa968d797186ba1878bc4bcd0688bc575ebe8b26ec0ddc3a12ba4c662b72"
+        },
+        {
+          "path": "libc/calls/poll.c",
+          "sha256": "fc03f46b48f5df214d1de1938f045e21b5e8fc0ca6d6e49810459095cc9aec29"
+        }
+      ],
+      "tests": [
+        "test/libc/proc/posix_spawn_test.c"
+      ],
+      "notes": [
+        "Private Nightly spawn implementation; Node argument quoting, stdio ownership and explicit uid/gid adapters. No new native dependency."
+      ],
+      "evidence_scope": "M2-05 sync subset; local Linux/Windows differential, Worker and SDK failure cleanup; full CI pending",
+      "evidence": [
+        "native/process/core.c",
+        "native/process/posix.c",
+        "native/process/windows.c",
+        "tests/native/child_process.c",
+        "tests/node/child-process.mjs",
+        "tests/node/child-process-limits.mjs",
+        "docs/M2_PROCESS.md"
+      ]
     }
   ],
   "deferred": [
