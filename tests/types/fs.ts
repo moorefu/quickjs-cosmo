@@ -14,7 +14,6 @@ void [data,text,big,absent,count,entries,first];
 fs.accessSync(1);
 // @ts-expect-error Read destinations must be views.
 fs.readSync(fd,new ArrayBuffer(4));
-// @ts-expect-error Async APIs belong to M3-02.
 fs.promises.readFile('file');
 // @ts-expect-error Stats uses bigint only on request.
 const wrong:bigint=fs.statSync('file').size;

@@ -34,6 +34,7 @@ static const Builtin builtins[] = {
     { "node:timers", core_module },
     { "node:timers/promises", core_module },
     { "node:fs", core_module },
+    { "node:fs/promises", core_module },
     { "node:crypto", core_module },
     { "cosmo:crypto", core_module },
     { "node:zlib", core_module },

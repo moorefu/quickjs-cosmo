@@ -138,7 +138,7 @@ declare module 'node:zlib' {
     const zlib: {gzipSync: typeof gzipSync; gunzipSync: typeof gunzipSync; deflateSync: typeof deflateSync;
         inflateSync: typeof inflateSync; deflateRawSync: typeof deflateRawSync; inflateRawSync: typeof inflateRawSync;
         unzipSync: typeof unzipSync; zstdCompressSync: typeof zstdCompressSync; zstdDecompressSync: typeof zstdDecompressSync;
-        crc32: typeof crc32; codes: typeof codes; constants: typeof constants};
+        crc32: typeof crc32; codes: typeof codes; constants: typeof constants} & AsyncZlibMethods;
     export default zlib;
 }
 declare module 'zlib' {export * from 'node:zlib'; export {default} from 'node:zlib';}
@@ -159,6 +159,7 @@ declare module 'cosmo:compression' {
     export function codecInfo(name: CodecInfo['name']): CodecInfo;
     const compression: {lz4CompressSync: typeof lz4CompressSync; lz4DecompressSync: typeof lz4DecompressSync;
         bzip2CompressSync: typeof bzip2CompressSync; bzip2DecompressSync: typeof bzip2DecompressSync;
-        crc32c: typeof crc32c; adler32: typeof adler32; codecInfo: typeof codecInfo};
+        crc32c: typeof crc32c; adler32: typeof adler32; codecInfo: typeof codecInfo;
+        lz4Compress:typeof lz4Compress;lz4Decompress:typeof lz4Decompress;bzip2Compress:typeof bzip2Compress;bzip2Decompress:typeof bzip2Decompress};
     export default compression;
 }

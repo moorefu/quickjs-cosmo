@@ -70,7 +70,7 @@ def build(root=ROOT):
         reports[arch] = dict(elf_machine=machine, sha256=sha256(target), exported=[ROOT_SYMBOL], undefined=undefined)
     sources = ['native/compression/' + name for name in ('core.c', 'core.h', 'binding.c', 'binding.h', 'allocator.c',
         'bzip2-huffman.c', 'bzip2-blocksort.c', 'bzip2-workspace.h')]
-    sources += ['scripts/build_compression.py', 'native/build-inputs.json']
+    sources += ['scripts/build_compression.py', 'native/build-inputs.json', 'native/tasks.h']
     (output / 'build.json').write_text(json.dumps(dict(format=1,
         inputs={name: sha256(root / name) for name in sources}, backend_fingerprint=manifest['fingerprint'],
         architectures=reports, commands=commands, included_sources=included,

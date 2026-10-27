@@ -29,6 +29,7 @@ static int error(QCResult *result,int status,int backend,const char *message) {
     return status;
 }
 static int reserve(QCResult *result,const QCOptions *options,QCAllocator *owner) {
+    if(options->cancelled && options->cancelled(options->cancel_opaque))return error(result,QC_CANCELLED,0,"Compression cancelled");
     QCBuffer *out=&result->output;
     if (out->length<out->capacity) return 0;
     size_t limit=options->maximum+1;

@@ -11,6 +11,7 @@
 #include <time.h>
 #include <unistd.h>
 #include "sync.h"
+#include "async.h"
 #include "../common/windows_host.h"
 
 static int property(JSContext *ctx, JSValueConst object, const char *name, JSValue value) {
@@ -25,7 +26,7 @@ enum { FS_OPEN, FS_CLOSE, FS_READ, FS_WRITE, FS_STAT, FS_MKDIR, FS_SCAN,
        FS_SYNC, FS_ACCESS, FS_ERROR, FS_PAUSE, FS_CHMOD };
 
 typedef struct { int value; const char *name; int windows; } FsError;
-static JSValue failure(JSContext *ctx, int number, const char *call) {
+JSValue js_cosmo_fs_error(JSContext *ctx, int number, const char *call) {
     const FsError errors[] = {
         {ENOENT,"ENOENT",-4058}, {ENOTDIR,"ENOTDIR",-4052}, {EACCES,"EACCES",-4092},
         {EPERM,"EPERM",-4048}, {EINVAL,"EINVAL",-4071}, {ENOMEM,"ENOMEM",-4057},
@@ -55,7 +56,7 @@ static JSValue failure(JSContext *ctx, int number, const char *call) {
 }
 
 /* JS passes byte paths, so Unix filenames need not be valid UTF-8. */
-static char *path_bytes(JSContext *ctx, JSValueConst value) {
+char *js_cosmo_fs_path(JSContext *ctx, JSValueConst value) {
     size_t offset, length, element, size=0;
     JSValue array = JS_GetTypedArrayBuffer(ctx,value,&offset,&length,&element);
     if (JS_IsException(array)) return NULL;
@@ -72,7 +73,7 @@ static char *path_bytes(JSContext *ctx, JSValueConst value) {
     JS_FreeValue(ctx,array); return path;
 }
 
-static JSValue stat_value(JSContext *ctx, const struct stat *s) {
+JSValue js_cosmo_fs_stat(JSContext *ctx, const struct stat *s) {
     JSValue value = JS_NewObject(ctx);
     if (JS_IsException(value)) return value;
 #define FIELD(name,expr) if (property(ctx,value,name,JS_NewBigInt64(ctx,(int64_t)(expr)))<0) goto fail
@@ -99,7 +100,7 @@ fail: JS_FreeValue(ctx,value); return JS_EXCEPTION;
 
 static JSValue scan(JSContext *ctx, const char *path) {
     DIR *directory=opendir(path);
-    if (!directory) return failure(ctx,errno,"scandir");
+    if (!directory) return js_cosmo_fs_error(ctx,errno,"scandir");
     JSValue list=JS_NewArray(ctx); uint32_t count=0; int saved=0;
     if (JS_IsException(list)) { closedir(directory); return list; }
     for (;;) {
@@ -116,13 +117,13 @@ static JSValue scan(JSContext *ctx, const char *path) {
         if (index_property(ctx,list,count++,pair)<0) goto fail;
     }
     if (closedir(directory) && !saved) saved=errno;
-    if (saved) { JS_FreeValue(ctx,list); return failure(ctx,saved,"scandir"); }
+    if (saved) { JS_FreeValue(ctx,list); return js_cosmo_fs_error(ctx,saved,"scandir"); }
     return list;
 fail: closedir(directory); JS_FreeValue(ctx,list); return JS_EXCEPTION;
 }
 
 /* Public numeric flags use Node's host ABI, independently of Cosmo's ABI. */
-static int host_flags(int flags) {
+int js_cosmo_fs_flags(int flags) {
     if (IsXnu()) {
         int out=flags&3;
         if (flags&0x200) out|=O_CREAT;
@@ -168,7 +169,7 @@ static JSValue call(JSContext *ctx, JSValueConst self, int argc, JSValueConst *a
             if (magic==FS_READ) count=position<0 ? read(fd,bytes+offset,length) : pread(fd,bytes+offset,length,position);
             else count=position<0 ? write(fd,bytes+offset,length) : pwrite(fd,bytes+offset,length,position);
         } while (count<0 && errno==EINTR);
-        return count<0 ? failure(ctx,errno,magic==FS_READ?"read":"write") : JS_NewInt64(ctx,count);
+        return count<0 ? js_cosmo_fs_error(ctx,errno,magic==FS_READ?"read":"write") : JS_NewInt64(ctx,count);
     }
     if (magic==FS_PAUSE) {
         int64_t delay; if (JS_ToInt64(ctx,&delay,argv[0])<0) return JS_EXCEPTION;
@@ -181,13 +182,13 @@ static JSValue call(JSContext *ctx, JSValueConst self, int argc, JSValueConst *a
         const char *code=JS_ToCString(ctx,argv[0]),*sys=JS_ToCString(ctx,argv[1]);
         if (!code || !sys) { JS_FreeCString(ctx,code); JS_FreeCString(ctx,sys); return JS_EXCEPTION; }
         n=!strcmp(code,"EISDIR")?EISDIR:!strcmp(code,"ENOTDIR")?ENOTDIR:!strcmp(code,"EEXIST")?EEXIST:!strcmp(code,"ENOTSUP")?ENOTSUP:!strcmp(code,"EPERM")?EPERM:EIO;
-        value=failure(ctx,n,sys); JS_FreeCString(ctx,code); JS_FreeCString(ctx,sys); return value;
+        value=js_cosmo_fs_error(ctx,n,sys); JS_FreeCString(ctx,code); JS_FreeCString(ctx,sys); return value;
     }
     if (magic==FS_STAT && JS_ToInt32(ctx,&n,argv[1])<0) return JS_EXCEPTION;
     if (magic==FS_CLOSE || magic==FS_TRUNCATE || magic==FS_SYNC || magic==FS_CHMOD || (magic==FS_STAT && n==2)) {
         if (JS_ToInt32(ctx,&fd,argv[0])<0) return JS_EXCEPTION;
     } else {
-        a=path_bytes(ctx,argv[0]); if (!a) return JS_EXCEPTION;
+        a=js_cosmo_fs_path(ctx,argv[0]); if (!a) return JS_EXCEPTION;
     }
     switch (magic) {
     case FS_OPEN:
@@ -195,19 +196,19 @@ static JSValue call(JSContext *ctx, JSValueConst self, int argc, JSValueConst *a
         if (JS_ToInt32(ctx,&n,argv[1])<0 || JS_ToInt32(ctx,&fd,argv[2])<0) goto exception;
         if (IsWindows() && (n & ~(3|256|1024|512|8))) { errno=EINVAL; result=-1; break; }
         if (IsXnu() && (n & ~(3|0x200|0x800|0x400|8|0x100000|0x100|0x20000|4|0x400000|0x80))) { errno=EINVAL; result=-1; break; }
-        do { result=qjs_cosmo_fs_openat(AT_FDCWD,a,host_flags(n)|O_CLOEXEC,fd); } while (result<0 && errno==EINTR);
+        do { result=qjs_cosmo_fs_openat(AT_FDCWD,a,js_cosmo_fs_flags(n)|O_CLOEXEC,fd); } while (result<0 && errno==EINTR);
         if (result>=0) value=JS_NewInt32(ctx,result);
         break;
     case FS_CLOSE: name="close"; result=close(fd); break; /* Do not retry close after EINTR. */
     case FS_STAT: {
         struct stat s; name=n==2?"fstat":n==1?"lstat":"stat";
         do { result=n==2?fstat(fd,&s):n==1?lstat(a,&s):stat(a,&s); } while (result<0 && errno==EINTR);
-        if (!result) value=stat_value(ctx,&s);
+        if (!result) value=js_cosmo_fs_stat(ctx,&s);
         break;
     }
     case FS_MKDIR: name="mkdir"; if (JS_ToInt32(ctx,&n,argv[1])<0) goto exception; result=qjs_cosmo_fs_mkdirat(AT_FDCWD,a,n); break;
     case FS_SCAN: value=scan(ctx,a); break;
-    case FS_RENAME: name="rename"; b=path_bytes(ctx,argv[1]); if (!b) goto exception; result=qjs_cosmo_fs_renameat(AT_FDCWD,a,AT_FDCWD,b); break;
+    case FS_RENAME: name="rename"; b=js_cosmo_fs_path(ctx,argv[1]); if (!b) goto exception; result=qjs_cosmo_fs_renameat(AT_FDCWD,a,AT_FDCWD,b); break;
     case FS_UNLINK: name="unlink"; result=unlink(a); break;
     case FS_RMDIR: name="rmdir"; result=rmdir(a); break;
     case FS_REALPATH: {
@@ -244,7 +245,8 @@ static JSValue call(JSContext *ctx, JSValueConst self, int argc, JSValueConst *a
     saved=errno;
     if (IsWindows() && saved==ENOTDIR && (magic==FS_OPEN || magic==FS_RMDIR || (magic==FS_STAT && n!=2))) saved=ENOENT;
     if ((IsWindows()||IsXnu()) && saved==EISDIR && magic==FS_UNLINK) saved=EPERM;
-    if (result<0) { JS_FreeValue(ctx,value); value=failure(ctx,saved,name); }
+    if (IsWindows() && saved==EACCES && magic==FS_SYNC) saved=EPERM;
+    if (result<0) { JS_FreeValue(ctx,value); value=js_cosmo_fs_error(ctx,saved,name); }
     js_free(ctx,a); js_free(ctx,b); return value;
 exception: js_free(ctx,a); js_free(ctx,b); JS_FreeValue(ctx,value); return JS_EXCEPTION;
 }
@@ -272,6 +274,7 @@ JSValue js_cosmo_fs_api(JSContext *ctx) {
     ADD("COPYFILE_EXCL",1); ADD("COPYFILE_FICLONE",2); ADD("COPYFILE_FICLONE_FORCE",4);
 #undef ADD
     if (property(ctx,api,"constants",constants)<0) { JS_FreeValue(ctx,api); return JS_EXCEPTION; }
+    if (property(ctx,api,"async",js_cosmo_fs_async_api(ctx))<0) { JS_FreeValue(ctx,api); return JS_EXCEPTION; }
     return api;
 fail: JS_FreeValue(ctx,api); JS_FreeValue(ctx,constants); return JS_EXCEPTION;
 }

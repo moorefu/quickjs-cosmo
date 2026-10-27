@@ -307,6 +307,38 @@
       "task": "M3-01",
       "description": "Native task pool SDK harness: timers, copied/transferred input, queue/memory limits, cancellation, cleanup, contexts, Workers and qjsc bytecode",
       "timeout_seconds": 120
+    },
+    {
+      "id": "FS-003",
+      "status": "differential",
+      "file": "tests/node/fs-async.mjs",
+      "task": "M3-02",
+      "description": "Callback/Promise fs, FileHandle I/O and close ordering, directory/copy/error/abort contracts",
+      "timeout_seconds": 120
+    },
+    {
+      "id": "KDF-002",
+      "status": "differential",
+      "file": "tests/node/crypto-async.mjs",
+      "task": "M3-02",
+      "description": "Async KDF vectors, copied inputs, random callback boundaries and nonblocking timer progress",
+      "timeout_seconds": 120
+    },
+    {
+      "id": "ZIP-005",
+      "status": "differential",
+      "file": "tests/node/compression-async.mjs",
+      "task": "M3-02",
+      "description": "Async codecs, dictionary, views, errors, cancellation and timer progress",
+      "timeout_seconds": 120
+    },
+    {
+      "id": "LIFE-002",
+      "status": "runtime",
+      "file": "tests/runtime_async.mjs",
+      "task": "M3-02",
+      "description": "Async public APIs in Worker/qjsc/SDK, extension codecs and native resource failure cleanup",
+      "timeout_seconds": 120
     }
   ],
   "modules": [
@@ -10306,14 +10338,41 @@
         },
         {
           "name": "promises",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
@@ -10358,266 +10417,860 @@
         },
         {
           "name": "readFile",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "writeFile",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "appendFile",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "access",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "mkdir",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "readdir",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "stat",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "lstat",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "rename",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "unlink",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "rmdir",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "rm",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "realpath",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "copyFile",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "mkdtemp",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "open",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "close",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "read",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "write",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "fstat",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "ftruncate",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "fsync",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
@@ -10734,254 +11387,1055 @@
       "entries": [
         {
           "name": "readFile",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "writeFile",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "appendFile",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "access",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "mkdir",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "readdir",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "stat",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "lstat",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "rename",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "unlink",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "rmdir",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "rm",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "realpath",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "copyFile",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "mkdtemp",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "open",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "FileHandle.read",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "FileHandle.write",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "FileHandle.stat",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "FileHandle.sync",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "FileHandle.close",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-001"
+            "FS-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
+          ]
+        },
+        {
+          "name": "FileHandle.fd",
+          "status": "partial",
+          "task": "M3-02",
+          "parameters": "Owned native FileHandle with in-flight operation accounting",
+          "tests": [
+            "FS-003"
+          ],
+          "differences": [
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
+          ]
+        },
+        {
+          "name": "FileHandle.readFile",
+          "status": "partial",
+          "task": "M3-02",
+          "parameters": "Owned native FileHandle with in-flight operation accounting",
+          "tests": [
+            "FS-003"
+          ],
+          "differences": [
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
+          ]
+        },
+        {
+          "name": "FileHandle.writeFile",
+          "status": "partial",
+          "task": "M3-02",
+          "parameters": "Owned native FileHandle with in-flight operation accounting",
+          "tests": [
+            "FS-003"
+          ],
+          "differences": [
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
+          ]
+        },
+        {
+          "name": "FileHandle.appendFile",
+          "status": "partial",
+          "task": "M3-02",
+          "parameters": "Owned native FileHandle with in-flight operation accounting",
+          "tests": [
+            "FS-003"
+          ],
+          "differences": [
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
+          ]
+        },
+        {
+          "name": "FileHandle.truncate",
+          "status": "partial",
+          "task": "M3-02",
+          "parameters": "Owned native FileHandle with in-flight operation accounting",
+          "tests": [
+            "FS-003"
+          ],
+          "differences": [
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
+          ]
+        },
+        {
+          "name": "FileHandle[Symbol.asyncDispose]",
+          "status": "partial",
+          "task": "M3-02",
+          "parameters": "Owned native FileHandle with in-flight operation accounting",
+          "tests": [
+            "FS-003"
+          ],
+          "differences": [
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "FS-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         }
       ]
@@ -11411,10 +12865,11 @@
             "HASH-001",
             "HASH-002",
             "KDF-001",
-            "HASH-003"
+            "HASH-003",
+            "KDF-002"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. No stream or KeyObject interfaces until later milestones. See docs/M2_CRYPTO.md."
+            "Sync and callback forms; callback zero-length behavior matches Node. Host task memory quotas apply to callback form."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -11568,38 +13023,119 @@
         },
         {
           "name": "hkdf",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback KDF/random forms; no invented Promise API",
           "tests": [
-            "HASH-001"
+            "KDF-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "KDF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "pbkdf2",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback KDF/random forms; no invented Promise API",
           "tests": [
-            "HASH-001"
+            "KDF-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "KDF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "randomFill",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback KDF/random forms; no invented Promise API",
           "tests": [
-            "HASH-001"
+            "KDF-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "KDF-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
@@ -12368,110 +13904,353 @@
         },
         {
           "name": "gzip",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms with error-first completion, exact Node options",
           "tests": [
-            "ZIP-001"
+            "ZIP-005"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "ZIP-005",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "gunzip",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms with error-first completion, exact Node options",
           "tests": [
-            "ZIP-001"
+            "ZIP-005"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "ZIP-005",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "deflate",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms with error-first completion, exact Node options",
           "tests": [
-            "ZIP-001"
+            "ZIP-005"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "ZIP-005",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "inflate",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms with error-first completion, exact Node options",
           "tests": [
-            "ZIP-001"
+            "ZIP-005"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "ZIP-005",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "deflateRaw",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms with error-first completion, exact Node options",
           "tests": [
-            "ZIP-001"
+            "ZIP-005"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "ZIP-005",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "inflateRaw",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms with error-first completion, exact Node options",
           "tests": [
-            "ZIP-001"
+            "ZIP-005"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "ZIP-005",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "unzip",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms with error-first completion, exact Node options",
           "tests": [
-            "ZIP-001"
+            "ZIP-005"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "ZIP-005",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "zstdCompress",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms with error-first completion, exact Node options",
           "tests": [
-            "ZIP-001"
+            "ZIP-005"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "ZIP-005",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
           "name": "zstdDecompress",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-02",
           "parameters": "Callback forms with error-first completion, exact Node options",
           "tests": [
-            "ZIP-001"
+            "ZIP-005"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "ZIP-005",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+            }
           ]
         },
         {
@@ -13490,6 +15269,162 @@
               "sdk": "partial"
             }
           }
+        },
+        {
+          "name": "lz4Compress",
+          "status": "partial",
+          "task": "M3-02",
+          "parameters": "Node-style error-first callback; shared codec options and copied input/dictionary",
+          "tests": [
+            "LIFE-002"
+          ],
+          "differences": [
+            "Extension formats; no node:* alias. Host task arena/queue limits apply."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "LIFE-002",
+              "report": "build/test-results/<platform>.json",
+              "scope": "Source/Worker/qjsc and SDK lifecycle; full M3-02 CI pending."
+            }
+          ]
+        },
+        {
+          "name": "lz4Decompress",
+          "status": "partial",
+          "task": "M3-02",
+          "parameters": "Node-style error-first callback; shared codec options and copied input/dictionary",
+          "tests": [
+            "LIFE-002"
+          ],
+          "differences": [
+            "Extension formats; no node:* alias. Host task arena/queue limits apply."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "LIFE-002",
+              "report": "build/test-results/<platform>.json",
+              "scope": "Source/Worker/qjsc and SDK lifecycle; full M3-02 CI pending."
+            }
+          ]
+        },
+        {
+          "name": "bzip2Compress",
+          "status": "partial",
+          "task": "M3-02",
+          "parameters": "Node-style error-first callback; shared codec options and copied input/dictionary",
+          "tests": [
+            "LIFE-002"
+          ],
+          "differences": [
+            "Extension formats; no node:* alias. Host task arena/queue limits apply."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "LIFE-002",
+              "report": "build/test-results/<platform>.json",
+              "scope": "Source/Worker/qjsc and SDK lifecycle; full M3-02 CI pending."
+            }
+          ]
+        },
+        {
+          "name": "bzip2Decompress",
+          "status": "partial",
+          "task": "M3-02",
+          "parameters": "Node-style error-first callback; shared codec options and copied input/dictionary",
+          "tests": [
+            "LIFE-002"
+          ],
+          "differences": [
+            "Extension formats; no node:* alias. Host task arena/queue limits apply."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "LIFE-002",
+              "report": "build/test-results/<platform>.json",
+              "scope": "Source/Worker/qjsc and SDK lifecycle; full M3-02 CI pending."
+            }
+          ]
         }
       ]
     },

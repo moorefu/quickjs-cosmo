@@ -30,7 +30,7 @@ function createCompression(native) {
         /* Node's zlib constructors read options by property access. */
         return value;
     }
-    function perform(mode, input, supplied) {
+    function perform(mode, input, supplied, asynchronous=false) {
         const options = optionsObject(supplied);
         const zstd = mode === 7 || mode === 8, extension = mode >= 9;
         let window = 15, level = -1, memory = 8, strategy = 0;
@@ -83,8 +83,15 @@ function createCompression(native) {
         if (extension && blockSize !== 0 && blockSize < 4) throw outOfRange('options.blockSize');
         const small = mode >= 11 ? boolean(options.small, 'options.small', false) : false;
         const data = bytes(input);
-        return Buffer.from(binding.run(mode, ...data, [maximum,chunk,window,level,memory,strategy,finish,+reject,+checksum,blockSize,+small],
-            ...dictionary, params, pledged));
+        const args=[mode,...data,[maximum,chunk,window,level,memory,strategy,finish,+reject,+checksum,blockSize,+small],...dictionary,params,pledged];
+        if(!asynchronous)return Buffer.from(binding.run(...args));
+        const signal=options.signal;
+        if(signal!==undefined && (signal===null || typeof signal!=='object' || typeof signal.aborted!=='boolean' || typeof signal.addEventListener!=='function'))throw invalidType('options.signal','an AbortSignal');
+        const aborted=()=>{const e=codedError(Error,'ABORT_ERR','The operation was aborted');e.name='AbortError';e.cause=signal.reason;return e;};
+        if(signal?.aborted)return Promise.reject(aborted());
+        const job=binding.runAsync(...args),cancel=()=>binding.cancel(job.id);
+        signal?.addEventListener('abort',cancel,{once:true});
+        return job.promise.then(value=>Buffer.from(value),error=>{if(signal?.aborted)throw aborted();throw error;}).finally(()=>signal?.removeEventListener('abort',cancel));
     }
     const api = {constants, codes};
     const names = ['deflateSync','inflateSync','gzipSync','gunzipSync','deflateRawSync','inflateRawSync','unzipSync',
@@ -94,6 +101,12 @@ function createCompression(native) {
         const name = names[mode];
         const fn = {[name](input, options) { return perform(mode, input, options); }}[name];
         (mode<9 ? api : extensions)[name] = fn;
+        const short=name.slice(0,-4);
+        (mode<9?api:extensions)[short]={[short](input,options,callback){
+            if(typeof options==='function'){callback=options;options=undefined;}
+            if(typeof callback!=='function')throw invalidType('callback','a function');
+            perform(mode,input,options,true).then(value=>callback(null,value),error=>callback(error));
+        }}[short];
     }
     api.crc32 = function crc32(data, value = 0) {
         if (typeof data !== 'string' && !ArrayBuffer.isView(data)) throw invalidType('data', 'a string or ArrayBufferView');

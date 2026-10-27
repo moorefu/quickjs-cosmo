@@ -5,6 +5,7 @@ QJS_COMPAT_OBJS += $(OBJDIR)/qjs-runtime-state.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-tasks.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-windows-host.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-fs-sync.o
+QJS_COMPAT_OBJS += $(OBJDIR)/qjs-fs-async.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-fs-paths.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-crypto.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-compression.o
@@ -49,7 +50,10 @@ $(OBJDIR)/qjs-runtime-state.o: $(QJS_COSMO_ROOT)/native/runtime_state.c \
     $(QJS_COSMO_ROOT)/native/runtime_state.h $(QJS_COSMO_ROOT)/native/common/windows_host.h $(QJS_COSMO_ROOT)/native/fs/sync.h $(QJS_COSMO_ROOT)/native/crypto/binding.h $(QJS_COSMO_ROOT)/native/compression/binding.h $(QJS_COSMO_ROOT)/native/process/binding.h $(QJS_COSMO_ROOT)/native/module_registry.h qjs-cosmo-config.h quickjs.h quickjs-libc.h | $(OBJDIR)
 	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -c -o $@ $<
 
-$(OBJDIR)/qjs-fs-sync.o: $(QJS_COSMO_ROOT)/native/fs/sync.c $(QJS_COSMO_ROOT)/native/fs/sync.h $(QJS_COSMO_ROOT)/native/common/windows_host.h quickjs.h | $(OBJDIR)
+$(OBJDIR)/qjs-fs-sync.o: $(QJS_COSMO_ROOT)/native/fs/sync.c $(QJS_COSMO_ROOT)/native/fs/sync.h $(QJS_COSMO_ROOT)/native/fs/async.h $(QJS_COSMO_ROOT)/native/common/windows_host.h quickjs.h | $(OBJDIR)
+	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -c -o $@ $<
+
+$(OBJDIR)/qjs-fs-async.o: $(QJS_COSMO_ROOT)/native/fs/async.c $(QJS_COSMO_ROOT)/native/fs/async.h $(QJS_COSMO_ROOT)/native/fs/sync.h $(QJS_COSMO_ROOT)/native/tasks.h $(QJS_COSMO_ROOT)/native/common/windows_host.h quickjs.h | $(OBJDIR)
 	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -c -o $@ $<
 
 $(OBJDIR)/qjs-fs-paths.o: $(QJS_COSMO_ROOT)/native/fs/paths.c $(QJS_COSMO_ROOT)/native/fs/sync.h \

@@ -6,6 +6,9 @@
 enum { QCR_MD5, QCR_SHA1, QCR_SHA224, QCR_SHA256, QCR_SHA384, QCR_SHA512, QCR_BLAKE512, QCR_ALGORITHMS };
 enum { QCR_OK, QCR_ALLOCATION=-1, QCR_ARGUMENT=-2, QCR_BACKEND=-3, QCR_STATE=-4 };
 typedef struct QCryptoHash QCryptoHash;
+typedef struct {int (*check)(void *);void *opaque;} QCryptoCancellation;
+QCryptoCancellation qcrypto_cancel_enter(QCryptoCancellation);
+void qcrypto_cancel_leave(QCryptoCancellation);
 typedef struct {
     void *opaque;
     void *(*allocate)(void *,size_t);

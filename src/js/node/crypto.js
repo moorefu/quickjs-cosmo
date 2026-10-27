@@ -87,22 +87,34 @@ function createCrypto(native) {
     function createHash(algorithm, options) { return new Hash(algorithm, options); }
     function createHmac(algorithm, key, options) { return new Hmac(algorithm, key, options); }
     function getHashes() { return algorithms.slice().sort(); }
-    function hkdfSync(digest, ikm, salt, info, keylen) {
+    function hkdfArguments(digest, ikm, salt, info, keylen) {
         if (typeof digest !== 'string') throw invalidType('digest', 'a string');
         const key = bytes(ikm, 'ikm'), saltBytes = bytes(salt, 'salt'), infoBytes = bytes(info, 'info');
         integer(keylen, 'keylen', 0, Number.MAX_SAFE_INTEGER);
         if (infoBytes[2] > 1024) throw outOfRange('info');
         const id = algorithmId(digest, true);
         if (keylen > 255 * sizes[id]) throw codedError(RangeError, 'ERR_CRYPTO_INVALID_KEYLEN', 'Invalid key length');
-        return binding.hkdf(id, ...key, ...saltBytes, ...infoBytes, keylen);
+        return [id,...key,...saltBytes,...infoBytes,keylen];
     }
-    function pbkdf2Sync(password, salt, iterations, keylen, digest) {
+    function hkdfSync(digest,ikm,salt,info,keylen) {return binding.hkdf(...hkdfArguments(digest,ikm,salt,info,keylen));}
+    function pbkdf2Arguments(password, salt, iterations, keylen, digest) {
         if (typeof digest !== 'string') throw invalidType('digest', 'a string');
         const key = bytes(password, 'password'), saltBytes = bytes(salt, 'salt');
         integer(iterations, 'iterations', 1, 0x7fffffff);
         integer(keylen, 'keylen', 0, 0x7fffffff);
         const id = algorithmId(digest, true);
-        return Buffer.from(binding.pbkdf2(id, ...key, ...saltBytes, iterations, keylen));
+        return [id,...key,...saltBytes,iterations,keylen];
+    }
+    function pbkdf2Sync(password,salt,iterations,keylen,digest) {return Buffer.from(binding.pbkdf2(...pbkdf2Arguments(password,salt,iterations,keylen,digest)));}
+    function callbackValue(value) {if(typeof value!=='function')throw invalidType('callback','a function');return value;}
+    function hkdf(digest,ikm,salt,info,keylen,callback) {
+        const args=hkdfArguments(digest,ikm,salt,info,keylen);callbackValue(callback);
+        binding.async.hkdf(...args).then(value=>callback(null,value),error=>callback(error));
+    }
+    function pbkdf2(password,salt,iterations,keylen,digest,callback) {
+        if(typeof digest==='function'){callback=digest;digest=undefined;}
+        const args=pbkdf2Arguments(password,salt,iterations,keylen,digest);callbackValue(callback);
+        binding.async.pbkdf2(...args).then(value=>callback(null,Buffer.from(value)),error=>callback(error));
     }
     function timingSafeEqual(a, b) {
         const first = bytes(a, 'buf1', false), second = bytes(b, 'buf2', false);
@@ -117,8 +129,9 @@ function createCrypto(native) {
     function randomBytes(size, callback) {
         size = randomSize(size, 'size', 0x7fffffff);
         if (callback !== undefined) {
-            if (typeof callback !== 'function') throw invalidType('callback', 'a function');
-            throw codedError(Error, 'ERR_NOT_SUPPORTED', 'Asynchronous randomBytes is not enabled');
+            callbackValue(callback);
+            if(!size){callback(null,Buffer.alloc(0));return;}
+            binding.async.random(size).then(value=>callback(null,Buffer.from(value)),error=>callback(error));return;
         }
         return Buffer.from(binding.random(size));
     }
@@ -132,6 +145,23 @@ function createCrypto(native) {
         const byteLength = size === undefined ? input[2] - byteOffset : randomSize(size * scale, 'size', 0x7fffffff);
         if (byteLength) binding.fill(input[0], input[1] + byteOffset, byteLength);
         return buffer;
+    }
+    function randomFill(buffer,offset,size,callback) {
+        const input=bytes(buffer,'buf',false),scale=buffer.BYTES_PER_ELEMENT||1;
+        if(typeof offset==='function'){callback=offset;offset=0;size=buffer.length;}
+        else if(typeof size==='function'){callback=size;size=(buffer.length??buffer.byteLength)-offset;}
+        else callbackValue(callback);
+        if(typeof offset!=='number')throw invalidType('offset','a number');
+        const byteOffset=randomSize(offset*scale,'offset',Math.min(input[2],0x7fffffff));
+        if(size!==undefined && typeof size!=='number')throw invalidType('size','a number');
+        if(size!==undefined && size*scale+byteOffset>input[2])throw outOfRange('size + offset');
+        const byteLength=size===undefined?input[2]-byteOffset:randomSize(size*scale,'size',0x7fffffff);
+        callbackValue(callback);
+        if(!byteLength){callback(null,buffer);return;}
+        binding.async.random(byteLength).then(value=>{
+            if(byteLength)new Uint8Array(input[0],input[1]+byteOffset,byteLength).set(new Uint8Array(value));
+            return buffer;
+        }).then(value=>callback(null,value),error=>callback(error));
     }
     function randomUUID(options) {
         if (options !== undefined) {
@@ -168,6 +198,6 @@ function createCrypto(native) {
         if (arguments.length !== 1) throw invalidType('arguments', 'one data argument');
         return Buffer.from(binding.blake256(...bytes(data, 'data')));
     }
-    return {api: {Hash, Hmac, createHash, createHmac, getHashes, hkdfSync, pbkdf2Sync, timingSafeEqual,
-        randomBytes, randomFillSync, randomUUID, hash}, extensions: {blake2b256}};
+    return {api: {Hash, Hmac, createHash, createHmac, getHashes, hkdfSync, pbkdf2Sync, hkdf, pbkdf2, timingSafeEqual,
+        randomBytes, randomFillSync, randomFill, randomUUID, hash}, extensions: {blake2b256}};
 }

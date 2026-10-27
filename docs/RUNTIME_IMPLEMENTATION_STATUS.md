@@ -14,8 +14,8 @@
 | M2-03 摘要与 KDF | 完成，CI 全绿 | `4b19b83`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40487013603)，[记录](M2_CRYPTO.md) |
 | M2-04 同步压缩 | 完成，CI 全绿 | `af6ddca`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40493866543)，[记录](M2_COMPRESSION.md) |
 | M2-05 同步子进程 | 完成，CI 全绿 | `c676727`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40509058444)，[记录](M2_PROCESS.md) |
-| M3-01 原生任务调度 | 本地通过，待完整 CI | 有界队列、唤醒、取消与销毁，[记录](M3_TASK_POOL.md) |
-| M3-02 异步 fs/算法 | 待实现 | callback、Promise 与非阻塞验收 |
+| M3-01 原生任务调度 | 完成，CI 全绿 | `d413b69`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40516679598)，[记录](M3_TASK_POOL.md) |
+| M3-02 异步 fs/算法 | 已实现，等待完整 CI | callback、Promise、FileHandle、异步 KDF/随机/压缩与故障清理；[记录](M3_ASYNC.md) |
 | M3-03 Stream | 待实现 | 流对象、背压、pipeline/finished |
 | M3-04 异步子进程 | 待实现 | ChildProcess、stdio、事件与终止 |
 | M3-05 文件/算法流 | 待实现 | 文件、Hash/Hmac、压缩 Transform |

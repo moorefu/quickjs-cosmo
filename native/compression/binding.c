@@ -1,4 +1,7 @@
 #include <math.h>
+#include <errno.h>
+#include <string.h>
+#include "../tasks.h"
 #include <stdint.h>
 #include "third_party/zlib/zlib.h"
 #include "third_party/zstd/zstd.h"
@@ -74,7 +77,8 @@ static JSValue failure(JSContext *ctx,int mode,const QCResult *result) {
     return JS_Throw(ctx,error);
 fail: JS_FreeValue(ctx,error); return JS_EXCEPTION;
 }
-static JSValue run(JSContext *ctx,JSValueConst self,int argc,JSValueConst *args) {
+typedef struct {int mode;const uint8_t *input;size_t length;QCOptions options;} Parsed;
+static JSValue parse_run(JSContext *ctx,int argc,JSValueConst *args,Parsed *out) {
     if (argc<10) return JS_ThrowTypeError(ctx,"Invalid native compression argument count");
     int64_t mode,values[11],parameter_count,pledged;
     if (number(ctx,args[0],0,QC_UNBZIP2,&mode)<0) return JS_EXCEPTION;
@@ -97,12 +101,63 @@ static JSValue run(JSContext *ctx,JSValueConst self,int argc,JSValueConst *args)
     uint8_t *input,*dictionary; size_t count,dict_count;
     if (span(ctx,args+1,&input,&count)<0 || span(ctx,args+5,&dictionary,&dict_count)<0) return JS_EXCEPTION;
     options.dictionary=dictionary; options.dictionary_length=dict_count;
+    *out=(Parsed){mode,input,count,options};return JS_UNDEFINED;
+}
+static JSValue run(JSContext *ctx,JSValueConst self,int argc,JSValueConst *args) {
+    Parsed p;if(JS_IsException(parse_run(ctx,argc,args,&p)))return JS_EXCEPTION;
     QCAllocator allocator={.opaque=JS_GetRuntime(ctx),.allocate=allocate,.release=release};
-    QCResult result=qc_run(mode,input,count,&options,&allocator);
-    if (result.status) return failure(ctx,mode,&result);
+    QCResult result=qc_run(p.mode,p.input,p.length,&p.options,&allocator);
+    if(result.status)return failure(ctx,p.mode,&result);
     JSValue output=JS_NewArrayBuffer(ctx,result.output.data,result.output.length,output_free,NULL,0);
-    if (JS_IsException(output)) qc_free(result.output.data);
+    if(JS_IsException(output))qc_free(result.output.data);
     return output;
+}
+typedef struct {Parsed config;QCAllocator memory;QCResult result;} CompressionTask;
+static void *task_allocate(void *task,size_t size){return js_cosmo_task_alloc(task,size);}
+static void task_release(void *task,void *data){js_cosmo_task_free(task,data);}
+static int task_cancelled(void *task){return js_cosmo_task_cancelled(task);}
+static void task_cleanup(QJSCosmoTask *task){CompressionTask *r=js_cosmo_task_data(task);qc_free(r->result.output.data);}
+static int task_work(QJSCosmoTask *task) {
+    CompressionTask *r=js_cosmo_task_data(task);
+    r->memory=(QCAllocator){.opaque=task,.allocate=task_allocate,.release=task_release};
+    r->config.options.cancelled=task_cancelled;r->config.options.cancel_opaque=task;
+    r->result=qc_run(r->config.mode,r->config.input,r->config.length,&r->config.options,&r->memory);return 0;
+}
+static JSValue task_finish(JSContext *ctx,QJSCosmoTask *task,int error) {
+    CompressionTask *r=js_cosmo_task_data(task);
+    if(error==ECANCELED) {
+        JSValue value=JS_NewError(ctx);if(JS_IsException(value))return value;
+        if(put(ctx,value,"name",JS_NewString(ctx,"AbortError"))<0 || put(ctx,value,"code",JS_NewString(ctx,"ABORT_ERR"))<0){JS_FreeValue(ctx,value);return JS_EXCEPTION;}
+        return JS_Throw(ctx,value);
+    }
+    if(r->result.status)return failure(ctx,r->config.mode,&r->result);
+    return JS_NewArrayBufferCopy(ctx,r->result.output.data,r->result.output.length);
+}
+static JSValue run_async(JSContext *ctx,JSValueConst self,int argc,JSValueConst *args) {
+    Parsed config;if(JS_IsException(parse_run(ctx,argc,args,&config)))return JS_EXCEPTION;
+    int compress=config.mode==QC_DEFLATE || config.mode==QC_GZIP || config.mode==QC_RAW || config.mode==QC_ZSTD || config.mode==QC_LZ4 || config.mode==QC_BZIP2;
+    size_t output=compress?config.length+config.length/8+65536:config.length>131072?config.length*32:4*1024*1024;
+    if(output>config.options.maximum)output=config.options.maximum;
+    size_t workspace=config.mode<=QC_UNZIP?1024*1024:config.mode<=QC_UNZSTD?16*1024*1024:config.mode<=QC_UNLZ4?1024*1024:12*1024*1024;
+    size_t budget=65536+config.length+config.options.dictionary_length+workspace+3*output;
+    if(budget>64*1024*1024)budget=64*1024*1024;
+    QJSCosmoTask *task=js_cosmo_task_create(ctx,budget,sizeof(CompressionTask),task_work,task_finish);if(!task)return JS_EXCEPTION;
+    CompressionTask *r=js_cosmo_task_data(task);r->config=config;js_cosmo_task_set_cleanup(task,task_cleanup);
+    uint8_t *input=js_cosmo_task_alloc(task,config.length?config.length:1);if(!input)goto memory;
+    if(config.length)memcpy(input,config.input,config.length);
+    r->config.input=input;
+    if(config.options.dictionary_length) {
+        uint8_t *dictionary=js_cosmo_task_alloc(task,config.options.dictionary_length);if(!dictionary)goto memory;
+        memcpy(dictionary,config.options.dictionary,config.options.dictionary_length);r->config.options.dictionary=dictionary;
+    }
+    uint64_t id;JSValue promise=js_cosmo_task_submit(ctx,task,&id);if(JS_IsException(promise))return promise;
+    JSValue value=JS_NewObject(ctx);if(JS_IsException(value)){JS_FreeValue(ctx,promise);js_cosmo_task_cancel(ctx,id);return value;}
+    if(put(ctx,value,"promise",promise)<0 || put(ctx,value,"id",JS_NewInt64(ctx,id))<0){JS_FreeValue(ctx,value);js_cosmo_task_cancel(ctx,id);return JS_EXCEPTION;}
+    return value;
+memory:js_cosmo_task_discard(task);return JS_ThrowOutOfMemory(ctx);
+}
+static JSValue cancel(JSContext *ctx,JSValueConst self,int argc,JSValueConst *args) {
+    int64_t id;if(argc<1 || JS_ToInt64(ctx,&id,args[0])<0)return JS_EXCEPTION;return JS_NewBool(ctx,js_cosmo_task_cancel(ctx,id));
 }
 static JSValue checksum(JSContext *ctx,JSValueConst self,int argc,JSValueConst *args) {
     if (argc<5) return JS_ThrowTypeError(ctx,"Invalid checksum arguments");
@@ -120,8 +175,8 @@ static JSValue versions(JSContext *ctx,JSValueConst self,int argc,JSValueConst *
 }
 JSValue js_cosmo_compression_api(JSContext *ctx) {
     JSValue api=JS_NewObject(ctx); if (JS_IsException(api)) return api;
-    const char *names[]={"run","checksum","versions"};
-    JSCFunction *functions[]={run,checksum,versions};
-    for (int i=0;i<3;i++) if (put(ctx,api,names[i],JS_NewCFunction(ctx,functions[i],names[i],0))<0) { JS_FreeValue(ctx,api); return JS_EXCEPTION; }
+    const char *names[]={"run","checksum","versions","runAsync","cancel"};
+    JSCFunction *functions[]={run,checksum,versions,run_async,cancel};
+    for (int i=0;i<5;i++) if (put(ctx,api,names[i],JS_NewCFunction(ctx,functions[i],names[i],0))<0) { JS_FreeValue(ctx,api); return JS_EXCEPTION; }
     return api;
 }

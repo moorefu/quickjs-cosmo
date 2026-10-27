@@ -365,7 +365,7 @@ function createFs(native, path) {
         return enc==='buffer'?value:value.toString(enc);
     }
     realpathSync.native=realpathSync;
-    return {
+    const api = {
         constants, Stats, Dirent, openSync, closeSync, readSync, writeSync, readFileSync, writeFileSync,
         appendFileSync(name,data,opts) { opts=options(opts,{flag:'a'}); if (!opts.flag||typeof name==='number') opts.flag='a'; return writeFileSync(name,data,opts); },
         existsSync(name) { try { pathCall(binding.stat,bytes(name),undefined,0); return true; } catch { return false; } },
@@ -378,4 +378,5 @@ function createFs(native, path) {
         ftruncateSync(number,length=0) { number=fd(number); integer(length,'len',-Number.MAX_SAFE_INTEGER,Number.MAX_SAFE_INTEGER); binding.truncate(number,Math.max(0,length)); },
         fsyncSync(number) { binding.sync(fd(number)); }
     };
+    return Object.assign(api,createFsAsync(native,path,{options,encoding,fd,isFd,mode,flags,bytes,display,join,parent,view,position,makeStats,Dirent,boolean},api));
 }

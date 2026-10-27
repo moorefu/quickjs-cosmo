@@ -11,7 +11,6 @@ const extension:Buffer=blake2b256('abc');
 void [digest,hash,mac,key,data,uuid,extension];
 // @ts-expect-error Hash.update accepts views, not plain ArrayBuffers.
 hash.update(new ArrayBuffer(1));
-// @ts-expect-error Async randomBytes belongs to M3-02.
 crypto.randomBytes(1,()=>{});
 // @ts-expect-error Timing comparisons reject strings.
 crypto.timingSafeEqual('a','a');

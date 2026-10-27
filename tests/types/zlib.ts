@@ -9,7 +9,6 @@ const bz:Buffer=compression.bzip2DecompressSync(compression.bzip2CompressSync('a
 const version:string=compression.codecInfo('lz4').version;
 const check:number=zlib.crc32(new Uint8Array(4));
 void [zipped,restored,zstd,lz4,bz,version,check];
-// @ts-expect-error Async compression belongs to M3-02.
 zlib.gzip('abc',()=>{});
 // @ts-expect-error Engine stream objects belong to M3-05.
 gzipSync('abc',{info:true});

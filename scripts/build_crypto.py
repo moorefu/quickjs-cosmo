@@ -24,7 +24,11 @@ def build(root=ROOT):
     output = root / 'build/native/crypto'
     output.mkdir(parents=True, exist_ok=True)
     objects, commands = [], []
-    for name in ('core', 'binding'):
+    included = next(record for library in manifest['libraries'] for record in library['sources']
+                    if record['path'] == 'third_party/mbedtls/pkcs5.c')
+    if sha256(settings.native_source / included['path']) != included['sha256']:
+        raise ValueError('PBKDF2 cancellation source pin mismatch')
+    for name in ('core', 'binding', 'pbkdf2'):
         target = output / (name + '.o')
         command = [settings.toolchain / 'bin/cosmocc', '-std=gnu23', '-D_COSMO_SOURCE', '-D_GNU_SOURCE',
                    '-O2', '-Wall', '-Werror=implicit-function-declaration', '-ffunction-sections', '-fdata-sections',
@@ -65,9 +69,10 @@ def build(root=ROOT):
                              exported=[ROOT_SYMBOL], undefined=undefined)
     inputs = {name: sha256(root / name) for name in (
         'native/crypto/core.c', 'native/crypto/core.h', 'native/crypto/binding.c',
-        'native/crypto/binding.h', 'scripts/build_crypto.py', 'native/build-inputs.json')}
+        'native/crypto/binding.h', 'native/crypto/pbkdf2.c', 'native/tasks.h', 'scripts/build_crypto.py', 'native/build-inputs.json')}
     (output / 'build.json').write_text(json.dumps(dict(format=1, inputs=inputs,
         backend_fingerprint=manifest['fingerprint'], architectures=reports, commands=commands,
+        included_sources={included['path']:included['sha256']},
         scope='SDK binding only; backend symbols localized; unused PBES2, cipher and file APIs removed'),
         indent=2) + '\n', encoding='utf-8')
     print('PASS crypto SDK closure: x86_64/aarch64, private backends, retained notices')

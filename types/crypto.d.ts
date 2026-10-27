@@ -34,7 +34,8 @@ declare module 'node:crypto' {
     const crypto: {Hash: typeof Hash; Hmac: typeof Hmac; createHash: typeof createHash; createHmac: typeof createHmac;
         getHashes: typeof getHashes; hkdfSync: typeof hkdfSync; pbkdf2Sync: typeof pbkdf2Sync;
         timingSafeEqual: typeof timingSafeEqual; randomBytes: typeof randomBytes;
-        randomFillSync: typeof randomFillSync; randomUUID: typeof randomUUID; hash: typeof hash};
+        randomFillSync: typeof randomFillSync; randomUUID: typeof randomUUID; hash: typeof hash;
+        hkdf:typeof hkdf;pbkdf2:typeof pbkdf2;randomFill:typeof randomFill};
     export default crypto;
 }
 declare module 'crypto' { export * from 'node:crypto'; export {default} from 'node:crypto'; }

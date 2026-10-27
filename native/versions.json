@@ -418,6 +418,28 @@
         "tests/node/child-process-limits.mjs",
         "docs/M2_PROCESS.md"
       ]
+    },
+    {
+      "id": "node-pbkdf2-cancellation",
+      "delivery": "private-source",
+      "admission": "E2",
+      "files": [
+        {
+          "path": "third_party/mbedtls/pkcs5.c",
+          "sha256": "5392e334ea357a4de021e0f9d401035d73f0dc4838e52a4ad729d6f2564a9c1a"
+        }
+      ],
+      "tests": [],
+      "notes": [
+        "Private HMAC-reset adapter adds cooperative cancellation; the pinned PBKDF2 iteration/counter/XOR algorithm remains unchanged."
+      ],
+      "evidence_scope": "M3-02 async task arena and running-job shutdown; full CI pending",
+      "evidence": [
+        "native/crypto/pbkdf2.c",
+        "tests/node/crypto-async.mjs",
+        "tests/native/async.c",
+        "docs/M3_ASYNC.md"
+      ]
     }
   ],
   "deferred": [

@@ -6,6 +6,7 @@
 #include "libc/str/str.h"
 #include "binding.h"
 #include "core.h"
+#include "../tasks.h"
 
 static JSClassID hash_class;
 static pthread_once_t class_once=PTHREAD_ONCE_INIT;
@@ -152,6 +153,51 @@ static JSValue call(JSContext *ctx,JSValueConst self,int argc,JSValueConst *args
     JSValue result=call_impl(ctx,argc,args,magic);
     qcrypto_allocator_leave(previous); return result;
 }
+typedef struct {int kind,algorithm;Bytes a,b,c;uint32_t iterations;size_t length;uint8_t *output;} CryptoTask;
+static void *task_allocate(void *task,size_t size){return js_cosmo_task_alloc(task,size);}
+static void task_release(void *task,void *data){js_cosmo_task_free(task,data);}
+static int task_cancelled(void *task){return js_cosmo_task_cancelled(task);}
+static int crypto_work(QJSCosmoTask *task) {
+    CryptoTask *r=js_cosmo_task_data(task);
+    QCryptoAllocator hooks={task,task_allocate,task_release},previous=qcrypto_allocator_enter(hooks);
+    QCryptoCancellation cancellation=qcrypto_cancel_enter((QCryptoCancellation){task_cancelled,task});
+    int result;
+    if(r->kind==CR_RANDOM)result=qcrypto_random(r->output,r->length);
+    else if(!r->length)result=QCR_ARGUMENT;
+    else if(r->kind==CR_HKDF)result=qcrypto_hkdf(r->algorithm,r->a.data,r->a.length,r->b.data,r->b.length,r->c.data,r->c.length,r->output,r->length);
+    else result=qcrypto_pbkdf2(r->algorithm,r->a.data,r->a.length,r->b.data,r->b.length,r->iterations,r->output,r->length);
+    qcrypto_cancel_leave(cancellation);qcrypto_allocator_leave(previous);return result;
+}
+static JSValue crypto_finish(JSContext *ctx,QJSCosmoTask *task,int error) {
+    CryptoTask *r=js_cosmo_task_data(task);
+    if(error){if(!r->length && r->kind!=CR_RANDOM)return failure(ctx,NULL,"Deriving bits failed");return compute_failure(ctx,error);}
+    uint8_t *data;JSValue value=output(ctx,r->length,&data);if(JS_IsException(value))return value;
+    if(r->length)memcpy(data,r->output,r->length);
+    return value;
+}
+static JSValue call_async(JSContext *ctx,JSValueConst self,int argc,JSValueConst *args,int kind) {
+    CryptoTask request={.kind=kind};uint64_t id=0,length=0,iterations=0;
+    if(argc<(kind==CR_RANDOM?1:kind==CR_HKDF?11:9))return JS_ThrowTypeError(ctx,"Invalid native async crypto arguments");
+    if(kind==CR_RANDOM){if(number(ctx,args[0],0x7fffffff,&length)<0)return JS_EXCEPTION;}
+    else {
+        if(number(ctx,args[0],QCR_ALGORITHMS-2,&id)<0 || span(ctx,args+1,&request.a)<0 || span(ctx,args+4,&request.b)<0)return JS_EXCEPTION;
+        if(kind==CR_HKDF && span(ctx,args+7,&request.c)<0)return JS_EXCEPTION;
+        if(number(ctx,args[kind==CR_HKDF?10:8],0x7fffffff,&length)<0)return JS_EXCEPTION;
+        if(kind==CR_PBKDF2 && number(ctx,args[7],0x7fffffff,&iterations)<0)return JS_EXCEPTION;
+    }
+    request.algorithm=id;request.length=length;request.iterations=iterations;
+    size_t budget=65536+length+request.a.length+request.b.length+request.c.length;
+    QJSCosmoTask *task=js_cosmo_task_create(ctx,budget,sizeof(CryptoTask),crypto_work,crypto_finish);if(!task)return JS_EXCEPTION;
+    CryptoTask *r=js_cosmo_task_data(task);*r=request;
+    Bytes *spans[]={&r->a,&r->b,&r->c};
+    for(int i=0;i<3;i++)if(spans[i]->length) {
+        uint8_t *copy=js_cosmo_task_alloc(task,spans[i]->length);if(!copy)goto memory;
+        memcpy(copy,spans[i]->data,spans[i]->length);spans[i]->data=copy;
+    }
+    r->output=js_cosmo_task_alloc(task,length?length:1);if(!r->output)goto memory;
+    return js_cosmo_task_submit(ctx,task,NULL);
+memory:js_cosmo_task_discard(task);return JS_ThrowOutOfMemory(ctx);
+}
 JSValue js_cosmo_crypto_api(JSContext *ctx) {
     pthread_once(&class_once,class_id);
     if (!JS_IsRegisteredClass(JS_GetRuntime(ctx),hash_class) && JS_NewClass(JS_GetRuntime(ctx),hash_class,&hash_definition)<0)
@@ -162,5 +208,9 @@ JSValue js_cosmo_crypto_api(JSContext *ctx) {
         JSValue fn=JS_NewCFunctionMagic(ctx,call,names[i],0,JS_CFUNC_generic_magic,i);
         if (JS_IsException(fn) || JS_SetPropertyStr(ctx,api,names[i],fn)<0) { JS_FreeValue(ctx,api); return JS_EXCEPTION; }
     }
+    JSValue async=JS_NewObject(ctx);if(JS_IsException(async)){JS_FreeValue(ctx,api);return async;}
+    const char *async_names[]={"hkdf","pbkdf2","random"};const int kinds[]={CR_HKDF,CR_PBKDF2,CR_RANDOM};
+    for(int i=0;i<3;i++)if(JS_SetPropertyStr(ctx,async,async_names[i],JS_NewCFunctionMagic(ctx,call_async,async_names[i],0,JS_CFUNC_generic_magic,kinds[i]))<0){JS_FreeValue(ctx,async);JS_FreeValue(ctx,api);return JS_EXCEPTION;}
+    if(JS_SetPropertyStr(ctx,api,"async",async)<0){JS_FreeValue(ctx,api);return JS_EXCEPTION;}
     return api;
 }

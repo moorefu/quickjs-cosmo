@@ -80,7 +80,7 @@ declare module 'node:fs' {
         existsSync:typeof existsSync; accessSync:typeof accessSync; statSync:typeof statSync; lstatSync:typeof lstatSync; fstatSync:typeof fstatSync;
         mkdirSync:typeof mkdirSync; readdirSync:typeof readdirSync; renameSync:typeof renameSync; unlinkSync:typeof unlinkSync;
         rmdirSync:typeof rmdirSync; rmSync:typeof rmSync; copyFileSync:typeof copyFileSync; realpathSync:typeof realpathSync;
-        mkdtempSync:typeof mkdtempSync; ftruncateSync:typeof ftruncateSync; fsyncSync:typeof fsyncSync; };
+        mkdtempSync:typeof mkdtempSync; ftruncateSync:typeof ftruncateSync; fsyncSync:typeof fsyncSync; } & AsyncFsMethods;
     export default fs;
 }
 declare module 'fs' { export * from 'node:fs'; export {default} from 'node:fs'; }

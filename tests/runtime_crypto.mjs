@@ -23,7 +23,7 @@ assert.equal(Buffer.from(crypto.hkdfSync('sha256',Buffer.alloc(22,0x0b),Buffer.f
 assert.equal(crypto.createHmac('sha256',Buffer.alloc(20,0x0b)).update('Hi There').digest('hex'),
     'b0344c61d8db38535ca8afceaf0bf12b881dc200c9833da726e9376c2e32cff7');
 assert.throws(()=>blake2b256('abc','ignored key'));
-assert.throws(()=>crypto.randomBytes(1,()=>{}),{code:'ERR_NOT_SUPPORTED'});
+assert.equal((await new Promise((resolve,reject)=>crypto.randomBytes(1,(error,data)=>error?reject(error):resolve(data)))).length,1);
 const worker=new os.Worker('./fixtures/crypto-worker.mjs');
 const timer=os.setTimeout(()=>std.exit(1),10000);
 try {

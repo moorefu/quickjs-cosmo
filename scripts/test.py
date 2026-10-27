@@ -107,6 +107,7 @@ def main():
     check("custom/runtime-crypto", [qjs, "-m", ROOT / "tests/runtime_crypto.mjs"], contains="PASS runtime-crypto")
     check("custom/runtime-compression", [qjs, "-m", ROOT / "tests/runtime_compression.mjs"], contains="PASS runtime-compression")
     check("custom/runtime-child-process", [qjs, "-m", ROOT / "tests/runtime_child_process.mjs"], contains="PASS runtime-child-process")
+    check("custom/runtime-async", [qjs, "-m", ROOT / "tests/runtime_async.mjs"], contains="PASS runtime-async", timeout=120)
     check("custom/unknown-builtin", [qjs, "-m", ROOT / "tests/fixtures/unknown-builtin.mjs"],
           expected=1, contains="Unknown builtin module: node:missing")
     check("qjsc/unknown-builtin", [qjsc, "-c", "-m", "-o", scratch / "unknown-builtin.c",
@@ -148,6 +149,14 @@ def main():
         if not valid:
             print("FAIL generated C has no bytecode array", flush=True)
     if args.compile:
+        if check("qjsc/compile-async-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/async-worker.mjs",
+                 "-o", scratch / "async-standalone.exe", ROOT / "tests/runtime_async.mjs"], timeout=180):
+            check("qjsc/run-async-ape", [scratch / "async-standalone.exe"], contains="PASS runtime-async", timeout=120)
+        if check("sdk/compile-async", [settings.toolchain / "bin/cosmocc", "-O2", "-I" + str(settings.dist),
+                 ROOT / "tests/native/async.c", settings.dist / "libquickjs.a", "-lm", "-lpthread", "-ldl",
+                 "-Wl,--wrap=_Exit,-u,__wrap__Exit", "-Wl,--wrap=js_malloc_rt,--wrap=js_malloc,--wrap=qjs_cosmo_fs_openat,--wrap=__fcntl_dupfd_cloexec,--wrap=read,--wrap=write,--wrap=close,--wrap=getrandom",
+                 "-o", scratch / "async-sdk.exe"], timeout=180):
+            check("sdk/run-async", [scratch / "async-sdk.exe"], contains="PASS async-sdk", timeout=120)
         if check("sdk/compile-task-pool", [sys.executable, ROOT / "scripts/build_task_tests.py"],
                  contains="PASS task-pool SDK build", timeout=180):
             check("sdk/task-pool-source", [scratch / "task-pool-sdk.exe"], contains="PASS task-pool-sdk", timeout=120)
@@ -215,6 +224,8 @@ def main():
                  timeout=180):
             check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
+        check("qjsc/cross-host-async", [args.standalone.resolve().parent / "async-standalone.exe"], contains="PASS runtime-async", timeout=120)
+        check("sdk/cross-host-async", [args.standalone.resolve().parent / "async-sdk.exe"], contains="PASS async-sdk", timeout=120)
         check("sdk/cross-host-task-pool-source", [args.standalone.resolve().parent / "task-pool-sdk.exe"], contains="PASS task-pool-sdk", timeout=120)
         check("sdk/cross-host-task-pool-bytecode", [args.standalone.resolve().parent / "task-pool-sdk.exe", "--bytecode"], contains="PASS task-pool-sdk", timeout=120)
         check("qjsc/cross-host-child-process", [args.standalone.resolve().parent / "child-process-standalone.exe"], contains="PASS runtime-child-process")
