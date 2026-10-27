@@ -45,6 +45,7 @@ python3 scripts/build_native.py $OFFLINE --jobs "$JOBS"
 python3 scripts/build_crypto.py
 python3 scripts/build_compression.py
 cp native/module_registry.h "$BUILD/qjs-cosmo.h"
+cp native/tasks.h "$BUILD/qjs-tasks.h"
 python3 scripts/generate_runtime_config.py --output "$BUILD/qjs-cosmo-config.h"
 python3 scripts/embed_js.py --output "$BUILD/qjs-builtins.h"
 QJSC=./qjsc.exe
@@ -67,7 +68,7 @@ for program in qjs qjsc run-test262; do
     cp scripts/launch.sh "$DIST/$program"
     chmod +x "$DIST/$program"
 done
-cp "$BUILD/quickjs.h" "$BUILD/quickjs-libc.h" "$BUILD/qjs-cosmo.h" "$DIST/"
+cp "$BUILD/quickjs.h" "$BUILD/quickjs-libc.h" "$BUILD/qjs-cosmo.h" "$BUILD/qjs-tasks.h" "$DIST/"
 cp types/*.d.ts "$DIST/"
 cp src/js/vendor/node/LICENSE "$DIST/NODE-MODULES-LICENSE"
 cp build/native/backends/LICENSES.txt "$DIST/NATIVE-MODULES-LICENSES"

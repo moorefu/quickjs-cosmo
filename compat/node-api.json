@@ -299,6 +299,14 @@
       "task": "M2-05",
       "timeout_seconds": 60,
       "description": "Concurrent stdin/stdout/stderr, aggregate maxBuffer, zero limit, timeout and kill signal"
+    },
+    {
+      "id": "LIFE-001",
+      "status": "runtime",
+      "file": "tests/native/task-pool.mjs",
+      "task": "M3-01",
+      "description": "Native task pool SDK harness: timers, copied/transferred input, queue/memory limits, cancellation, cleanup, contexts, Workers and qjsc bytecode",
+      "timeout_seconds": 120
     }
   ],
   "modules": [
@@ -12769,7 +12777,7 @@
             {
               "test": "PROC-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "PROC-001/002 plus source/Worker/qjsc and SDK allocation/pipe/thread/I/O failures; full CI pending"
+              "scope": "PROC-001/002 plus Worker/qjsc and SDK allocation/pipe/thread/I/O failure tests; all seven platforms and CI gate passed at c676727 (40509058444)."
             }
           ]
         },
@@ -12809,7 +12817,7 @@
             {
               "test": "PROC-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "PROC-001/002 plus source/Worker/qjsc and SDK allocation/pipe/thread/I/O failures; full CI pending"
+              "scope": "PROC-001/002 plus Worker/qjsc and SDK allocation/pipe/thread/I/O failure tests; all seven platforms and CI gate passed at c676727 (40509058444)."
             }
           ]
         },
@@ -12849,7 +12857,7 @@
             {
               "test": "PROC-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "PROC-001/002 plus source/Worker/qjsc and SDK allocation/pipe/thread/I/O failures; full CI pending"
+              "scope": "PROC-001/002 plus Worker/qjsc and SDK allocation/pipe/thread/I/O failure tests; all seven platforms and CI gate passed at c676727 (40509058444)."
             }
           ]
         },

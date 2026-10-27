@@ -2,6 +2,7 @@
 QJS_COMPAT_OBJS = $(OBJDIR)/qjs-host-exit.o $(OBJDIR)/qjs-host-process.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-module-registry.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-runtime-state.o
+QJS_COMPAT_OBJS += $(OBJDIR)/qjs-tasks.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-windows-host.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-fs-sync.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-fs-paths.o
@@ -27,6 +28,9 @@ $(OBJDIR)/qjs-compression.o: $(QJS_COSMO_ROOT)/build/native/compression/qjs-comp
 
 $(OBJDIR)/qjs-module-registry.o: $(QJS_COSMO_ROOT)/native/module_registry.c \
     $(QJS_COSMO_ROOT)/native/module_registry.h $(QJS_COSMO_ROOT)/native/runtime_state.h qjs-cosmo-config.h qjs-builtins.h quickjs.h quickjs-libc.h | $(OBJDIR)
+	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -c -o $@ $<
+
+$(OBJDIR)/qjs-tasks.o: $(QJS_COSMO_ROOT)/native/tasks.c $(QJS_COSMO_ROOT)/native/tasks.h $(QJS_COSMO_ROOT)/native/module_registry.h quickjs.h quickjs-libc.h | $(OBJDIR)
 	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -c -o $@ $<
 
 $(OBJDIR)/qjs-child-process.o: $(QJS_COSMO_ROOT)/native/process/binding.c $(QJS_COSMO_ROOT)/native/process/binding.h $(QJS_COSMO_ROOT)/native/process/core.h quickjs.h | $(OBJDIR)

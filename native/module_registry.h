@@ -1,6 +1,7 @@
 #ifndef QUICKJS_COSMO_MODULE_REGISTRY_H
 #define QUICKJS_COSMO_MODULE_REGISTRY_H
 #include "quickjs.h"
+#include "qjs-tasks.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -148,6 +148,10 @@ def main():
         if not valid:
             print("FAIL generated C has no bytecode array", flush=True)
     if args.compile:
+        if check("sdk/compile-task-pool", [sys.executable, ROOT / "scripts/build_task_tests.py"],
+                 contains="PASS task-pool SDK build", timeout=180):
+            check("sdk/task-pool-source", [scratch / "task-pool-sdk.exe"], contains="PASS task-pool-sdk", timeout=120)
+            check("sdk/task-pool-bytecode", [scratch / "task-pool-sdk.exe", "--bytecode"], contains="PASS task-pool-sdk", timeout=120)
         if check("qjsc/compile-child-process-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/child-process-worker.mjs",
                  "-o", scratch / "child-process-standalone.exe", ROOT / "tests/runtime_child_process.mjs"], timeout=180):
             check("qjsc/run-child-process-ape", [scratch / "child-process-standalone.exe"], contains="PASS runtime-child-process")
@@ -211,6 +215,8 @@ def main():
                  timeout=180):
             check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
+        check("sdk/cross-host-task-pool-source", [args.standalone.resolve().parent / "task-pool-sdk.exe"], contains="PASS task-pool-sdk", timeout=120)
+        check("sdk/cross-host-task-pool-bytecode", [args.standalone.resolve().parent / "task-pool-sdk.exe", "--bytecode"], contains="PASS task-pool-sdk", timeout=120)
         check("qjsc/cross-host-child-process", [args.standalone.resolve().parent / "child-process-standalone.exe"], contains="PASS runtime-child-process")
         check("sdk/cross-host-child-process", [args.standalone.resolve().parent / "child-process-sdk.exe"], contains="PASS child-process-sdk", timeout=180)
         check("qjsc/cross-host-compression", [args.standalone.resolve().parent / "compression-standalone.exe"], contains="PASS runtime-compression")

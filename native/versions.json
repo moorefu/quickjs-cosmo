@@ -408,7 +408,7 @@
       "notes": [
         "Private Nightly spawn implementation; Node argument quoting, stdio ownership and explicit uid/gid adapters. No new native dependency."
       ],
-      "evidence_scope": "M2-05 sync subset; local Linux/Windows differential, Worker and SDK failure cleanup; full CI pending",
+      "evidence_scope": "M2-05 sync subset: all seven platforms and CI gate passed at c676727 (40509058444), including default-SIGPIPE SDK hosts on both macOS architectures.",
       "evidence": [
         "native/process/core.c",
         "native/process/posix.c",

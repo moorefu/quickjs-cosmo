@@ -1,0 +1,83 @@
+--- a/quickjs-libc.c
++++ b/quickjs-libc.c
+@@ -2581,7 +2581,7 @@
+     delay = JS_AtomicsPollWaiters(ctx);
+ 
+     if (list_empty(&ts->os_rw_handlers) && !has_referenced_timer(ts) &&
+-        list_empty(&ts->port_list) && delay < 0) {
++        list_empty(&ts->port_list) && !js_cosmo_tasks_pending(rt) && delay < 0) {
+         return -1; /* no more events */
+     }
+     
+@@ -2590,6 +2590,7 @@
+         min_delay = delay;
+ 
+     if (poll_timer(ctx, &min_delay)) return 0;
++    if (js_cosmo_tasks_poll(ctx)) return 0;
+ 
+     count = 0;
+     list_for_each(el, &ts->os_rw_handlers) {
+@@ -2745,7 +2746,7 @@
+     delay = JS_AtomicsPollWaiters(ctx);
+ 
+     if (list_empty(&ts->os_rw_handlers) && !has_referenced_timer(ts) &&
+-        list_empty(&ts->port_list) && delay < 0)
++        list_empty(&ts->port_list) && !js_cosmo_tasks_pending(rt) && delay < 0)
+         return -1; /* no more events */
+ 
+     min_delay = 10000;
+@@ -2753,6 +2754,7 @@
+         min_delay = delay;
+     
+     if (poll_timer(ctx, &min_delay)) return 0;
++    if (js_cosmo_tasks_poll(ctx)) return 0;
+     
+     nfds = 0;
+     list_for_each(el, &ts->os_rw_handlers) {
+@@ -4457,6 +4459,20 @@
+     }
+ }
+ 
++static void js_cosmo_tasks_signal(void *opaque)
++{
++    js_waker_signal(opaque);
++}
++
++int js_cosmo_tasks_waker(JSRuntime *rt, void (**signal)(void *), void **opaque)
++{
++    JSThreadState *ts = JS_GetRuntimeOpaque(rt);
++    if (!ts) return -1;
++    *signal = js_cosmo_tasks_signal;
++    *opaque = &ts->atomics_async_waker;
++    return 0;
++}
++
+ void js_std_init_handlers(JSRuntime *rt)
+ {
+     os_poll_func = js_os_poll;
+@@ -4499,6 +4515,7 @@
+ 
+ void js_std_free_handlers(JSRuntime *rt)
+ {
++    js_cosmo_tasks_shutdown(rt);
+     JSThreadState *ts = JS_GetRuntimeOpaque(rt);
+     struct list_head *el, *el1;
+ 
+--- a/quickjs.c
++++ b/quickjs.c
+@@ -43,6 +43,7 @@
+ #include "cutils.h"
+ #include "list.h"
+ #include "quickjs.h"
++#include "qjs-tasks.h"
+ #include "libregexp.h"
+ #include "libunicode.h"
+ #include "dtoa.h"
+@@ -2454,6 +2455,7 @@
+ 
+ void JS_FreeRuntime(JSRuntime *rt)
+ {
++    js_cosmo_tasks_shutdown(rt);
+     struct list_head *el, *el1;
+     int i;
+ 
