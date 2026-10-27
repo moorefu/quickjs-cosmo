@@ -195,11 +195,11 @@ int js_cosmo_process_poll(JSContext *owner) {
     for(Child *c=registry;c;c=c->next)if(c->rt==rt) {
         if(js_cosmo_scheduler_stopped(c->ctx)){chosen=c;type=-2;break;}
         pthread_mutex_lock(&c->mutex);
-        if(c->result.exited && !c->exit_sent){type=EXIT_EVENT;status=c->result.status;code=c->result.signal;c->exit_sent=1;}
-        else if(c->write_done){type=WRITE_EVENT;code=c->write_error;c->write_done=0;pthread_cond_broadcast(&c->changed);}
+        if(c->write_done){type=WRITE_EVENT;code=c->write_error;c->write_done=0;pthread_cond_broadcast(&c->changed);}
+        else if(c->pipe[0] && c->fd[0]<0 && !c->eof_sent[0]){type=INPUT_CLOSED;c->eof_sent[0]=1;}
+        else if(c->result.exited && !c->exit_sent){type=EXIT_EVENT;status=c->result.status;code=c->result.signal;c->exit_sent=1;}
         else {
             for(int n=0;n<2;n++){int i=1+(c->round+n)%2;if(c->want[i] && c->output_length[i]){type=DATA;index=i;length=c->output_length[i];break;}if(c->pipe[i] && c->fd[i]<0 && !c->eof_sent[i] && !c->output_length[i]){type=EOF_EVENT;index=i;code=c->read_error[i];c->eof_sent[i]=1;break;}}
-            if(type<0 && c->pipe[0] && c->fd[0]<0 && !c->eof_sent[0]){type=INPUT_CLOSED;c->eof_sent[0]=1;}
             if(type<0 && c->pump_done && c->exit_sent && c->eof_sent[0] && c->eof_sent[1] && c->eof_sent[2]){type=DONE_EVENT;code=c->result.error;}
         }
         pthread_mutex_unlock(&c->mutex);if(type>=0){chosen=c;break;}

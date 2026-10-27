@@ -20,6 +20,8 @@ ChildProcess 提供 pid/spawnfile/spawnargs、exitCode/signalCode/killed、stdin
 
 spawn 在调用时完成原生启动，spawn/error 事件异步交付。exit 表示进程已结束；close 等待相关 stdio 的 close 事件和原生清理，不能以流的 closed 属性提前代替事件。子进程退出时按 Node 行为处理 stdin 与输出排空。Windows 重定向文件的游标在 exit 交付前同步，既支持 exit 监听器读取，也支持 close 后读取。
 
+已经完成的 stdin 写入及关闭先于进程 exit 通知交付，避免较慢宿主先处理 exit、销毁 stdin 后吞掉写入失败或回调结果。SDK 故障用例显式延迟 JS 事件处理，覆盖写入 EIO 与子进程退出同时到达的情况。
+
 execFile/exec 捕获两条输出并调用 error-first 回调。maxBuffer 按每条流单独计数，与同步接口既有的合计合同区分；默认 1 MiB，0 表示零容量，Infinity 不设捕获上限但仍受 Runtime 配额约束。字符串解码使用 Stream 边界解码器；encoding:null/显式 undefined/非编码字符串按 Node 返回 Buffer。超限、启动失败、超时终止与 AbortError 保留各自字段，不能统一成一种错误形状。util.promisify 返回 `{stdout, stderr}`，其 Promise 的 child 为真实 ChildProcess。
 
 Stream 集成同时补上 readable 监听存在时的 resume 行为，以及异步迭代期间持续保留 readable 监听，避免退出排空丢掉尚未被迭代器消费的数据。

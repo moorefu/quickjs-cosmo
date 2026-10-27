@@ -11,14 +11,14 @@ const executable=process.env.NODE_COMPAT_CHILD_EXECUTABLE||process.execPath,fixt
 const spawn=mode=>cp.spawn(executable,[fixture,mode],base);
 const close=child=>new Promise((resolve,reject)=>{child.on('error',reject);child.on('close',(code,signal)=>resolve([code,signal]));});
 {
-    const child=spawn('flood'),done=close(child),parts=[[],[]];let ticks=0,paused=false,callbacks=0,inputError=null;
+    const child=spawn('flood'),done=close(child),parts=[[],[]],callbackErrors=[];let ticks=0,paused=false,callbacks=0,inputError=null;
     child.stdin.on('error',error=>inputError=error.code);
     const timer=setInterval(()=>ticks++,1);
     child.stdout.on('data',chunk=>{parts[0].push(chunk);if(!paused){paused=true;child.stdout.pause();setTimeout(()=>child.stdout.resume(),5);}});child.stderr.on('data',chunk=>parts[1].push(chunk));
     const refs=[child.stdin,child.stdout,child.stderr].map(s=>{const u=s.unref(),r=s.ref();return [u===s,r===s];});
-    const input=Buffer.alloc(1024*1024,99),backpressure=child.stdin.write(input,()=>callbacks++);child.stdin.end(()=>callbacks++);
+    const input=Buffer.alloc(1024*1024,99),backpressure=child.stdin.write(input,error=>{callbacks++;if(error)callbackErrors.push(error.code);});child.stdin.end(error=>{callbacks++;if(error)callbackErrors.push(error.code);});
     const status=await done;clearInterval(timer);const data=parts.map(chunks=>Buffer.concat(chunks));if(inputError)console.error('flood child: '+JSON.stringify({status,inputError,stderr:data[1].toString()}));check(!inputError,'flood stdin succeeds');
-    output.flood={status,lengths:data.map(x=>x.length),digests:data.map(x=>createHash('sha256').update(x).digest('hex')),backpressure,callbacks,progress:ticks>0,refs};
+    output.flood={status,lengths:data.map(x=>x.length),digests:data.map(x=>createHash('sha256').update(x).digest('hex')),backpressure,callbacks,callbackErrors,progress:ticks>0,refs};
 }
 {
     const child=spawn('input'),done=close(child),parts=[];

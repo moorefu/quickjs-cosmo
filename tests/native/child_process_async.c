@@ -54,7 +54,7 @@ static int native_child(const char *kind){
     if(!strcmp(kind,"duplex")){char data[4096];memset(data,'a',sizeof(data));for(int i=0;i<64;i++)write_all(1,data,sizeof(data));memset(data,'b',sizeof(data));for(int i=0;i<64;i++)write_all(2,data,sizeof(data));}
     char block[4096];ssize_t n;while((n=read(0,block,sizeof(block)))>0)write_all(1,block,n);return 0;
 }
-static JSValue evaluate(JSContext *ctx,const char *source,int type){return JS_Eval(ctx,source,strlen(source),"<child-async-sdk>",type);}
+static JSValue evaluate(JSContext *ctx,const char *source,int type){char filename[64];snprintf(filename,sizeof(filename),"<child-async-sdk:mode-%d>",mode);return JS_Eval(ctx,source,strlen(source),filename,type);}
 static void settle(JSContext *ctx,JSValue value){if(JS_IsException(value)){js_std_dump_error(ctx);assert(0);}value=js_std_await(ctx,value);if(JS_IsException(value)){js_std_dump_error(ctx);assert(0);}JS_FreeValue(ctx,value);}
 static int64_t now(void){struct timespec t;clock_gettime(CLOCK_MONOTONIC,&t);return t.tv_sec*INT64_C(1000)+t.tv_nsec/1000000;}
 static JSContext *context(JSRuntime **out){
@@ -71,7 +71,12 @@ int main(int argc,char **argv){
         JSRuntime *rt;JSContext *ctx=context(&rt);tracking=1;mode=0;
         settle(ctx,evaluate(ctx,"let ticks=0;const timer=setInterval(()=>ticks++,1);const r=await run('duplex',Buffer.alloc(4096,9));clearInterval(timer);f.a.equal(r.output.length,64*4096+4096);f.a(ticks>0);f.a.equal(r.spawnError,null);",JS_EVAL_TYPE_MODULE));assert(!live_fds && !live_children);
         mode=1;interrupted=0;settle(ctx,evaluate(ctx,"const r=await run('echo',Buffer.alloc(64,9));f.a.equal(r.output.length,64);f.a.equal(r.errors.length,0);",JS_EVAL_TYPE_MODULE));assert((interrupted&3)==3);assert(!live_fds && !live_children);
-        for(int fault=2;fault<=4;fault++){mode=fault;settle(ctx,evaluate(ctx,"const r=await run('echo',Buffer.alloc(64,9));f.a(r.errors.length>0);",JS_EVAL_TYPE_MODULE));assert(!live_fds && !live_children);}
+        for(int fault=2;fault<=4;fault++){
+            mode=fault;
+            if(fault==2){settle(ctx,evaluate(ctx,"globalThis.delayed=run('echo',Buffer.alloc(64,9));void 0;",JS_EVAL_TYPE_GLOBAL));struct timespec pause={0,200000000};nanosleep(&pause,NULL);settle(ctx,evaluate(ctx,"const r=await delayed;f.a(r.errors.includes('EIO'));",JS_EVAL_TYPE_MODULE));}
+            else settle(ctx,evaluate(ctx,"const r=await run('echo',Buffer.alloc(64,9));f.a(r.errors.length>0);",JS_EVAL_TYPE_MODULE));
+            assert(!live_fds && !live_children);
+        }
         mode=5;interrupted=0;settle(ctx,evaluate(ctx,"const r=await run('sleep',Buffer.alloc(8));f.a.equal(r.spawnError,'EIO');",JS_EVAL_TYPE_MODULE));assert(!live_fds && !live_children);
         for(int fault=10;fault<=12;fault++){mode=fault;pipe_calls=0;settle(ctx,evaluate(ctx,"const r=await run('echo',Buffer.alloc(8));f.a.equal(r.spawnError,'EMFILE');",JS_EVAL_TYPE_MODULE));assert(!live_fds && !live_children);}
         for(int fault=20;fault<=21;fault++){mode=fault;thread_calls=0;settle(ctx,evaluate(ctx,"const r=await run('echo',Buffer.alloc(8));f.a.equal(r.spawnError,'EAGAIN');",JS_EVAL_TYPE_MODULE));assert(!live_fds && !live_children);}
