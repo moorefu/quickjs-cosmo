@@ -1,4 +1,4 @@
-function createChildProcess(native, process, path, fs) {
+function createChildProcess(native, process, path, fs, streams) {
     const binding = native.childProcess, windows = native.platform === 'win32';
     const empty = new ArrayBuffer(0);
     const signalPairs = {...binding.signals};
@@ -70,7 +70,7 @@ function createChildProcess(native, process, path, fs) {
         }
         return [...new Set(result)];
     }
-    function stdio(value) {
+    function stdio(value,asynchronous=false) {
         if (!value) value='pipe';
         if (typeof value === 'string') {
             if (!['pipe','ignore','inherit','overlapped'].includes(value)) throw invalidValue('stdio');
@@ -79,7 +79,7 @@ function createChildProcess(native, process, path, fs) {
         if (value.length>3) throw codedError(Error,'ERR_NOT_SUPPORTED','Extra child descriptors are not enabled');
         return [0,1,2].map(index=>{
             let mode=value[index] ?? 'pipe';
-            if (mode==='ipc') throw codedError(Error,'ERR_IPC_SYNC_FORK','IPC cannot be used with synchronous child processes');
+            if (mode==='ipc') throw codedError(Error,asynchronous?'ERR_NOT_SUPPORTED':'ERR_IPC_SYNC_FORK','Node IPC is not enabled');
             if (mode==='pipe' || mode==='overlapped') return -1;
             if (mode==='ignore') return -2;
             if (mode==='inherit') return index;
@@ -88,7 +88,7 @@ function createChildProcess(native, process, path, fs) {
             throw invalidValue('stdio['+index+']');
         });
     }
-    function normalize(file, args, supplied) {
+    function normalize(file, args, supplied,asynchronous=false) {
         file=text(file,'file',true);if (!file.length) throw invalidValue('file');
         if (Array.isArray(args)) args=args.slice();
         else if (args == null) args=[];
@@ -104,7 +104,7 @@ function createChildProcess(native, process, path, fs) {
             if (cwd.includes(0)) throw invalidValue('options.cwd');
             if (windows) cwd=Buffer.from(cwd.toString());
         }
-        if (flag(options.detached,'options.detached')) throw codedError(Error,'ERR_NOT_SUPPORTED','Detached children are outside the synchronous subset');
+        if (flag(options.detached,'options.detached')) throw codedError(Error,'ERR_NOT_SUPPORTED','Detached children are outside the initial subset');
         const ids=['uid','gid'].map(name=>{
             const value=options[name];if (value==null) return -1;
             if (!Number.isInteger(value) || value< -2147483648 || value>2147483647) throw invalidType('options.'+name,'int32');
@@ -125,11 +125,11 @@ function createChildProcess(native, process, path, fs) {
         const env=environment(options.env);
         const timeout=options.timeout==null ? 0 : options.timeout;
         if (!Number.isInteger(timeout) || timeout<0 || timeout>Number.MAX_SAFE_INTEGER) throw outOfRange('timeout');
-        const maximum=Object.hasOwn(options,'maxBuffer') ? options.maxBuffer ?? 0 : 1024*1024;
+        const maximum=asynchronous?Infinity:Object.hasOwn(options,'maxBuffer') ? options.maxBuffer ?? 0 : 1024*1024;
         if (typeof maximum!=='number' || !(maximum>=0)) throw outOfRange('options.maxBuffer');
-        const signal=killSignal(options.killSignal), io=stdio(options.stdio);
+        const signal=killSignal(options.killSignal), io=stdio(options.stdio,asynchronous);
         let input=[empty,0,0];
-        if (options.input) {
+        if (!asynchronous && options.input) {
             let value=options.input;
             if (typeof value==='string') value=Buffer.from(value,options.encoding);
             if (!ArrayBuffer.isView(value)) throw invalidType('options.stdio[0]','a string or ArrayBufferView');
@@ -178,5 +178,5 @@ function createChildProcess(native, process, path, fs) {
         if (!options.stdio) forwardStderr(result.stderr);
         return checked(result,command);
     }
-    return {spawnSync,execFileSync,execSync};
+    return Object.assign({spawnSync,execFileSync,execSync},createAsyncChildProcess({binding:binding.async,normalize,candidates,signalName,killSignal,text,object,process,streams,windows}));
 }

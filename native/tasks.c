@@ -8,6 +8,7 @@
 #include "tasks.h"
 #include "quickjs-libc.h"
 #include "module_registry.h"
+#include "process/async.h"
 
 enum { THREADS=2,CAPACITY=64,MAX_RESERVED=64*1024*1024 };
 enum { PREPARED,QUEUED,RUNNING,READY };
@@ -41,7 +42,7 @@ struct Pool {
     QJSCosmoTask *all,*head,*tail,*ready_head,*ready_tail;
     size_t active,reserved,workers;
     uint64_t next_id;
-    int closing;
+    int closing,last_process;
     void (*wake)(void *);
     void *waker;
 };
@@ -209,15 +210,16 @@ void js_cosmo_tasks_stats(JSRuntime *rt,QJSCosmoTaskStats *out) {
     pthread_mutex_unlock(&p->mutex);
 }
 int js_cosmo_tasks_pending(JSRuntime *rt) {
-    Pool *p=find_pool(rt);if(!p)return 0;
-    pthread_mutex_lock(&p->mutex);int pending=p->active!=0;pthread_mutex_unlock(&p->mutex);return pending;
+    Pool *p=find_pool(rt);int pending=0;
+    if(p){pthread_mutex_lock(&p->mutex);pending=p->active!=0;pthread_mutex_unlock(&p->mutex);}return pending || js_cosmo_process_pending(rt);
 }
 int js_cosmo_tasks_poll(JSContext *ctx) {
-    Pool *p=find_pool(JS_GetRuntime(ctx));if(!p)return 0;
+    Pool *p=find_pool(JS_GetRuntime(ctx));if(!p)return js_cosmo_process_poll(ctx);
+    if(!p->last_process && js_cosmo_process_poll(ctx)){p->last_process=1;return 1;}
     assert(pthread_equal(p->owner,pthread_self()));
     pthread_mutex_lock(&p->mutex);QJSCosmoTask *t=p->ready_head;
     if(t){p->ready_head=t->ready_next;if(!p->ready_head)p->ready_tail=NULL;unlink_task(p,t);}
-    pthread_mutex_unlock(&p->mutex);if(!t)return 0;
+    pthread_mutex_unlock(&p->mutex);if(!t)return js_cosmo_process_poll(ctx);p->last_process=0;
     JSContext *owner=JS_DupContext(t->ctx);
     if(!js_cosmo_scheduler_stopped(t->ctx)) {
         int error=js_cosmo_task_cancelled(t)?ECANCELED:t->error;
@@ -231,6 +233,7 @@ int js_cosmo_tasks_poll(JSContext *ctx) {
     release_task(t);js_cosmo_checkpoint(owner,1);JS_FreeContext(owner);return 1;
 }
 void js_cosmo_tasks_close_context(JSContext *ctx) {
+    js_cosmo_process_close_context(ctx);
     Pool *p=find_pool(JS_GetRuntime(ctx));if(!p)return;
     pthread_mutex_lock(&p->mutex);
     for(QJSCosmoTask *t=p->all;t;t=t->all_next)if(t->ctx==ctx)atomic_store_explicit(&t->cancelled,1,memory_order_release);
@@ -252,6 +255,7 @@ void js_cosmo_tasks_close_context(JSContext *ctx) {
     while(removed){QJSCosmoTask *next=removed->all_next;destroy_task(removed);removed=next;}
 }
 void js_cosmo_tasks_shutdown(JSRuntime *rt) {
+    js_cosmo_process_shutdown(rt);
     pthread_mutex_lock(&registry_mutex);Pool **link=&registry;
     while(*link && (*link)->rt!=rt)link=&(*link)->next;
     Pool *p=*link;if(p)*link=p->next;pthread_mutex_unlock(&registry_mutex);if(!p)return;

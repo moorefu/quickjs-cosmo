@@ -10,7 +10,7 @@ CORE_SOURCES = ("src/js/internal/errors.js", "src/js/internal/encoding.js", "src
                 "src/js/node/events.js", "src/js/node/process.js", "src/js/node/path-adapter.js",
                 "src/js/node/os.js", "src/js/node/util.js", "src/js/node/assert.js", "src/js/node/console.js",
                 "src/js/internal/abort.js", "src/js/node/timers.js", "src/js/node/stream.js", "src/js/node/fs-async.js", "src/js/node/fs.js", "src/js/node/crypto.js",
-                "src/js/internal/compression-constants.js", "src/js/node/zlib.js", "src/js/node/child_process.js")
+                "src/js/internal/compression-constants.js", "src/js/node/zlib.js", "src/js/node/child-process-async.js", "src/js/node/child_process.js")
 
 
 def generate(root=ROOT):
@@ -36,7 +36,7 @@ const os = createOs(native, process, path);
 const fs = createFs(native, path);
 const crypto = createCrypto(native);
 const compression = createCompression(native);
-const childProcess = createChildProcess(native, process, path, fs);
+const childProcess = createChildProcess(native, process, path, fs, streams.api);
 const console = createConsole(native);
 function fileURL(filename) {
     let name = native.platform === 'win32' ? filename.replace(/\\\\/g, '/') : filename;

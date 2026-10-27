@@ -33,7 +33,7 @@ declare module 'node:child_process' {
     export function execFileSync(file:string,options?:SpawnSyncOptionsWithBufferEncoding):Buffer;
     export function execSync(command:string,options:SpawnSyncOptionsWithStringEncoding):string;
     export function execSync(command:string,options?:SpawnSyncOptionsWithBufferEncoding):Buffer;
-    const childProcess:{spawnSync:typeof spawnSync;execFileSync:typeof execFileSync;execSync:typeof execSync};
+    const childProcess:{spawnSync:typeof spawnSync;execFileSync:typeof execFileSync;execSync:typeof execSync}&AsyncChildProcessMethods;
     export default childProcess;
 }
 declare module 'child_process' {export * from 'node:child_process';export {default} from 'node:child_process';}

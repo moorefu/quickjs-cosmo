@@ -36,6 +36,8 @@ void js_cosmo_cancel_timer(JSContext *ctx, int timer_id);
 int js_cosmo_ref_timer(JSContext *ctx, int timer_id, int referenced);
 int js_cosmo_checkpoint(JSContext *ctx, int ticks_first);
 int js_cosmo_scheduler_stopped(JSContext *ctx);
+/* Consume/report a pending native exception and stop this scheduler. */
+void js_cosmo_scheduler_error(JSContext *ctx);
 int js_cosmo_before_exit(JSContext *ctx);
 void js_cosmo_finish_loop(JSContext *ctx, int unsettled);
 void js_cosmo_check_rejections(JSContext *ctx);

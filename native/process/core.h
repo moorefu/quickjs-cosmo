@@ -29,4 +29,10 @@ int qp_windows_launch(const QPRequest *,const char *,const int [3],QPResult *);
 int qp_windows_wait(QPResult *);
 int qp_windows_kill(QPResult *,int);
 void qp_windows_close(QPResult *);
+/* Shared launch/wait primitives; asynchronous supervision owns its own pipes. */
+int qp_make_pipe(int [2]);
+int qp_launch(const QPRequest *,const int [3],QPResult *,QPAllocator *);
+int qp_wait_child(QPResult *);
+int qp_kill_child(QPResult *,int);
+int qp_force_reap(QPResult *);
 #endif

@@ -363,6 +363,38 @@
       "task": "M3-03",
       "description": "Streams in source, Worker, qjsc and SDK with timer progress",
       "timeout_seconds": 120
+    },
+    {
+      "id": "PROC-003",
+      "status": "differential",
+      "file": "tests/node/child-process-async.mjs",
+      "task": "M3-04",
+      "description": "Async spawn, ChildProcess/stdio identities, quoting, cwd/env, inheritance, exec and promisify",
+      "timeout_seconds": 120
+    },
+    {
+      "id": "PROC-004",
+      "status": "differential",
+      "file": "tests/node/child-process-async-errors.mjs",
+      "task": "M3-04",
+      "description": "Async spawn/exec errors, per-stream maxBuffer, timeout, abort and kill",
+      "timeout_seconds": 120
+    },
+    {
+      "id": "PROC-005",
+      "status": "differential",
+      "file": "tests/node/child-process-async-io.mjs",
+      "task": "M3-04",
+      "description": "Duplex pipes, stream pipeline/iteration, backpressure, concurrent backends and actual unref exit",
+      "timeout_seconds": 120
+    },
+    {
+      "id": "PROC-006",
+      "status": "runtime",
+      "file": "tests/runtime_child_process_async.mjs",
+      "task": "M3-04",
+      "description": "Async children in Worker/qjsc/SDK with native failure and shutdown probes",
+      "timeout_seconds": 120
     }
   ],
   "modules": [
@@ -14469,7 +14501,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ]
         },
@@ -14510,7 +14542,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ]
         },
@@ -14551,7 +14583,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ]
         },
@@ -14592,7 +14624,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ]
         },
@@ -14633,7 +14665,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ]
         },
@@ -14674,7 +14706,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ]
         },
@@ -14712,7 +14744,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -14753,7 +14785,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -14794,7 +14826,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -14835,7 +14867,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -14876,7 +14908,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -14917,7 +14949,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -14958,7 +14990,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -14999,7 +15031,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -15040,7 +15072,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -15081,7 +15113,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -15122,7 +15154,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -15163,7 +15195,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -15204,7 +15236,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -15245,7 +15277,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -15286,7 +15318,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -15327,7 +15359,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -15368,7 +15400,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -15409,7 +15441,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -15450,7 +15482,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -15491,7 +15523,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -15532,7 +15564,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -15573,7 +15605,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -15614,7 +15646,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -15655,7 +15687,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ],
           "differences": [
@@ -15707,7 +15739,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ]
         },
@@ -15748,7 +15780,7 @@
             {
               "test": "STR-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176."
             }
           ]
         }
@@ -15882,38 +15914,453 @@
         },
         {
           "name": "spawn",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-04",
-          "parameters": "ChildProcess with streams, events, timeout/maxBuffer, kill and cancellation",
+          "parameters": "Documented Node v24.21.0 asynchronous ChildProcess subset; stream stdio, error/exit/close, per-stream exec capture and cancellation",
           "tests": [
-            "PROC-001"
+            "PROC-003",
+            "PROC-004",
+            "PROC-005"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Bounded 16-child native supervision per Runtime, initial three-stdio subset; no detached/IPC/fork. SDK/Worker teardown reaps owned children. See docs/M3_CHILD_PROCESS_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "PROC-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK failure and lifecycle probes; full M3-04 CI pending."
+            }
           ]
         },
         {
           "name": "execFile",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-04",
-          "parameters": "ChildProcess with streams, events, timeout/maxBuffer, kill and cancellation",
+          "parameters": "Documented Node v24.21.0 asynchronous ChildProcess subset; stream stdio, error/exit/close, per-stream exec capture and cancellation",
           "tests": [
-            "PROC-001"
+            "PROC-003",
+            "PROC-004",
+            "PROC-005"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Bounded 16-child native supervision per Runtime, initial three-stdio subset; no detached/IPC/fork. SDK/Worker teardown reaps owned children. See docs/M3_CHILD_PROCESS_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "PROC-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK failure and lifecycle probes; full M3-04 CI pending."
+            }
           ]
         },
         {
           "name": "exec",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-04",
-          "parameters": "ChildProcess with streams, events, timeout/maxBuffer, kill and cancellation",
+          "parameters": "Documented Node v24.21.0 asynchronous ChildProcess subset; stream stdio, error/exit/close, per-stream exec capture and cancellation",
           "tests": [
-            "PROC-001"
+            "PROC-003",
+            "PROC-004",
+            "PROC-005"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Bounded 16-child native supervision per Runtime, initial three-stdio subset; no detached/IPC/fork. SDK/Worker teardown reaps owned children. See docs/M3_CHILD_PROCESS_ASYNC.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "PROC-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK failure and lifecycle probes; full M3-04 CI pending."
+            }
+          ]
+        },
+        {
+          "name": "ChildProcess.kill",
+          "task": "M3-04",
+          "status": "partial",
+          "tests": [
+            "PROC-003",
+            "PROC-004",
+            "PROC-005"
+          ],
+          "parameters": "Documented Node v24.21.0 asynchronous ChildProcess subset; stream stdio, error/exit/close, per-stream exec capture and cancellation",
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "PROC-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK failure and lifecycle probes; full M3-04 CI pending."
+            }
+          ],
+          "differences": [
+            "Bounded 16-child native supervision per Runtime, initial three-stdio subset; no detached/IPC/fork. SDK/Worker teardown reaps owned children. See docs/M3_CHILD_PROCESS_ASYNC.md."
+          ]
+        },
+        {
+          "name": "ChildProcess.ref",
+          "task": "M3-04",
+          "status": "partial",
+          "tests": [
+            "PROC-003",
+            "PROC-004",
+            "PROC-005"
+          ],
+          "parameters": "Documented Node v24.21.0 asynchronous ChildProcess subset; stream stdio, error/exit/close, per-stream exec capture and cancellation",
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "PROC-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK failure and lifecycle probes; full M3-04 CI pending."
+            }
+          ],
+          "differences": [
+            "Bounded 16-child native supervision per Runtime, initial three-stdio subset; no detached/IPC/fork. SDK/Worker teardown reaps owned children. See docs/M3_CHILD_PROCESS_ASYNC.md."
+          ]
+        },
+        {
+          "name": "ChildProcess.unref",
+          "task": "M3-04",
+          "status": "partial",
+          "tests": [
+            "PROC-003",
+            "PROC-004",
+            "PROC-005"
+          ],
+          "parameters": "Documented Node v24.21.0 asynchronous ChildProcess subset; stream stdio, error/exit/close, per-stream exec capture and cancellation",
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "PROC-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK failure and lifecycle probes; full M3-04 CI pending."
+            }
+          ],
+          "differences": [
+            "Bounded 16-child native supervision per Runtime, initial three-stdio subset; no detached/IPC/fork. SDK/Worker teardown reaps owned children. See docs/M3_CHILD_PROCESS_ASYNC.md."
+          ]
+        },
+        {
+          "name": "ChildProcess.stdin",
+          "task": "M3-04",
+          "status": "partial",
+          "tests": [
+            "PROC-003",
+            "PROC-004",
+            "PROC-005"
+          ],
+          "parameters": "Documented Node v24.21.0 asynchronous ChildProcess subset; stream stdio, error/exit/close, per-stream exec capture and cancellation",
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "PROC-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK failure and lifecycle probes; full M3-04 CI pending."
+            }
+          ],
+          "differences": [
+            "Bounded 16-child native supervision per Runtime, initial three-stdio subset; no detached/IPC/fork. SDK/Worker teardown reaps owned children. See docs/M3_CHILD_PROCESS_ASYNC.md."
+          ]
+        },
+        {
+          "name": "ChildProcess.stdout",
+          "task": "M3-04",
+          "status": "partial",
+          "tests": [
+            "PROC-003",
+            "PROC-004",
+            "PROC-005"
+          ],
+          "parameters": "Documented Node v24.21.0 asynchronous ChildProcess subset; stream stdio, error/exit/close, per-stream exec capture and cancellation",
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "PROC-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK failure and lifecycle probes; full M3-04 CI pending."
+            }
+          ],
+          "differences": [
+            "Bounded 16-child native supervision per Runtime, initial three-stdio subset; no detached/IPC/fork. SDK/Worker teardown reaps owned children. See docs/M3_CHILD_PROCESS_ASYNC.md."
+          ]
+        },
+        {
+          "name": "ChildProcess.stderr",
+          "task": "M3-04",
+          "status": "partial",
+          "tests": [
+            "PROC-003",
+            "PROC-004",
+            "PROC-005"
+          ],
+          "parameters": "Documented Node v24.21.0 asynchronous ChildProcess subset; stream stdio, error/exit/close, per-stream exec capture and cancellation",
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "PROC-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK failure and lifecycle probes; full M3-04 CI pending."
+            }
+          ],
+          "differences": [
+            "Bounded 16-child native supervision per Runtime, initial three-stdio subset; no detached/IPC/fork. SDK/Worker teardown reaps owned children. See docs/M3_CHILD_PROCESS_ASYNC.md."
+          ]
+        },
+        {
+          "name": "ChildProcess.stdio",
+          "task": "M3-04",
+          "status": "partial",
+          "tests": [
+            "PROC-003",
+            "PROC-004",
+            "PROC-005"
+          ],
+          "parameters": "Documented Node v24.21.0 asynchronous ChildProcess subset; stream stdio, error/exit/close, per-stream exec capture and cancellation",
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "PROC-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK failure and lifecycle probes; full M3-04 CI pending."
+            }
+          ],
+          "differences": [
+            "Bounded 16-child native supervision per Runtime, initial three-stdio subset; no detached/IPC/fork. SDK/Worker teardown reaps owned children. See docs/M3_CHILD_PROCESS_ASYNC.md."
+          ]
+        },
+        {
+          "name": "ChildProcess.Symbol.dispose",
+          "task": "M3-04",
+          "status": "partial",
+          "tests": [
+            "PROC-003",
+            "PROC-004",
+            "PROC-005"
+          ],
+          "parameters": "Documented Node v24.21.0 asynchronous ChildProcess subset; stream stdio, error/exit/close, per-stream exec capture and cancellation",
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "PROC-003",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK failure and lifecycle probes; full M3-04 CI pending."
+            }
+          ],
+          "differences": [
+            "Bounded 16-child native supervision per Runtime, initial three-stdio subset; no detached/IPC/fork. SDK/Worker teardown reaps owned children. See docs/M3_CHILD_PROCESS_ASYNC.md."
           ]
         }
       ]

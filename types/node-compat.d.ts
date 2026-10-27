@@ -249,6 +249,7 @@ declare module 'node:os' {
 // Bare 'os' remains the upstream QuickJS module.
 
 declare module 'node:util' {
+    export function promisify<T extends (...args:any[])=>any>(original:{[promisify.custom]:T}):T;
     export function promisify<T>(original: (callback: (error: any, result: T) => void) => void): () => Promise<T>;
     export function promisify<A, T>(original: (a: A, callback: (error: any, result: T) => void) => void): (a: A) => Promise<T>;
     export function promisify<A, B, T>(original: (a: A, b: B, callback: (error: any, result: T) => void) => void): (a: A, b: B) => Promise<T>;

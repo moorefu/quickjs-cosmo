@@ -299,6 +299,7 @@ static void scheduler_failure(JSContext *ctx) {
     state->scheduler_failed = 1;
     JS_SetPropertyStr(ctx, state->data, "exitCode", JS_NewInt32(ctx, 1));
 }
+void js_cosmo_scheduler_error(JSContext *ctx) {js_std_dump_error(ctx);scheduler_failure(ctx);}
 
 static JSValue microtask_job(JSContext *ctx, int argc, JSValueConst *argv) {
     (void)argc;

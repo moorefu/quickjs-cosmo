@@ -26,7 +26,7 @@ static int promote(int fd) {
     if (fd<0 || fd>=3) return fd;
     int copy=fcntl(fd,F_DUPFD_CLOEXEC,3),saved=errno; close(fd);errno=saved;return copy;
 }
-static int make_pipe(int pair[2]) {
+int qp_make_pipe(int pair[2]) {
     if (pipe2(pair,O_CLOEXEC)<0) return -1;
     for (int i=0;i<2;i++) {
         pair[i]=promote(pair[i]);
@@ -68,7 +68,7 @@ static int append(QPBuffer *buffer,const uint8_t *data,size_t size,QPAllocator *
     }
     memcpy(buffer->data+buffer->length,data,size);buffer->length=length;return 0;
 }
-static int wait_child(QPResult *result) {
+int qp_wait_child(QPResult *result) {
     if (result->exited) return 1;
     if (IsWindows()) return qp_windows_wait(result);
     int status;pid_t pid=waitpid(result->pid,&status,WNOHANG);
@@ -79,11 +79,16 @@ static int wait_child(QPResult *result) {
     else if (WIFSIGNALED(status)) result->signal=WTERMSIG(status);
     return 1;
 }
-static int kill_child(QPResult *result,int signal) {
+int qp_kill_child(QPResult *result,int signal) {
     if (result->exited) return 0;
     return IsWindows()?qp_windows_kill(result,signal):kill(result->pid,signal);
 }
-static int launch(const QPRequest *options,const int child[3],QPResult *result,QPAllocator *memory) {
+int qp_force_reap(QPResult *result) {
+    if(result->exited)return 0;
+    if(qp_kill_child(result,SIGKILL)<0 && errno!=ESRCH)return errno;
+    for(;;){int rc=qp_wait_child(result);if(rc>0)return 0;if(rc<0){if(errno==ECHILD){result->exited=1;return 0;}return errno;}struct timespec pause={0,1000000};nanosleep(&pause,NULL);}
+}
+int qp_launch(const QPRequest *options,const int child[3],QPResult *result,QPAllocator *memory) {
     int denied=0,last=ENOENT;
     for (const char **candidate=options->candidates;*candidate;candidate++) {
         last=IsWindows()?qp_windows_launch(options,*candidate,child,result):qp_unix_launch(options,*candidate,child,result);
@@ -117,7 +122,7 @@ QPResult qp_run(const QPRequest *options,QPAllocator *memory) {
     }
     for(int i=0;i<3;i++) {
         if(options->stdio[i]==QP_PIPE) {
-            int pair[2];if(make_pipe(pair)<0){result.error=errno;goto done;}
+            int pair[2];if(qp_make_pipe(pair)<0){result.error=errno;goto done;}
             parent[i]=pair[i?0:1];child[i]=pair[i?1:0];result.capture[i]=i!=0;
         } else if(options->stdio[i]==QP_IGNORE) {
             child[i]=promote(open("/dev/null",O_RDWR|O_CLOEXEC));
@@ -131,12 +136,12 @@ QPResult qp_run(const QPRequest *options,QPAllocator *memory) {
        writer thread alone cannot protect an SDK host with SIG_DFL. Darwin's
        descriptor-local F_SETNOSIGPIPE (73) avoids changing host handlers. */
     if(IsXnu() && parent[0]>=0 && fcntl(parent[0],73,1)<0){result.error=errno;goto done;}
-    result.error=launch(options,child,&result,memory);if(result.error)goto done;
+    result.error=qp_launch(options,child,&result,memory);if(result.error)goto done;
     for(int i=0;i<3;i++)close_fd(child+i);
     input.fd=parent[0];parent[0]=-1;input.data=options->input;input.length=options->input_length;
     if(input.fd>=0 && input.length) {
         int code=pthread_create(&writer,NULL,write_input,&input);
-        if(code){result.error=code;kill_child(&result,SIGKILL);killed=1;finish_input(&input,writer,&started);}
+        if(code){result.error=code;qp_kill_child(&result,SIGKILL);killed=1;finish_input(&input,writer,&started);}
         else started=1;
     } else close_fd(&input.fd);
     uint64_t total=0;
@@ -145,14 +150,14 @@ QPResult qp_run(const QPRequest *options,QPAllocator *memory) {
             finish_input(&input,writer,&started);
             if(input.error && input.error!=EPIPE && !result.error)result.error=input.error;
         }
-        if(wait_child(&result)<0){if(!result.error)result.error=errno;break;}
+        if(qp_wait_child(&result)<0){if(!result.error)result.error=errno;break;}
         int64_t elapsed=milliseconds()-start;
         if(!killed && options->timeout>0 && elapsed>=options->timeout) {
             if(!result.error)result.error=ETIMEDOUT;
         }
         if(result.error && !killed) {
             int signal=result.error==ENOMEM?SIGKILL:options->kill_signal;
-            if(kill_child(&result,signal)<0 && errno!=ESRCH)kill_child(&result,SIGKILL);
+            if(qp_kill_child(&result,signal)<0 && errno!=ESRCH)qp_kill_child(&result,SIGKILL);
             killed=1;for(int i=1;i<3;i++)close_fd(parent+i);
             finish_input(&input,writer,&started);
         }
@@ -179,8 +184,8 @@ done:
     finish_input(&input,writer,&started);
     for(int i=0;i<3;i++){close_fd(parent+i);close_fd(child+i);}
     if(result.pid && !result.exited) {
-        kill_child(&result,SIGKILL);
-        while(!result.exited) {if(wait_child(&result)<0)break;struct timespec pause={0,1000000};nanosleep(&pause,NULL);}
+        qp_kill_child(&result,SIGKILL);
+        while(!result.exited) {if(qp_wait_child(&result)<0)break;struct timespec pause={0,1000000};nanosleep(&pause,NULL);}
     }
     if(IsWindows())qp_windows_close(&result);
     return result;

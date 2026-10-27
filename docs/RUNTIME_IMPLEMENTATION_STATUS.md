@@ -16,8 +16,8 @@
 | M2-05 同步子进程 | 完成，CI 全绿 | `c676727`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40509058444)，[记录](M2_PROCESS.md) |
 | M3-01 原生任务调度 | 完成，CI 全绿 | `d413b69`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40516679598)，[记录](M3_TASK_POOL.md) |
 | M3-02 异步 fs/算法 | 完成，CI 全绿 | `5877ce7`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777)，[记录](M3_ASYNC.md) |
-| M3-03 Stream | 已实现，等待完整 CI | 流对象、背压、pipeline/finished、迭代/解码及关闭边界；[记录](M3_STREAMS.md) |
-| M3-04 异步子进程 | 待实现 | ChildProcess、stdio、事件与终止 |
+| M3-03 Stream | 完成，CI 全绿 | `362a2af`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176)，[记录](M3_STREAMS.md) |
+| M3-04 异步子进程 | 已实现，等待完整 CI | ChildProcess、stdio、exec/promisify、取消与资源回收；[记录](M3_CHILD_PROCESS_ASYNC.md) |
 | M3-05 文件/算法流 | 待实现 | 文件、Hash/Hmac、压缩 Transform |
 | M4-01 密钥与 AEAD | 待实现 | KeyObject/DER/PEM、Ed/X25519、Cipher |
 | M4-02 扩展摘要 | 待实现 | SHA3/SHAKE/BLAKE2s |

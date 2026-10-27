@@ -25,7 +25,8 @@ STANDALONES = ("build/test-linux/hello-standalone.exe", "build/test-linux/runtim
                "build/test-linux/compression-standalone.exe", "build/test-linux/compression-sdk.exe",
                "build/test-linux/child-process-standalone.exe", "build/test-linux/child-process-sdk.exe",
                "build/test-linux/task-pool-sdk.exe", "build/test-linux/async-standalone.exe", "build/test-linux/async-sdk.exe",
-               "build/test-linux/stream-standalone.exe", "build/test-linux/stream-sdk.exe")
+               "build/test-linux/stream-standalone.exe", "build/test-linux/stream-sdk.exe",
+               "build/test-linux/child-process-async-standalone.exe", "build/test-linux/child-process-async-sdk.exe")
 SOURCE = ".cache/quickjs-source.tar.gz"
 NATIVE_PROBES = tuple("build/native/" + name + suffix
                      for name in ("toolchain-probe.exe", "backends-probe.exe")
@@ -75,7 +76,7 @@ def verify_dist(settings):
     if manifest.get("runtime_sources") != expected:
         raise ValueError("Artifact runtime sources do not match this checkout")
     required = {"qjs.exe", "qjsc.exe", "run-test262.exe", "libquickjs.a", ".aarch64/libquickjs.a",
-                "quickjs.h", "quickjs-libc.h", "qjs-cosmo.h", "qjs-tasks.h", "node-compat.d.ts", "stream.d.ts", "fs.d.ts", "fs-async.d.ts", "crypto.d.ts", "zlib.d.ts", "algorithms-async.d.ts", "child_process.d.ts", "cosmo.d.ts", "ape-x86_64.elf", "ape-aarch64.elf",
+                "quickjs.h", "quickjs-libc.h", "qjs-cosmo.h", "qjs-tasks.h", "node-compat.d.ts", "stream.d.ts", "fs.d.ts", "fs-async.d.ts", "crypto.d.ts", "zlib.d.ts", "algorithms-async.d.ts", "child_process.d.ts", "child-process-async.d.ts", "cosmo.d.ts", "ape-x86_64.elf", "ape-aarch64.elf",
                 "qjs", "qjsc", "run-test262", "versions.json", "QUICKJS-LICENSE", "NODE-MODULES-LICENSE", "NATIVE-MODULES-LICENSES"}
     if not required.issubset(manifest["files"]):
         raise ValueError("Incomplete SDK in CI artifact")

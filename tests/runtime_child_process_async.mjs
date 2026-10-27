@@ -1,0 +1,14 @@
+import cp from 'node:child_process';
+import {promisify} from 'node:util';
+import assert from 'node:assert/strict';
+import * as os from 'os';
+const events=[],child=cp.spawn('echo runtime-async-child',[],{shell:true,windowsHide:true}),parts=[];
+child.once('spawn',()=>events.push('spawn'));child.once('exit',()=>events.push('exit'));
+child.stdout.on('data',chunk=>parts.push(chunk));child.stderr.resume();child.stdin.end();
+await new Promise((resolve,reject)=>{child.on('error',reject);child.once('close',(code,signal)=>{events.push('close');assert.equal(code,0);assert.equal(signal,null);resolve();});});
+assert.equal(Buffer.concat(parts).toString().trim(),'runtime-async-child');assert.equal(events.join(','),'spawn,exit,close');
+const promise=promisify(cp.exec)('echo runtime-async-exec',{windowsHide:true});assert(promise.child instanceof cp.ChildProcess);assert.equal((await promise).stdout.trim(),'runtime-async-exec');
+const worker=new os.Worker('./fixtures/child-process-async-worker.mjs');
+const value=await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('async child Worker timeout')),10000);worker.onmessage=({data})=>{clearTimeout(timer);worker.onmessage=null;resolve(data);};worker.postMessage('start');});
+assert.equal(value.text,'runtime-child-worker');assert(value.child);
+console.log('PASS runtime-child-process-async');

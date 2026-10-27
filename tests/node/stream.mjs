@@ -12,6 +12,9 @@ const output={identity:bare.default===Stream && Stream.Readable===Readable && pr
 const sleep=()=>new Promise(resolve=>setTimeout(resolve,1));
 const pipe=(...streams)=>new Promise((resolve,reject)=>pipeline(...streams,e=>e?reject(e):resolve()));
 {
+    const r=new Readable({read(){}}),parts=[];r.on('readable',()=>{let c;while((c=r.read())!==null)parts.push(c.toString());});r.resume();r.push('readable-listener');r.push(null);await sp.finished(r,{cleanup:true});output.readableResume=parts.join('');
+}
+{
     const chunks=[],events=[];let counter=0,active=0,maxActive=0;
     const source=new Readable({objectMode:true,highWaterMark:2,read(){while(counter<12)if(!this.push(counter++))return;this.push(null);}});
     const transform=new Transform({objectMode:true,highWaterMark:1,transform(value,encoding,cb){cb(null,value*3);},flush(cb){this.push(99);cb();}});

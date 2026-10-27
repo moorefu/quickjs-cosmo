@@ -440,6 +440,33 @@
         "tests/native/async.c",
         "docs/M3_ASYNC.md"
       ]
+    },
+    {
+      "id": "node-native-ape-routing",
+      "delivery": "private-source",
+      "admission": "E2",
+      "files": [
+        {
+          "path": "libc/proc/execve-sysv.c",
+          "sha256": "93a2e908826a54d0aadd24a204c89dabc42b157c031f65605b2de6086987bf0a"
+        },
+        {
+          "path": "libc/calls/isapemagic.c",
+          "sha256": "fd008a538af6a4f0a7356e11f84546dd0b34af32b673c0662e7e3b570d397b18"
+        }
+      ],
+      "tests": [],
+      "notes": [
+        "Linux APE targets use the pinned native loader fallback before kernel PE dispatch, preventing WSL from launching the Windows slice.",
+        "Use pinned IsApeMagic, excluding ordinary ELF images from the forced APE route."
+      ],
+      "evidence_scope": "M3-04 source/standalone/SDK nested APE launch and real unref exit; full CI pending",
+      "evidence": [
+        "native/process/posix.c",
+        "tests/node/child-process-async-io.mjs",
+        "tests/native/child_process_async.c",
+        "docs/M3_CHILD_PROCESS_ASYNC.md"
+      ]
     }
   ],
   "deferred": [

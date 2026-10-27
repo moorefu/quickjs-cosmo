@@ -20,3 +20,4 @@ else if(mode==='input') {
 else if(mode==='env') {write(1,JSON.stringify({token:process.env.CHILD_TOKEN??null,prototype:process.env.PROTOTYPE_TOKEN??null}));}
 else if(mode==='argv0') {write(1,process.argv0);}
 else if(mode==='signal') {process.kill(process.pid,args[0]);}
+else if(mode==='marker') {setTimeout(()=>fs.writeFileSync(args[0],'done'),300);}

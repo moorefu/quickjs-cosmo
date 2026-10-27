@@ -5,7 +5,6 @@ const text:SpawnSyncReturns<string>=childProcess.spawnSync('program',{encoding:'
 const value:string=childProcess.execFileSync('program',['arg'],{encoding:'utf8'});
 const shell:Buffer=childProcess.execSync('echo shell',{windowsHide:true});
 void [raw,text,value,shell];
-// @ts-expect-error Async children belong to M3-04.
 childProcess.spawn('program');
 // @ts-expect-error Child input accepts views, not plain ArrayBuffer.
 spawnSync('program',{input:new ArrayBuffer(4)});

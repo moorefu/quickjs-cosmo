@@ -148,10 +148,12 @@ function createStreams(process) {
     };
     Readable.prototype.setEncoding=function(encoding){const r=readers.get(this),decoder=new Decoder(encoding),chunks=[];for(const chunk of r.queue){const text=typeof chunk==='string'?chunk:decoder.write(chunk);if(text)chunks.push(text);}r.decoder=decoder;r.encoding=decoder.encoding;r.queue=chunks;r.length=chunks.reduce((sum,s)=>sum+s.length,0);return this;};
     Readable.prototype.pause=function(){const r=readers.get(this);if(r.flowing!==false){r.flowing=false;this.emit('pause');}return this;};
-    Readable.prototype.resume=function(){const r=readers.get(this);if(r.flowing!==true){r.flowing=true;tick(()=>{if(r.flowing && !this.destroyed){this.read(0);this.emit('resume');while(r.flowing && !this.destroyed && this.read()!==null){}requestRead(this);}});}return this;};
+    Readable.prototype.resume=function(){const r=readers.get(this);if(r.flowing!==true){r.flowing=this.listenerCount('readable')===0;tick(()=>{if(!this.destroyed){this.read(0);this.emit('resume');while(r.flowing && !this.destroyed && this.read()!==null){}requestRead(this);}});}return this;};
     Readable.prototype.isPaused=function(){return readers.get(this).flowing===false;};
     Readable.prototype.on=function(type,listener){EventEmitter.prototype.on.call(this,type,listener);const r=readers.get(this);if(type==='data' && r.flowing!==false)this.resume();else if(type==='readable'){r.flowing=false;requestRead(this);if(r.length || r.ended)readable(this);}return this;};
     Readable.prototype.addListener=Readable.prototype.on;
+    Readable.prototype.removeListener=function(type,listener){EventEmitter.prototype.removeListener.call(this,type,listener);if(type==='readable' && !this.listenerCount('readable') && this.listenerCount('data'))tick(()=>this.resume());return this;};
+    Readable.prototype.off=Readable.prototype.removeListener;
     Object.defineProperties(Readable.prototype,{
         readable:{get(){return !this.destroyed && !this.errored && !readers.get(this).endEmitted;}},readableEnded:{get(){return readers.get(this).endEmitted;}},
         readableLength:{get(){return readers.get(this).length;}},readableHighWaterMark:{get(){return readers.get(this).hwm;}},
@@ -181,9 +183,9 @@ function createStreams(process) {
     Readable.prototype.iterator=function(opts) {
         opts=options(opts);const stream=this,destroyOnReturn=opts.destroyOnReturn!==false;
         return (async function*(){
-            const swallow=()=>{};stream.on('error',swallow);
+            const swallow=()=>{},hold=()=>{};stream.on('error',swallow);stream.on('readable',hold);
             try {for(;;){if(stream.errored)throw stream.errored;const chunk=stream.read();if(chunk!==null){yield chunk;continue;}if(stream.readableEnded)return;await waitReadable(stream);}}
-            finally {if(destroyOnReturn && !stream.readableEnded && !stream.destroyed)stream.destroy(aborted());const state=states.get(stream);if(stream.destroyed && (!stream.closed || state.error && !state.errorEmitted))stream.once(state.emitClose?'close':'error',()=>stream.removeListener('error',swallow));else stream.removeListener('error',swallow);}
+            finally {stream.removeListener('readable',hold);if(destroyOnReturn && !stream.readableEnded && !stream.destroyed)stream.destroy(aborted());const state=states.get(stream);if(stream.destroyed && (!stream.closed || state.error && !state.errorEmitted))stream.once(state.emitClose?'close':'error',()=>stream.removeListener('error',swallow));else stream.removeListener('error',swallow);}
         })();
     };
     Readable.prototype[Symbol.asyncIterator]=function(){return this.iterator();};

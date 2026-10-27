@@ -8,6 +8,7 @@
 #include "libc/calls/syscall_support-sysv.internal.h"
 #include "binding.h"
 #include "core.h"
+#include "async.h"
 static uint8_t empty;
 static int put(JSContext *ctx,JSValueConst object,const char *name,JSValue value) {
     return JS_IsException(value)?-1:JS_SetPropertyStr(ctx,object,name,value);
@@ -57,7 +58,7 @@ static int span(JSContext *ctx,JSValueConst array,uint8_t **out,size_t *length) 
     *out=data+(size_t)offset;return 0;
 }
 typedef struct {int value,windows;const char *name;} ErrorCode;
-static JSValue error_info(JSContext *ctx,int code) {
+JSValue js_cosmo_process_error_info(JSContext *ctx,int code) {
     const ErrorCode values[]={
         {E2BIG,-4093,"E2BIG"},{EACCES,-4092,"EACCES"},{EAGAIN,-4088,"EAGAIN"},{EBADF,-4083,"EBADF"},
         {EBUSY,-4082,"EBUSY"},{EFAULT,-4074,"EFAULT"},{EINTR,-4072,"EINTR"},{EINVAL,-4071,"EINVAL"},
@@ -82,7 +83,7 @@ static JSValue result_value(JSContext *ctx,QPResult *result) {
     if(put(ctx,object,"pid",JS_NewUint32(ctx,result->pid))<0||
        put(ctx,object,"status",result->exited&&!result->signal?JS_NewUint32(ctx,result->status):JS_NULL)<0||
        put(ctx,object,"signal",JS_NewInt32(ctx,result->signal))<0)goto fail;
-    if(result->error&&put(ctx,object,"error",error_info(ctx,result->error))<0)goto fail;
+    if(result->error&&put(ctx,object,"error",js_cosmo_process_error_info(ctx,result->error))<0)goto fail;
     JSValue output=result->exited?JS_NewArray(ctx):JS_NULL;
     if(JS_IsException(output))goto fail;
     if(result->exited)for(int i=0;i<3;i++) {
@@ -98,8 +99,8 @@ static JSValue result_value(JSContext *ctx,QPResult *result) {
     return object;
 fail:JS_FreeValue(ctx,object);return JS_EXCEPTION;
 }
-static JSValue run(JSContext *ctx,JSValueConst self,int argc,JSValueConst *args) {
-    if(argc<7)return JS_ThrowTypeError(ctx,"Invalid native process arguments");
+static JSValue run(JSContext *ctx,JSValueConst self,int argc,JSValueConst *args,int asynchronous) {
+    if(argc<(asynchronous?8:7))return JS_ThrowTypeError(ctx,"Invalid native process arguments");
     QPRequest options={0};double values[7],stdio[3];
     if(element(ctx,args[6],0,0,9007199254740991.0,1,values)<0||
        element(ctx,args[6],1,0,INFINITY,0,values+1)<0||
@@ -125,6 +126,7 @@ static JSValue run(JSContext *ctx,JSValueConst self,int argc,JSValueConst *args)
     options.windows_verbatim=values[4];options.uid=values[5];options.gid=values[6];
     for(int i=0;i<3;i++)options.stdio[i]=stdio[i];
     QPAllocator memory={JS_GetRuntime(ctx),allocate,release};
+    if(asynchronous){result=js_cosmo_process_start(ctx,&options,&memory,args[7]);goto done;}
     QPResult collected=qp_run(&options,&memory);
     result=collected.error==ENOMEM?JS_ThrowOutOfMemory(ctx):result_value(ctx,&collected);
     qp_result_free(&collected,&memory);
@@ -155,6 +157,8 @@ fail:JS_FreeValue(ctx,object);return JS_EXCEPTION;
 }
 JSValue js_cosmo_child_process_api(JSContext *ctx) {
     JSValue object=JS_NewObject(ctx);if(JS_IsException(object))return object;
-    if(put(ctx,object,"run",JS_NewCFunction(ctx,run,"run",7))<0||put(ctx,object,"signals",signals(ctx))<0){JS_FreeValue(ctx,object);return JS_EXCEPTION;}
+    JSValue async=js_cosmo_process_async_api(ctx);if(JS_IsException(async)){JS_FreeValue(ctx,object);return async;}
+    if(put(ctx,async,"start",JS_NewCFunctionMagic(ctx,run,"start",8,JS_CFUNC_generic_magic,1))<0){JS_FreeValue(ctx,async);JS_FreeValue(ctx,object);return JS_EXCEPTION;}
+    if(put(ctx,object,"async",async)<0||put(ctx,object,"run",JS_NewCFunctionMagic(ctx,run,"run",7,JS_CFUNC_generic_magic,0))<0||put(ctx,object,"signals",signals(ctx))<0){JS_FreeValue(ctx,object);return JS_EXCEPTION;}
     return object;
 }
