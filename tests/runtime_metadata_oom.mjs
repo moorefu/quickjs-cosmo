@@ -2,14 +2,21 @@ import * as std from 'std';
 import { runtimeInfo } from 'cosmo:runtime';
 
 let retained = [];
+let reserve = new ArrayBuffer(64 * 1024);
 let failure;
+let caught = false;
 try {
     for (;;) retained.push(runtimeInfo());
 } catch (error) {
-    failure = error.name;
+    // Recover headroom before any further call or inspection of the exception.
+    reserve = null;
+    retained = null;
+    failure = error;
+    caught = true;
 }
-retained = null;
 std.gc();
-if (failure !== 'InternalError') throw Error('Expected a clean allocation failure, got ' + failure);
+// QuickJS's JS_ThrowError2 explicitly throws null if even the Error allocation fails.
+if (!caught || (failure !== null && failure.name !== 'InternalError'))
+    throw Error('Expected an allocation failure, got ' + failure);
 if (runtimeInfo().engine !== 'quickjs') throw Error('Metadata failed after releasing retained objects');
 print('PASS runtime-metadata-oom');

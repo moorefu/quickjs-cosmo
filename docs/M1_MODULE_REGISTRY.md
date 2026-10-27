@@ -82,6 +82,8 @@ JS_SetModuleLoaderFunc2(rt, js_cosmo_module_normalize,
 
 `tests/runtime_modules.mjs` 检查模块别名、具名导出、静态/动态身份、错误代码、元数据隔离与 Worker。额外检查静态未知内建在 qjs/qjsc 中失败；8 MiB 内存上限用例验证元数据分配失败和释放后恢复。手写 SDK 程序在 16 个独立 runtime/context 上验证初始化、导入、销毁与路径边界。
 
+首轮 M1 CI 中，Linux/macOS ARM64 的内存耗尽用例暴露了测试假设错误：QuickJS 的 `JS_ThrowError2` 在无法分配 Error 对象时允许抛出 `null`。用例现先释放保留对象及应急缓冲，再检查 `InternalError` 或该明确的 `null` 回退，并验证 `runtimeInfo()` 恢复工作。Windows 另以 7—9 MiB、8 KiB 步长执行了 256 个预算点，全部通过；修正后的 ARM 结果以新 CI 为准。
+
 构建清单绑定原生注册源码、公共头文件及元数据生成器的 SHA-256。源码在构建后发生改变、缺少来源记录或 SDK 公共头文件时，CI 传输校验拒绝该产物。原有四项补丁与宿主兼容修复继续保留，发布 ZIP 仍为 `readme.txt`、`run-test262`、`qjs`。
 
 ```sh
