@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CORE_SOURCES = ("src/js/internal/errors.js", "src/js/internal/encoding.js", "src/js/node/buffer.js",
                 "src/js/node/events.js", "src/js/node/process.js", "src/js/node/path-adapter.js",
                 "src/js/node/os.js", "src/js/node/util.js", "src/js/node/assert.js", "src/js/node/console.js",
-                "src/js/internal/abort.js", "src/js/node/timers.js", "src/js/node/fs-async.js", "src/js/node/fs.js", "src/js/node/crypto.js",
+                "src/js/internal/abort.js", "src/js/node/timers.js", "src/js/node/stream.js", "src/js/node/fs-async.js", "src/js/node/fs.js", "src/js/node/crypto.js",
                 "src/js/internal/compression-constants.js", "src/js/node/zlib.js", "src/js/node/child_process.js")
 
 
@@ -30,6 +30,7 @@ const process = createProcess(native, data, () => path);
 let scheduler;
 const abort = createAbortPrimitives(() => scheduler);
 scheduler = createScheduler(native, process, abort);
+const streams = createStreams(process);
 path = createPathModule(process);
 const os = createOs(native, process, path);
 const fs = createFs(native, path);
@@ -55,6 +56,7 @@ return {
     'node:events': eventsAPI, 'node:util': exportObject(utilAPI),
     'node:assert': assertionExports(assert), 'node:assert/strict': assertionExports(strictAssert),
     'node:timers': exportObject(scheduler.api), 'node:timers/promises': exportObject(scheduler.promises),
+    'node:stream': {...exportObject(streams.api), default: streams.default}, 'node:stream/promises': exportObject(streams.promises),
     'node:fs': exportObject(fs), 'node:fs/promises': exportObject(fs.promises),
     'node:crypto': exportObject(crypto.api), 'cosmo:crypto': exportObject(crypto.extensions),
     'node:zlib': exportObject(compression.api), 'cosmo:compression': exportObject(compression.extensions),

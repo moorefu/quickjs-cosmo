@@ -15,7 +15,7 @@ manifest = {
     "format": "Actually Portable Executable (APE), x86_64 + aarch64",
     "features": ["std", "os", "qjs:std", "qjs:os", "cosmo:runtime", "node:buffer", "node:process", "node:path",
                  "node:path/posix", "node:path/win32", "node:os", "node:events", "node:util", "node:assert", "node:assert/strict",
-                 "node:timers", "node:timers/promises", "node:fs", "node:fs/promises", "node:crypto", "cosmo:crypto", "node:zlib", "cosmo:compression", "node:child_process", "queueMicrotask", "AbortController", "AbortSignal", "EventTarget", "Event", "DOMException",
+                 "node:timers", "node:timers/promises", "node:stream", "node:stream/promises", "node:fs", "node:fs/promises", "node:crypto", "cosmo:crypto", "node:zlib", "cosmo:compression", "node:child_process", "queueMicrotask", "AbortController", "AbortSignal", "EventTarget", "Event", "DOMException",
                  "Buffer", "process", "console", "TextEncoder", "TextDecoder", "Worker", "BigInt", "experimental Temporal/Intl"],
     "windows_exit_status": "raw uint32; Unix retains POSIX wait status",
     "compatibility": json.loads((ROOT / "compat/versions.json").read_text()),

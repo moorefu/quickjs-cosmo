@@ -93,11 +93,11 @@
     },
     {
       "id": "STR-001",
-      "status": "planned",
-      "file": null,
+      "status": "differential",
+      "file": "tests/node/stream.mjs",
       "task": "M3-03",
-      "description": "Stream backpressure, termination and error propagation",
-      "timeout_seconds": 30
+      "description": "Stream buffering, backpressure, callbacks, pipe, half-close and construction",
+      "timeout_seconds": 60
     },
     {
       "id": "KEY-001",
@@ -338,6 +338,30 @@
       "file": "tests/runtime_async.mjs",
       "task": "M3-02",
       "description": "Async public APIs in Worker/qjsc/SDK, extension codecs and native resource failure cleanup",
+      "timeout_seconds": 120
+    },
+    {
+      "id": "STR-002",
+      "status": "differential",
+      "file": "tests/node/stream-errors.mjs",
+      "task": "M3-03",
+      "description": "Stream failure propagation, pending callbacks, delayed destruction and AbortSignal",
+      "timeout_seconds": 60
+    },
+    {
+      "id": "STR-003",
+      "status": "differential",
+      "file": "tests/node/stream-iterate.mjs",
+      "task": "M3-03",
+      "description": "Stream decoding boundaries, asynchronous iteration, return and disposal",
+      "timeout_seconds": 60
+    },
+    {
+      "id": "STR-004",
+      "status": "runtime",
+      "file": "tests/runtime_stream.mjs",
+      "task": "M3-03",
+      "description": "Streams in source, Worker, qjsc and SDK with timer progress",
       "timeout_seconds": 120
     }
   ],
@@ -10371,7 +10395,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -10450,7 +10474,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -10489,7 +10513,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -10528,7 +10552,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -10567,7 +10591,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -10606,7 +10630,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -10645,7 +10669,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -10684,7 +10708,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -10723,7 +10747,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -10762,7 +10786,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -10801,7 +10825,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -10840,7 +10864,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -10879,7 +10903,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -10918,7 +10942,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -10957,7 +10981,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -10996,7 +11020,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11035,7 +11059,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11074,7 +11098,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11113,7 +11137,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11152,7 +11176,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11191,7 +11215,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11230,7 +11254,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11269,7 +11293,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11420,7 +11444,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11459,7 +11483,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11498,7 +11522,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11537,7 +11561,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11576,7 +11600,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11615,7 +11639,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11654,7 +11678,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11693,7 +11717,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11732,7 +11756,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11771,7 +11795,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11810,7 +11834,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11849,7 +11873,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11888,7 +11912,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11927,7 +11951,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -11966,7 +11990,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -12005,7 +12029,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -12044,7 +12068,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -12083,7 +12107,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -12122,7 +12146,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -12161,7 +12185,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -12200,7 +12224,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -12239,7 +12263,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -12278,7 +12302,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -12317,7 +12341,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -12356,7 +12380,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -12395,7 +12419,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -12434,7 +12458,7 @@
             {
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         }
@@ -13056,7 +13080,7 @@
             {
               "test": "KDF-002",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -13095,7 +13119,7 @@
             {
               "test": "KDF-002",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -13134,7 +13158,7 @@
             {
               "test": "KDF-002",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -13937,7 +13961,7 @@
             {
               "test": "ZIP-005",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -13976,7 +14000,7 @@
             {
               "test": "ZIP-005",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -14015,7 +14039,7 @@
             {
               "test": "ZIP-005",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -14054,7 +14078,7 @@
             {
               "test": "ZIP-005",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -14093,7 +14117,7 @@
             {
               "test": "ZIP-005",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -14132,7 +14156,7 @@
             {
               "test": "ZIP-005",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -14171,7 +14195,7 @@
             {
               "test": "ZIP-005",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -14210,7 +14234,7 @@
             {
               "test": "ZIP-005",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -14249,7 +14273,7 @@
             {
               "test": "ZIP-005",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI pending."
+              "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -14410,74 +14434,1232 @@
       "entries": [
         {
           "name": "Readable",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-03",
           "parameters": "Readable/Writable/Duplex/Transform lifecycle, backpressure and asynchronous iteration",
           "tests": [
-            "STR-001"
+            "STR-001",
+            "STR-002",
+            "STR-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
           ]
         },
         {
           "name": "Writable",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-03",
           "parameters": "Readable/Writable/Duplex/Transform lifecycle, backpressure and asynchronous iteration",
           "tests": [
-            "STR-001"
+            "STR-001",
+            "STR-002",
+            "STR-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
           ]
         },
         {
           "name": "Duplex",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-03",
           "parameters": "Readable/Writable/Duplex/Transform lifecycle, backpressure and asynchronous iteration",
           "tests": [
-            "STR-001"
+            "STR-001",
+            "STR-002",
+            "STR-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
           ]
         },
         {
           "name": "Transform",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-03",
           "parameters": "Readable/Writable/Duplex/Transform lifecycle, backpressure and asynchronous iteration",
           "tests": [
-            "STR-001"
+            "STR-001",
+            "STR-002",
+            "STR-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
           ]
         },
         {
           "name": "pipeline",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-03",
           "parameters": "Readable/Writable/Duplex/Transform lifecycle, backpressure and asynchronous iteration",
           "tests": [
-            "STR-001"
+            "STR-001",
+            "STR-002",
+            "STR-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
           ]
         },
         {
           "name": "finished",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-03",
           "parameters": "Readable/Writable/Duplex/Transform lifecycle, backpressure and asynchronous iteration",
           "tests": [
-            "STR-001"
+            "STR-001",
+            "STR-002",
+            "STR-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ]
+        },
+        {
+          "name": "Stream",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "PassThrough",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "promises",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "addAbortSignal",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Readable.destroy",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Readable.errored",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Readable.closed",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Readable.Symbol.asyncDispose",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Readable.from",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Readable.read",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Readable.push",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Readable.unshift",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Readable.setEncoding",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Readable.pause",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Readable.resume",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Readable.pipe",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Readable.unpipe",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Readable.iterator",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Readable.Symbol.asyncIterator",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Writable.write",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Writable.end",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Writable.cork",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Writable.uncork",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ]
+        },
+        {
+          "name": "Writable.setDefaultEncoding",
+          "task": "M3-03",
+          "parameters": "Documented Node v24 stream subset, including state getters and instance hooks",
+          "status": "partial",
+          "tests": [
+            "STR-001",
+            "STR-002",
+            "STR-003"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
+          ],
+          "differences": [
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
           ]
         }
       ]
@@ -14490,26 +15672,84 @@
       "entries": [
         {
           "name": "pipeline",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-03",
           "parameters": "Promise pipeline and finished; cancellation and close/error semantics",
           "tests": [
-            "STR-001"
+            "STR-001",
+            "STR-002",
+            "STR-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
           ]
         },
         {
           "name": "finished",
-          "status": "planned",
+          "status": "partial",
           "task": "M3-03",
           "parameters": "Promise pipeline and finished; cancellation and close/error semantics",
           "tests": [
-            "STR-001"
+            "STR-001",
+            "STR-002",
+            "STR-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Node-style stream subset; Web Streams, stream operator helpers, function stages and pipeline end:false are not enabled. See docs/M3_STREAMS.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "STR-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential plus Worker/qjsc/SDK lifecycle tests; full M3-03 CI pending."
+            }
           ]
         }
       ]
@@ -15305,7 +16545,7 @@
             {
               "test": "LIFE-002",
               "report": "build/test-results/<platform>.json",
-              "scope": "Source/Worker/qjsc and SDK lifecycle; full M3-02 CI pending."
+              "scope": "Source/Worker/qjsc and SDK lifecycle; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -15344,7 +16584,7 @@
             {
               "test": "LIFE-002",
               "report": "build/test-results/<platform>.json",
-              "scope": "Source/Worker/qjsc and SDK lifecycle; full M3-02 CI pending."
+              "scope": "Source/Worker/qjsc and SDK lifecycle; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -15383,7 +16623,7 @@
             {
               "test": "LIFE-002",
               "report": "build/test-results/<platform>.json",
-              "scope": "Source/Worker/qjsc and SDK lifecycle; full M3-02 CI pending."
+              "scope": "Source/Worker/qjsc and SDK lifecycle; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         },
@@ -15422,7 +16662,7 @@
             {
               "test": "LIFE-002",
               "report": "build/test-results/<platform>.json",
-              "scope": "Source/Worker/qjsc and SDK lifecycle; full M3-02 CI pending."
+              "scope": "Source/Worker/qjsc and SDK lifecycle; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
           ]
         }

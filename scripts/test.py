@@ -108,6 +108,7 @@ def main():
     check("custom/runtime-compression", [qjs, "-m", ROOT / "tests/runtime_compression.mjs"], contains="PASS runtime-compression")
     check("custom/runtime-child-process", [qjs, "-m", ROOT / "tests/runtime_child_process.mjs"], contains="PASS runtime-child-process")
     check("custom/runtime-async", [qjs, "-m", ROOT / "tests/runtime_async.mjs"], contains="PASS runtime-async", timeout=120)
+    check("custom/runtime-stream", [qjs, "-m", ROOT / "tests/runtime_stream.mjs"], contains="PASS runtime-stream", timeout=120)
     check("custom/unknown-builtin", [qjs, "-m", ROOT / "tests/fixtures/unknown-builtin.mjs"],
           expected=1, contains="Unknown builtin module: node:missing")
     check("qjsc/unknown-builtin", [qjsc, "-c", "-m", "-o", scratch / "unknown-builtin.c",
@@ -149,6 +150,13 @@ def main():
         if not valid:
             print("FAIL generated C has no bytecode array", flush=True)
     if args.compile:
+        if check("qjsc/compile-stream-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/stream-worker.mjs",
+                 "-o", scratch / "stream-standalone.exe", ROOT / "tests/runtime_stream.mjs"], timeout=180):
+            check("qjsc/run-stream-ape", [scratch / "stream-standalone.exe"], contains="PASS runtime-stream", timeout=120)
+        if check("sdk/compile-stream", [settings.toolchain / "bin/cosmocc", "-O2", "-I" + str(settings.dist),
+                 ROOT / "tests/native/stream.c", settings.dist / "libquickjs.a", "-lm", "-lpthread", "-ldl",
+                 "-Wl,--wrap=_Exit,-u,__wrap__Exit", "-o", scratch / "stream-sdk.exe"], timeout=180):
+            check("sdk/run-stream", [scratch / "stream-sdk.exe"], contains="PASS stream-sdk", timeout=120)
         if check("qjsc/compile-async-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/async-worker.mjs",
                  "-o", scratch / "async-standalone.exe", ROOT / "tests/runtime_async.mjs"], timeout=180):
             check("qjsc/run-async-ape", [scratch / "async-standalone.exe"], contains="PASS runtime-async", timeout=120)
@@ -224,6 +232,8 @@ def main():
                  timeout=180):
             check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
+        check("qjsc/cross-host-stream", [args.standalone.resolve().parent / "stream-standalone.exe"], contains="PASS runtime-stream", timeout=120)
+        check("sdk/cross-host-stream", [args.standalone.resolve().parent / "stream-sdk.exe"], contains="PASS stream-sdk", timeout=120)
         check("qjsc/cross-host-async", [args.standalone.resolve().parent / "async-standalone.exe"], contains="PASS runtime-async", timeout=120)
         check("sdk/cross-host-async", [args.standalone.resolve().parent / "async-sdk.exe"], contains="PASS async-sdk", timeout=120)
         check("sdk/cross-host-task-pool-source", [args.standalone.resolve().parent / "task-pool-sdk.exe"], contains="PASS task-pool-sdk", timeout=120)

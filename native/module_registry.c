@@ -33,6 +33,8 @@ static const Builtin builtins[] = {
     { "node:assert/strict", core_module },
     { "node:timers", core_module },
     { "node:timers/promises", core_module },
+    { "node:stream", core_module },
+    { "node:stream/promises", core_module },
     { "node:fs", core_module },
     { "node:fs/promises", core_module },
     { "node:crypto", core_module },
