@@ -59,4 +59,4 @@ python3 scripts/ci_artifact.py pack
 python3 scripts/ci_artifact.py verify
 ```
 
-本地验收：Linux 54/54；Windows 同一产物 47/47，保留一个原有 Unix 专用跳过；两端 Node 差分各 15/15，独立生命周期差分各 19/19；Python 门禁 73 项；es2022 与 es2022+DOM 类型检查通过；九份独立 APE、SDK 和三文件包完整性校验通过。方法清单保持 partial，完整跨平台结果以本项提交的 CI 为准。
+本地验收：Linux 54/54；Windows 同一产物 47/47，保留一个原有 Unix 专用跳过；两端 Node 差分各 15/15，独立生命周期差分各 19/19；Python 门禁 73 项；es2022 与 es2022+DOM 类型检查通过；九份独立 APE、SDK 和三文件包完整性校验通过。方法清单保持 partial。提交 `1f467a4` 的 [完整 CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40454177787) 已通过构建、七个平台矩阵及最终门禁。

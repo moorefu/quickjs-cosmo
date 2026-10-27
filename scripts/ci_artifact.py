@@ -22,6 +22,9 @@ STANDALONES = ("build/test-linux/hello-standalone.exe", "build/test-linux/runtim
                "build/test-linux/entry-standalone.exe", "build/test-linux/scheduling-standalone.exe",
                "build/test-linux/scheduler-sdk.exe")
 SOURCE = ".cache/quickjs-source.tar.gz"
+NATIVE_PROBES = tuple("build/native/" + name + suffix
+                     for name in ("toolchain-probe.exe", "backends-probe.exe")
+                     for suffix in ("", ".build.json"))
 
 
 def sha256(path):
@@ -41,7 +44,7 @@ def checked_name(name, version):
     if path.is_absolute() or ".." in path.parts or "\\" in name or ":" in name or str(path) != name:
         raise ValueError("Unsafe CI artifact path: " + name)
     release = f"releases/quickjs-cosmo-{version}.zip"
-    allowed = name in (MANIFEST, SOURCE, *STANDALONES, release, release + ".sha256")
+    allowed = name in (MANIFEST, SOURCE, *STANDALONES, *NATIVE_PROBES, release, release + ".sha256")
     allowed |= len(path.parts) == 2 and path.parts[0] == "dist"
     allowed |= len(path.parts) == 3 and path.parts[:2] == ("dist", ".aarch64")
     if not allowed:
@@ -68,7 +71,7 @@ def verify_dist(settings):
         raise ValueError("Artifact runtime sources do not match this checkout")
     required = {"qjs.exe", "qjsc.exe", "run-test262.exe", "libquickjs.a", ".aarch64/libquickjs.a",
                 "quickjs.h", "quickjs-libc.h", "qjs-cosmo.h", "node-compat.d.ts", "cosmo.d.ts", "ape-x86_64.elf", "ape-aarch64.elf",
-                "qjs", "qjsc", "run-test262", "versions.json", "QUICKJS-LICENSE", "NODE-MODULES-LICENSE"}
+                "qjs", "qjsc", "run-test262", "versions.json", "QUICKJS-LICENSE", "NODE-MODULES-LICENSE", "NATIVE-MODULES-LICENSES"}
     if not required.issubset(manifest["files"]):
         raise ValueError("Incomplete SDK in CI artifact")
     for name, record in manifest["files"].items():
@@ -142,10 +145,14 @@ def verify(settings):
             raise ValueError("CI payload hash mismatch: " + name)
     sdk = verify_dist(settings)
     expected = {"dist/" + name for name in sdk["files"]} | {
-        "dist/manifest.json", SOURCE, *STANDALONES,
+        "dist/manifest.json", SOURCE, *STANDALONES, *NATIVE_PROBES,
         "releases/" + release["archive"], "releases/" + release["archive"] + ".sha256"}
     if set(metadata["files"]) != expected:
         raise ValueError("CI bundle payload inventory mismatch")
+    from native_provenance import verify_probe
+    for backend in (False, True):
+        name = "backends" if backend else "toolchain"
+        verify_probe(settings, settings.root / ("build/native/" + name + "-probe.exe"), backend)
     verify_package(settings, release)
     print("PASS CI artifact integrity: SDK, sources, standalone APEs and release ZIP", flush=True)
     return metadata
@@ -160,7 +167,14 @@ def pack(settings, output, tag=None):
         raise ValueError("Build host tests must pass for the packaged qjs")
     archive = "releases/" + release["archive"]
     files = sorted({"dist/" + name for name in sdk["files"]} | {
-        "dist/manifest.json", SOURCE, *STANDALONES, archive, archive + ".sha256"})
+        "dist/manifest.json", SOURCE, *STANDALONES, *NATIVE_PROBES, archive, archive + ".sha256"})
+    for name in ("probe-linux.json", "backends-linux.json"):
+        native = json.loads((settings.root / "build/native" / name).read_text(encoding="utf-8"))
+        if not native["passed"]:
+            raise ValueError("Native probes must pass before packaging")
+        binary = "toolchain-probe.exe" if name.startswith("probe-") else "backends-probe.exe"
+        if native["build"]["binary_sha256"] != sha256(settings.root / "build/native" / binary):
+            raise ValueError("Native report refers to a different binary")
     metadata = dict(format=2, versions=settings.data, release=release, files={})
     for name in files:
         checked_name(name, release["version"])

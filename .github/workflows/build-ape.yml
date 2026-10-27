@@ -37,9 +37,10 @@ jobs:
           path: |
             .cache/cosmocc-*.zip
             .cache/quickjs-source.tar.gz
+            .cache/cosmopolitan-nightly-source.tar.gz
             .cache/cosmo-compat/nightly/
             .cache/dev-tools/
-          key: ape-inputs-${{ hashFiles('versions.json', 'compat/versions.json', 'compat/dev-tools.json') }}
+          key: ape-inputs-${{ hashFiles('versions.json', 'native/versions.json', 'compat/versions.json', 'compat/dev-tools.json') }}
       - name: Build locked QuickJS and cosmocc inputs
         env:
           GH_TOKEN: ${{ secrets.COSMOCC_ARTIFACT_TOKEN || github.token }}
@@ -77,6 +78,8 @@ jobs:
             build/test-results/*.json
             build/runtime-audit/nightly-regression-*.json
             build/node-compat/*.json
+            build/native/probe-*.json
+            build/native/backends-*.json
           if-no-files-found: warn
           retention-days: 14
 
@@ -134,6 +137,8 @@ jobs:
             build/test-results/*.json
             build/runtime-audit/nightly-regression-*.json
             build/node-compat/*.json
+            build/native/probe-*.json
+            build/native/backends-*.json
           if-no-files-found: warn
           retention-days: 14
 

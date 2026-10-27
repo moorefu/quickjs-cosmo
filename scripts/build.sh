@@ -41,6 +41,7 @@ for patch_file in "$ROOT"/patches/*.patch; do
     patch --batch -d "$BUILD" -p1 -i "$patch_file"
 done
 python3 scripts/prepare_compat.py $OFFLINE
+python3 scripts/build_native.py $OFFLINE --jobs "$JOBS"
 cp native/module_registry.h "$BUILD/qjs-cosmo.h"
 python3 scripts/generate_runtime_config.py --output "$BUILD/qjs-cosmo-config.h"
 python3 scripts/embed_js.py --output "$BUILD/qjs-builtins.h"
@@ -67,6 +68,7 @@ done
 cp "$BUILD/quickjs.h" "$BUILD/quickjs-libc.h" "$BUILD/qjs-cosmo.h" "$DIST/"
 cp types/*.d.ts "$DIST/"
 cp src/js/vendor/node/LICENSE "$DIST/NODE-MODULES-LICENSE"
+cp build/native/backends/LICENSES.txt "$DIST/NATIVE-MODULES-LICENSES"
 cp "$BUILD/libquickjs.a" "$DIST/"
 mkdir -p "$DIST/.aarch64"
 cp "$BUILD/.aarch64/libquickjs.a" "$DIST/.aarch64/"

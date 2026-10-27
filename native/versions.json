@@ -11,7 +11,7 @@
     {
       "id": "zlib",
       "delivery": "toolchain",
-      "admission": "E0",
+      "admission": "E2",
       "files": [
         {
           "path": "third_party/zlib/zlib.h",
@@ -33,12 +33,19 @@
       "tests": [
         "test/libc/str/crc32z_test.c"
       ],
-      "notes": []
+      "notes": [
+        "Scoped native probe evidence; no JS support or general SDK archive admission."
+      ],
+      "evidence_scope": "compress2/uncompress round trip and CRC32; full JS format contract pending M2-04",
+      "evidence": [
+        "native/probes/toolchain.c",
+        "scripts/probe_native.py"
+      ]
     },
     {
       "id": "random",
       "delivery": "toolchain",
-      "admission": "E0",
+      "admission": "E2",
       "files": [
         {
           "path": "libc/calls/getrandom.c",
@@ -56,12 +63,19 @@
       "tests": [
         "test/libc/calls/getrandom_test.c"
       ],
-      "notes": []
+      "notes": [
+        "Scoped native probe evidence; no JS support or general SDK archive admission."
+      ],
+      "evidence_scope": "getrandom retry/short-read host probe; JS API and failure injection pending M2-03",
+      "evidence": [
+        "native/probes/toolchain.c",
+        "scripts/probe_native.py"
+      ]
     },
     {
       "id": "sockets",
       "delivery": "toolchain",
-      "admission": "E0",
+      "admission": "E2",
       "files": [
         {
           "path": "libc/sock/socket.c",
@@ -79,12 +93,19 @@
       "tests": [
         "test/libc/sock/socket_test.c"
       ],
-      "notes": []
+      "notes": [
+        "Scoped native probe evidence; no JS support or general SDK archive admission."
+      ],
+      "evidence_scope": "numeric IPv4 resolution and socket creation/close; DNS/TCP exchange pending M5-01",
+      "evidence": [
+        "native/probes/toolchain.c",
+        "scripts/probe_native.py"
+      ]
     },
     {
       "id": "blake2b256",
       "delivery": "toolchain",
-      "admission": "E0",
+      "admission": "E2",
       "files": [
         {
           "path": "libc/str/blake2.h",
@@ -102,12 +123,19 @@
       "tests": [
         "test/libc/str/blake2_test.c"
       ],
-      "notes": []
+      "notes": [
+        "Scoped native probe evidence; no JS support or general SDK archive admission."
+      ],
+      "evidence_scope": "abc known vector and independent HACL cross-check; public backend selection pending M2-03",
+      "evidence": [
+        "native/probes/toolchain.c",
+        "scripts/probe_native.py"
+      ]
     },
     {
       "id": "mbedtls",
       "delivery": "source",
-      "admission": "E0",
+      "admission": "E2",
       "files": [
         {
           "path": "third_party/mbedtls/config.h",
@@ -129,12 +157,20 @@
       "tests": [
         "third_party/mbedtls/test/BUILD.mk"
       ],
-      "notes": []
+      "notes": [
+        "Scoped native probe evidence; no JS support or general SDK archive admission."
+      ],
+      "evidence_scope": "MD5/SHA1/SHA224/256/384/512 self-tests and streaming/copy vectors, HMAC/HKDF/PBKDF2 SHA256 vectors; no TLS/key admission",
+      "evidence": [
+        "native/build-inputs.json",
+        "native/probes/backends.c",
+        "scripts/probe_backends.py"
+      ]
     },
     {
       "id": "haclstar",
       "delivery": "source",
-      "admission": "E0",
+      "admission": "E2",
       "files": [
         {
           "path": "third_party/haclstar/haclstar.h",
@@ -156,12 +192,20 @@
       "tests": [
         "test/net/https/mbedtls_test.c"
       ],
-      "notes": []
+      "notes": [
+        "Scoped native probe evidence; no JS support or general SDK archive admission."
+      ],
+      "evidence_scope": "Blake2b512/256/keyed, stream/copy/reset vectors only; other HACL algorithms pending M4",
+      "evidence": [
+        "native/build-inputs.json",
+        "native/probes/backends.c",
+        "scripts/probe_backends.py"
+      ]
     },
     {
       "id": "zstd",
       "delivery": "source",
-      "admission": "E0",
+      "admission": "E2",
       "files": [
         {
           "path": "third_party/zstd/zstd.h",
@@ -178,13 +222,19 @@
       ],
       "tests": [],
       "notes": [
-        "Upstream test coverage must be established before admission."
+        "Scoped native probe evidence; no JS support or general SDK archive admission."
+      ],
+      "evidence_scope": "C compression/decompression round trip, corrupt magic and bounded output; frame/option/interoperability contracts pending M2-04",
+      "evidence": [
+        "native/build-inputs.json",
+        "native/probes/backends.c",
+        "scripts/probe_backends.py"
       ]
     },
     {
       "id": "lz4",
       "delivery": "source",
-      "admission": "E0",
+      "admission": "E2",
       "files": [
         {
           "path": "third_party/lz4cli/lz4frame.h",
@@ -201,13 +251,19 @@
       ],
       "tests": [],
       "notes": [
-        "Upstream test coverage must be established before admission."
+        "Scoped native probe evidence; no JS support or general SDK archive admission."
+      ],
+      "evidence_scope": "LZ4 frame round trip and corrupt magic; full frame/interoperability/bounds contracts pending M2-04",
+      "evidence": [
+        "native/build-inputs.json",
+        "native/probes/backends.c",
+        "scripts/probe_backends.py"
       ]
     },
     {
       "id": "bzip2",
       "delivery": "source",
-      "admission": "E0",
+      "admission": "E2",
       "files": [
         {
           "path": "third_party/bzip2/bzlib.h",
@@ -224,7 +280,13 @@
       ],
       "tests": [],
       "notes": [
-        "Upstream test coverage must be established before admission."
+        "Scoped native probe evidence; no JS support or general SDK archive admission."
+      ],
+      "evidence_scope": "buffer round trip, corrupt magic and bounded output; interoperability/stream contracts pending M2-04",
+      "evidence": [
+        "native/build-inputs.json",
+        "native/probes/backends.c",
+        "scripts/probe_backends.py"
       ]
     }
   ],
@@ -233,7 +295,7 @@
       "id": "sha3-shake-blake2s",
       "reference_commit": "c27a168be0527a8a6916af5457fa293b65ab88ec",
       "status": "candidate",
-      "reason": "Check Nightly coverage first; no external HACL source admitted yet."
+      "reason": "Nightly source has no SHA3/SHAKE/BLAKE2s implementation (stale BUILD.mk SHA3 rule has no source); minimal fixed backup source admission remains M4-02."
     },
     {
       "id": "tls",

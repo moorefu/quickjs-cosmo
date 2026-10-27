@@ -83,6 +83,14 @@ def main():
             print(output.rstrip(), flush=True)
         return passed
 
+    if args.compile or args.standalone:
+        for probe in ("native", "backends"):
+            command = [sys.executable, ROOT / ("scripts/probe_" + probe + ".py")]
+            if args.compile:
+                command.append("--compile")
+                if probe == "backends": command.append("--offline")
+            check("native/" + probe, command, timeout=300)
+
     for name in ("language", "modules", "async", "io", "io-events", "worker", "experimental"):
         flags = ["--experimental"] if name == "experimental" else []
         check("custom/" + name, [qjs, *flags, "-m", ROOT / f"tests/{name}.js"],

@@ -4630,7 +4630,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -4641,10 +4641,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8484,7 +8484,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -8495,10 +8495,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8523,7 +8523,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -8534,10 +8534,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8562,7 +8562,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -8573,10 +8573,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8601,7 +8601,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -8612,10 +8612,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8640,7 +8640,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -8651,10 +8651,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8679,7 +8679,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -8690,10 +8690,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8718,7 +8718,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -8729,10 +8729,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8757,7 +8757,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -8768,10 +8768,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8796,7 +8796,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -8807,10 +8807,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8835,7 +8835,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -8846,10 +8846,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8874,7 +8874,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -8885,10 +8885,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8913,7 +8913,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -8924,10 +8924,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8952,7 +8952,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -8963,10 +8963,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -8991,7 +8991,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -9002,10 +9002,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9030,7 +9030,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -9041,10 +9041,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9069,7 +9069,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -9080,10 +9080,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9108,7 +9108,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -9119,10 +9119,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9147,7 +9147,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -9158,10 +9158,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9194,7 +9194,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -9205,10 +9205,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9233,7 +9233,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -9244,10 +9244,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",
@@ -9272,7 +9272,7 @@
             {
               "test": "EVT-001",
               "report": "build/node-compat/<platform>.json",
-              "scope": "Same-source Node oracle; 19 subprocess lifecycle cases and representative Worker/qjsc/repeated SDK loops in build/test-results/<platform>.json"
+              "scope": "Same-source Node oracle and 19 subprocess lifecycle cases; Worker/qjsc/repeated SDK loops. Full seven-platform CI passed at 1f467a4 (run 40454177787)."
             }
           ],
           "support": {
@@ -9283,10 +9283,10 @@
               "sdk": "partial"
             },
             "darwin": {
-              "qjs": "planned",
-              "worker": "planned",
-              "qjsc": "planned",
-              "sdk": "planned"
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
             },
             "win32": {
               "qjs": "partial",

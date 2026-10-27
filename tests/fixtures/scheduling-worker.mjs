@@ -10,12 +10,16 @@ parent.onmessage = async ({ data }) => {
         return;
     }
     const order = [];
+    const before = Number(process.hrtime.bigint()) / 1e6;
+    const clock = os.now();
+    const after = Number(process.hrtime.bigint()) / 1e6;
     process.nextTick(() => order.push('tick'));
     queueMicrotask(() => order.push('micro'));
     Promise.resolve().then(() => order.push('promise'));
     const unref = setTimeout(() => { throw Error('Unref Worker timer fired'); }, 10000).unref();
     const controller = new AbortController(); controller.abort();
     await delay(2); order.push('timer');
-    parent.postMessage({ order, identity: timers.setTimeout === setTimeout, ref: unref.hasRef(), aborted: controller.signal.aborted });
+    parent.postMessage({ order, monotonic: clock >= before - 1 && clock <= after + 1,
+        identity: timers.setTimeout === setTimeout, ref: unref.hasRef(), aborted: controller.signal.aborted });
     parent.onmessage = null;
 };

@@ -11,6 +11,7 @@ from build_config import load_config
 from host_runtime import ape_command, host_info
 from node_contract import ROOT, read_json
 from prepare_native import sha256
+from native_provenance import source_names, verify_probe
 from test_node_compat import run_command
 
 
@@ -48,19 +49,17 @@ def main():
                           toolchain=settings.data["cosmopolitan"],
                           compatibility=read_json(ROOT / "compat/versions.json"),
                           sources={name: sha256(ROOT / name) for name in
-                                   ("native/probes/toolchain.c", "compat/host_exit.c", "compat/host_process.c")})
+                                   sorted(source_names(False))})
         binary.with_name(binary.name + ".build.json").write_text(json.dumps(provenance, indent=2) + "\n", encoding="utf-8")
     if not binary.is_file():
         parser.error("Missing native probe; use --compile in WSL first")
     provenance_path = binary.with_name(binary.name + ".build.json")
     if not provenance_path.is_file():
         parser.error("Missing probe build provenance; compile using this script first")
-    provenance = read_json(provenance_path)
-    if provenance["binary_sha256"] != sha256(binary) or provenance["toolchain"] != settings.data["cosmopolitan"]:
-        parser.error("Probe provenance does not match binary or toolchain")
-    if provenance["compatibility"] != read_json(ROOT / "compat/versions.json") or any(
-            sha256(ROOT / name) != digest for name, digest in provenance["sources"].items()):
-        parser.error("Probe was not built with current source/compatibility inputs")
+    try:
+        provenance = verify_probe(settings, binary)
+    except ValueError as error:
+        parser.error(str(error))
     result = run_command(ape_command(binary, [], settings.dist), ROOT, timeout=30)
     records = [line[len("NATIVE_PROBE "):] for line in result["stdout"].splitlines()
                if line.startswith("NATIVE_PROBE ")]

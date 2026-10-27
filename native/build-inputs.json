@@ -1,0 +1,382 @@
+{
+  "format": 1,
+  "source_lock": "native/versions.json",
+  "common_flags": [
+    "-std=gnu23",
+    "-O2",
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-D_GNU_SOURCE",
+    "-D_COSMO_SOURCE"
+  ],
+  "libraries": [
+    {
+      "id": "mbedtls-core",
+      "scope": [
+        "MD5",
+        "SHA-1",
+        "SHA-224/256/384/512",
+        "HMAC",
+        "HKDF",
+        "PBKDF2"
+      ],
+      "license": "Apache-2.0 AND ISC",
+      "license_files": [
+        "third_party/mbedtls/LICENSE",
+        "third_party/mbedtls/zeroize.c",
+        "third_party/mbedtls/blake2b256.c"
+      ],
+      "flags": [],
+      "sources": [
+        {
+          "path": "third_party/mbedtls/notice.c",
+          "sha256": "9565c43b0052f9131e2dc9a113e89451c2232b3c2be6d5d3ffd19464a63e484c",
+          "flags": []
+        },
+        {
+          "path": "third_party/mbedtls/zeroize.c",
+          "sha256": "073c23aad8b25bfe09c7013fb523a73b942fcf655fbe8c574ecca3d4e05936b8",
+          "flags": [
+            "-O3",
+            "-fomit-frame-pointer",
+            "-foptimize-sibling-calls"
+          ]
+        },
+        {
+          "path": "third_party/mbedtls/md.c",
+          "sha256": "ca10998a317716eca674d9a96fc4794e26f0fc67cfc562328a63905422359791",
+          "flags": []
+        },
+        {
+          "path": "third_party/mbedtls/md5.c",
+          "sha256": "1b39be3a54d59a7f45676df0b57d70ca9e2b910bcbf5ad904ff1a956bf9686f3",
+          "flags": []
+        },
+        {
+          "path": "third_party/mbedtls/md5t.c",
+          "sha256": "f8d52b4e948cf1fa43b7659ed9e0f4bb42db9d6f585c0c401341186b56c7e494",
+          "flags": []
+        },
+        {
+          "path": "third_party/mbedtls/sha1.c",
+          "sha256": "bb236ad8f392c9980dbe8eae4f5a33dbf003f74beface55f119cc9de67194e5a",
+          "flags": []
+        },
+        {
+          "path": "third_party/mbedtls/sha1t.c",
+          "sha256": "5f512b68f9f745d4cc4852e307a09812b75a634ec1fc17f33846dab00d70a800",
+          "flags": []
+        },
+        {
+          "path": "third_party/mbedtls/sha256.c",
+          "sha256": "ddc01c917e1332b1df04f8bfdd068c627b09246fefd291da09faa0f1c9953cab",
+          "flags": []
+        },
+        {
+          "path": "third_party/mbedtls/sha256t.c",
+          "sha256": "93dec154f2fdd5ced02ed2052c3f17edf9af5aac36c6c63295ae58ca13ac25fc",
+          "flags": []
+        },
+        {
+          "path": "third_party/mbedtls/sha512.c",
+          "sha256": "c6651d90ea0db668c5738d8d47dfd357f616d1b4e87eda8b2f4ac9779397d8e6",
+          "flags": []
+        },
+        {
+          "path": "third_party/mbedtls/sha512t.c",
+          "sha256": "04f3a869b51edf47e7f4700de7cbc0a0036906cbbc5458e159cc0537ee5dd588",
+          "flags": []
+        },
+        {
+          "path": "third_party/mbedtls/hkdf.c",
+          "sha256": "a8ad34b1dd9699f442f98cea7b3ac1e42b986fed017dd1b31f7ec9a120cb6854",
+          "flags": []
+        },
+        {
+          "path": "third_party/mbedtls/pkcs5.c",
+          "sha256": "5392e334ea357a4de021e0f9d401035d73f0dc4838e52a4ad729d6f2564a9c1a",
+          "flags": []
+        },
+        {
+          "path": "third_party/mbedtls/blake2b256.c",
+          "sha256": "f3128aa196577666bed995aff7e91abaea1004309cd11a1ed8ed5818fa0b13f1",
+          "flags": []
+        }
+      ],
+      "export_to_sdk": false
+    },
+    {
+      "id": "haclstar-blake2b",
+      "scope": [
+        "BLAKE2b-256/512"
+      ],
+      "license": "MIT",
+      "license_files": [
+        "third_party/haclstar/blake2b.c"
+      ],
+      "flags": [],
+      "sources": [
+        {
+          "path": "third_party/haclstar/blake2b.c",
+          "sha256": "5b56cef5903470d4c86e79f5d4a5ccb0350cb36b531db90f9771200d9a65d1a6",
+          "flags": [
+            "-O2",
+            "-fno-sanitize=all"
+          ]
+        },
+        {
+          "path": "third_party/haclstar/notice.c",
+          "sha256": "bd6f7dce5e060527b3a471ace35d8f5a74a4411ccd10dd0fc172f642e470a2e1",
+          "flags": []
+        }
+      ],
+      "export_to_sdk": false
+    },
+    {
+      "id": "zstd",
+      "scope": [
+        "Zstandard compression/decompression"
+      ],
+      "license": "BSD-3-Clause",
+      "license_files": [
+        "third_party/zstd/LICENSE"
+      ],
+      "flags": [
+        "-DZSTD_MULTITHREAD",
+        "-Wframe-larger-than=262144",
+        "-Wno-array-bounds",
+        "-Wno-comment"
+      ],
+      "sources": [
+        {
+          "path": "third_party/zstd/lib/common/debug.c",
+          "sha256": "20b6355fa053e25d815ec7a4460ff05ff9b410d8ae2090895980e5dc02c9f9b2",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/common/entropy_common.c",
+          "sha256": "c9bf198ea338a18f31f66a859698cf31b329c488c5eb7604e57b17e5e220ef36",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/common/error_private.c",
+          "sha256": "633bd46e228e891e3ba95ed6b3a25878fa956cd495f71a9d32257d65d9e4a213",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/common/fse_decompress.c",
+          "sha256": "fbd7cfa7b2d7f93e5e7d935c6354d6da0f5e4437186e05b184fb5612c31ae232",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/common/pool.c",
+          "sha256": "cfc0ab3088c53466765a6a668cf727ea6ac118825b2da6223be2d9f83f91698d",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/common/threading.c",
+          "sha256": "7dc7b2a19c577453fee3bb6e9ae4185dafdfae14caf4aeab144ac22f04d7802c",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/common/xxhash.c",
+          "sha256": "42b69c233bab7a22f68d3c3c6628f405a13200da6a53c4cfe7721917f1eb3b83",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/common/zstd_common.c",
+          "sha256": "1a827aa2fdc48611d946338e32ad5a1a1cd1d49f7ce143c92a56c9c6db1fee41",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/compress/fse_compress.c",
+          "sha256": "b3a1d91f243b4a0220cf2649b0655fb9a37d3bd77be6fc48620350dea240a360",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/compress/hist.c",
+          "sha256": "128a4f0d19189451fc87d3658fa584692236cbc9b7e25cf5d033f4bf71f8021e",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/compress/huf_compress.c",
+          "sha256": "0304d68aa92de4f48515bd86c3a4fee302738d6b699ef9a1142915f5a202fd19",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/compress/zstd_compress.c",
+          "sha256": "207365bae2b1112aafae88b58662eb424bd87698bcf409a589389738e7a9d68f",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/compress/zstd_compress_literals.c",
+          "sha256": "79b11807427ca76e3736d1c5a2243e935e478b051acdd65a64dd016ac684aa88",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/compress/zstd_compress_sequences.c",
+          "sha256": "d484128cbf39ed4da4f96c872199025834ddb95131665bdc90ac508a6b80af1b",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/compress/zstd_compress_superblock.c",
+          "sha256": "51969de266aece360f0874c05541c5bfa28c17d4c71d4bd0630cc01274e6afd3",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/compress/zstd_double_fast.c",
+          "sha256": "64d0adceacde40f98458eff74f6d34bd25f0bca86d88bd0131236b77b9722f3b",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/compress/zstd_fast.c",
+          "sha256": "475f99eeacc4eb9109961229fc88a8f91987efe646b779c1555042c4d451f029",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/compress/zstd_lazy.c",
+          "sha256": "4f82432b884a0a1e25d0a0a929bfddc55e034b8e658371150b14b66a05ff2a4e",
+          "flags": [
+            "-O3"
+          ]
+        },
+        {
+          "path": "third_party/zstd/lib/compress/zstd_ldm.c",
+          "sha256": "3b927a88f4eea438a0a75c0d12d62599279c464aa6fc366ac2cb0845cbe07caa",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/compress/zstd_opt.c",
+          "sha256": "ce5264cdc59f20acd10c4acd528b62389b5f0623a06bba2fbe411d2a08000cb8",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/compress/zstdmt_compress.c",
+          "sha256": "5504347d9e2ece2f3ce02ecc8b216d2059a598b26c4723305a7419b7816fcf5c",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/decompress/huf_decompress.c",
+          "sha256": "acb150c526bf2072b74ef40427e88a98d34cb01b7345191ba4e5bc6dc0064183",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/decompress/zstd_ddict.c",
+          "sha256": "2a0226604559cac233e459b6eeb7f474a9a42fd816a5aa009864da7e5274ba66",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/decompress/zstd_decompress.c",
+          "sha256": "dcbd241acbd2eb5db88099cc8daf3dcf6cc9cc5216a2972aef85a8d7ba04994b",
+          "flags": []
+        },
+        {
+          "path": "third_party/zstd/lib/decompress/zstd_decompress_block.c",
+          "sha256": "9dabf010d113c564b2d1aa6f52f1ba4013d2b4190931e8b4d7a0f76040544497",
+          "flags": []
+        }
+      ],
+      "export_to_sdk": false
+    },
+    {
+      "id": "lz4-frame",
+      "scope": [
+        "LZ4 Frame library; GPL CLI excluded"
+      ],
+      "license": "BSD-2-Clause",
+      "license_files": [
+        "third_party/lz4cli/lz4.c",
+        "third_party/lz4cli/lz4hc.c",
+        "third_party/lz4cli/lz4frame.c",
+        "third_party/lz4cli/xxhash.c"
+      ],
+      "flags": [],
+      "sources": [
+        {
+          "path": "third_party/lz4cli/lz4.c",
+          "sha256": "296ca4d3a68850748c669fca45e11f2a87a566c34956b4bba9a880c33f65b2f7",
+          "flags": []
+        },
+        {
+          "path": "third_party/lz4cli/lz4hc.c",
+          "sha256": "a5c7b5c1462e7a44409628896fe67dd8054ad6921276a5fcfba08700a03fa2e1",
+          "flags": []
+        },
+        {
+          "path": "third_party/lz4cli/lz4frame.c",
+          "sha256": "94140f44d7c67af81dc3f3e684e1aed7baf2335be405b1177d8cfc693a74da5e",
+          "flags": []
+        },
+        {
+          "path": "third_party/lz4cli/xxhash.c",
+          "sha256": "231c0cd7c776c36ded62cb0a2a30658b5d8b1060ae293cf81d0a595a6b56f757",
+          "flags": []
+        }
+      ],
+      "export_to_sdk": false
+    },
+    {
+      "id": "bzip2",
+      "scope": [
+        "bzip2 buffer/stream codec; stdio disabled"
+      ],
+      "license": "bzip2-1.0.6 AND ISC",
+      "license_files": [
+        "third_party/bzip2/LICENSE",
+        "third_party/bzip2/bz_internal_error.c"
+      ],
+      "flags": [
+        "-DBZ_NO_STDIO"
+      ],
+      "sources": [
+        {
+          "path": "third_party/bzip2/blocksort.c",
+          "sha256": "319451269a119e654466344001612b4f60ec3ca50b84a3c5e2e7f5c7fe9d2f21",
+          "flags": []
+        },
+        {
+          "path": "third_party/bzip2/huffman.c",
+          "sha256": "40bc4e45f9c97e6677cd1b302bb500fc02adfc0b1f50ea74543210039cb6c42a",
+          "flags": []
+        },
+        {
+          "path": "third_party/bzip2/crctable.c",
+          "sha256": "c55e9e24690b9ed57bc1490f4e64999b8e2b9fbbb71f9ce129f2b9595cd856f2",
+          "flags": []
+        },
+        {
+          "path": "third_party/bzip2/randtable.c",
+          "sha256": "7f2c76c5c72894681c369262927bb0f6446397bfc3ed52a09f9287acb2f755be",
+          "flags": []
+        },
+        {
+          "path": "third_party/bzip2/compress.c",
+          "sha256": "991916b4ad5319bf0cb69117cb8c90c9e0d2de41d7d72acb594e950770b9ddba",
+          "flags": []
+        },
+        {
+          "path": "third_party/bzip2/decompress.c",
+          "sha256": "6bb3a5d1507f557fddbb37a71a398a8879e8445d0e390d425acc96ea788f179e",
+          "flags": []
+        },
+        {
+          "path": "third_party/bzip2/bzlib.c",
+          "sha256": "ff6db80dcfaf66373083c9ae485bf415b443699826e7b21c3bd8a41ac05851af",
+          "flags": []
+        },
+        {
+          "path": "third_party/bzip2/bz_internal_error.c",
+          "sha256": "3a2c4e31a8f9c6d51f741b5f3605963db7f4a191c37fd477c4b4f92bcd2c2e86",
+          "flags": []
+        }
+      ],
+      "export_to_sdk": false
+    }
+  ],
+  "notes": [
+    "Only fixed Nightly files; no host libraries or new external source input.",
+    "Per-file flags follow actual upstream BUILD.mk rules for selected objects.",
+    "Private build archives only in M2-01; SDK dependency export requires a separate reviewed scope.",
+    "Zstd follows the Nightly C-only object list; the toolchain OS macros disable its optional external assembly path."
+  ]
+}
