@@ -5,13 +5,14 @@
 #include <fcntl.h>
 #include <poll.h>
 #include <pthread.h>
+#include <signal.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include "quickjs-libc.h"
 #include "qjs-cosmo.h"
-static int tracking,calls,fail_at,live,mode,interrupted,created[64],count;
+static int tracking,calls,fail_at,injected,live,mode,interrupted,created[64],count;
 static void *blocks[2048];
 void *__real_js_malloc_rt(JSRuntime *,size_t);
 void __real_js_free_rt(JSRuntime *,void *);
@@ -21,7 +22,7 @@ ssize_t __real_read(int,void *,size_t);
 ssize_t __real_write(int,const void *,size_t);
 int __real_pthread_create(pthread_t *,const pthread_attr_t *,void *(*)(void *),void *);
 void *__wrap_js_malloc_rt(JSRuntime *rt,size_t size) {
-    if(tracking && ++calls==fail_at)return NULL;
+    if(tracking && ++calls==fail_at){injected=1;return NULL;}
     void *p=__real_js_malloc_rt(rt,size);
     if(tracking && p){int i;for(i=0;i<2048 && blocks[i];i++);assert(i<2048);blocks[i]=p;live++;}
     return p;
@@ -72,10 +73,12 @@ static int evaluate(JSContext *ctx,const char *source) {
     if(JS_IsException(value)){js_std_dump_error(ctx);return -1;}
     JS_FreeValue(ctx,value);return 0;
 }
-static void reset(void){calls=0;count=0;interrupted=0;}
+static void reset(void){calls=0;count=0;interrupted=0;injected=0;}
 static void closed_pipes(void){for(int i=0;i<count;i++){errno=0;assert(fcntl(created[i],F_GETFD)==-1 && errno==EBADF);}}
 int main(int argc,char **argv) {
     if(argc==3 && !strcmp(argv[1],"--qp-child"))return child(argv[2]);
+    struct sigaction before={0},after={0};before.sa_handler=SIG_DFL;
+    assert(sigaction(SIGPIPE,&before,NULL)==0);
     for(int iteration=0;iteration<3;iteration++) {
         JSRuntime *rt=JS_NewRuntime();assert(rt);js_std_init_handlers(rt);
         JSContext *ctx=JS_NewContext(rt);assert(ctx);JS_SetContextOpaque(ctx,(void *)(uintptr_t)0x1234);
@@ -89,8 +92,13 @@ int main(int argc,char **argv) {
         int allocations=calls;assert(allocations>0);JS_RunGC(rt);assert(live==0);closed_pipes();
         for(int fail=1;fail<=allocations;fail++) {
             reset();fail_at=fail;
-            assert(evaluate(ctx,"{let caught=false;try{invoke();}catch{caught=true;}if(!caught)throw Error('allocation failure was lost');}")==0);
-            fail_at=0;JS_RunGC(rt);assert(live==0);closed_pipes();
+            assert(evaluate(ctx,"globalThis.failureCaught=false;try{invoke();}catch{failureCaught=true;}")==0);
+            fail_at=0;
+            /* Pipe read chunk sizes change the number of buffer growths.
+               Require propagation whenever the chosen allocation occurred. */
+            JSValue global=JS_GetGlobalObject(ctx),caught=JS_GetPropertyStr(ctx,global,"failureCaught");
+            assert(!injected || JS_ToBool(ctx,caught));JS_FreeValue(ctx,caught);JS_FreeValue(ctx,global);
+            JS_RunGC(rt);assert(live==0);closed_pipes();
         }
         for(mode=1;mode<=4;mode++) {
             reset();
@@ -102,6 +110,7 @@ int main(int argc,char **argv) {
             "const e=cp.spawnSync(childPath,['--qp-child','close'],{input:Buffer.alloc(1048576),timeout:10000,windowsHide:true});a.equal(e.status,7);a.equal(e.error,undefined);}")==0);
         JS_RunGC(rt);assert(live==0);closed_pipes();assert(JS_GetContextOpaque(ctx)==(void *)(uintptr_t)0x1234);
         tracking=0;JS_FreeContext(ctx);js_std_free_handlers(rt);JS_FreeRuntime(rt);assert(live==0);
+        assert(sigaction(SIGPIPE,NULL,&after)==0 && after.sa_handler==SIG_DFL);
     }
     puts("PASS child-process-sdk: native duplex child, allocation/pipe/thread/poll failures, EINTR/short I/O, timeout and cleanup");
 }

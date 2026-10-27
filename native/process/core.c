@@ -127,6 +127,10 @@ QPResult qp_run(const QPRequest *options,QPAllocator *memory) {
             if(child[i]<0){result.error=errno;goto done;}
         }
     }
+    /* XNU sends pipe-write SIGPIPE to the process, so blocking it on the
+       writer thread alone cannot protect an SDK host with SIG_DFL. Darwin's
+       descriptor-local F_SETNOSIGPIPE (73) avoids changing host handlers. */
+    if(IsXnu() && parent[0]>=0 && fcntl(parent[0],73,1)<0){result.error=errno;goto done;}
     result.error=launch(options,child,&result,memory);if(result.error)goto done;
     for(int i=0;i<3;i++)close_fd(child+i);
     input.fd=parent[0];parent[0]=-1;input.data=options->input;input.length=options->input_length;

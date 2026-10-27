@@ -21,6 +21,8 @@ Windows 私有适配使用 MSVCRT/libuv 风格参数转义，保留 `/C/...` 等
 
 JS 参数在启动前完成规范化，后台输入线程不访问 QuickJS、不分配 JS 内存。读取工作区与输出缓冲计入当前 JSRuntime 配额；Worker 的 80 KiB 原生线程栈不承载 64 KiB I/O 数组。每条失败路径关闭 fd/句柄、取消并 join 输入线程、终止并回收仍运行的子进程，再向 JS 传播错误。嵌入方的 Runtime/Context opaque 保持可用。
 
+首轮 CI 的两个 macOS SDK 用例发现宿主收到 SIGPIPE：XNU 将管道写入的 SIGPIPE 发给进程，仅在输入线程屏蔽不能保护默认信号处理的 SDK 宿主。修复仅对父 stdin 写端设置 Darwin 的 F_SETNOSIGPIPE，保留宿主信号处理与子进程的 SIGPIPE 行为。SDK 显式以 SIG_DFL 验证并检查未被修改。依据为 [Apple fcntl 定义](https://github.com/apple-oss-distributions/xnu/blob/main/bsd/sys/fcntl.h)及 [XNU 写入路径](https://github.com/apple-oss-distributions/xnu/blob/main/bsd/kern/sys_generic.c)，没有新增源码依赖。
+
 ## 验收
 
 - `PROC-001`：参数、Unicode、cwd/env/PATH、输入视图、编码、stdio 文件共享游标、shell/直接执行、PID、原始状态、错误与参数校验。
