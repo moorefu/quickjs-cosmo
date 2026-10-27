@@ -32,6 +32,8 @@ Worker 使用创建时 argv/execArgv/env 快照；修改快照不改变主上下
 
 Windows PID/PPID 使用 Nightly 已有本机原语，路径转换为宿主驱动器格式；release 读取系统 RtlGetVersion，避免 Cosmopolitan uname 的兼容描述替代真实系统版本。调用使用系统已加载 ntdll、固定布局和 MS ABI，不加载第三方宿主库。[RtlGetVersion](https://learn.microsoft.com/en-us/windows/win32/devnotes/rtlgetversion) 与 [版本结构](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_osversioninfow) 是布局依据。
 
+首轮 macOS CI 验证出 Nightly `third_party/musl/pwd.c` 会由 HOME 或 cwd 合成用户记录，不能提供真实目录服务查询；其 x86_64 macOS 动态库接口也不支持补接 libSystem。当前明确使用 Context 创建时的 HOME 作为删除变量后的回退。若启动时就没有 HOME，则抛 `ERR_NOT_SUPPORTED`；不返回 cwd 冒充主目录。这与 Node 查询用户数据库有差异，仍标为 partial；不引入未经验证的宿主库。macOS 临时目录检查按 realpath 比较目录身份，允许系统 `/var` 到 `/private/var` 的符号链接。
+
 ## 来源与许可
 
 path 采用固定 Node v24.21.0 原始 `lib/path.js`，SHA-256 锁在 `compat/node-sources.json`；生成器验证摘要后，通过内部 primordials/validator 小型适配层执行。不引入通用 require、CommonJS 或 npm 解析。matchesGlob 的额外依赖未启用。其余基础 JS 使用现有引擎原语，宿主绑定基于当前固定 Cosmopolitan。
@@ -60,3 +62,5 @@ python3 scripts/ci_artifact.py verify
 完整跨平台结果以本项提交的 CI 为准；BSD 尚无 runner，不宣称通过。方法清单区分本地验证与后续 CI 平台。
 
 本地验收：Linux 48/48；Windows 同一产物 43/43，通过七份独立 APE 的相关检查，保留一个原有 Unix 专用跳过；两端 Node 差分各 13/13；Python 门禁 73 项；两种 lib 配置的严格类型检查通过；三文件包、SDK 和 CI 传输完整性校验通过。
+
+首轮提交 `acdc541` 的 [CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40447882717) 中，Linux x64/ARM64、Windows 2022/2025/ARM64 通过；两个 macOS 行暴露上述目录身份与 HOME 回退问题。修复后重新通过本地全回归及包校验，等待完整 CI 重跑；没有开始 M1-04。

@@ -6635,7 +6635,8 @@
             "ENV-001"
           ],
           "differences": [
-            "Initial synchronous subset; see docs/M1_FOUNDATION.md for platform and entry limits."
+            "Initial synchronous subset; see docs/M1_FOUNDATION.md for platform and entry limits.",
+            "Darwin fallback uses HOME captured at Context creation because fixed Nightly synthesizes passwd records; absent initial HOME fails ERR_NOT_SUPPORTED. No directory-service lookup is claimed."
           ],
           "support": {
             "linux": {

@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 
 from build_config import load_config
 from host_runtime import ape_command
@@ -43,6 +44,13 @@ def main():
             result = subprocess.run(list(map(str, command)), cwd=ROOT, capture_output=True, timeout=30)
             expected = code & (0xffffffff if os.name == 'nt' else 255)
             assert result.returncode == expected, (source, result.returncode, expected, result.stderr)
+    if sys.platform == 'darwin':
+        environment = dict(os.environ)
+        environment.pop('HOME', None)
+        source = "import os from 'node:os'; try { os.homedir(); throw Error('missing failure'); } catch(e) { if(e.code!=='ERR_NOT_SUPPORTED') throw e; }"
+        result = subprocess.run(list(map(str, ape_command(settings.dist / 'qjs.exe', ['-m', '-e', source], settings.dist))),
+                                cwd=ROOT, env=environment, capture_output=True, timeout=30)
+        assert result.returncode == 0, result.stderr
     if args.standalone:
         target = args.standalone.resolve()
         pid, compiled = run(ape_command(target, ['中文 space', '--business-option'], settings.dist))
