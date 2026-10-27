@@ -11,7 +11,7 @@ declare module 'node:fs' {
     export class ReadStream extends Readable {
         constructor(path:PathLike|undefined, options?:ReadStreamOptions|BufferEncoding);
         fd:number|null; path:PathLike|undefined; readonly pending:boolean; readonly bytesRead:number;
-        close(callback?:()=>void):void;
+        close(callback?:(error?:Error|null)=>void):void;
     }
     export class WriteStream extends Writable {
         constructor(path:PathLike|undefined, options?:WriteStreamOptions|BufferEncoding);

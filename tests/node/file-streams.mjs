@@ -22,11 +22,22 @@ try {
     const hash=crypto.createHash('sha256'),parts=[];hash.on('data',c=>parts.push(c));await pipeline(fs.createReadStream(file),hash);
     output.digest=Buffer.concat(parts).toString('hex')===crypto.createHash('sha256').update(data).digest('hex');
     const fd=fs.openSync(file,'r');const supplied=fs.createReadStream(undefined,{fd,autoClose:false,start:1,end:4});
-    output.fdContent=(await collect(supplied)).toString('hex');output.fdStillOpen=fs.fstatSync(fd).isFile();await new Promise(resolve=>supplied.close(resolve));
+    output.fdContent=(await collect(supplied)).toString('hex');output.fdStillOpen=fs.fstatSync(fd).isFile();
+    const suppliedClosed=new Promise(resolve=>supplied.once('close',resolve));supplied.close();await suppliedClosed;
     try{fs.fstatSync(fd);output.fdClosed=false;}catch(e){output.fdClosed=e.code==='EBADF';}
     const target=path.join(root,'position');fs.writeFileSync(target,'0123456789');
     const position=fs.createWriteStream(target,{flags:'r+',start:3,highWaterMark:1});position.end('XY');await finished(position);
     output.position=[fs.readFileSync(target,'utf8'),position.bytesWritten];
+    const retainedFd=fs.openSync(target,'a'),retained=fs.createWriteStream(undefined,{fd:retainedFd,autoClose:false});retained.end('Z');await finished(retained);
+    output.writeRetained=fs.fstatSync(retainedFd).isFile();
+    const retainedClosed=new Promise(resolve=>retained.once('close',resolve));retained.destroy();await retainedClosed;
+    try{fs.fstatSync(retainedFd);output.writeClosed=false;}catch(e){output.writeClosed=e.code==='EBADF';}
+    const destroyFd=fs.openSync(file,'r'),explicit=fs.createReadStream(undefined,{fd:destroyFd,autoClose:false});
+    const explicitlyClosed=new Promise(resolve=>explicit.once('close',resolve));explicit.destroy();await explicitlyClosed;
+    try{fs.fstatSync(destroyFd);output.explicitDestroy=false;}catch(e){output.explicitDestroy=e.code==='EBADF';}
+    const closingFile=path.join(root,'close-write'),closing=fs.createWriteStream(closingFile,{autoClose:false});closing.write('close-content');
+    const writeClosed=new Promise(resolve=>closing.once('close',resolve));closing.close();await writeClosed;output.writeClose=fs.readFileSync(closingFile,'utf8');
+    const premature=fs.createReadStream(file);output.closeBeforeEnd=await new Promise(resolve=>premature.close(e=>resolve(e?.code??null)));
     const missing=fs.createReadStream(path.join(root,'absent'));const errors=[];missing.on('error',e=>errors.push(e.code));missing.on('close',()=>errors.push('close'));
     try{await finished(missing);}catch{}await new Promise(resolve=>setTimeout(resolve,1));output.missing=errors;
     const abort=new AbortController(),aborted=fs.createReadStream(file,{signal:abort.signal});const failure=finished(aborted).catch(e=>e.code);abort.abort();output.abort=await failure;

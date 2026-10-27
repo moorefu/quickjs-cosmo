@@ -52,7 +52,7 @@ function createFileStreams(fs, streams, helpers) {
         const state = states.get(this);
         const close = async () => {
             if (state.busy) try { await state.busy; } catch (failure) { error ??= failure; }
-            if (state.autoClose && state.number !== null) {
+            if (state.number !== null) {
                 try {
                     if (state.writing && state.opts.flush && !error) await call(this, 'fsync');
                 } catch (failure) { error ??= failure; }
@@ -110,9 +110,14 @@ function createFileStreams(fs, streams, helpers) {
         Object.defineProperty(Constructor.prototype, 'pending', {get() { return this.fd === null; }});
         Constructor.prototype.close = function(callback) {
             if (callback !== undefined && typeof callback !== 'function') throw invalidType('callback', 'a function');
-            if (callback) { if (this.closed) queueMicrotask(callback); else this.once('close', callback); }
-            states.get(this).autoClose = true;
-            if (states.get(this).writing && !this.destroyed) this.end(() => this.destroy()); else this.destroy();
+            const state = states.get(this);
+            if (!state.writing) {
+                if (callback) streams.finished(this, callback);
+                this.destroy(); return;
+            }
+            if (callback) { if (this.closed) { queueMicrotask(callback); return; } else this.once('close', callback); }
+            if (!state.autoClose) this.once('finish', () => this.destroy());
+            this.end();
         };
     }
     return {ReadStream, WriteStream, createReadStream:(name, opts) => new ReadStream(name, opts), createWriteStream:(name, opts) => new WriteStream(name, opts)};

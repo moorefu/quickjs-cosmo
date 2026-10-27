@@ -6,7 +6,7 @@
 
 `fs.createReadStream/ReadStream` 与 `createWriteStream/WriteStream` 继承已交付的 Readable/Writable。覆盖编码、水位、flags/mode、包含 end 的范围、position、bytesRead/bytesWritten、open/ready/end/finish/close、fd/pending、autoClose、signal、写入 flush 和显式 close。支持数值 fd、FileHandle、FileHandle 的两个 createStream 方法及 callback 风格的 fs 替换接口。
 
-默认打开的文件持有现有 FileHandle 原生守卫。销毁等待正在进行的 I/O，再按 autoClose 关闭；写操作处理短写，范围读取接受短读。自定义 fs 的资源所有权由其 callback 实现承担。autoClose:false 保留调用者的描述符，close 显式接管关闭。URL 路径与 Windows realpath/入口路径问题仍属于 M5/M6。
+默认打开的文件持有现有 FileHandle 原生守卫。销毁等待正在进行的 I/O，再按 autoClose 关闭；写操作处理短写，范围读取接受短读。自定义 fs 的资源所有权由其 callback 实现承担。autoClose:false 在自然结束时保留描述符，显式 destroy/close 仍关闭它。ReadStream.close(cb) 按 Node 的 finished 语义交付回调，流已 end 时回调可能早于底层关闭；需要关闭屏障时观察实际 close 事件。URL 路径与 Windows realpath/入口路径问题仍属于 M5/M6。
 
 Hash/Hmac 继承 Transform，沿用原生增量状态，写入不缓存全部历史数据，flush 只输出一个摘要。保留 update/digest、Hash.copy、输出编码、链式调用和流结束后的错误合同。Hash.copy 初始化独立流状态并复制原生摘要状态。
 
@@ -34,3 +34,5 @@ SDK 的 GC 压力测试同时修复了公共 EventEmitter 的状态所有权：�
 Python 80 项检查、TypeScript 5.9.3 的 ES2022/ES2022+DOM 正反向声明检查通过。三文件运行包、双架构 SDK 与包含 28 个测试/探针 APE 的 CI 传输包校验通过。清单现有 469 项 API、29 个模块和 52 个测试条目。
 
 本项等待完整 CI；全绿后进入 M4-01。
+
+首次 CI 中 macOS ARM 的 STR-005 揭示了上述 close 回调竞态。修复对齐显式 destroy 的 fd 关闭，并以实际 close 事件验证释放；补充了 autoClose:false 的读/写流销毁、WriteStream.close 和提前关闭回调的同源测试。
