@@ -35,12 +35,14 @@ static JSValue failure(JSContext *ctx, int number, const char *call) {
         {ENOSPC,"ENOSPC",-4055}, {EFBIG,"EFBIG",-4036}, {EROFS,"EROFS",-4043},
         {EXDEV,"EXDEV",-4037}, {EBUSY,"EBUSY",-4082}, {ENOTSUP,"ENOTSUP",-4049},
         {EINTR,"EINTR",-4072}, {ETXTBSY,"ETXTBSY",-4038}, {EIO,"EIO",-4070},
-        {EILSEQ,"EILSEQ",-4027}
+        {EILSEQ,"EILSEQ",-4027}, {EAGAIN,"EAGAIN",-4088}, {EPIPE,"EPIPE",-4047}, {ESPIPE,"ESPIPE",-4041}
     };
     const char *name = "EIO"; int code = IsWindows() ? -4070 : -number;
     for (size_t i = 0; i < sizeof(errors)/sizeof(*errors); i++) if (errors[i].value == number) {
         name = errors[i].name; if (IsWindows()) code = errors[i].windows; break;
     }
+    if (IsXnu()) code=-(number==ENAMETOOLONG?63:number==ELOOP?62:number==ENOSYS?78:
+        number==ENOTEMPTY?66:number==ENOTSUP?45:number==EILSEQ?92:number==EAGAIN?35:number);
     JSValue error = JS_NewError(ctx);
     if (JS_IsException(error)) return error;
     if (property(ctx,error,"code",JS_NewString(ctx,name)) < 0 ||
@@ -121,6 +123,20 @@ fail: closedir(directory); JS_FreeValue(ctx,list); return JS_EXCEPTION;
 
 /* Public numeric flags use Node's host ABI, independently of Cosmo's ABI. */
 static int host_flags(int flags) {
+    if (IsXnu()) {
+        int out=flags&3;
+        if (flags&0x200) out|=O_CREAT;
+        if (flags&0x800) out|=O_EXCL;
+        if (flags&0x400) out|=O_TRUNC;
+        if (flags&8) out|=O_APPEND;
+        if (flags&0x100000) out|=O_DIRECTORY;
+        if (flags&0x100) out|=O_NOFOLLOW;
+        if (flags&0x20000) out|=O_NOCTTY;
+        if (flags&4) out|=O_NONBLOCK;
+        if (flags&0x400000) out|=O_DSYNC;
+        if (flags&0x80) out|=O_SYNC;
+        return out;
+    }
     if (!IsWindows()) return flags;
     int out=flags&3;
     if (flags&256) out|=O_CREAT;
@@ -178,6 +194,7 @@ static JSValue call(JSContext *ctx, JSValueConst self, int argc, JSValueConst *a
         name="open";
         if (JS_ToInt32(ctx,&n,argv[1])<0 || JS_ToInt32(ctx,&fd,argv[2])<0) goto exception;
         if (IsWindows() && (n & ~(3|256|1024|512|8))) { errno=EINVAL; result=-1; break; }
+        if (IsXnu() && (n & ~(3|0x200|0x800|0x400|8|0x100000|0x100|0x20000|4|0x400000|0x80))) { errno=EINVAL; result=-1; break; }
         do { result=qjs_cosmo_fs_openat(AT_FDCWD,a,host_flags(n)|O_CLOEXEC,fd); } while (result<0 && errno==EINTR);
         if (result>=0) value=JS_NewInt32(ctx,result);
         break;
@@ -226,7 +243,7 @@ static JSValue call(JSContext *ctx, JSValueConst self, int argc, JSValueConst *a
     }
     saved=errno;
     if (IsWindows() && saved==ENOTDIR && (magic==FS_OPEN || magic==FS_RMDIR || (magic==FS_STAT && n!=2))) saved=ENOENT;
-    if (IsWindows() && saved==EISDIR && magic==FS_UNLINK) saved=EPERM;
+    if ((IsWindows()||IsXnu()) && saved==EISDIR && magic==FS_UNLINK) saved=EPERM;
     if (result<0) { JS_FreeValue(ctx,value); value=failure(ctx,saved,name); }
     js_free(ctx,a); js_free(ctx,b); return value;
 exception: js_free(ctx,a); js_free(ctx,b); JS_FreeValue(ctx,value); return JS_EXCEPTION;
@@ -240,11 +257,11 @@ JSValue js_cosmo_fs_api(JSContext *ctx) {
         if (property(ctx,api,keys[i],JS_NewCFunctionMagic(ctx,call,keys[i],0,JS_CFUNC_generic_magic,i))<0) goto fail;
 #define ADD(key,val) if (property(ctx,constants,key,JS_NewInt32(ctx,val))<0) goto fail
     ADD("O_RDONLY",0); ADD("O_WRONLY",1); ADD("O_RDWR",2);
-    ADD("O_CREAT",IsWindows()?256:O_CREAT); ADD("O_EXCL",IsWindows()?1024:O_EXCL);
-    ADD("O_TRUNC",IsWindows()?512:O_TRUNC); ADD("O_APPEND",IsWindows()?8:O_APPEND);
+    ADD("O_CREAT",IsWindows()?256:IsXnu()?0x200:O_CREAT); ADD("O_EXCL",IsWindows()?1024:IsXnu()?0x800:O_EXCL);
+    ADD("O_TRUNC",IsWindows()?512:IsXnu()?0x400:O_TRUNC); ADD("O_APPEND",(IsWindows()||IsXnu())?8:O_APPEND);
     if (!IsWindows()) {
-        ADD("O_DIRECTORY",O_DIRECTORY); ADD("O_NOFOLLOW",O_NOFOLLOW); ADD("O_NOCTTY",O_NOCTTY);
-        ADD("O_NONBLOCK",O_NONBLOCK); ADD("O_DSYNC",O_DSYNC); ADD("O_SYNC",O_SYNC);
+        ADD("O_DIRECTORY",IsXnu()?0x100000:O_DIRECTORY); ADD("O_NOFOLLOW",IsXnu()?0x100:O_NOFOLLOW); ADD("O_NOCTTY",IsXnu()?0x20000:O_NOCTTY);
+        ADD("O_NONBLOCK",IsXnu()?4:O_NONBLOCK); ADD("O_DSYNC",IsXnu()?0x400000:O_DSYNC); ADD("O_SYNC",IsXnu()?0x80:O_SYNC);
         ADD("S_IFBLK",S_IFBLK); ADD("S_IFSOCK",S_IFSOCK);
         ADD("S_IRGRP",S_IRGRP); ADD("S_IWGRP",S_IWGRP); ADD("S_IXGRP",S_IXGRP);
         ADD("S_IROTH",S_IROTH); ADD("S_IWOTH",S_IWOTH); ADD("S_IXOTH",S_IXOTH); ADD("S_IXUSR",S_IXUSR);

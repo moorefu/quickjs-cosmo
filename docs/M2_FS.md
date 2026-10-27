@@ -15,6 +15,8 @@
 
 原生层在 `native/fs/sync.c`，JS 外观在 `src/js/node/fs.js`。C 调用期间不回调 JS，保留系统错误后再映射为 Node 的 code、errno、syscall；路径和双路径操作另补 path/dest。Windows 的 UV errno、数字 open flags、uid/gid 和权限位单独转换，不把 Cosmo 的内部值直接当作 Node 值。
 
+首轮 CI 在 macOS 两个架构发现 ABI 转换遗漏：Cosmo 在 Darwin 也使用内部归一化常量，不能原样公开。现增加 Darwin errno 和数字 flags 双向边界转换，数值对照 [Apple fcntl 定义](https://github.com/apple-oss-distributions/xnu/blob/main/bsd/sys/fcntl.h)与同宿主 Node；同时对齐 Darwin unlink 目录的 EPERM、copyfile 目录的 ENOTSUP。两种架构执行同源差分，SDK 另注入 EAGAIN/ESPIPE 并检查公开 errno。
+
 read/write/pread/pwrite 与 open 遇 EINTR 重试，实际短读写继续按返回字节推进。close 不在 EINTR 后重试，避免关闭已复用的描述符。高层方法用 finally 关闭自己打开的文件；调用方传入的描述符保留给调用方关闭，不在 GC 或 Context 销毁时擅自关闭。fs.openSync 暴露的是进程内文件描述符，显式关闭责任与 Node 相同。
 
 readFileSync 的普通 Buffer/非 UTF8 路径遵循基线已知 size 的读取上限；未知 size 按块读到 EOF，按实际字节检查 2 GiB-1 上限。小文件不能因不可信的 size 就无限分配。UTF8 快捷路径遵循 [Node v24.21.0 ReadFileUtf8](https://github.com/nodejs/node/blob/v24.21.0/src/node_file.cc)：size 仅作提示，读取继续到 EOF。调用方 buffer/分配函数、缓冲区不足、读中增长、分配失败和关闭都单独验证。引擎自己的内存/字符串限制仍可能先触发。

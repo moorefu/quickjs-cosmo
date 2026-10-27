@@ -30,11 +30,13 @@ int __wrap_qjs_cosmo_fs_openat(int directory,const char *path,int flags,...) {
 ssize_t __wrap_read(int fd,void *buffer,size_t length) {
     if (fd!=target) return __real_read(fd,buffer,length);
     if (!(interrupted&2)) { interrupted|=2; errno=EINTR; return -1; }
+    if (mode==8) { errno=EAGAIN; return -1; }
     if (mode==3 && reads++) { errno=EIO; return -1; }
     return __real_read(fd,buffer,length>3?3:length);
 }
 ssize_t __wrap_pread(int fd,void *buffer,size_t length,int64_t position) {
     if (fd==target && position>UINT32_MAX) large_offset++;
+    if (fd==target && mode==7) { errno=ESPIPE; return -1; }
     return __real_pread(fd,buffer,length,position);
 }
 ssize_t __wrap_write(int fd,const void *buffer,size_t length) {
@@ -95,6 +97,12 @@ int main(void) {
             "assert.equal(fs.fstatSync(fd).size,100);"
             "assert.equal(fs.readSync(fd,Buffer.alloc(1),{length:1,position:4294967303n}),0); fs.closeSync(fd);") ==0);
         assert(opened==closed && target==-1 && interrupted==7 && large_offset>0);
+        mode=7;
+        assert(evaluate(ctx,"const {fs,assert,file}=fsFixture; const fd=fs.openSync(file,'r'); try { assert.throws(()=>fs.readSync(fd,Buffer.alloc(1),{position:0,length:1}),{code:'ESPIPE',syscall:'read',errno:process.platform==='win32'?-4041:-29}); } finally {fs.closeSync(fd);}")==0);
+        assert(opened==closed && target==-1);
+        mode=8;
+        assert(evaluate(ctx,"const {fs,assert,file}=fsFixture; assert.throws(()=>fs.readFileSync(file),{code:'EAGAIN',syscall:'read',errno:process.platform==='win32'?-4088:process.platform==='darwin'?-35:-11});")==0);
+        assert(opened==closed && target==-1);
         mode=3;
         assert(evaluate(ctx,"const {fs,assert,file}=fsFixture; assert.throws(()=>fs.readFileSync(file),{code:'EIO',syscall:'read'});")==0);
         assert(opened==closed && target==-1);

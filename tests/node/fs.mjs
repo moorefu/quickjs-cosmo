@@ -92,6 +92,7 @@ try {
         errorOf(()=>fs.mkdirSync(nested,{recursive:1})),errorOf(()=>fs.rmSync(nested,{force:1})),
         errorOf(()=>fs.readFileSync(file,{buffer:()=>undefined}))];
     observations.constants=['O_RDONLY','O_WRONLY','O_RDWR','O_CREAT','O_EXCL','O_TRUNC','O_APPEND','F_OK','R_OK','W_OK','X_OK',
+        'O_DIRECTORY','O_NOFOLLOW','O_NOCTTY','O_NONBLOCK','O_DSYNC','O_SYNC',
         'COPYFILE_EXCL','COPYFILE_FICLONE','COPYFILE_FICLONE_FORCE'].map(key=>[key,fs.constants[key]]);
     fs.rmSync(path.join(root,'a'),{recursive:true}); fs.rmSync(path.join(root,'absent'),{force:true});
     observations.removed=!fs.existsSync(path.join(root,'a'));

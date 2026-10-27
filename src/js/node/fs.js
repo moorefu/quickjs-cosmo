@@ -338,7 +338,7 @@ function createFs(native, path) {
         try {
             if (copyMode&4) binding.error('ENOTSUP','copyfile');
             input=openSync(a,'r'); const s=stat(input,undefined,2);
-            if (s.isDirectory()) binding.error(windows?'EPERM':'EISDIR','copyfile');
+            if (s.isDirectory()) binding.error(windows?'EPERM':native.platform==='darwin'?'ENOTSUP':'EISDIR','copyfile');
             output=openSync(b,constants.O_WRONLY|constants.O_CREAT|(copyMode&1?constants.O_EXCL:0),Number(s.mode)&0o777);
             const dst=stat(output,undefined,2);
             if (s.dev===dst.dev && s.ino===dst.ino) return;
