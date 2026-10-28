@@ -61,7 +61,7 @@ def main():
                     expected_names=[sni,sni]
                     if args.compiled:
                         actual=result(ape_command(args.compiled.resolve(),[],ROOT/'dist'),environment)
-                        if actual!=expected:raise ValueError(mode+' compiled TLS mismatch: '+json.dumps(actual))
+                        if actual!=expected:raise ValueError(mode+' compiled TLS mismatch\nNode '+json.dumps(expected)+'\nqjsc '+json.dumps(actual))
                         expected_names.append(sni)
                     if mode not in ('abort','timeout') and seen!=expected_names:raise ValueError('SNI mismatch: '+repr(seen))
                     if mode=='echo':
