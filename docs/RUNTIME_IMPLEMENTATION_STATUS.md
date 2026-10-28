@@ -26,8 +26,8 @@
 | M5-03 TLS 接入 | 完成，CI 全绿 | `f1494c1`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40648737327)，[记录](M5_TLS_CLIENT.md) |
 | M5-04 HTTP/Fetch | 完成，CI 全绿 | `9cdc98b`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40670191020)，[记录](M5_HTTP_FETCH.md) |
 | M5-05 HTTPS | 完成，CI 全绿 | `68373b7`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40684836385)，[记录](M5_HTTPS.md) |
-| M6-01 全入口交付 | 本地验收通过，待 CI | 标准流、入口边界、状态回收；Linux 139/139、共享 APE 92/92、Windows 94/94；[记录](M6_DELIVERY.md) |
-| M6-02 CI 与发布 | 待实现 | 全目标矩阵、能力清单与发布产物 |
+| M6-01 全入口交付 | 完成，CI 全绿 | `256ee8b`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40714828461)，[记录](M6_DELIVERY.md) |
+| M6-02 CI 与发布 | 本地验收通过，待 CI | 能力清单、报告绑定、七行报告门禁及发布产物；[记录](M6_CI_RELEASE.md) |
 | M6-03 文档与类型 | 持续更新，最终验收待完成 | 已增加 Buffer、公共基础、调度/取消与 cosmo:runtime 类型 |
 
 局部实现与平台差异由 `compat/node-api.json` 描述；本表不以“已有同名导出”替代任务退出条件。未完成任务继续保持待实现，TLS 如遇真实准入阻碍需按规划记录并解决，不能伪造通过。

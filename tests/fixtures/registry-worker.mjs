@@ -8,6 +8,7 @@ parent.onmessage = async () => {
     let unknownCode;
     try { await import('node:no-such-builtin'); } catch (error) { unknownCode = error.code; }
     const info = runtimeInfo();
+    if(info.entry!=='worker'||info.capabilities.format!==1||!info.capabilities.modules.some(m=>m.specifier==='node:https'))throw Error('Invalid Worker capability contract');
     parent.postMessage({ engine: info.engine, arch: info.arch, modules: info.builtinModules,
                          aliases: os === qos, unknownCode,
                          buffer: globalThis.Buffer === Buffer && Buffer.from('😀').toString('hex') === 'f09f9880' &&

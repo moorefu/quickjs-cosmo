@@ -4,20 +4,19 @@ import json
 from pathlib import Path
 from build_config import load_config
 from runtime_inputs import runtime_source_names
+from runtime_capabilities import report, features
 
 ROOT = Path(__file__).resolve().parents[1]
 settings = load_config()
 config = settings.data
+capabilities = report(ROOT)
+(settings.dist / 'capabilities.json').write_text(json.dumps(capabilities,indent=2,ensure_ascii=True)+'\n',encoding='utf8')
 manifest = {
     "build_profile": settings.profile,
     "quickjs": config["quickjs"],
     "cosmopolitan": config["cosmopolitan"],
     "format": "Actually Portable Executable (APE), x86_64 + aarch64",
-    "features": ["std", "os", "qjs:std", "qjs:os", "cosmo:runtime", "node:buffer", "node:process", "node:path",
-                 "node:path/posix", "node:path/win32", "node:os", "node:events", "node:util", "node:assert", "node:assert/strict",
-                 "node:timers", "node:timers/promises", "node:stream", "node:stream/promises", "node:fs", "node:fs/promises", "node:crypto", "cosmo:crypto", "node:zlib", "cosmo:compression", "node:child_process", "queueMicrotask", "AbortController", "AbortSignal", "EventTarget", "Event", "DOMException",
-                 "node:dns", "node:dns/promises", "node:net", "node:url", "URL", "URLSearchParams",
-                 "Buffer", "process", "console", "TextEncoder", "TextDecoder", "Worker", "BigInt", "experimental Temporal/Intl"],
+    "features": features(capabilities),
     "windows_exit_status": "raw uint32; Unix retains POSIX wait status",
     "compatibility": json.loads((ROOT / "compat/versions.json").read_text()),
     "compatibility_sources": {p.relative_to(ROOT).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()

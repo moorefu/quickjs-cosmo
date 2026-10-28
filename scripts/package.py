@@ -9,6 +9,7 @@ import stat
 import zipfile
 from build_config import load_config
 from release_version import release_info
+from runtime_capabilities import readme, report
 
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
@@ -42,6 +43,7 @@ for path, relative, mode in files:
                  "cosmocc Nightly run: " + str(lock["cosmopolitan"]["run_number"]) + "\n").encode("ascii")
         data += b"\nNode.js JavaScript modules (MIT)\n" + (settings.dist / "NODE-MODULES-LICENSE").read_bytes()
         data += b"\nNative library and source notices (runtime adapters and build probes)\n" + (settings.dist / "NATIVE-MODULES-LICENSES").read_bytes()
+        data += readme(report(root))
     if mode & 0o111 and not data.startswith(b"MZ"):
         raise ValueError(f"Expected an APE binary, not a shell launcher: {path}")
     contents.append((relative, mode, data))

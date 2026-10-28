@@ -65,6 +65,7 @@ jobs:
           export GITHUB_REF_TYPE=tag
           export GITHUB_REF_NAME="$RELEASE_TAG"
           export GITHUB_RUN_ID="$SOURCE_RUN_ID"
+          export GITHUB_SHA="$(git rev-parse HEAD)"
           python scripts/ci_artifact.py unpack
           cp .release-tools/scripts/publish_release.py scripts/publish_release.py
           python scripts/publish_release.py

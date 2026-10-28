@@ -37,3 +37,9 @@ import missing from 'node:missing';
 new EventEmitter({ captureRejections: true });
 // @ts-expect-error path operations reject non-strings.
 path.join(1);
+import {runtimeInfo} from 'cosmo:runtime';
+const runtime=runtimeInfo();
+const entryKind:'qjs'|'worker'|'qjsc'|'sdk'=runtime.entry;
+const quota:number=runtime.capabilities.limits.nativeTasks.reservedBytes;
+const statuses:Record<string,import('cosmo:runtime').APIStatus>=runtime.capabilities.modules[0].apis;
+void entryKind;void quota;void statuses;

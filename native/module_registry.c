@@ -239,6 +239,11 @@ static JSValue runtime_info(JSContext *ctx, JSValueConst self, int argc, JSValue
         }
     }
     if (JS_SetPropertyStr(ctx, info, "builtinModules", modules) < 0) goto fail;
+    const char *description = QJS_COSMO_CAPABILITIES_JSON;
+    JSValue capabilities = JS_ParseJSON(ctx, description, strlen(description), "<runtime-capabilities>");
+    if (JS_IsException(capabilities) || JS_SetPropertyStr(ctx, info, "capabilities", capabilities) < 0) goto fail;
+    CosmoRuntimeState *state = js_cosmo_state(ctx);
+    if (!state || set_string(ctx, info, "entry", state->worker ? "worker" : state->mode == 2 ? "qjsc" : state->mode == 3 ? "sdk" : "qjs") < 0) goto fail;
 #if defined(__aarch64__)
     const char *arch = "arm64";
 #else

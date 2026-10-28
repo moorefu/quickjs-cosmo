@@ -12,6 +12,7 @@ import sys
 import time
 from build_config import load_config
 from host_runtime import ape_command, check_host, host_info
+from release_evidence import binding
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -416,6 +417,8 @@ def main():
 
     failed = sum(not result["passed"] for result in results)
     report = dict(platform=platform.platform(), host=host, python=sys.version.split()[0], build_profile=settings.profile,
+                  coverage=dict(upstream=args.upstream,nodeCompat=args.node_compat,compiled=args.compile,standalone=bool(args.standalone)),
+                  artifacts=binding(settings),
                   qjs=str(qjs), qjs_sha256=hashlib.sha256(qjs.read_bytes()).hexdigest(),
                   quickjs_commit=settings.data["quickjs"]["commit"], cosmopolitan=settings.data["cosmopolitan"],
                   passed=len(results) - failed, failed=failed, skipped=skipped, results=results)

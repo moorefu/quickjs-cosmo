@@ -13,9 +13,12 @@ import zipfile
 from build_config import load_config
 from release_version import bundle_release, release_info
 from runtime_inputs import runtime_source_names
+from runtime_capabilities import report as capability_report, features
+from release_evidence import validate_reports, validate_evidence
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = "build/ci/bundle-manifest.json"
+BUILD_EVIDENCE = "build/ci/build-evidence.json"
 STANDALONES = ("build/test-linux/hello-standalone.exe", "build/test-linux/runtime-standalone.exe",
                "build/test-linux/registry-standalone.exe", "build/test-linux/registry-sdk.exe",
                "build/test-linux/buffer-standalone.exe", "build/test-linux/foundation-standalone.exe",
@@ -59,7 +62,7 @@ def checked_name(name, version):
     if path.is_absolute() or ".." in path.parts or "\\" in name or ":" in name or str(path) != name:
         raise ValueError("Unsafe CI artifact path: " + name)
     release = f"releases/quickjs-cosmo-{version}.zip"
-    allowed = name in (MANIFEST, SOURCE, *STANDALONES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA, *HTTPS_METADATA, release, release + ".sha256")
+    allowed = name in (MANIFEST, BUILD_EVIDENCE, SOURCE, *STANDALONES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA, *HTTPS_METADATA, release, release + ".sha256")
     allowed |= len(path.parts) == 2 and path.parts[0] == "dist"
     allowed |= len(path.parts) == 3 and path.parts[:2] == ("dist", ".aarch64")
     if not allowed:
@@ -89,6 +92,15 @@ def verify_dist(settings):
                 "http.d.ts", "fetch.d.ts", "https.d.ts", "qjs", "qjsc", "run-test262", "versions.json", "QUICKJS-LICENSE", "NODE-MODULES-LICENSE", "NATIVE-MODULES-LICENSES"}
     if not required.issubset(manifest["files"]):
         raise ValueError("Incomplete SDK in CI artifact")
+    required_types={p.name for p in (root/'types').glob('*.d.ts')}
+    if not required_types.issubset(manifest['files']):raise ValueError('SDK is missing current declaration files')
+    for name in required_types:
+        if sha256(root/'types'/name)!=sha256(dist/name):raise ValueError('Stale SDK declaration: '+name)
+    for source,target in (('native/module_registry.h','qjs-cosmo.h'),('native/tasks.h','qjs-tasks.h')):
+        if sha256(root/source)!=sha256(dist/target):raise ValueError('Stale SDK public header: '+target)
+    capabilities=capability_report(root)
+    if json.loads((dist/'capabilities.json').read_text(encoding='utf8'))!=capabilities or manifest['features']!=features(capabilities):raise ValueError('Capability contract differs from source inventory')
+    if 'capabilities.json' not in manifest['files']:raise ValueError('SDK capability contract is not hashed')
     for name, record in manifest["files"].items():
         checked_name("dist/" + name, settings.data["quickjs"]["version"])
         path = dist / name
@@ -142,6 +154,8 @@ def verify_package(settings, release=None):
             raise ValueError("Release readme is missing Node module notices")
         if (settings.dist / "NATIVE-MODULES-LICENSES").read_bytes() not in readme:
             raise ValueError("Release readme is missing native source notices")
+        from runtime_capabilities import readme as capability_readme
+        if not readme.endswith(capability_readme(capability_report(settings.root))):raise ValueError('Release readme has a stale capability contract')
 
 
 def bundle_metadata(settings):
@@ -162,10 +176,11 @@ def verify(settings):
             raise ValueError("CI payload hash mismatch: " + name)
     sdk = verify_dist(settings)
     expected = {"dist/" + name for name in sdk["files"]} | {
-        "dist/manifest.json", SOURCE, *STANDALONES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA, *HTTPS_METADATA,
+        "dist/manifest.json", BUILD_EVIDENCE, SOURCE, *STANDALONES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA, *HTTPS_METADATA,
         "releases/" + release["archive"], "releases/" + release["archive"] + ".sha256"}
     if set(metadata["files"]) != expected:
         raise ValueError("CI bundle payload inventory mismatch")
+    validate_evidence(settings,json.loads((settings.root/BUILD_EVIDENCE).read_text(encoding='utf8')),build=True)
     from native_provenance import verify_probe
     for backend in (False, True):
         name = "backends" if backend else "toolchain"
@@ -207,9 +222,12 @@ def pack(settings, output, tag=None):
     report = json.loads((settings.reports / "linux.json").read_text(encoding="utf-8"))
     if report["failed"] or report["qjs_sha256"] != sha256(settings.dist / "qjs.exe"):
         raise ValueError("Build host tests must pass for the packaged qjs")
+    evidence=validate_reports(settings,'build-linux-x64',build=True)
+    (settings.root/BUILD_EVIDENCE).parent.mkdir(parents=True,exist_ok=True)
+    (settings.root/BUILD_EVIDENCE).write_text(json.dumps(evidence,indent=2)+'\n',encoding='utf8')
     archive = "releases/" + release["archive"]
     files = sorted({"dist/" + name for name in sdk["files"]} | {
-        "dist/manifest.json", SOURCE, *STANDALONES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA, *HTTPS_METADATA, archive, archive + ".sha256"})
+        "dist/manifest.json", BUILD_EVIDENCE, SOURCE, *STANDALONES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA, *HTTPS_METADATA, archive, archive + ".sha256"})
     for name in ("probe-linux.json", "backends-linux.json"):
         native = json.loads((settings.root / "build/native" / name).read_text(encoding="utf-8"))
         if not native["passed"]:

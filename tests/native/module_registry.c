@@ -55,6 +55,7 @@ int main(void) {
         JS_FreeValue(ctx, buffer); JS_FreeValue(other, other_buffer);
         JS_FreeValue(ctx, global); JS_FreeValue(other, other_global);
         const char host[] = "import process from 'node:process'; import path from 'node:path';"
+                            "import {runtimeInfo} from 'cosmo:runtime';const info=runtimeInfo();if(info.entry!=='sdk'||info.capabilities.format!==1||!info.capabilities.modules.some(m=>m.specifier==='node:https'))throw Error('SDK capability contract');"
                             "import {EventEmitter} from 'node:events'; import assert from 'node:assert/strict';"
                             "assert.equal(process,globalThis.process); assert(process instanceof EventEmitter);"
                             "assert(path.isAbsolute(process.execPath)); assert.equal(process.argv.length,1);"

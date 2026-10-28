@@ -28,4 +28,4 @@ QuickJS 的 WeakMap 值会强引用其内容；当值回指键时，旧状态表
 
 本地验收：Linux 构建及完整回归 139/139；最终共享 APE 复核 92/92；Windows 94/94，另有 1 项 Unix 命令测试按既定规则跳过；两端 Node 差分 58/58；Python 97 项；TypeScript 5.9.3 的 ES2022 与 ES2022+DOM 均通过。CI 传输清单包含 45 个独立 APE，三文件 ZIP 与 SDK/源码/产物哈希核验均通过。
 
-本项待提交对应的完整 CI 验收；全部必需检查通过后，才开始 M6-02。
+完整 CI 已通过：`256ee8b`，[七平台及总门禁](https://github.com/moorefu/quickjs-cosmo/actions/runs/40714828461)。首轮发现的 unref 标记文件创建/写入竞态已修正为等待完整内容，未放宽超时和结果比较。现进入 M6-02。
