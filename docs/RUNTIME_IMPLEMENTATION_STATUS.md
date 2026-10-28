@@ -21,8 +21,8 @@
 | M3-05 文件/算法流 | 完成，CI 全绿 | `f90d02d`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40581885448)，[记录](M3_FILE_ALGORITHM_STREAMS.md) |
 | M4-01 密钥与 AEAD | 完成，CI 全绿 | `111ec61`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40603741483)，[记录](M4_KEYS_AEAD.md) |
 | M4-02 扩展摘要 | 完成，CI 全绿 | `a7e6da7`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40609066017)，[记录](M4_EXTRA_DIGESTS.md) |
-| M5-01 DNS/TCP/URL | 本地验收完成，待完整 CI | Linux 113/113、Windows 83/83；差分 46/46，[记录](M5_NETWORK.md) |
-| M5-02 TLS 审计 | 待实现 | 新 Nightly、旧缺陷、CA 与 SDK 范围 |
+| M5-01 DNS/TCP/URL | 完成，CI 全绿 | `df2e2f8`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40628025488)，[记录](M5_NETWORK.md) |
+| M5-02 TLS 审计 | 本地验收完成，待完整 CI | Linux 116/116、Windows 85/85；73 条断言、31 组策略用例、55 条公告，[记录](M5_TLS_AUDIT.md) |
 | M5-03 TLS 接入 | 待实现 | 客户端 TLS、证书、SNI 与取消 |
 | M5-04 HTTP/Fetch | 待实现 | HTTP/1.1 与 Fetch 声明子集 |
 | M5-05 HTTPS | 待实现 | TLS/HTTP 集成与故障清理 |

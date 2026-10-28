@@ -1,0 +1,260 @@
+--- a/third_party/mbedtls/config.h
++++ b/third_party/mbedtls/config.h
+@@ -71,6 +71,7 @@
+ /* eliptic curves */
+ #define MBEDTLS_ECP_DP_SECP256R1_ENABLED
+ #define MBEDTLS_ECP_DP_SECP384R1_ENABLED
++#define MBEDTLS_ECP_DP_SECP521R1_ENABLED
+ #define MBEDTLS_ECP_DP_CURVE25519_ENABLED
+ #ifndef TINY
+ #define MBEDTLS_ECP_DP_CURVE448_ENABLED
+--- a/third_party/mbedtls/x509_crt.c
++++ b/third_party/mbedtls/x509_crt.c
+@@ -403,16 +403,15 @@
+     if( ( ret = mbedtls_asn1_get_tag( p, end, &len,
+             MBEDTLS_ASN1_CONSTRUCTED | MBEDTLS_ASN1_SEQUENCE ) ) )
+         return( MBEDTLS_ERR_X509_INVALID_EXTENSIONS + ret );
++    if( len != (size_t)( end - *p ) )
++        return( MBEDTLS_ERR_X509_INVALID_EXTENSIONS +
++                MBEDTLS_ERR_ASN1_LENGTH_MISMATCH );
+     if( *p == end )
+         return 0;
+     if( ( ret = mbedtls_asn1_get_bool( p, end, ca_istrue ) ) )
+     {
+-        if( ret == MBEDTLS_ERR_ASN1_UNEXPECTED_TAG )
+-            ret = mbedtls_asn1_get_int( p, end, ca_istrue );
+-        if( ret )
++        if( ret != MBEDTLS_ERR_ASN1_UNEXPECTED_TAG )
+             return( MBEDTLS_ERR_X509_INVALID_EXTENSIONS + ret );
+-        if( *ca_istrue )
+-            *ca_istrue = 1;
+     }
+     if( *p == end )
+         return 0;
+--- a/third_party/mbedtls/ecdh.c
++++ b/third_party/mbedtls/ecdh.c
+@@ -672,10 +672,9 @@
+     }
+ #endif /* MBEDTLS_ECP_RESTARTABLE */
+ 
+-    if( mbedtls_mpi_size( &ctx->z ) > blen )
++    *olen = ctx->grp.pbits / 8 + ( ( ctx->grp.pbits % 8 ) != 0 );
++    if( *olen > blen )
+         return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
+-
+-    *olen = ctx->grp.pbits / 8 + ( ( ctx->grp.pbits % 8 ) != 0 );
+ 
+     if( mbedtls_ecp_get_type( &ctx->grp ) == MBEDTLS_ECP_TYPE_MONTGOMERY )
+         return mbedtls_mpi_write_binary_le( &ctx->z, buf, *olen );
+--- a/third_party/mbedtls/ssl_internal.h
++++ b/third_party/mbedtls/ssl_internal.h
+@@ -492,7 +492,7 @@
+ 
+     void (*update_checksum)(mbedtls_ssl_context *, const unsigned char *, size_t);
+     void (*calc_verify)(const mbedtls_ssl_context *, unsigned char *, size_t *);
+-    void (*calc_finished)(mbedtls_ssl_context *, unsigned char *, int);
++    int (*calc_finished)(mbedtls_ssl_context *, unsigned char *, int);
+     mbedtls_ssl_tls_prf_cb *tls_prf;
+ 
+     mbedtls_ssl_ciphersuite_t const *ciphersuite_info;
+--- a/third_party/mbedtls/ssl_tls.c
++++ b/third_party/mbedtls/ssl_tls.c
+@@ -316,6 +316,9 @@
+ {
+     mbedtls_ssl_session_free( dst );
+     memcpy( dst, src, sizeof( mbedtls_ssl_session ) );
++#if defined(MBEDTLS_SSL_SESSION_TICKETS) && defined(MBEDTLS_SSL_CLI_C)
++    dst->ticket = NULL;
++#endif
+ #if defined(MBEDTLS_X509_CRT_PARSE_C)
+ #if defined(MBEDTLS_SSL_KEEP_PEER_CERTIFICATE)
+     if( src->peer_cert != NULL )
+@@ -576,7 +579,8 @@
+     }
+ exit:
+     mbedtls_md_free( &md_ctx );
+-    mbedtls_platform_zeroize( tmp, tmp_len );
++    if( tmp != NULL )
++        mbedtls_platform_zeroize( tmp, tmp_len );
+     mbedtls_platform_zeroize( h_i, sizeof( h_i ) );
+     mbedtls_free( tmp );
+     return( ret );
+@@ -649,7 +653,8 @@
+ exit:
+     mbedtls_md_free( &md_ctx );
+ 
+-    mbedtls_platform_zeroize( tmp, tmp_len );
++    if( tmp != NULL )
++        mbedtls_platform_zeroize( tmp, tmp_len );
+     mbedtls_platform_zeroize( h_i, sizeof( h_i ) );
+ 
+     mbedtls_free( tmp );
+@@ -689,25 +694,25 @@
+ 
+ #if defined(MBEDTLS_SSL_PROTO_SSL3)
+ static void ssl_calc_verify_ssl( const mbedtls_ssl_context *, unsigned char *, size_t * );
+-static void ssl_calc_finished_ssl( mbedtls_ssl_context *, unsigned char *, int );
++static int ssl_calc_finished_ssl( mbedtls_ssl_context *, unsigned char *, int );
+ #endif
+ 
+ #if defined(MBEDTLS_SSL_PROTO_TLS1) || defined(MBEDTLS_SSL_PROTO_TLS1_1)
+ static void ssl_calc_verify_tls( const mbedtls_ssl_context *, unsigned char*, size_t * );
+-static void ssl_calc_finished_tls( mbedtls_ssl_context *, unsigned char *, int );
++static int ssl_calc_finished_tls( mbedtls_ssl_context *, unsigned char *, int );
+ #endif
+ 
+ #if defined(MBEDTLS_SSL_PROTO_TLS1_2)
+ #if defined(MBEDTLS_SHA256_C)
+ static void ssl_update_checksum_sha256( mbedtls_ssl_context *, const unsigned char *, size_t );
+ static void ssl_calc_verify_tls_sha256( const mbedtls_ssl_context *,unsigned char*, size_t * );
+-static void ssl_calc_finished_tls_sha256( mbedtls_ssl_context *,unsigned char *, int );
++static int ssl_calc_finished_tls_sha256( mbedtls_ssl_context *,unsigned char *, int );
+ #endif
+ 
+ #if defined(MBEDTLS_SHA512_C)
+ static void ssl_update_checksum_sha384( mbedtls_ssl_context *, const unsigned char *, size_t );
+ static void ssl_calc_verify_tls_sha384( const mbedtls_ssl_context *, unsigned char*, size_t * );
+-static void ssl_calc_finished_tls_sha384( mbedtls_ssl_context *, unsigned char *, int );
++static int ssl_calc_finished_tls_sha384( mbedtls_ssl_context *, unsigned char *, int );
+ #endif
+ #endif /* MBEDTLS_SSL_PROTO_TLS1_2 */
+ 
+@@ -2646,7 +2651,7 @@
+ #endif /* MBEDTLS_SSL_PROTO_TLS1_2 */
+ 
+ #if defined(MBEDTLS_SSL_PROTO_SSL3)
+-static void ssl_calc_finished_ssl(
++static int ssl_calc_finished_ssl(
+                 mbedtls_ssl_context *ssl, unsigned char *buf, int from )
+ {
+     const char *sender;
+@@ -2708,14 +2713,15 @@
+     mbedtls_platform_zeroize(  md5sum, sizeof(  md5sum ) );
+     mbedtls_platform_zeroize( sha1sum, sizeof( sha1sum ) );
+     MBEDTLS_SSL_DEBUG_MSG( 2, ( "<= calc  finished" ) );
++    return( 0 );
+ }
+ #endif /* MBEDTLS_SSL_PROTO_SSL3 */
+ 
+ #if defined(MBEDTLS_SSL_PROTO_TLS1) || defined(MBEDTLS_SSL_PROTO_TLS1_1)
+-static void ssl_calc_finished_tls(
++static int ssl_calc_finished_tls(
+                 mbedtls_ssl_context *ssl, unsigned char *buf, int from )
+ {
+-    int len = 12;
++    int len = 12, ret;
+     const char *sender;
+     mbedtls_md5_context  md5;
+     mbedtls_sha1_context sha1;
+@@ -2746,22 +2752,24 @@
+              : "server finished";
+     mbedtls_md5_finish_ret(  &md5, padbuf );
+     mbedtls_sha1_finish_ret( &sha1, padbuf + 16 );
+-    ssl->handshake->tls_prf( session->master, 48, sender,
++    ret = ssl->handshake->tls_prf( session->master, 48, sender,
+                              padbuf, 36, buf, len );
+-    MBEDTLS_SSL_DEBUG_BUF( 3, "calc finished result", buf, len );
++    if( ret == 0 )
++        MBEDTLS_SSL_DEBUG_BUF( 3, "calc finished result", buf, len );
+     mbedtls_md5_free(  &md5  );
+     mbedtls_sha1_free( &sha1 );
+     mbedtls_platform_zeroize(  padbuf, sizeof(  padbuf ) );
+     MBEDTLS_SSL_DEBUG_MSG( 2, ( "<= calc  finished" ) );
++    return( ret );
+ }
+ #endif /* MBEDTLS_SSL_PROTO_TLS1 || MBEDTLS_SSL_PROTO_TLS1_1 */
+ 
+ #if defined(MBEDTLS_SSL_PROTO_TLS1_2)
+ #if defined(MBEDTLS_SHA256_C)
+-static void ssl_calc_finished_tls_sha256(
++static int ssl_calc_finished_tls_sha256(
+                 mbedtls_ssl_context *ssl, unsigned char *buf, int from )
+ {
+-    int len = 12;
++    int len = 12, ret;
+     const char *sender;
+     unsigned char padbuf[32];
+     mbedtls_sha256_context sha256;
+@@ -2784,24 +2792,25 @@
+     MBEDTLS_SSL_DEBUG_BUF( 4, "finished sha2 state", (unsigned char *)
+                    sha256.state, sizeof( sha256.state ) );
+ #endif
+-    mbedtls_sha256_finish_ret( &sha256, padbuf );
++    ret = mbedtls_sha256_finish_ret( &sha256, padbuf );
+     mbedtls_sha256_free( &sha256 );
+-    ssl->handshake->tls_prf( session->master, 48, sender,
++    if( ret == 0 )
++        ret = ssl->handshake->tls_prf( session->master, 48, sender,
+                              padbuf, 32, buf, len );
+-    MBEDTLS_SSL_DEBUG_BUF( 3, "calc finished result", buf, len );
++    if( ret == 0 )
++        MBEDTLS_SSL_DEBUG_BUF( 3, "calc finished result", buf, len );
+     mbedtls_platform_zeroize(  padbuf, sizeof(  padbuf ) );
+     MBEDTLS_SSL_DEBUG_MSG( 2, ( "<= calc  finished" ) );
++    return( ret );
+ }
+ #endif /* MBEDTLS_SHA256_C */
+ 
+ #if defined(MBEDTLS_SHA512_C)
+ 
+-typedef int (*finish_sha384_t)(mbedtls_sha512_context*, unsigned char*);
+-
+-static void ssl_calc_finished_tls_sha384(
++static int ssl_calc_finished_tls_sha384(
+                 mbedtls_ssl_context *ssl, unsigned char *buf, int from )
+ {
+-    int len = 12;
++    int len = 12, ret;
+     const char *sender;
+     unsigned char padbuf[64];
+     mbedtls_sha512_context sha512;
+@@ -2822,20 +2831,17 @@
+ #if !defined(MBEDTLS_SHA512_ALT)
+     MBEDTLS_SSL_DEBUG_BUF( 4, "finished sha512 state", (unsigned char *)
+                    sha512.state, sizeof( sha512.state ) );
+-    /*
+-     * For SHA-384, we can save 16 bytes by keeping padbuf 48 bytes long.
+-     * However, to avoid stringop-overflow warning in gcc, we have to cast
+-     * mbedtls_sha512_finish_ret().
+-     */
+-    finish_sha384_t finish = (finish_sha384_t)mbedtls_sha512_finish_ret;
+-    finish( &sha512, padbuf );
++#endif
++    ret = mbedtls_sha512_finish_ret( &sha512, padbuf );
+     mbedtls_sha512_free( &sha512 );
+-#endif
+-    ssl->handshake->tls_prf( session->master, 48, sender,
++    if( ret == 0 )
++        ret = ssl->handshake->tls_prf( session->master, 48, sender,
+                              padbuf, 48, buf, len );
+-    MBEDTLS_SSL_DEBUG_BUF( 3, "calc finished result", buf, len );
++    if( ret == 0 )
++        MBEDTLS_SSL_DEBUG_BUF( 3, "calc finished result", buf, len );
+     mbedtls_platform_zeroize(  padbuf, sizeof( padbuf ) );
+     MBEDTLS_SSL_DEBUG_MSG( 2, ( "<= calc  finished" ) );
++    return( ret );
+ }
+ #endif /* MBEDTLS_SHA512_C */
+ #endif /* MBEDTLS_SSL_PROTO_TLS1_2 */
+@@ -2920,7 +2926,9 @@
+     int ret, hash_len;
+     MBEDTLS_SSL_DEBUG_MSG( 2, ( "=> write finished" ) );
+     mbedtls_ssl_update_out_pointers( ssl, ssl->transform_negotiate );
+-    ssl->handshake->calc_finished( ssl, ssl->out_msg + 4, ssl->conf->endpoint );
++    ret = ssl->handshake->calc_finished( ssl, ssl->out_msg + 4, ssl->conf->endpoint );
++    if( ret != 0 )
++        return( ret );
+     /*
+      * RFC 5246 7.4.9 (Page 63) says 12 is the default length and ciphersuites
+      * may define some other value. Currently (early 2016), no defined
+@@ -3025,7 +3033,9 @@
+     unsigned int hash_len;
+     unsigned char buf[SSL_MAX_HASH_LEN];
+     MBEDTLS_SSL_DEBUG_MSG( 2, ( "=> parse finished" ) );
+-    ssl->handshake->calc_finished( ssl, buf, ssl->conf->endpoint ^ 1 );
++    ret = ssl->handshake->calc_finished( ssl, buf, ssl->conf->endpoint ^ 1 );
++    if( ret != 0 )
++        return( ret );
+     if( ( ret = mbedtls_ssl_read_record( ssl, 1 ) ) != 0 )
+     {
+         MBEDTLS_SSL_DEBUG_RET( 1, "mbedtls_ssl_read_record", ret );

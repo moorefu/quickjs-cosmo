@@ -169,16 +169,20 @@
         "third_party/mbedtls/test/BUILD.mk"
       ],
       "notes": [
-        "Scoped native probe evidence; no JS support or general SDK archive admission."
+        "Scoped digest/AEAD bindings and private M5-02 TLS audit candidate only; general backend remains unadmitted."
       ],
-      "evidence_scope": "MD5/SHA1/SHA224/256/384/512 self-tests and streaming/copy vectors, HMAC/HKDF/PBKDF2 SHA256 vectors; no TLS/key admission; M2-03 production binding uses only the declared digest/KDF/random subset, SDK backends localized; full library admission unchanged",
+      "evidence_scope": "M2/M4 private crypto closure plus M5-02 patched TLS policy candidate, 55 advisory review, CA and SDK symbol boundary; no public TLS until M5-03",
       "evidence": [
         "native/build-inputs.json",
         "native/probes/backends.c",
         "scripts/probe_backends.py",
         "docs/M2_CRYPTO.md",
         "tests/native/crypto.c",
-        "tests/runtime_crypto.mjs"
+        "tests/runtime_crypto.mjs",
+        "native/tls/security.json",
+        "native/tls/advisories.json",
+        "scripts/probe_tls.py",
+        "docs/M5_TLS_AUDIT.md"
       ]
     },
     {

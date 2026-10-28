@@ -1,0 +1,1228 @@
+{
+  "format": 1,
+  "review_date": "2026-10-28",
+  "scope": "55 official advisories from 2021 onward; not formal certification or a full pre-2021/side-channel/fuzz audit",
+  "source_repository": "Mbed-TLS/mbedtls-docs",
+  "source_commit": "abe4067e3f2069efc394ea362c46ce7d8998c5ce",
+  "conclusion": "Admitted public JS/SDK scope and private TLS policy candidate only; general MbedTLS remains unadmitted with 14 raw backend issues. M5-03 must retain this boundary and policy.",
+  "counts": {
+    "unfixed_raw_backend": 14,
+    "patched_TLS_candidate": 4,
+    "not_affected_or_disabled": 27,
+    "integration_constraints": 8,
+    "cosmopolitan_specific_path": 2
+  },
+  "records": [
+    {
+      "id": "mbedtls-security-advisory-2021-07-1",
+      "cve": "无编号",
+      "source": {
+        "id": "mbedtls-security-advisory-2021-07-1",
+        "sha256": "24dacd54863ca1f26ef9b21a90496771fc78729b688a13cd460e650b116cefc4",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2021-07-1.md"
+      },
+      "nightly_backend": "unfixed_raw_backend",
+      "reference_rationale": "客户端只验证 RSA 公钥签名，JS 未暴露 RSA 私钥；SDK 的 RSA 私钥实现未回移全部侧信道修复。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2021-07-2",
+      "cve": "无编号",
+      "source": {
+        "id": "mbedtls-security-advisory-2021-07-2",
+        "sha256": "562939d4b8c2e74eead978cd56b28871c74bef94048f2216b0f904ee01c90d4e",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2021-07-2.md"
+      },
+      "nightly_backend": "unfixed_raw_backend",
+      "reference_rationale": "TLS 只生成单次随机 ECDHE，JS X25519 使用 HACL*；SDK 的长寿命静态密钥用途未获保证。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2021-12",
+      "cve": "CVE-2021-44732",
+      "source": {
+        "id": "mbedtls-security-advisory-2021-12",
+        "sha256": "c7193e0870b30398272f045341a1d7450110a9113a9e919243f2bb1dcca8c137",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2021-12.md"
+      },
+      "nightly_backend": "patched_TLS_candidate",
+      "reference_rationale": "复制后立即断开 ticket 所有权别名；故障注入验证两个会话可以分别释放。客户端另禁用 ticket 且不复用会话。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2022-07",
+      "cve": "CVE-2022-35409",
+      "source": {
+        "id": "mbedtls-security-advisory-2022-07",
+        "sha256": "abd9e88fb672a8104b9655226bec0e8342636883bdcd4e3fdcb6699aecc27995",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2022-07.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "固定配置未启用 DTLS。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2023-10-1",
+      "cve": "CVE-2023-43615",
+      "source": {
+        "id": "mbedtls-security-advisory-2023-10-1",
+        "sha256": "fe09d6cefbf1c0730ac765aa3ab2a7af0754e469032de9140328a1aa10cfe884",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2023-10-1.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "客户端仅允许四个 AES-GCM 套件；固定 SDK 配置也未启用 NULL cipher 或 ARC4。更改配置须重审，不能声明底层记录代码已修复。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2023-10-2",
+      "cve": "CVE-2023-45199",
+      "source": {
+        "id": "mbedtls-security-advisory-2023-10-2",
+        "sha256": "7a04548b64b1d63b6a918956be732e3373e9324faef30bf35504b92c59f9b020",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2023-10-2.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "公告从 3.2.0 起；当前 2.26 无 TLS 1.3 和 PSA 集成。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2024-01-1",
+      "cve": "CVE-2024-23170",
+      "source": {
+        "id": "mbedtls-security-advisory-2024-01-1",
+        "sha256": "582d41cc6d1bf2c55fee7e073f4ea0f7bfb571501b53085a33f11b590bd8f703",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2024-01-1.md"
+      },
+      "nightly_backend": "unfixed_raw_backend",
+      "reference_rationale": "客户端无 RSA 私钥运算，通用 SDK 的私钥实现未回移。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2024-01-2",
+      "cve": "CVE-2024-23775",
+      "source": {
+        "id": "mbedtls-security-advisory-2024-01-2",
+        "sha256": "bdbaa52cae8ad702a9080fa17476c37dde2e4fcbfa9b9da050fd4e2d13de4003",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2024-01-2.md"
+      },
+      "nightly_backend": "unfixed_raw_backend",
+      "reference_rationale": "客户端只解析证书；SDK 证书及 CSR 写入接口未回移边界修复。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2024-03",
+      "cve": "CVE-2024-28960",
+      "source": {
+        "id": "mbedtls-security-advisory-2024-03",
+        "sha256": "58f0405da4acb0e097aae62f148806fc6ef90a96a02cc54c06d349185efd41ac",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2024-03.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "未启用 PSA Crypto；网络和 JS 接口不接受共享 PSA 参数。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2024-08-1",
+      "cve": "CVE-2024-45157",
+      "source": {
+        "id": "mbedtls-security-advisory-2024-08-1",
+        "sha256": "10a24ba3b8a980280a406f37a2d25cb1c2c2631246327499821af01f7e5f96a4",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2024-08-1.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "未启用 PSA，客户端每次从宿主取随机数。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2024-08-2",
+      "cve": "CVE-2024-45158",
+      "source": {
+        "id": "mbedtls-security-advisory-2024-08-2",
+        "sha256": "223e92a41da40d6344594f041b473229cb89a39667bf5405961a2939376af441",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2024-08-2.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "公告仅影响 3.6.0 的新增转换接口。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2024-08-3",
+      "cve": "CVE-2024-45159",
+      "source": {
+        "id": "mbedtls-security-advisory-2024-08-3",
+        "sha256": "a70b28082df4144149c3de81ada40951c89fb77cbc56b431bbee2ace2802a030",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2024-08-3.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "当前无 TLS 1.3。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2024-10-1",
+      "cve": "CVE-2024-49195",
+      "source": {
+        "id": "mbedtls-security-advisory-2024-10-1",
+        "sha256": "c2174abab41f6c8000061cb7a059138e2fe3e776b120c1966814e3fd3c9afe4f",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2024-10-1.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "公告从 3.5.0 起，当前无 PSA 不透明密钥。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2025-03-1",
+      "cve": "CVE-2025-27809",
+      "source": {
+        "id": "mbedtls-security-advisory-2025-03-1",
+        "sha256": "8c02f93c54f983d9871f2e1c057d39ffe23cdd5d3b9923756971c2bc79c9025a",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-03-1.md"
+      },
+      "nightly_backend": "integration_constraints",
+      "reference_rationale": "每次必须设置 hostname 并检查返回；IP 额外要求同类型 SAN，验证模式固定 REQUIRED。SDK 直接使用者仍须设置并检查 hostname。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "DNS requires successful set_hostname; IP identities skip SNI and require exact same-type IP SAN through an unconditional leaf callback. CN/DNS-text IP alternatives are rejected in offline tests.",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2025-03-2",
+      "cve": "CVE-2025-27810",
+      "source": {
+        "id": "mbedtls-security-advisory-2025-03-2",
+        "sha256": "6dbdfd1dd098690344a7b5a708fd3da193d6c7956054ffe075c97b6d179a37a5",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-03-2.md"
+      },
+      "nightly_backend": "patched_TLS_candidate",
+      "reference_rationale": "Finished 改为返回错误并由发送和解析调用方传播；补上 Cosmo PRF 分配错误及 NULL 清理。SHA256/384 的三个分配点均注入失败。适用固定内建 hash 配置。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2025-06-1",
+      "cve": "CVE-2025-52496",
+      "source": {
+        "id": "mbedtls-security-advisory-2025-06-1",
+        "sha256": "205f2f2cefc0a7dcca6083d12e3d40fa6a7dcb460818bd43dc746a0053f9b4f8",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-06-1.md"
+      },
+      "nightly_backend": "cosmopolitan_specific_path",
+      "reference_rationale": "Cosmo 使用 X86_HAVE(AES)，无上游 done/c 懒初始化；AES_ROM_TABLES 也排除软件表的懒初始化。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2025-06-2",
+      "cve": "CVE-2025-52497",
+      "source": {
+        "id": "mbedtls-security-advisory-2025-06-2",
+        "sha256": "1ae25feca4fe9e305b9a83c78dd2294e08e9fe2d9e1e41bd941ad653cb65d197",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-06-2.md"
+      },
+      "nightly_backend": "unfixed_raw_backend",
+      "reference_rationale": "网络 CA 读取不提供口令，仅读证书；SDK 加密私钥 PEM 路径未回移。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2025-06-3",
+      "cve": "CVE-2025-49600",
+      "source": {
+        "id": "mbedtls-security-advisory-2025-06-3",
+        "sha256": "0801d2d1a93f7d3efd0599a7c830d011960f7972b156d78bfbe1845888e567d1",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-06-3.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "LMS 从 3.3.0 引入，当前无此模块。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2025-06-4",
+      "cve": "CVE-2025-49601",
+      "source": {
+        "id": "mbedtls-security-advisory-2025-06-4",
+        "sha256": "12257b0398f72b0f45c03f6cc8f4ba680bfa849bdb35bf8866ff0810efa7d0bc",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-06-4.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "LMS 从 3.3.0 引入，当前无此模块。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2025-06-5",
+      "cve": "CVE-2025-49087",
+      "source": {
+        "id": "mbedtls-security-advisory-2025-06-5",
+        "sha256": "8e5eb8676e541189e2d2c931d65e7a27a341c266730a2b8d3c6760b708a8da95",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-06-5.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "公告范围为 3.6.1 至 3.6.3；客户端与 JS 均仅使用 AEAD。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2025-06-6",
+      "cve": "CVE-2025-48965",
+      "source": {
+        "id": "mbedtls-security-advisory-2025-06-6",
+        "sha256": "f6c6e1b314f29c448c91434598bfe79604a0ce7617bd6c2f1500e9ea7c1447fa",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-06-6.md"
+      },
+      "nightly_backend": "unfixed_raw_backend",
+      "reference_rationale": "仅写入证书等名称存储用途；网络不写证书，SDK 未回移。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2025-06-7",
+      "cve": "CVE-2025-47917",
+      "source": {
+        "id": "mbedtls-security-advisory-2025-06-7",
+        "sha256": "7e86089bef5db445fcae729d3255be00ac15c19cd1d28b2d0f5c5add93144ad1",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-06-7.md"
+      },
+      "nightly_backend": "unfixed_raw_backend",
+      "reference_rationale": "网络不调用名称写入接口；SDK x509_string_to_names 的失败所有权约定仍需整改。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2025-10-invalid-padding-error",
+      "cve": "CVE-2025-59438",
+      "source": {
+        "id": "mbedtls-security-advisory-2025-10-invalid-padding-error",
+        "sha256": "00c9b6ec6c3f5a328b8f089996bedc224a90d89fbcc546b3709a7554e725e699",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-10-invalid-padding-error.md"
+      },
+      "nightly_backend": "integration_constraints",
+      "reference_rationale": "固定构建无 PSA；TLS 仅 GCM，JS 仅 AEAD；SDK 使用带填充 legacy 解密的应用仍需审查错误处理时间。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2025-10-ssbleed-mstep",
+      "cve": "CVE-2025-54764",
+      "source": {
+        "id": "mbedtls-security-advisory-2025-10-ssbleed-mstep",
+        "sha256": "1d972f2f55c8f86ff7032310792f43e6a91a68bfd31331c28a18429298831d2e",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-10-ssbleed-mstep.md"
+      },
+      "nightly_backend": "unfixed_raw_backend",
+      "reference_rationale": "运行时无 RSA 私钥生成或解密；SDK 通用 RSA 尚未回移。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-03-ccm-finish-boundary-check",
+      "cve": "CVE-2026-34876",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-03-ccm-finish-boundary-check",
+        "sha256": "b8f9266a9a5fe152ee478837235573168fb035bb31a85029540afbc46c84051e",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-ccm-finish-boundary-check.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "公告从 3.1.0 的分段接口起，当前 2.26 无该新增接口。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-03-client-impersonation-while-resuming-tls13-session",
+      "cve": "CVE-2026-34873",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-03-client-impersonation-while-resuming-tls13-session",
+        "sha256": "1ea5c518c20d289fc5e0d6e912628a670af8f79269dc2c3bdbc2d1fc87afd45a",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-client-impersonation-while-resuming-tls13-session.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "无 TLS 1.3。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-03-compiler-induced-constant-time-violations",
+      "cve": "CVE-2025-66442",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-03-compiler-induced-constant-time-violations",
+        "sha256": "91a043b0d8820a1e459197d52ec84becb6ea75b4f060033b26831c9279df3fec",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-compiler-induced-constant-time-violations.md"
+      },
+      "nightly_backend": "integration_constraints",
+      "reference_rationale": "客户端不做带填充解密；固定 cosmocc 使用 GCC/O2，目标为 x86_64/AArch64，无 LLVM select-optimize。重新选择编译器或选项需重审。未进行物理侧信道认证。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-03-dev-random",
+      "cve": "CVE-2026-34871",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-03-dev-random",
+        "sha256": "0e1d1bb3839f4998bdbeef7c40b71be1427dd5174f7e5932e34a4d9d37ce0bea",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-dev-random.md"
+      },
+      "nightly_backend": "integration_constraints",
+      "reference_rationale": "TLS 和 JS 随机数在 Linux 使用 GRND_RANDOM，使 Cosmo 的旧内核设备回退选择 /dev/random；其他宿主保持系统默认。SDK 自选 RNG 仍须确保启动熵及错误处理。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-03-ffdh-buffer-overflow",
+      "cve": "CVE-2026-34875",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-03-ffdh-buffer-overflow",
+        "sha256": "fb6763eaa82587c86b59ecd78a7ac26c906a0813a4c2cee2518f0eee86fbdfdd",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-ffdh-buffer-overflow.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "公告从 3.5.0 起，当前无受影响的 PSA 导出路径。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-03-ffdh-peerkey-checks",
+      "cve": "CVE-2026-34872",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-03-ffdh-peerkey-checks",
+        "sha256": "af46737eb6a06ff5629074ec9b9d41c4352f7d90438deb414e6f197dc3d14d83",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-ffdh-peerkey-checks.md"
+      },
+      "nightly_backend": "unfixed_raw_backend",
+      "reference_rationale": "网络禁用 FFDH，只用 ECDHE；SDK 通用 dhm 对端输入检查未回移。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-03-inet-pton",
+      "cve": "CVE-2026-25833",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-03-inet-pton",
+        "sha256": "a9e0f756af83b8400cdffdde801bf234ce636eb1f41a5768c3c29f046567ac9b",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-inet-pton.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "公告从 3.5.0 起；此版使用 Cosmo inet_pton 和独立 IP SAN 校验，无受影响的 x509_inet_pton_ipv6。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-03-null-pointer-dereference-x509",
+      "cve": "CVE-2026-34874",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-03-null-pointer-dereference-x509",
+        "sha256": "90b8be602148d809dc8e0d4a41f7330992bede3e7daf69505830ca1fc8932115",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-null-pointer-dereference-x509.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "公告从 3.5.0 起；不替代对更早名称写入问题的独立待处理结论。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-03-rng-cloning",
+      "cve": "CVE-2026-25835",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-03-rng-cloning",
+        "sha256": "6f5f2dd934b9ce59727494a194273ab3ca268a39f472b7bafceea0c479404a4e",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-rng-cloning.md"
+      },
+      "nightly_backend": "integration_constraints",
+      "reference_rationale": "客户端移除持久 CTR_DRBG 状态，每次取宿主随机数；未启用 PSA。SDK 自建 legacy DRBG 必须在 fork 后 reseed；VM 快照需宿主恢复熵，活跃网络线程不支持跨 fork。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-03-serialized-data",
+      "cve": "CVE-2026-34877",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-03-serialized-data",
+        "sha256": "b38631593518b45dae2569b4158aa763e771a8f86d751b46393abdbda14f9248",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-serialized-data.md"
+      },
+      "nightly_backend": "integration_constraints",
+      "reference_rationale": "客户端不导入或导出会话和上下文；SDK 直接使用这些接口必须对持久化字节提供认证、机密性及版本隔离。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-03-sigalg-injection",
+      "cve": "CVE-2026-25834",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-03-sigalg-injection",
+        "sha256": "21f861ab853d05d7a392157277bcdb6950d38bf42bf6ef73a633ea149f04260f",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-sigalg-injection.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "公告从 3.3.0 起；当前无 TLS 1.3 或 PSA 对应路径，仍显式配置签名 hash 白名单。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-chacha20-counter-overflow-keystream-reuse",
+      "cve": "CVE-2026-50584",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-chacha20-counter-overflow-keystream-reuse",
+        "sha256": "83f9f38ddead9b48c5f5ff1839db6a994622d3db8d43c835fd3b6bb02f997352",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-chacha20-counter-overflow-keystream-reuse.md"
+      },
+      "nightly_backend": "unfixed_raw_backend",
+      "reference_rationale": "The old HACL-based JS rationale does not apply to this implementation; the raw Nightly counter bug remains unfixed. The wrapper guard prevents the first reused counter block, and TLS policy offers AES-GCM only.",
+      "js_crypto": "Current ChaCha20-Poly1305 uses Nightly MbedTLS, with a mandatory total <= (2^32-1)*64 bytes guard before backend update; native rejection/canary tests cover the boundary.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-ecc-optimized-modp-side-channel",
+      "cve": "CVE-2026-54435",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-ecc-optimized-modp-side-channel",
+        "sha256": "92b43d9036f402d9309ba894c347b665f2ff7a158b3d29d302f7673ee95e77c2",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-ecc-optimized-modp-side-channel.md"
+      },
+      "nightly_backend": "unfixed_raw_backend",
+      "reference_rationale": "公告攻击依赖重复相同秘密标量的长期 ECC 运算；客户端仅随机单次 ECDHE，JS Ed25519/X25519 用 HACL*。SDK 长期密钥、确定性 ECDSA 等用途仍未修。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-everest-low-order-input-validation",
+      "cve": "CVE-2026-54434",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-everest-low-order-input-validation",
+        "sha256": "004200529a06161b62c10e205b5db6985e2fe7dce3eeb0ba73a733433a0a8826",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-everest-low-order-input-validation.md"
+      },
+      "nightly_backend": "cosmopolitan_specific_path",
+      "reference_rationale": "公告仅影响 TF-PSA-Crypto 1.1/MbedTLS4.1；Cosmo 定制 Everest 另有共享秘密全零拒绝和私钥擦除。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-extended-master-secret-calculation-failure-ignored",
+      "cve": "CVE-2026-50581",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-extended-master-secret-calculation-failure-ignored",
+        "sha256": "eb871e6c34f6b0ebaf505dbf16869665d6b98bb12708a933581eafc4dceb07cf",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-extended-master-secret-calculation-failure-ignored.md"
+      },
+      "nightly_backend": "integration_constraints",
+      "reference_rationale": "2.26 内建 SHA256/384 的 calc_verify 使用栈对象、不分配且无 PSA/hash ALT；公告指出这种配置不会产生所述失败。保留 EMS；替换驱动或配置必须重审。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-heap-corruption-early-renegotiation-corrupted-dtls-record",
+      "cve": "CVE-2026-50713",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-heap-corruption-early-renegotiation-corrupted-dtls-record",
+        "sha256": "009513a0ade4c0f446248aa101733e2f2789e28cdb6b9b1ec61a1200c79e8084",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-heap-corruption-early-renegotiation-corrupted-dtls-record.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "公告仅 3.6.3 至 3.6.6，且此版禁用 DTLS。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-ignored-tls13-resumption-secret-derivation-error",
+      "cve": "CVE-2026-50640",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-ignored-tls13-resumption-secret-derivation-error",
+        "sha256": "224e7d8958aab3617f53344bc560c0206906b37c8bd88f9762cd24e2d735867a",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-ignored-tls13-resumption-secret-derivation-error.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "无 TLS 1.3。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-pkcs7-weak-hash-algorithms-accepted",
+      "cve": "无编号",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-pkcs7-weak-hash-algorithms-accepted",
+        "sha256": "a63e3880b2ff72b615a4342e31ff8ffbadab423ffdcc0a8d46f0ad51f428ca08",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-pkcs7-weak-hash-algorithms-accepted.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "PKCS7 signed-data 模块从 3.3.0 引入，此版无该模块。勿与 PKCS7 填充混淆。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-possible-buffer-overflow-ecdh-calc-secret",
+      "cve": "CVE-2026-35336",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-possible-buffer-overflow-ecdh-calc-secret",
+        "sha256": "240d4fe1eef6e4fa095781c7870f574899eac116a9cea605d50c447c4f394465",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-possible-buffer-overflow-ecdh-calc-secret.md"
+      },
+      "nightly_backend": "patched_TLS_candidate",
+      "reference_rationale": "按曲线固定输出长度检查缓冲区；金丝雀测试覆盖前导零秘密。TLS 内部缓冲区本已足够，此补丁保护 SDK 调用者。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-random-generator-fault-tls-integrity",
+      "cve": "CVE-2026-73064",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-random-generator-fault-tls-integrity",
+        "sha256": "04163c55b6ccc8b292f77c18bf19c6851ce77101d47bc8e24aca77dc3cbdc5c4",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-random-generator-fault-tls-integrity.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "公告从 3.2.0 起；仍新增实际随机源错误注入，证明此客户端在 RNG 失败时中止握手。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-rsa-pkcs1-v15-decryption-timing-side-channel",
+      "cve": "CVE-2026-50587",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-rsa-pkcs1-v15-decryption-timing-side-channel",
+        "sha256": "bd1068f5428b6d66f33bf4507f1c82cebef7f2a6e291f3e335936b6128402b49",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-rsa-pkcs1-v15-decryption-timing-side-channel.md"
+      },
+      "nightly_backend": "unfixed_raw_backend",
+      "reference_rationale": "网络只有 ECDHE 认证、公钥验签，无 RSA 密钥交换/私钥解密；SDK 对应私钥路径未修。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-signature-algorithm-restrictions-certificate-chain",
+      "cve": "CVE-2026-54441",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-signature-algorithm-restrictions-certificate-chain",
+        "sha256": "062a585d72bf9037f5317c1e66e16ee61d11a865fe83efa76958c33aad48c9c0",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-signature-algorithm-restrictions-certificate-chain.md"
+      },
+      "nightly_backend": "integration_constraints",
+      "reference_rationale": "同时设置 SHA256/384/512 的握手 hash 和 certificate profile_next，避免只配握手算法却仍接受 SHA1 证书链。SDK 直接使用者必须同步两套策略。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Handshake signature hashes and certificate profile both enforce SHA256/384/512 and RSA >= 2048; weak SHA1 leaf and RSA1024 are rejected.",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-ssl-session-reset-incomplete-context-reset",
+      "cve": "CVE-2026-50585",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-ssl-session-reset-incomplete-context-reset",
+        "sha256": "597f47945961bb36cee779837a8045e6c5b47f04e94be81e50ad4e0d496fa83f",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-ssl-session-reset-incomplete-context-reset.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "问题字段均属于 DTLS/SRTP，固定配置未启用 DTLS；客户端也不复用上下文。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-tls12-ecdhe-psk-client-buffer-overflow",
+      "cve": "CVE-2026-50580",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-tls12-ecdhe-psk-client-buffer-overflow",
+        "sha256": "5db6ba58f6bcdc0d2b096b52fbd05ae053f6695000691a4e487c68f00ebadccc",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-tls12-ecdhe-psk-client-buffer-overflow.md"
+      },
+      "nightly_backend": "unfixed_raw_backend",
+      "reference_rationale": "客户端无 PSK 配置和套件；SDK 编译了 ECDHE-PSK，超长身份/特定输出布局的条件漏洞未回移，禁止解释为已验证可利用。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-tls12-ecjpake-serverkeyexchange-oob-read",
+      "cve": "CVE-2026-50588",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-tls12-ecjpake-serverkeyexchange-oob-read",
+        "sha256": "a1237fc2c583e3a8e62b23c9177763b203ce2d03e5be3a2ccca3333ff0575014",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-tls12-ecjpake-serverkeyexchange-oob-read.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "公告从 3.3.0 起且当前未启用 J-PAKE。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-tls12-newsessionticket-information-disclosure",
+      "cve": "CVE-2026-50586",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-tls12-newsessionticket-information-disclosure",
+        "sha256": "6deea6d064711332b4053604c4a226d976bcb30b7c2170367e999f8824664e2b",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-tls12-newsessionticket-information-disclosure.md"
+      },
+      "nightly_backend": "unfixed_raw_backend",
+      "reference_rationale": "项目只有 TLS 客户端且禁用 ticket；SDK 含通用服务器和 ticket 接口，未修生成回调失败时的 lifetime 初始化。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-tls13-early-data-integrity-failure-key-change",
+      "cve": "CVE-2026-73096",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-tls13-early-data-integrity-failure-key-change",
+        "sha256": "f988600c94dc7c161fe8f3bb49dae927f0e9dee8d22237f94982cf3313e39a9d",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-tls13-early-data-integrity-failure-key-change.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "无 TLS 1.3 和 early data。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-tls13-hrr-unadvertised-group",
+      "cve": "CVE-2026-25832",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-tls13-hrr-unadvertised-group",
+        "sha256": "1246b5505b8960ef8c9a41e879feacc45f23e6401f00ef7d7b5a88bb776d04dc",
+        "matches_reference": false,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-tls13-hrr-unadvertised-group.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "无 TLS 1.3。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-use-after-free-pkcs7-free-reused-context",
+      "cve": "CVE-2026-50579",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-use-after-free-pkcs7-free-reused-context",
+        "sha256": "341728b724e672eca544e5e007819d2ecfee16ee40da08bf3517f5a31adfa0dd",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-use-after-free-pkcs7-free-reused-context.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "公告从 3.3.0 起，此版无 PKCS7 signed-data 模块。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-x509-ca-bit-forgery-invalid-basicconstraints",
+      "cve": "CVE-2026-49300",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-x509-ca-bit-forgery-invalid-basicconstraints",
+        "sha256": "495851740d8c1a1d66e0f6703b573e10d30c1a2b8e85c4d1693bec47da0546a3",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-x509-ca-bit-forgery-invalid-basicconstraints.md"
+      },
+      "nightly_backend": "patched_TLS_candidate",
+      "reference_rationale": "严格限制 SEQUENCE 边界，不再把 INTEGER 当成 BOOLEAN CA；覆盖八组 DER。公告主要攻击前提为跨解析器根注册，不宣称任意公网叶证书即可伪造。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    },
+    {
+      "id": "mbedtls-security-advisory-2026-07-zero-length-ecc-public-key-oob-read",
+      "cve": "CVE-2026-50583",
+      "source": {
+        "id": "mbedtls-security-advisory-2026-07-zero-length-ecc-public-key-oob-read",
+        "sha256": "4f20304c66115f1fce7107e39472aabc9b4dbb9672f023602a4195b03c61eaf1",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-zero-length-ecc-public-key-oob-read.md"
+      },
+      "nightly_backend": "not_affected_or_disabled",
+      "reference_rationale": "公告影响 driver-only ECC；此版为 2.26 内建 ECC，未启用 PSA。",
+      "js_crypto": "No public RSA, ECDSA, static MbedTLS ECDH, key writing or encrypted private-key parser; Ed/X25519 use the admitted HACL binding.",
+      "sdk": "No general backend API/archive/headers; both architecture archives checked by scripts/probe_tls.py",
+      "client": "Only the C TLS 1.2 policy candidate is audited here; JS transport/entry/lifecycle follows in M5-03",
+      "evidence": [
+        "native/tls/security.json",
+        "native/tls/policy.c",
+        "tests/native/tls_security.c",
+        "tests/native/tls_policy.c",
+        "scripts/test_tls_security.py"
+      ]
+    }
+  ],
+  "general_backend_admitted": false
+}

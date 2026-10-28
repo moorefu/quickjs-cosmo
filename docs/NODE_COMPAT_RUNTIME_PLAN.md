@@ -1,6 +1,6 @@
 # QuickJS Cosmopolitan Node 风格运行时实施规划
 
-日期：2026-10-28（北京时间）。状态：M0—M4 已通过逐项完整 CI；当前验收 M5-01 DNS/TCP/URL。逐项状态、接口记录与门禁证据见 [实施状态](RUNTIME_IMPLEMENTATION_STATUS.md)。
+日期：2026-10-28（北京时间）。状态：M0—M4 及 M5-01 已通过逐项完整 CI；当前验收 M5-02 TLS 审计。逐项状态、接口记录与门禁证据见 [实施状态](RUNTIME_IMPLEMENTATION_STATUS.md)。
 
 目标是在当前固定版本的 QuickJS 与 Cosmopolitan Nightly 上提供 Node.js 风格的文件、进程、加密、压缩和网络能力，使使用已支持 API 的同一份 ESM 业务脚本可以直接在 Node.js 与本项目运行。优先复用同一 Cosmopolitan 提交中的实现，以及备份分支已有的算法、适配器和测试资产。
 
@@ -431,7 +431,7 @@ M0 的基础交付与验证结果见 [M0 实施记录](M0_FOUNDATION.md)，后�
 
 可按 M1/M2 的已完成子集形成开发产物，能力标为 `partial`。异步、流、TLS 等未完成模块不通过导出占位函数来扩大兼容声明。阶段编号表示依赖顺序，不构成对工期的承诺。
 
-首个开工批次 **M0-01—M0-04**、**M1-01—M1-04** 及 **M2-01—M2-05** 已通过完整 CI。**M3-01—M3-05**、**M4-01 密钥与 AEAD** 和 **M4-02 扩展摘要** 也已通过完整 CI。当前验收 **M5-01 DNS/TCP/URL**；本项完整 CI 全绿后进入 **M5-02 TLS 审计**。逐项进度和 CI 链接见 [实施状态](RUNTIME_IMPLEMENTATION_STATUS.md)。
+首个开工批次 **M0-01—M0-04**、**M1-01—M1-04** 及 **M2-01—M2-05** 已通过完整 CI。**M3-01—M3-05**、**M4-01/02** 和 **M5-01 DNS/TCP/URL** 也已通过完整 CI。当前验收 **M5-02 TLS 审计**；本项完整 CI 全绿后进入 **M5-03 TLS 接入**。逐项进度和 CI 链接见 [实施状态](RUNTIME_IMPLEMENTATION_STATUS.md)。
 
 ## 10. 测试设计与报告
 

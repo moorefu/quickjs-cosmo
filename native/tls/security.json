@@ -1,0 +1,1055 @@
+{
+  "format": 1,
+  "cosmopolitan_commit": "aefad27c09ffda64c6ac64bd69f758e9f9c7b91d",
+  "version_label": "Cosmopolitan-customized Mbed TLS 2.26.0",
+  "patch": {
+    "path": "native/tls/mbedtls-security.patch",
+    "sha256": "a7d520f6fa4e3b015572de6ced5e21aa0bccffa8bf1ebf7c3e32bc0384898650",
+    "targets": [
+      {
+        "path": "third_party/mbedtls/config.h",
+        "source_sha256": "c445ecfb3451bc6acb27f092e000a5bd459b50515fa5c395059dea844344eefc",
+        "patched_sha256": "c270ab736b7f8e7da546831aa33ebae4b04487b65edd4a61586c0c2e08f307b1"
+      },
+      {
+        "path": "third_party/mbedtls/x509_crt.c",
+        "source_sha256": "dec4da3cb01ef8e04a539f25bf6862413671eec6553ff239b8aba56e668fed7c",
+        "patched_sha256": "6b9641096be9c7af6e1f08197c3ccf06f13ca54150a9ea1ee9a364efafb695a8"
+      },
+      {
+        "path": "third_party/mbedtls/ecdh.c",
+        "source_sha256": "b8929b8ccc574d3a361663f2dce10aa93ced9eda4f4b328b6e922f003ce75a95",
+        "patched_sha256": "53c6c0bdd94238e6ea646a4ed7fc4cb1f73b419b1bf5893b4aa70854ae6e9659"
+      },
+      {
+        "path": "third_party/mbedtls/ssl_internal.h",
+        "source_sha256": "bfc7d682c2d1012219bc5f7d1ccc6c42ea56beb584ae7d0a65e691bfa546e8c2",
+        "patched_sha256": "370891295ca6fc4964c9305c5c8cf71752929882fd54ada3a9d149056b5fc37c"
+      },
+      {
+        "path": "third_party/mbedtls/ssl_tls.c",
+        "source_sha256": "aab04f3166abab858e5611d155a8913100cfacdbbc9b6e927c2cb9bcfc4ee6d1",
+        "patched_sha256": "8fc2ab5a2666d81d1c9ecc4f988e5947a21425355540fae5bb5ff174d0002b2d"
+      }
+    ]
+  },
+  "candidate_only": true,
+  "scope": "Private TLS audit/backend candidate; no general mbedTLS SDK library or headers",
+  "source_cohort": [
+    {
+      "path": "third_party/mbedtls/aes.c",
+      "sha256": "bdfdc57dcfa7a39794a638b4f788d9806585be19f1e3f8285714b0a8c46c90b8"
+    },
+    {
+      "path": "third_party/mbedtls/aes.h",
+      "sha256": "0f473d9e75543fa730af81f2437f1f49060290565845dab5af33f010043b780c"
+    },
+    {
+      "path": "third_party/mbedtls/aesce.c",
+      "sha256": "a81c4e65faa47031cb84eb3b04ed089d94b6c8ccc2973cd9a016ebdd1e237730"
+    },
+    {
+      "path": "third_party/mbedtls/aesce.h",
+      "sha256": "ba12c7f70ee7662c6416dd1686e44cccb6000ef2aba69e680b24049772957c76"
+    },
+    {
+      "path": "third_party/mbedtls/aesni.c",
+      "sha256": "661b150439486911ce63e5a0fade638915f1d66403e4084cdffaebdb4e3ba910"
+    },
+    {
+      "path": "third_party/mbedtls/aesni.h",
+      "sha256": "f95f675078124ff88a73b2914602c797d98f461b35c3efb2cbe6aafab212e3fb"
+    },
+    {
+      "path": "third_party/mbedtls/asn1.h",
+      "sha256": "cf6ccbc56d7902b1470ce5ffe9f6693e3b3519a6a3e40eebc3ecf2babe74a6dc"
+    },
+    {
+      "path": "third_party/mbedtls/asn1parse.c",
+      "sha256": "7ad4563412cc44cca0a41da2c09c3d479e1853fcb820c74d43eb513e2045efda"
+    },
+    {
+      "path": "third_party/mbedtls/asn1write.c",
+      "sha256": "92d29a324c175b475075aa96f24b30ab6ce2302344e75b96c8e565a2879a9658"
+    },
+    {
+      "path": "third_party/mbedtls/asn1write.h",
+      "sha256": "6ad711f19093fb3f7cc86d069f4b99a1d3514b269c3c9588c7d57cc703bb3f3b"
+    },
+    {
+      "path": "third_party/mbedtls/base64.c",
+      "sha256": "22d48aea3303f669f0ffd47a3421cd6933619d19fa5afd9ba7866251c812432d"
+    },
+    {
+      "path": "third_party/mbedtls/base64.h",
+      "sha256": "c996ff06b25c4a489c403a2bdf4471f687193af22810f901b7d3cc479f3992a5"
+    },
+    {
+      "path": "third_party/mbedtls/bigmul.c",
+      "sha256": "c4df44df314bc5ef3dd8323b706b310440c9971acbe624e6c98794e5d086b739"
+    },
+    {
+      "path": "third_party/mbedtls/bigmul4.c",
+      "sha256": "973a536e6974071d49bac6185a19d50749abe217b7d6b80813abdc3c287c7f71"
+    },
+    {
+      "path": "third_party/mbedtls/bignum.c",
+      "sha256": "8818a83afac1d07f6d104ed435d6ac3ae2ea28432ca67ff224fcfeb7added48d"
+    },
+    {
+      "path": "third_party/mbedtls/bignum.h",
+      "sha256": "4cb399b22b49b28d0fc3d187e315b737af9d537e683edaa64188e5327d52cafd"
+    },
+    {
+      "path": "third_party/mbedtls/bignum_internal.h",
+      "sha256": "75b36f9a50d01ec19a1557182a6ef446b39e644bdf8ec4dc4ba3f56273a99a1a"
+    },
+    {
+      "path": "third_party/mbedtls/bigshift.c",
+      "sha256": "9f91b2a84fd3b42694206807ce821226fcc0b0734b1f177e139a1b95fd02d818"
+    },
+    {
+      "path": "third_party/mbedtls/blake2b256.c",
+      "sha256": "f3128aa196577666bed995aff7e91abaea1004309cd11a1ed8ed5818fa0b13f1"
+    },
+    {
+      "path": "third_party/mbedtls/ccm.c",
+      "sha256": "598947eb541b1e2280792cfaceeba9a28f3e926feed6929d04cb57ff47d3012e"
+    },
+    {
+      "path": "third_party/mbedtls/ccm.h",
+      "sha256": "a8bd7313e0452f8623f57960b71e2164bfcd995f3ad20e3fa0242a334243bd03"
+    },
+    {
+      "path": "third_party/mbedtls/certs.h",
+      "sha256": "c45ef3a888f360da4a79b086703e26bb5bfa7d50e9e0917c09b5428937570045"
+    },
+    {
+      "path": "third_party/mbedtls/chacha20.c",
+      "sha256": "e1562bd4d46a7f87a1852085d0d20e04640fd0e21af73cf03932ba47e4cd2a59"
+    },
+    {
+      "path": "third_party/mbedtls/chacha20.h",
+      "sha256": "272f9a62381d3b052cc532c2e66381a6a2beb389e7013cb03f2800f7adc6bc7c"
+    },
+    {
+      "path": "third_party/mbedtls/chachapoly.c",
+      "sha256": "72d57d1af83f4be24dbeb2edc0b216792c8b7dadb74fff1ff6cff53661f4ec88"
+    },
+    {
+      "path": "third_party/mbedtls/chachapoly.h",
+      "sha256": "0b970f590428db764b123367fb727284e8c93c186cf74a6afb9417183dd00ba9"
+    },
+    {
+      "path": "third_party/mbedtls/check.inc",
+      "sha256": "2027ee4de29f8399eb3ceb6fa10c234e7181c9256765af3cc3b1b37b360a0402"
+    },
+    {
+      "path": "third_party/mbedtls/chk.h",
+      "sha256": "09605e3168258968f98e57a5af20a183eb559d0eca60f95ebc34836ef7d513be"
+    },
+    {
+      "path": "third_party/mbedtls/cipher.c",
+      "sha256": "5b198f646f60f9499797bf4a0caadbc99d53313e782aefbbf6fe979ff52cc62c"
+    },
+    {
+      "path": "third_party/mbedtls/cipher.h",
+      "sha256": "08f6759b30fc469b1d86b97cf19867f984308f0ac0d9db7650104dd7a60cdc69"
+    },
+    {
+      "path": "third_party/mbedtls/cipher_internal.h",
+      "sha256": "def2b5e1648a8550a8cb450474b7ad28e78f724434afd4525095c7c354331278"
+    },
+    {
+      "path": "third_party/mbedtls/cipher_wrap.c",
+      "sha256": "66667e0d62f708f6bfaee03a29aed28d2fd2e4cecb2a71e0493ec30479bd8325"
+    },
+    {
+      "path": "third_party/mbedtls/common.h",
+      "sha256": "d37c6d8e5502cf85c4bc324673eef013f485f076beeeefa2a2de79ed3a6d7386"
+    },
+    {
+      "path": "third_party/mbedtls/config.h",
+      "sha256": "c445ecfb3451bc6acb27f092e000a5bd459b50515fa5c395059dea844344eefc"
+    },
+    {
+      "path": "third_party/mbedtls/ctr_drbg.c",
+      "sha256": "c7c2646294184867d7fc66d14826eda434bf2681f37e6bbb448083b3837bafb8"
+    },
+    {
+      "path": "third_party/mbedtls/ctr_drbg.h",
+      "sha256": "6999e620685eaca4b98c6ca173bcef697a292fde799726eaefa95747f4e13ec5"
+    },
+    {
+      "path": "third_party/mbedtls/debug.c",
+      "sha256": "b2ec95bd0c0b53941773af9e16f5b34bd3cd4ab1ef4e26b89a63c85b0e868699"
+    },
+    {
+      "path": "third_party/mbedtls/debug.h",
+      "sha256": "b06806a32b1f1cc93042944753c3de260be23321a7fbec78f1470795e7947792"
+    },
+    {
+      "path": "third_party/mbedtls/des.c",
+      "sha256": "0ccc6c479113859f9184c557263224aea2cdf575ac5f68eef92b3bcc37fc0ec7"
+    },
+    {
+      "path": "third_party/mbedtls/des.h",
+      "sha256": "371e30405d143ab1b60ce17ca3039297b72d816b9386023d36082e541bbee813"
+    },
+    {
+      "path": "third_party/mbedtls/describecode.c",
+      "sha256": "ef7d0565c3c8d32ee2e3334cb205dfc9ac174fc39050aa6d2aaf2ef6ebf051b4"
+    },
+    {
+      "path": "third_party/mbedtls/dhm.c",
+      "sha256": "6815d6784543ad663fd6a0b0430d072b6ef3e0242ff72641225e988058597488"
+    },
+    {
+      "path": "third_party/mbedtls/dhm.h",
+      "sha256": "99920c1ce8fc406d7bc9c4633b05796540157829300ebe00613b0d3217ca645e"
+    },
+    {
+      "path": "third_party/mbedtls/ecdh.c",
+      "sha256": "b8929b8ccc574d3a361663f2dce10aa93ced9eda4f4b328b6e922f003ce75a95"
+    },
+    {
+      "path": "third_party/mbedtls/ecdh.h",
+      "sha256": "b99655f88deec3e2a619f64e4e1296bc3b1e7e94fff87919c6dcfb9fe33367f6"
+    },
+    {
+      "path": "third_party/mbedtls/ecdh_everest.c",
+      "sha256": "23a70ff8cadb7c6f8105f5c2d2918e0593d36d3513111556b7de5e20cd1776f3"
+    },
+    {
+      "path": "third_party/mbedtls/ecdh_everest.h",
+      "sha256": "abc8a2f65607f45d1768e8b8855203338f2eb26a172c95ac53bfadd563a84eb6"
+    },
+    {
+      "path": "third_party/mbedtls/ecdsa.c",
+      "sha256": "350de8eaa831e69b0b210c94324a9919b4a5163e8db76f4f8ab06b19191c411a"
+    },
+    {
+      "path": "third_party/mbedtls/ecdsa.h",
+      "sha256": "5a6f7d135e2fbc395f4fadbdfbed65ec0a7de43267250e45d9cadd52c668f74d"
+    },
+    {
+      "path": "third_party/mbedtls/ecp.c",
+      "sha256": "08602737a156895441bd7034dea569924b00c751c83c7ca362499530bf06fa06"
+    },
+    {
+      "path": "third_party/mbedtls/ecp.h",
+      "sha256": "bd1e8563fabf1c961e9c01ba28e715b87d100ee38870b674d49cfd860a34af12"
+    },
+    {
+      "path": "third_party/mbedtls/ecp256.c",
+      "sha256": "49fda4e214b4dca8a9d1aeb1e6caa0e0ae409eb8d7d4f201df945cdd713d68b2"
+    },
+    {
+      "path": "third_party/mbedtls/ecp384.c",
+      "sha256": "3b8d9b6978167764a2e640a0e17a3efb107569a480be1b0347065bc1d05087a5"
+    },
+    {
+      "path": "third_party/mbedtls/ecp_curves.c",
+      "sha256": "111c6443aa3fe05c15af968024e227badbc81a91613c12c483501182e21969ca"
+    },
+    {
+      "path": "third_party/mbedtls/ecp_internal.h",
+      "sha256": "3dfc5c05d4b3995ce8fb3ba815e2761b44bc908a1ecfa3f75caadcd411965d41"
+    },
+    {
+      "path": "third_party/mbedtls/ecpshl.c",
+      "sha256": "b85a0a7f05e445bc363b95bb102d6592373f73ef60d0d30937ac2cdd938f24d8"
+    },
+    {
+      "path": "third_party/mbedtls/endian.h",
+      "sha256": "d89344e953767ca4b70a74d412978d7ced187b23283db2f729edc77231effc8e"
+    },
+    {
+      "path": "third_party/mbedtls/entropy.c",
+      "sha256": "3086c88d752f4dd0f1bcadb269af95dec23d04010c8d6329f5ed6e570e88b0e2"
+    },
+    {
+      "path": "third_party/mbedtls/entropy.h",
+      "sha256": "2f0f02adae5e8cd9e51486d6e995b43d007ee01e06489c86986d6ab076148f0b"
+    },
+    {
+      "path": "third_party/mbedtls/entropy_poll.c",
+      "sha256": "7a4d476e54aae34e68cdf3cab8b7dae18fddc4c0a28435bec9dea91917bacedd"
+    },
+    {
+      "path": "third_party/mbedtls/entropy_poll.h",
+      "sha256": "d2727e3e6955f79140c982b0c506cd5bd5fc8afb55fc959d892dcf1e0bcb7b46"
+    },
+    {
+      "path": "third_party/mbedtls/error.c",
+      "sha256": "cd76f702ef657e17de00e4fc5e40d02c2a792fbf8ab1f658ad892da40447dd47"
+    },
+    {
+      "path": "third_party/mbedtls/error.h",
+      "sha256": "25cf839c83596d9d29e6e06af5e19ce1b8c01b9c52ccb09d64705b2877219448"
+    },
+    {
+      "path": "third_party/mbedtls/everest.c",
+      "sha256": "862a3d613d3023b74540f5de0f1feb1db49e3450888a72f2568c38547e2f39d7"
+    },
+    {
+      "path": "third_party/mbedtls/everest.h",
+      "sha256": "70f72e4679f85e9523615013e353e4666ead43f18332446693f623136d29a3dd"
+    },
+    {
+      "path": "third_party/mbedtls/fastdiv.h",
+      "sha256": "24a989861a43bbc691072e1a2907b67b4e400d699eb49cf4cc40a496db76f20f"
+    },
+    {
+      "path": "third_party/mbedtls/formatclientciphers.c",
+      "sha256": "728275287cc4ac760bf628809f440876ff12dcf7dbe209e2b4b5a3a1fd0a9e99"
+    },
+    {
+      "path": "third_party/mbedtls/gcm.c",
+      "sha256": "bbd9cc7e36b40dd23f48f240b909252d5bb4e991a97949363de0f5aa163acaac"
+    },
+    {
+      "path": "third_party/mbedtls/gcm.h",
+      "sha256": "7ca240882e29067600033380a514875868668e7e9435fa0ff3f425cd52514328"
+    },
+    {
+      "path": "third_party/mbedtls/getalertdescription.c",
+      "sha256": "1747ba189d6a4fcd1f60314fa4edc0465f0bd2c566191c514316a19f2e8ee6bc"
+    },
+    {
+      "path": "third_party/mbedtls/getciphersuite.c",
+      "sha256": "e01ccb93176d6298624bcae9d81895caf58fec515b108014d75c933b3f36c74b"
+    },
+    {
+      "path": "third_party/mbedtls/getciphersuitename.c",
+      "sha256": "5a2e1c41adcb6ed0bed48f5924b4206ae99668bb42c979f5255370b004f2067e"
+    },
+    {
+      "path": "third_party/mbedtls/getsslstatename.c",
+      "sha256": "da8d5c0fe377bab2c5152f2c08528afe30edc56cd503759521c711de2e2e2b4f"
+    },
+    {
+      "path": "third_party/mbedtls/hkdf.c",
+      "sha256": "a8ad34b1dd9699f442f98cea7b3ac1e42b986fed017dd1b31f7ec9a120cb6854"
+    },
+    {
+      "path": "third_party/mbedtls/hkdf.h",
+      "sha256": "db965bf42b810978ea6dda9efefea551e6d9712b5de945f4ca7ac3805f265c98"
+    },
+    {
+      "path": "third_party/mbedtls/hmac_drbg.c",
+      "sha256": "2f128dae9dfba87252421e3caa32b69b75bb567509d36120ab2d839ec3ebb48f"
+    },
+    {
+      "path": "third_party/mbedtls/hmac_drbg.h",
+      "sha256": "0b00da930a8870025dce3a25f31bbc8cb49f5ed80bf11169ba23c73507b8ad20"
+    },
+    {
+      "path": "third_party/mbedtls/iana.h",
+      "sha256": "ca65691a6c658f4dac7511c0970b471a2f607dd43bb0df664b8e1b3037dc2b99"
+    },
+    {
+      "path": "third_party/mbedtls/isciphersuitegood.c",
+      "sha256": "237587b99b6e1930faadba764e19ce298dd004d80a2e764c7e612b70f500d56f"
+    },
+    {
+      "path": "third_party/mbedtls/karatsuba.c",
+      "sha256": "52295920cfb85f739fc8fe58bd8ce2b26b143efdd9b5ff6f425b86b4402d874a"
+    },
+    {
+      "path": "third_party/mbedtls/math.h",
+      "sha256": "4d722c8cdbecd63009199a6c9b9820a401492de0c5965aa97bc6a2e6e9f2310d"
+    },
+    {
+      "path": "third_party/mbedtls/md.c",
+      "sha256": "ca10998a317716eca674d9a96fc4794e26f0fc67cfc562328a63905422359791"
+    },
+    {
+      "path": "third_party/mbedtls/md.h",
+      "sha256": "0575b29a176bd9fbf67c5dd713d9a1eff09a218f29b0c17beda77ea95d18515d"
+    },
+    {
+      "path": "third_party/mbedtls/md5.c",
+      "sha256": "1b39be3a54d59a7f45676df0b57d70ca9e2b910bcbf5ad904ff1a956bf9686f3"
+    },
+    {
+      "path": "third_party/mbedtls/md5.h",
+      "sha256": "0e26fa3e040c32a0dca6e3c88e97395678e1f6ff50b353da8c65a7657a8d6ab1"
+    },
+    {
+      "path": "third_party/mbedtls/md5t.c",
+      "sha256": "f8d52b4e948cf1fa43b7659ed9e0f4bb42db9d6f585c0c401341186b56c7e494"
+    },
+    {
+      "path": "third_party/mbedtls/mdtype.c",
+      "sha256": "88292c67e4c33b5cb5090f2ae7bb22f07cc45cb201d29a32bbe4755573b4d168"
+    },
+    {
+      "path": "third_party/mbedtls/memory_buffer_alloc.c",
+      "sha256": "57583646f2a7162285753d81415e7f91e0b88fd33648d20bdc6800acd81f94bc"
+    },
+    {
+      "path": "third_party/mbedtls/memory_buffer_alloc.h",
+      "sha256": "34ec0d19c8f326a18da6273ce337694719a9846094a9aad254ab129804e2a737"
+    },
+    {
+      "path": "third_party/mbedtls/net_sockets.c",
+      "sha256": "23c21300c63f8b61af594aea2db96e085873b1c5a1420964f202aaeca23f5841"
+    },
+    {
+      "path": "third_party/mbedtls/net_sockets.h",
+      "sha256": "13d219593b7de6a8c7b5f37ef4a2e7569b863c33a5a93b6cc7cb716f1436c1ca"
+    },
+    {
+      "path": "third_party/mbedtls/nist_kw.c",
+      "sha256": "b3d1a19e8d4e97e2d58feb295bd44e20a7b559967c0fd0b0c45f2a818765104c"
+    },
+    {
+      "path": "third_party/mbedtls/nist_kw.h",
+      "sha256": "7d285c506c285fa2f151dec7e7c0a30265d5d81fb6ea25d321bf96d5b8511d14"
+    },
+    {
+      "path": "third_party/mbedtls/notice.c",
+      "sha256": "9565c43b0052f9131e2dc9a113e89451c2232b3c2be6d5d3ffd19464a63e484c"
+    },
+    {
+      "path": "third_party/mbedtls/oid.c",
+      "sha256": "aeb0a4234ce8caa4466ea89f8bbf347d7245139454b7fbc9fe50bc8e68458600"
+    },
+    {
+      "path": "third_party/mbedtls/oid.h",
+      "sha256": "facf31577d8483d72dc9368d4dba8414e0389ecb02456cbab2eeb592ac348b91"
+    },
+    {
+      "path": "third_party/mbedtls/param.c",
+      "sha256": "7577cc5214958838b1d97e314e3c2d5de62fd63244e6506a1633a290cb669b5a"
+    },
+    {
+      "path": "third_party/mbedtls/pem.c",
+      "sha256": "2a16831153b04a90eca7b54db816ea0b5cfe33cb8d2742d96dfc7c33f15ecdfa"
+    },
+    {
+      "path": "third_party/mbedtls/pem.h",
+      "sha256": "5c7fc291c5f3bbc73182248a4d45ded65787f21edf5e2dcd9e2ff8d6423519c4"
+    },
+    {
+      "path": "third_party/mbedtls/pk.c",
+      "sha256": "7b622307239c656b48b60a8a9ab24f84373a6edf07988ac45c656963ed8ea49d"
+    },
+    {
+      "path": "third_party/mbedtls/pk.h",
+      "sha256": "a9dfeae837261c000aabc02a664a7a90efb682cb70462a50b3954a50a30e8995"
+    },
+    {
+      "path": "third_party/mbedtls/pk_internal.h",
+      "sha256": "a32ac184390f048184397262456ed64c285f81ef53ca3310e8d055bbcd5ff121"
+    },
+    {
+      "path": "third_party/mbedtls/pk_wrap.c",
+      "sha256": "993e00ef7aba0dc5edc19950ca916335624245c7fefbe0486b6ae02b97432b9b"
+    },
+    {
+      "path": "third_party/mbedtls/pkcs5.c",
+      "sha256": "5392e334ea357a4de021e0f9d401035d73f0dc4838e52a4ad729d6f2564a9c1a"
+    },
+    {
+      "path": "third_party/mbedtls/pkcs5.h",
+      "sha256": "31714e0cb8e1e80d69a74d6d39e9f764619f9837ac985b2c1efbd18646e81f69"
+    },
+    {
+      "path": "third_party/mbedtls/pkparse.c",
+      "sha256": "3e5e87fd9dac1f41c9223326a2bc55413d58578ff85629e7ad3add26070046d2"
+    },
+    {
+      "path": "third_party/mbedtls/pktype.c",
+      "sha256": "0e4989704b4717faee30c84884469d860a3ecc3ff47381e88fdc467584a65fa1"
+    },
+    {
+      "path": "third_party/mbedtls/pkwrite.c",
+      "sha256": "85fb65a56d16904c6426fa80b3a8e6688748d4a8c9e7424fddec6f4229e01214"
+    },
+    {
+      "path": "third_party/mbedtls/platform.c",
+      "sha256": "965d3e8dc3cc3eeefa44ce87a0b16cb9994e4cdf8221b06d07e27362771cf58d"
+    },
+    {
+      "path": "third_party/mbedtls/platform.h",
+      "sha256": "0cd33fc7c1a5a49736fb41a28b6ba0b917b02e21fc17a8b77005be325a5f587e"
+    },
+    {
+      "path": "third_party/mbedtls/poly1305.c",
+      "sha256": "1eea7dfdd75c26ec7791a2b5042cc87f2bedba923d1cf1e7a86e1733a3fdc3d9"
+    },
+    {
+      "path": "third_party/mbedtls/poly1305.h",
+      "sha256": "5b02a03781948f457f572c1682368f0b68780d6627d0066075c852edff0ba737"
+    },
+    {
+      "path": "third_party/mbedtls/profile.h",
+      "sha256": "67cbc371fde7a83c18c23e87257dbb3fa8f9ea8c0777e638d2da2428fd6e386f"
+    },
+    {
+      "path": "third_party/mbedtls/rando.c",
+      "sha256": "208cfe047e310374d810bea8cf80626a13495c7b186ba80928ffef46ff3930f0"
+    },
+    {
+      "path": "third_party/mbedtls/rsa.c",
+      "sha256": "40aebe6513fdd218a60e1732b8a87aa7990ea761a4202db1c4f974678ecffdee"
+    },
+    {
+      "path": "third_party/mbedtls/rsa.h",
+      "sha256": "a60ca360d1306f6167b7442fc6b490b60c937fe94e327cf29c29c3cbe1d0f0ce"
+    },
+    {
+      "path": "third_party/mbedtls/rsa_internal.c",
+      "sha256": "27791ba874f2e049ad5245c01b7d4a59a52fb4789d151def181dbdba8a169dc8"
+    },
+    {
+      "path": "third_party/mbedtls/rsa_internal.h",
+      "sha256": "0801af708edc2f076440d6ee7bd12c2c63e0d0392a0a169794805cee500d0c16"
+    },
+    {
+      "path": "third_party/mbedtls/san.c",
+      "sha256": "b1398426cccd2a4f64249bd00a0692648fb67c664e5ebff2bee560d0b893a651"
+    },
+    {
+      "path": "third_party/mbedtls/san.h",
+      "sha256": "33ceab8bf6cd286ddda5b046064eef98e18721ab70b73afb78db0ff9771efb0b"
+    },
+    {
+      "path": "third_party/mbedtls/secp256r1.c",
+      "sha256": "6d485ae690b082e0c106b10278f2cbd39014dd96421ce7f183e69328182bdb5e"
+    },
+    {
+      "path": "third_party/mbedtls/secp384r1.c",
+      "sha256": "13bf91de545f35c65cbaae92abc0676a1617a198289269af40163e602bbc00dd"
+    },
+    {
+      "path": "third_party/mbedtls/select.h",
+      "sha256": "d7f36a44f270f07376c05529faab8a8402f164e82189d3ae0e610e9108accaab"
+    },
+    {
+      "path": "third_party/mbedtls/sha1.c",
+      "sha256": "bb236ad8f392c9980dbe8eae4f5a33dbf003f74beface55f119cc9de67194e5a"
+    },
+    {
+      "path": "third_party/mbedtls/sha1.h",
+      "sha256": "e4343f1932c5f3c07d4da1ec6b99a73f542caff195f100567e8eb23136e03a3a"
+    },
+    {
+      "path": "third_party/mbedtls/sha1t.c",
+      "sha256": "5f512b68f9f745d4cc4852e307a09812b75a634ec1fc17f33846dab00d70a800"
+    },
+    {
+      "path": "third_party/mbedtls/sha256.c",
+      "sha256": "ddc01c917e1332b1df04f8bfdd068c627b09246fefd291da09faa0f1c9953cab"
+    },
+    {
+      "path": "third_party/mbedtls/sha256.h",
+      "sha256": "2eeaad88c79fcfdde81246f255b22a73ba54d138c990f28b1ccbd0b7b9fa736a"
+    },
+    {
+      "path": "third_party/mbedtls/sha256t.c",
+      "sha256": "93dec154f2fdd5ced02ed2052c3f17edf9af5aac36c6c63295ae58ca13ac25fc"
+    },
+    {
+      "path": "third_party/mbedtls/sha512.c",
+      "sha256": "c6651d90ea0db668c5738d8d47dfd357f616d1b4e87eda8b2f4ac9779397d8e6"
+    },
+    {
+      "path": "third_party/mbedtls/sha512.h",
+      "sha256": "9d6314b78adaa44edad9475fac7f9f8512d356d331bb551509389ec7fc626d81"
+    },
+    {
+      "path": "third_party/mbedtls/sha512t.c",
+      "sha256": "04f3a869b51edf47e7f4700de7cbc0a0036906cbbc5458e159cc0537ee5dd588"
+    },
+    {
+      "path": "third_party/mbedtls/shakedescription.c",
+      "sha256": "773f049869eda3c159783e8c128f1334e6bba898f9347b23b461e6ab3ef65dfa"
+    },
+    {
+      "path": "third_party/mbedtls/shiftright-avx.c",
+      "sha256": "fdedf00016a9c8dcc2471ec7f9fd64076883199b08d1e2592f37d55caede2a4a"
+    },
+    {
+      "path": "third_party/mbedtls/shiftright.c",
+      "sha256": "fb997e9fb1db5708d2b782240708e4c14601ddd7e9caad3c01e79970f56c5b1d"
+    },
+    {
+      "path": "third_party/mbedtls/sigalg.c",
+      "sha256": "bc030508befd72500ef7f67c5a3159ebffa756d20e4f566898bf76c064f36d4b"
+    },
+    {
+      "path": "third_party/mbedtls/srtp.c",
+      "sha256": "acf1e3fd6dc292740aab349ff679c37ed9b5380bd44c41e1d9d16eb510273654"
+    },
+    {
+      "path": "third_party/mbedtls/ssl.h",
+      "sha256": "1f2cd88bfa05c6d2f023261705368ec453fac812d9ec12fc50fd05f9c5ff4cab"
+    },
+    {
+      "path": "third_party/mbedtls/ssl_cache.c",
+      "sha256": "a098740098e200121f61a3b6bbe4bba3acb0d7b8aa6665d61531dba6e4a8d191"
+    },
+    {
+      "path": "third_party/mbedtls/ssl_cache.h",
+      "sha256": "c96bc5b257c8c3a7b71c176222aab50432b805701d6c4cabebd097a6336f9340"
+    },
+    {
+      "path": "third_party/mbedtls/ssl_ciphersuites.c",
+      "sha256": "523ef3a3477f6bab1c138e42ac0a0ac5562eeaed2fde9fc537bf01222ae48c58"
+    },
+    {
+      "path": "third_party/mbedtls/ssl_ciphersuites.h",
+      "sha256": "39a93a49936f7f054860c7d7bc25dc6fa851462906310610ccb9c686bcff54a7"
+    },
+    {
+      "path": "third_party/mbedtls/ssl_cli.c",
+      "sha256": "9b3f2e23359d551f43bba9089bcf0d4742a3d4097e7d16750ad4711abc6c61f6"
+    },
+    {
+      "path": "third_party/mbedtls/ssl_cookie.c",
+      "sha256": "40394609cd4c0bca08b3e458d2b5587c144103ad8959bdfb8b98d1c588f07390"
+    },
+    {
+      "path": "third_party/mbedtls/ssl_cookie.h",
+      "sha256": "d606e29a863da032d826c460b7f162e5501ea3d06adbb52410bc66301b385903"
+    },
+    {
+      "path": "third_party/mbedtls/ssl_internal.h",
+      "sha256": "bfc7d682c2d1012219bc5f7d1ccc6c42ea56beb584ae7d0a65e691bfa546e8c2"
+    },
+    {
+      "path": "third_party/mbedtls/ssl_invasive.h",
+      "sha256": "a00c514bf43818fdeb5b6cc9e1a2050c6c5d949a0bf806b728c67288bf7cb3b4"
+    },
+    {
+      "path": "third_party/mbedtls/ssl_msg.c",
+      "sha256": "5b705680f648208ff829bbb3890463898d3f3520a94c5ad8c67e9e42a88b26b7"
+    },
+    {
+      "path": "third_party/mbedtls/ssl_srv.c",
+      "sha256": "221b70511b08ef9916d3eaa4653285a9f810fbce56ee1059639c99696f199abd"
+    },
+    {
+      "path": "third_party/mbedtls/ssl_ticket.c",
+      "sha256": "5115cc2da18f2f52cfbe582e335031fb0af2562b2f98284c1b6caeffa481a7cc"
+    },
+    {
+      "path": "third_party/mbedtls/ssl_ticket.h",
+      "sha256": "df0caaed17ad6243637e4cb735b03bf174e3b61261848dc1d722faab18fe1b06"
+    },
+    {
+      "path": "third_party/mbedtls/ssl_tls.c",
+      "sha256": "aab04f3166abab858e5611d155a8913100cfacdbbc9b6e927c2cb9bcfc4ee6d1"
+    },
+    {
+      "path": "third_party/mbedtls/ssl_tls13_keys.c",
+      "sha256": "9e971950e1f5fb4b4de11b844612f122fa2dd2895ce07286ab7e1cb3d7257c19"
+    },
+    {
+      "path": "third_party/mbedtls/ssl_tls13_keys.h",
+      "sha256": "aab6900118f9be8fffff531bf66d00a05f03aa925fdd4922a99051321f950c63"
+    },
+    {
+      "path": "third_party/mbedtls/version.h",
+      "sha256": "8efde1bdb4bd81038bd9d593e733b8a23d4196998c72f67d02a40bc78a01eedd"
+    },
+    {
+      "path": "third_party/mbedtls/x509.c",
+      "sha256": "0c460963144a0cdf4491e6fb9216785f7ede6f044ccbc790f39c713cbc912b5c"
+    },
+    {
+      "path": "third_party/mbedtls/x509.h",
+      "sha256": "8bbebe44cad869ac2522623d452c12b866c9d7ffbe7210c41bf3b5af62fb9fa7"
+    },
+    {
+      "path": "third_party/mbedtls/x509_create.c",
+      "sha256": "c37dda096afeaac51292809f4e1ef32d35c9314806fca5268d73902098d7d25f"
+    },
+    {
+      "path": "third_party/mbedtls/x509_crl.c",
+      "sha256": "9d36d3f5bff44bb0d14d24d2dbf97c1f33ab1b2cbd12adbb70b93074894c4436"
+    },
+    {
+      "path": "third_party/mbedtls/x509_crl.h",
+      "sha256": "b3a6e1c92ae3ee15402845756f645c0f61ce3b4d700e21179a95560b89a5949f"
+    },
+    {
+      "path": "third_party/mbedtls/x509_crt.c",
+      "sha256": "dec4da3cb01ef8e04a539f25bf6862413671eec6553ff239b8aba56e668fed7c"
+    },
+    {
+      "path": "third_party/mbedtls/x509_crt.h",
+      "sha256": "d47d24e367c77e77a9781bf38e11f52257f51e0affb499c3b95448608cb62bf0"
+    },
+    {
+      "path": "third_party/mbedtls/x509_csr.c",
+      "sha256": "024db62d7f2784c705590e7b781778ca1830f4c0da0d60045a84f63eba881741"
+    },
+    {
+      "path": "third_party/mbedtls/x509_csr.h",
+      "sha256": "0d38896bf1ac9ed2f3cd60fc52ff258d945523b6dc437c3b1670c9bc583545be"
+    },
+    {
+      "path": "third_party/mbedtls/x509write_crt.c",
+      "sha256": "7ae7f9b30094ab7bdc9cd4f6d1e7ccccdbd2adb4074d1d3b91d21d3c7e0b16ff"
+    },
+    {
+      "path": "third_party/mbedtls/x509write_csr.c",
+      "sha256": "ba924bfc38d2d4b389467822a776ff83dc6991b4565b0aa4b7acbcf883e9490c"
+    },
+    {
+      "path": "third_party/mbedtls/zeroize.c",
+      "sha256": "073c23aad8b25bfe09c7013fb523a73b942fcf655fbe8c574ecca3d4e05936b8"
+    }
+  ],
+  "advisories": {
+    "repository": "Mbed-TLS/mbedtls-docs",
+    "commit": "abe4067e3f2069efc394ea362c46ce7d8998c5ce",
+    "review_date": "2026-10-28",
+    "records": [
+      {
+        "id": "mbedtls-security-advisory-2021-07-1",
+        "sha256": "24dacd54863ca1f26ef9b21a90496771fc78729b688a13cd460e650b116cefc4",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2021-07-1.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2021-07-2",
+        "sha256": "562939d4b8c2e74eead978cd56b28871c74bef94048f2216b0f904ee01c90d4e",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2021-07-2.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2021-12",
+        "sha256": "c7193e0870b30398272f045341a1d7450110a9113a9e919243f2bb1dcca8c137",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2021-12.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2022-07",
+        "sha256": "abd9e88fb672a8104b9655226bec0e8342636883bdcd4e3fdcb6699aecc27995",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2022-07.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2023-10-1",
+        "sha256": "fe09d6cefbf1c0730ac765aa3ab2a7af0754e469032de9140328a1aa10cfe884",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2023-10-1.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2023-10-2",
+        "sha256": "7a04548b64b1d63b6a918956be732e3373e9324faef30bf35504b92c59f9b020",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2023-10-2.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2024-01-1",
+        "sha256": "582d41cc6d1bf2c55fee7e073f4ea0f7bfb571501b53085a33f11b590bd8f703",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2024-01-1.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2024-01-2",
+        "sha256": "bdbaa52cae8ad702a9080fa17476c37dde2e4fcbfa9b9da050fd4e2d13de4003",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2024-01-2.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2024-03",
+        "sha256": "58f0405da4acb0e097aae62f148806fc6ef90a96a02cc54c06d349185efd41ac",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2024-03.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2024-08-1",
+        "sha256": "10a24ba3b8a980280a406f37a2d25cb1c2c2631246327499821af01f7e5f96a4",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2024-08-1.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2024-08-2",
+        "sha256": "223e92a41da40d6344594f041b473229cb89a39667bf5405961a2939376af441",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2024-08-2.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2024-08-3",
+        "sha256": "a70b28082df4144149c3de81ada40951c89fb77cbc56b431bbee2ace2802a030",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2024-08-3.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2024-10-1",
+        "sha256": "c2174abab41f6c8000061cb7a059138e2fe3e776b120c1966814e3fd3c9afe4f",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2024-10-1.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2025-03-1",
+        "sha256": "8c02f93c54f983d9871f2e1c057d39ffe23cdd5d3b9923756971c2bc79c9025a",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-03-1.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2025-03-2",
+        "sha256": "6dbdfd1dd098690344a7b5a708fd3da193d6c7956054ffe075c97b6d179a37a5",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-03-2.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2025-06-1",
+        "sha256": "205f2f2cefc0a7dcca6083d12e3d40fa6a7dcb460818bd43dc746a0053f9b4f8",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-06-1.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2025-06-2",
+        "sha256": "1ae25feca4fe9e305b9a83c78dd2294e08e9fe2d9e1e41bd941ad653cb65d197",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-06-2.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2025-06-3",
+        "sha256": "0801d2d1a93f7d3efd0599a7c830d011960f7972b156d78bfbe1845888e567d1",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-06-3.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2025-06-4",
+        "sha256": "12257b0398f72b0f45c03f6cc8f4ba680bfa849bdb35bf8866ff0810efa7d0bc",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-06-4.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2025-06-5",
+        "sha256": "8e5eb8676e541189e2d2c931d65e7a27a341c266730a2b8d3c6760b708a8da95",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-06-5.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2025-06-6",
+        "sha256": "f6c6e1b314f29c448c91434598bfe79604a0ce7617bd6c2f1500e9ea7c1447fa",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-06-6.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2025-06-7",
+        "sha256": "7e86089bef5db445fcae729d3255be00ac15c19cd1d28b2d0f5c5add93144ad1",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-06-7.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2025-10-invalid-padding-error",
+        "sha256": "00c9b6ec6c3f5a328b8f089996bedc224a90d89fbcc546b3709a7554e725e699",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-10-invalid-padding-error.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2025-10-ssbleed-mstep",
+        "sha256": "1d972f2f55c8f86ff7032310792f43e6a91a68bfd31331c28a18429298831d2e",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2025-10-ssbleed-mstep.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-03-ccm-finish-boundary-check",
+        "sha256": "b8f9266a9a5fe152ee478837235573168fb035bb31a85029540afbc46c84051e",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-ccm-finish-boundary-check.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-03-client-impersonation-while-resuming-tls13-session",
+        "sha256": "1ea5c518c20d289fc5e0d6e912628a670af8f79269dc2c3bdbc2d1fc87afd45a",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-client-impersonation-while-resuming-tls13-session.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-03-compiler-induced-constant-time-violations",
+        "sha256": "91a043b0d8820a1e459197d52ec84becb6ea75b4f060033b26831c9279df3fec",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-compiler-induced-constant-time-violations.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-03-dev-random",
+        "sha256": "0e1d1bb3839f4998bdbeef7c40b71be1427dd5174f7e5932e34a4d9d37ce0bea",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-dev-random.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-03-ffdh-buffer-overflow",
+        "sha256": "fb6763eaa82587c86b59ecd78a7ac26c906a0813a4c2cee2518f0eee86fbdfdd",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-ffdh-buffer-overflow.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-03-ffdh-peerkey-checks",
+        "sha256": "af46737eb6a06ff5629074ec9b9d41c4352f7d90438deb414e6f197dc3d14d83",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-ffdh-peerkey-checks.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-03-inet-pton",
+        "sha256": "a9e0f756af83b8400cdffdde801bf234ce636eb1f41a5768c3c29f046567ac9b",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-inet-pton.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-03-null-pointer-dereference-x509",
+        "sha256": "90b8be602148d809dc8e0d4a41f7330992bede3e7daf69505830ca1fc8932115",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-null-pointer-dereference-x509.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-03-rng-cloning",
+        "sha256": "6f5f2dd934b9ce59727494a194273ab3ca268a39f472b7bafceea0c479404a4e",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-rng-cloning.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-03-serialized-data",
+        "sha256": "b38631593518b45dae2569b4158aa763e771a8f86d751b46393abdbda14f9248",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-serialized-data.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-03-sigalg-injection",
+        "sha256": "21f861ab853d05d7a392157277bcdb6950d38bf42bf6ef73a633ea149f04260f",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-03-sigalg-injection.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-chacha20-counter-overflow-keystream-reuse",
+        "sha256": "83f9f38ddead9b48c5f5ff1839db6a994622d3db8d43c835fd3b6bb02f997352",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-chacha20-counter-overflow-keystream-reuse.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-ecc-optimized-modp-side-channel",
+        "sha256": "92b43d9036f402d9309ba894c347b665f2ff7a158b3d29d302f7673ee95e77c2",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-ecc-optimized-modp-side-channel.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-everest-low-order-input-validation",
+        "sha256": "004200529a06161b62c10e205b5db6985e2fe7dce3eeb0ba73a733433a0a8826",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-everest-low-order-input-validation.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-extended-master-secret-calculation-failure-ignored",
+        "sha256": "eb871e6c34f6b0ebaf505dbf16869665d6b98bb12708a933581eafc4dceb07cf",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-extended-master-secret-calculation-failure-ignored.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-heap-corruption-early-renegotiation-corrupted-dtls-record",
+        "sha256": "009513a0ade4c0f446248aa101733e2f2789e28cdb6b9b1ec61a1200c79e8084",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-heap-corruption-early-renegotiation-corrupted-dtls-record.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-ignored-tls13-resumption-secret-derivation-error",
+        "sha256": "224e7d8958aab3617f53344bc560c0206906b37c8bd88f9762cd24e2d735867a",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-ignored-tls13-resumption-secret-derivation-error.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-pkcs7-weak-hash-algorithms-accepted",
+        "sha256": "a63e3880b2ff72b615a4342e31ff8ffbadab423ffdcc0a8d46f0ad51f428ca08",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-pkcs7-weak-hash-algorithms-accepted.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-possible-buffer-overflow-ecdh-calc-secret",
+        "sha256": "240d4fe1eef6e4fa095781c7870f574899eac116a9cea605d50c447c4f394465",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-possible-buffer-overflow-ecdh-calc-secret.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-random-generator-fault-tls-integrity",
+        "sha256": "04163c55b6ccc8b292f77c18bf19c6851ce77101d47bc8e24aca77dc3cbdc5c4",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-random-generator-fault-tls-integrity.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-rsa-pkcs1-v15-decryption-timing-side-channel",
+        "sha256": "bd1068f5428b6d66f33bf4507f1c82cebef7f2a6e291f3e335936b6128402b49",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-rsa-pkcs1-v15-decryption-timing-side-channel.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-signature-algorithm-restrictions-certificate-chain",
+        "sha256": "062a585d72bf9037f5317c1e66e16ee61d11a865fe83efa76958c33aad48c9c0",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-signature-algorithm-restrictions-certificate-chain.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-ssl-session-reset-incomplete-context-reset",
+        "sha256": "597f47945961bb36cee779837a8045e6c5b47f04e94be81e50ad4e0d496fa83f",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-ssl-session-reset-incomplete-context-reset.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-tls12-ecdhe-psk-client-buffer-overflow",
+        "sha256": "5db6ba58f6bcdc0d2b096b52fbd05ae053f6695000691a4e487c68f00ebadccc",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-tls12-ecdhe-psk-client-buffer-overflow.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-tls12-ecjpake-serverkeyexchange-oob-read",
+        "sha256": "a1237fc2c583e3a8e62b23c9177763b203ce2d03e5be3a2ccca3333ff0575014",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-tls12-ecjpake-serverkeyexchange-oob-read.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-tls12-newsessionticket-information-disclosure",
+        "sha256": "6deea6d064711332b4053604c4a226d976bcb30b7c2170367e999f8824664e2b",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-tls12-newsessionticket-information-disclosure.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-tls13-early-data-integrity-failure-key-change",
+        "sha256": "f988600c94dc7c161fe8f3bb49dae927f0e9dee8d22237f94982cf3313e39a9d",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-tls13-early-data-integrity-failure-key-change.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-tls13-hrr-unadvertised-group",
+        "sha256": "1246b5505b8960ef8c9a41e879feacc45f23e6401f00ef7d7b5a88bb776d04dc",
+        "matches_reference": false,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-tls13-hrr-unadvertised-group.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-use-after-free-pkcs7-free-reused-context",
+        "sha256": "341728b724e672eca544e5e007819d2ecfee16ee40da08bf3517f5a31adfa0dd",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-use-after-free-pkcs7-free-reused-context.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-x509-ca-bit-forgery-invalid-basicconstraints",
+        "sha256": "495851740d8c1a1d66e0f6703b573e10d30c1a2b8e85c4d1693bec47da0546a3",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-x509-ca-bit-forgery-invalid-basicconstraints.md"
+      },
+      {
+        "id": "mbedtls-security-advisory-2026-07-zero-length-ecc-public-key-oob-read",
+        "sha256": "4f20304c66115f1fce7107e39472aabc9b4dbb9672f023602a4195b03c61eaf1",
+        "matches_reference": true,
+        "url": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls-docs/abe4067e3f2069efc394ea362c46ce7d8998c5ce/security-advisories/mbedtls-security-advisory-2026-07-zero-length-ecc-public-key-oob-read.md"
+      }
+    ]
+  },
+  "ca": {
+    "path": "native/tls/ca-bundle.pem",
+    "url": "https://curl.se/ca/cacert-2026-10-20.pem",
+    "sha256": "796f1389bfea13c0ed78f663b765baaff54a508e5483786bd6ece73c5e3e3cbe",
+    "origin": "Mozilla NSS via curl CA Extract; manual checksum-pinned updates",
+    "default_trust": "Mozilla snapshot only; exclude Cosmopolitan redbean development root and automatic host stores",
+    "license": "MPL-2.0",
+    "license_path": "native/tls/LICENSE",
+    "license_sha256": "cab670fd383f7a1a43a16f5ce35af6928c9d68f6fa94e3886ff899920ea2768d"
+  }
+}

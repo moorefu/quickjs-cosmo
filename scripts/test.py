@@ -155,6 +155,12 @@ def main():
         if not valid:
             print("FAIL generated C has no bytecode array", flush=True)
     if args.compile:
+        if check("sdk/compile-tls-audit", [sys.executable, ROOT / "scripts/probe_tls.py", "--offline", "--output", scratch], timeout=600):
+            check("sdk/tls-security-unit", [scratch / "tls-security-sdk.exe"], contains="PASS tls-security-unit", timeout=120)
+            if args.node_compat:
+                tls_command=[sys.executable, ROOT / "scripts/test_tls_security.py", "--probe", scratch / "tls-policy-sdk.exe"]
+                if args.node: tls_command += ["--node", str(Path(args.node).resolve())]
+                check("sdk/tls-security-policy", tls_command, contains="PASS TLS security policy:", timeout=120)
         if check("qjsc/compile-network-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/network-worker.mjs",
                  "-o", scratch / "network-standalone.exe", ROOT / "tests/runtime_network.mjs"], timeout=180):
             check("qjsc/run-network-ape", [sys.executable, ROOT / "scripts/test_network.py", "--executable", scratch / "network-standalone.exe"], contains="PASS runtime-network", timeout=120)
@@ -272,6 +278,11 @@ def main():
                  timeout=180):
             check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
+        check("sdk/cross-host-tls-security", [args.standalone.resolve().parent / "tls-security-sdk.exe"], contains="PASS tls-security-unit", timeout=120)
+        if args.node_compat:
+            tls_command=[sys.executable, ROOT / "scripts/test_tls_security.py", "--probe", args.standalone.resolve().parent / "tls-policy-sdk.exe"]
+            if args.node: tls_command += ["--node", str(Path(args.node).resolve())]
+            check("sdk/cross-host-tls-policy", tls_command, contains="PASS TLS security policy:", timeout=120)
         check("qjsc/cross-host-hash-extra", [args.standalone.resolve().parent / "hash-extra-standalone.exe"], contains="PASS runtime-hash-extra", timeout=120)
         check("qjsc/cross-host-network", [sys.executable, ROOT / "scripts/test_network.py", "--executable", args.standalone.resolve().parent / "network-standalone.exe"], contains="PASS runtime-network", timeout=120)
         check("sdk/cross-host-network", [args.standalone.resolve().parent / "network-sdk.exe"], contains="PASS network-sdk", timeout=120)

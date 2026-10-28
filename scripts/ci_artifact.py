@@ -29,11 +29,13 @@ STANDALONES = ("build/test-linux/hello-standalone.exe", "build/test-linux/runtim
                "build/test-linux/child-process-async-standalone.exe", "build/test-linux/child-process-async-sdk.exe",
                "build/test-linux/file-algorithm-streams-standalone.exe", "build/test-linux/file-algorithm-streams-sdk.exe",
                "build/test-linux/crypto-advanced-standalone.exe", "build/test-linux/crypto-advanced-sdk.exe",
-               "build/test-linux/hash-extra-standalone.exe", "build/test-linux/network-standalone.exe", "build/test-linux/network-sdk.exe")
+               "build/test-linux/hash-extra-standalone.exe", "build/test-linux/network-standalone.exe", "build/test-linux/network-sdk.exe",
+               "build/test-linux/tls-security-sdk.exe", "build/test-linux/tls-policy-sdk.exe")
 SOURCE = ".cache/quickjs-source.tar.gz"
 NATIVE_PROBES = tuple("build/native/" + name + suffix
                      for name in ("toolchain-probe.exe", "backends-probe.exe")
                      for suffix in ("", ".build.json"))
+TLS_METADATA = ("build/native/tls/probes.json",)
 
 
 def sha256(path):
@@ -53,7 +55,7 @@ def checked_name(name, version):
     if path.is_absolute() or ".." in path.parts or "\\" in name or ":" in name or str(path) != name:
         raise ValueError("Unsafe CI artifact path: " + name)
     release = f"releases/quickjs-cosmo-{version}.zip"
-    allowed = name in (MANIFEST, SOURCE, *STANDALONES, *NATIVE_PROBES, release, release + ".sha256")
+    allowed = name in (MANIFEST, SOURCE, *STANDALONES, *NATIVE_PROBES, *TLS_METADATA, release, release + ".sha256")
     allowed |= len(path.parts) == 2 and path.parts[0] == "dist"
     allowed |= len(path.parts) == 3 and path.parts[:2] == ("dist", ".aarch64")
     if not allowed:
@@ -156,7 +158,7 @@ def verify(settings):
             raise ValueError("CI payload hash mismatch: " + name)
     sdk = verify_dist(settings)
     expected = {"dist/" + name for name in sdk["files"]} | {
-        "dist/manifest.json", SOURCE, *STANDALONES, *NATIVE_PROBES,
+        "dist/manifest.json", SOURCE, *STANDALONES, *NATIVE_PROBES, *TLS_METADATA,
         "releases/" + release["archive"], "releases/" + release["archive"] + ".sha256"}
     if set(metadata["files"]) != expected:
         raise ValueError("CI bundle payload inventory mismatch")
@@ -165,6 +167,15 @@ def verify(settings):
         name = "backends" if backend else "toolchain"
         verify_probe(settings, settings.root / ("build/native/" + name + "-probe.exe"), backend)
     verify_package(settings, release)
+    tls=json.loads((settings.root / TLS_METADATA[0]).read_text(encoding='utf8'))
+    if tls['lock_sha256']!=sha256(settings.root/'native/tls/security.json'):raise ValueError('TLS audit lock mismatch')
+    for name,digest in {**tls['sources'],**tls['binaries']}.items():
+        path=(settings.root/name).resolve()
+        if not path.is_relative_to(settings.root.resolve()) or sha256(path)!=digest:raise ValueError('TLS audit input or binary mismatch: '+name)
+    expected_sdk={'x86_64':'dist/libquickjs.a','aarch64':'dist/.aarch64/libquickjs.a'}
+    if set(tls['sdk'])!=set(expected_sdk):raise ValueError('TLS SDK architecture inventory mismatch')
+    for arch,record in tls['sdk'].items():
+        if record['archive']!=expected_sdk[arch] or record['general_backend_symbols'] or sha256(settings.root/record['archive'])!=record['sha256']:raise ValueError('TLS SDK closure mismatch')
     print("PASS CI artifact integrity: SDK, sources, standalone APEs and release ZIP", flush=True)
     return metadata
 
@@ -178,7 +189,7 @@ def pack(settings, output, tag=None):
         raise ValueError("Build host tests must pass for the packaged qjs")
     archive = "releases/" + release["archive"]
     files = sorted({"dist/" + name for name in sdk["files"]} | {
-        "dist/manifest.json", SOURCE, *STANDALONES, *NATIVE_PROBES, archive, archive + ".sha256"})
+        "dist/manifest.json", SOURCE, *STANDALONES, *NATIVE_PROBES, *TLS_METADATA, archive, archive + ".sha256"})
     for name in ("probe-linux.json", "backends-linux.json"):
         native = json.loads((settings.root / "build/native" / name).read_text(encoding="utf-8"))
         if not native["passed"]:
