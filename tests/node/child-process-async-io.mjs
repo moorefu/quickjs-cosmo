@@ -45,8 +45,13 @@ const close=child=>new Promise((resolve,reject)=>{child.on('error',reject);child
         const parent=path.join(path.dirname(fixture),'child-unref-parent.mjs'),args=[...(process.versions.node?[]:['-m']),parent];
         const value=cp.spawnSync(process.execPath,args,{stdio:['ignore','pipe','pipe'],windowsHide:true,timeout:5000,env:{...process.env,QJS_UNREF_SCRIPT:fixture,QJS_UNREF_MARKER:marker}});const deadline=Date.now()+1500;
         if(value.status!==0)console.error('unref parent: '+value.stderr?.toString());
-        while(!fs.existsSync(marker) && Date.now()<deadline)await new Promise(resolve=>setTimeout(resolve,20));
-        output.unref={status:value.status,marker:fs.existsSync(marker)?fs.readFileSync(marker,'utf8'):null};
+        let markerValue=null;
+        while(Date.now()<deadline){
+            try{markerValue=fs.readFileSync(marker,'utf8');}catch(error){if(error.code!=='ENOENT')throw error;}
+            if(markerValue==='done')break;
+            await new Promise(resolve=>setTimeout(resolve,20));
+        }
+        output.unref={status:value.status,marker:markerValue};
     }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 check(output.flood.progress,'timers advance while pipes are active');check(output.pipeline.content,'pipeline content');
