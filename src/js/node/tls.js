@@ -1,4 +1,4 @@
-function createTLS(net,dns,url) {
+function createTLS(net,dns,url,defaultCA=null) {
     const states=Symbol('tls.socket'),unsupported=name=>{throw codedError(Error,'ERR_NOT_SUPPORTED','TLS option '+name+' is not enabled');};
     function settings(options){
         if(!options||typeof options!=='object')throw invalidType('options','an object');
@@ -13,7 +13,7 @@ function createTLS(net,dns,url) {
         let identity=sni||host;if(!dns.isIP(identity))identity=url.domainToASCII(identity);
         if(!identity||identity.length>253||identity.includes('\0'))throw codedError(TypeError,'ERR_INVALID_ARG_VALUE','Invalid TLS identity');
         if(sni==='')sni=null;
-        let ca=null;if(options.ca!==undefined){const values=Array.isArray(options.ca)?options.ca:[options.ca];ca=values.map(value=>{if(typeof value==='string')return value;if(value instanceof Uint8Array)return Buffer.from(value.buffer,value.byteOffset,value.byteLength).toString('utf8');throw invalidType('ca','a string, Buffer, or array');}).join('\n');if(!ca||ca.length>4*1024*1024||ca.includes('\0'))throw codedError(TypeError,'ERR_INVALID_ARG_VALUE','Invalid TLS CA');}
+        let ca=defaultCA;if(options.ca!==undefined){const values=Array.isArray(options.ca)?options.ca:[options.ca];ca=values.map(value=>{if(typeof value==='string')return value;if(value instanceof Uint8Array)return Buffer.from(value.buffer,value.byteOffset,value.byteLength).toString('utf8');throw invalidType('ca','a string, Buffer, or array');}).join('\n');if(!ca||ca.length>4*1024*1024||ca.includes('\0'))throw codedError(TypeError,'ERR_INVALID_ARG_VALUE','Invalid TLS CA');}
         return [identity,sni,ca];
     }
     function TLSSocket(socket,options={}){
@@ -43,5 +43,5 @@ function createTLS(net,dns,url) {
         if(callback!==undefined&&typeof callback!=='function')throw invalidType('callback','a function');
         const socket=new TLSSocket(undefined,options);if(callback)socket.once('secureConnect',callback);return socket.connect(options);
     }
-    return {connect,TLSSocket};
+    return {api:{connect,TLSSocket},settings};
 }

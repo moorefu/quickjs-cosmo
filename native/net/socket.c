@@ -261,10 +261,19 @@ static JSValue error_info(JSContext *ctx,JSValueConst self,int argc,JSValueConst
     }
     return js_cosmo_process_error_info(ctx,code);
 }
+static JSValue default_ca(JSContext *ctx,JSValueConst self,int argc,JSValueConst *argv){return JS_NewString(ctx,qjs_tls_backend_api()->default_ca());}
+static JSValue validate_ca(JSContext *ctx,JSValueConst self,int argc,JSValueConst *argv){
+    if(argc<1)return JS_ThrowTypeError(ctx,"Missing extra CA PEM");
+    size_t length;const char *ca=JS_ToCStringLen(ctx,&length,argv[0]);if(!ca)return JS_EXCEPTION;
+    if(!length||length>3*1024*1024||memchr(ca,0,length)){JS_FreeCString(ctx,ca);return JS_FALSE;}
+    void *memory=js_mallocz(ctx,QJS_TLS_ARENA);if(!memory){JS_FreeCString(ctx,ca);return JS_EXCEPTION;}
+    int valid=qjs_tls_backend_api()->validate_ca(memory,QJS_TLS_ARENA,(const unsigned char *)ca,length);
+    memset(memory,0,QJS_TLS_ARENA);js_free(ctx,memory);JS_FreeCString(ctx,ca);return JS_NewBool(ctx,valid);
+}
 JSValue js_cosmo_net_api(JSContext *ctx){
     pthread_once(&once,class_id);if(!JS_IsRegisteredClass(JS_GetRuntime(ctx),guard_class)&&JS_NewClass(JS_GetRuntime(ctx),guard_class,&definition)<0)return JS_ThrowOutOfMemory(ctx);
     JSValue api=JS_NewObject(ctx);if(JS_IsException(api))return api;
-    if(JS_SetPropertyStr(ctx,api,"start",JS_NewCFunction(ctx,start,"start",6))<0 || JS_SetPropertyStr(ctx,api,"error",JS_NewCFunction(ctx,error_info,"error",1))<0){JS_FreeValue(ctx,api);return JS_EXCEPTION;}
+    if(JS_SetPropertyStr(ctx,api,"start",JS_NewCFunction(ctx,start,"start",6))<0 || JS_SetPropertyStr(ctx,api,"error",JS_NewCFunction(ctx,error_info,"error",1))<0 || JS_SetPropertyStr(ctx,api,"defaultCA",JS_NewCFunction(ctx,default_ca,"defaultCA",0))<0 || JS_SetPropertyStr(ctx,api,"validateCA",JS_NewCFunction(ctx,validate_ca,"validateCA",1))<0){JS_FreeValue(ctx,api);return JS_EXCEPTION;}
     const char *names[]={"read","write","end","close","ref","noDelay","keepAlive"};
     for(int i=0;i<7;i++)if(JS_SetPropertyStr(ctx,api,names[i],JS_NewCFunctionMagic(ctx,control,names[i],1,JS_CFUNC_generic_magic,i))<0){JS_FreeValue(ctx,api);return JS_EXCEPTION;}return api;
 }

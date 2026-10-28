@@ -1,5 +1,5 @@
 /* HTTP/1.1 clients. Framing and stream ownership stay on the JS owner thread. */
-function createHTTP(native,net,streams,process,url,transport={protocol:'http:',defaultPort:80,connect:options=>net.api.connect(options),ready:'connect'}) {
+function createHTTP(native,net,streams,process,url,defaultTransport={protocol:'http:',defaultPort:80,connect:options=>net.api.connect(options),ready:'connect'}) {
     const {Writable,Readable}=streams.api,key=Symbol('http.state'),agentKey=Symbol('http.agent');
     const tick=(fn,...args)=>process.nextTick(fn,...args),error=(code,message=code)=>codedError(Error,code,message);
     const token=/^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$/;
@@ -14,7 +14,7 @@ function createHTTP(native,net,streams,process,url,transport={protocol:'http:',d
         }return {out,distinct};
     }
     function rawFields(lines){const pairs=[];for(const line of lines){if(!line)continue;const index=line.indexOf(':');if(index<1||!token.test(line.slice(0,index))||/[^\t\x20-\x7e\x80-\xff]/.test(line.slice(index+1)))throw error('HPE_INVALID_HEADER_TOKEN','Invalid response header');pairs.push(line.slice(0,index),line.slice(index+1).replace(/^[ \t]+|[ \t]+$/g,''));}return pairs;}
-    function endpoint(args,raw=false){
+    function endpoint(args,raw=false,transport=defaultTransport){
         let value=args[0],options={},callback;
         if(typeof value==='string'||value instanceof url.URL){
             const scheme=typeof value==='string'?/^([A-Za-z][A-Za-z0-9+.-]*:)/.exec(value)?.[1].toLowerCase():value.protocol;if(scheme&&scheme!==transport.protocol)throw codedError(TypeError,'ERR_INVALID_PROTOCOL','Protocol '+scheme+' not supported. Expected '+transport.protocol);
@@ -32,17 +32,17 @@ function createHTTP(native,net,streams,process,url,transport={protocol:'http:',d
         if(options.socketPath!==undefined||options.insecureHTTPParser||method==='CONNECT')throw error('ERR_NOT_SUPPORTED','IPC, CONNECT and insecure parsing are not enabled');
         return {options:{...options,protocol,hostname,port,method,path,maxHeaderSize:limit},callback};
     }
-    function Agent(options={}){
+    function Agent(options={},transport=defaultTransport){
         if(!(this instanceof Agent))return new Agent(options);if(!options||typeof options!=='object')throw invalidType('options','an object');
         this.options={...options};this.keepAlive=options.keepAlive??false;this.maxSockets=options.maxSockets??Infinity;this.maxTotalSockets=options.maxTotalSockets??32;this.maxFreeSockets=options.maxFreeSockets??16;
         for(const [name,max] of [['maxSockets',Infinity],['maxTotalSockets',32],['maxFreeSockets',32]])if(typeof this[name]!=='number'||this[name]<1||this[name]>max||this[name]!==Infinity&&!Number.isInteger(this[name]))throw outOfRange(name);
         this.sockets=Object.create(null);this.freeSockets=Object.create(null);this.requests=Object.create(null);this.protocol=transport.protocol;this.defaultPort=transport.defaultPort;
-        Object.defineProperty(this,agentKey,{value:{total:0,queue:[],destroyed:false}});
+        Object.defineProperty(this,agentKey,{value:{total:0,queue:[],destroyed:false,transport}});
     }
     Agent.prototype.getName=function(options){return (options.hostname??options.host??'localhost')+':'+(options.port??this.defaultPort)+':'+(options.localAddress??'')+':'+(options.family??'');};
-    Agent.prototype.createConnection=function(options,callback){const socket=transport.connect(options);if(callback)socket.once(transport.ready,()=>callback(null,socket));return socket;};
-    Agent.prototype.addRequest=function(request,options,callback){const state=this[agentKey],name=this.getName(options);
-        const queued={request,options,callback,name};request[key].queued=queued;request[key].agent=this;
+    Agent.prototype.createConnection=function(options,callback){const transport=this[agentKey].transport,socket=transport.connect(options);if(callback)socket.once(transport.ready,()=>callback(null,socket));return socket;};
+    Agent.prototype.addRequest=function(request,options,callback){const state=this[agentKey];let connectionOptions={...options,...this.options,allowHalfOpen:true};connectionOptions.host=connectionOptions.hostname;delete connectionOptions.path;delete connectionOptions.signal;connectionOptions=state.transport.snapshot?.(connectionOptions)??connectionOptions;const name=this.getName(connectionOptions);
+        const queued={request,options:connectionOptions,callback,name};request[key].queued=queued;request[key].agent=this;
         if(state.destroyed){tick(callback,error('ERR_HTTP_AGENT_DESTROYED'));return;}
         if(state.queue.length>=128){tick(callback,error('EAGAIN','HTTP request queue is full'));return;}
         state.queue.push(queued);(this.requests[name]??=[]).push(request);this._dispatch();
@@ -56,7 +56,7 @@ function createHTTP(native,net,streams,process,url,transport={protocol:'http:',d
             this._remove(item);
             if(socket){socket.removeListener('data',socket._httpIdleData);socket._httpIdleData=null;socket.ref();item.request.reusedSocket=true;}
             else {
-                try{const connectionOptions={...item.options,...this.options,allowHalfOpen:true};connectionOptions.host=connectionOptions.hostname;delete connectionOptions.path;delete connectionOptions.signal;socket=this.createConnection(connectionOptions);if(!socket||typeof socket.on!=='function')throw invalidType('socket','a Socket');}catch(e){tick(item.callback,e);continue;}
+                try{socket=this.createConnection(item.options);if(!socket||typeof socket.on!=='function')throw invalidType('socket','a Socket');}catch(e){tick(item.callback,e);continue;}
                 const poolName=item.name;state.total++;socket.once('close',()=>{state.total--;for(const map of [this.sockets,this.freeSockets]){const a=map[poolName];if(a){const i=a.indexOf(socket);if(i>=0)a.splice(i,1);if(!a.length)delete map[poolName];}}this._dispatch();});
                 socket.on('end',()=>{if(this.freeSockets[poolName]?.includes(socket))socket.destroy();});socket.on('error',()=>{if(this.freeSockets[poolName]?.includes(socket))socket.destroy();});
             }
@@ -79,8 +79,9 @@ function createHTTP(native,net,streams,process,url,transport={protocol:'http:',d
     function ClientRequest(...args){if(!(this instanceof ClientRequest))return new ClientRequest(...args);const {options,callback}=endpoint(args);
         initialize(this,options,callback);
     }
-    function initialize(request,options,callback){
-        Object.defineProperty(request,key,{value:{options,headers:new Map(),queued:null,agent:null,construct:null,normal:false,released:false,pending:Buffer.alloc(0),phase:'headers',remaining:0,blocked:false,pumping:false,information:0,written:0,expected:null,chunked:false,headersSent:false,bodyWritten:false}});
+    function initialize(request,options,callback,transport=defaultTransport){
+        if(options.agent!==undefined&&options.agent!==false){if(!(options.agent instanceof Agent))throw invalidType('agent','an admitted HTTP Agent');if(options.agent.protocol!==transport.protocol)throw codedError(TypeError,'ERR_INVALID_PROTOCOL','Agent protocol does not match request');}
+        Object.defineProperty(request,key,{value:{options,transport,headers:new Map(),queued:null,agent:null,construct:null,normal:false,released:false,pending:Buffer.alloc(0),phase:'headers',remaining:0,blocked:false,pumping:false,information:0,written:0,expected:null,chunked:false,headersSent:false,bodyWritten:false}});
         request.method=options.method;request.path=options.path;request.host=options.hostname;request.protocol=options.protocol;request.socket=request.connection=null;request.reusedSocket=false;request.aborted=false;request.res=null;request.maxHeadersCount=2000;
         Writable.call(request,{autoDestroy:false,highWaterMark:options.highWaterMark,signal:options.signal});
         streams.httpOutgoing(request);
@@ -92,7 +93,7 @@ function createHTTP(native,net,streams,process,url,transport={protocol:'http:',d
     Object.setPrototypeOf(ClientRequest.prototype,Writable.prototype);Object.setPrototypeOf(ClientRequest,Writable);
     ClientRequest.prototype._construct=function(callback){const s=this[key];let completed=false;const done=failure=>{if(completed)return;completed=true;s.construct=null;callback(failure);};s.construct=done;
         if(this.destroyed){done();return;}
-        let agent=s.options.agent===false?new Agent({keepAlive:false}):s.options.agent??api.globalAgent;
+        let agent=s.options.agent===false?new s.transport.Agent({keepAlive:false}):s.options.agent??s.transport.api.globalAgent;
         if(!(agent instanceof Agent))return done(invalidType('agent','an admitted HTTP Agent'));
         this.agent=agent;agent.addRequest(this,s.options,(failure,socket)=>{if(this.destroyed){socket?.destroy();done();return;}if(failure){done(failure);return;}
             this.socket=this.connection=socket;socket.setTimeout(0);socket.removeAllListeners('timeout');
@@ -179,8 +180,21 @@ function createHTTP(native,net,streams,process,url,transport={protocol:'http:',d
             if(!this.res.push(data)){s.blocked=true;this.socket.pause();}if(s.phase==='chunk'&&!s.remaining)s.phase='chunk-crlf';
         }}catch(e){this._fail(e);}finally{s.pumping=false;}
         if(s.ended&&!s.blocked&&!this.destroyed&&!this.res?.complete){if(s.phase==='close'&&!s.pending.length)this._complete();else this._fail(error('ECONNRESET','aborted'));}
+        // The complete body may still be buffered in IncomingMessage. A peer
+        // EOF cannot leave an allowHalfOpen transport alive until its consumer
+        // reads that body; release only the transport and preserve those bytes.
+        if(s.ended&&this.res?.complete&&!this.destroyed){s.normal=true;this._release(false);this.destroy();}
     };
-    function request(...args){return new ClientRequest(...args);}function get(...args){const req=request(...args);req.end();return req;}
-    const api={request,get,ClientRequest,IncomingMessage,Agent,globalAgent:new Agent(),maxHeaderSize:16384,validateHeaderName,validateHeaderValue};
-    return {api,requestRaw(options,callback){const normalized=endpoint([options,callback],true),req=Object.create(ClientRequest.prototype);initialize(req,normalized.options,normalized.callback);return req;}};
+    function makeRequest(args,raw,transport){const normalized=endpoint(args,raw,transport),req=Object.create(ClientRequest.prototype);transport.validate?.(normalized.options);initialize(req,normalized.options,normalized.callback,transport);return req;}
+    function forTransport(transport,publicHTTP=false){
+        function TransportAgent(options){if(!(this instanceof TransportAgent))return new TransportAgent(options);Agent.call(this,options,transport);transport.initializeAgent?.(this,options??{});}
+        Object.setPrototypeOf(TransportAgent.prototype,Agent.prototype);Object.setPrototypeOf(TransportAgent,Agent);Object.defineProperty(TransportAgent,'name',{value:'Agent'});
+        if(transport.poolName)TransportAgent.prototype.getName=function(options){return transport.poolName(options,Agent.prototype.getName.call(this,options));};
+        transport.Agent=publicHTTP?Agent:TransportAgent;
+        function request(...args){return makeRequest(args,false,transport);}function get(...args){const req=request(...args);req.end();return req;}
+        const api=transport.api={request,get,Agent:transport.Agent,globalAgent:new transport.Agent()};
+        if(publicHTTP)Object.assign(api,{ClientRequest,IncomingMessage,maxHeaderSize:16384,validateHeaderName,validateHeaderValue});
+        return {api,requestRaw(options,callback){return makeRequest([options,callback],true,transport);}};
+    }
+    return {...forTransport(defaultTransport,true),forTransport};
 }

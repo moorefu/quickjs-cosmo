@@ -155,6 +155,13 @@ def main():
         if not valid:
             print("FAIL generated C has no bytecode array", flush=True)
     if args.compile:
+        check("qjsc/compile-https",[qjsc,"-m","-D",ROOT/"tests/fixtures/https-worker.mjs","-o",scratch/"https-standalone.exe",ROOT/"tests/runtime_https.mjs"],timeout=180)
+        check("sdk/compile-https-client",[settings.toolchain/"bin/cosmocc","-O2","-I"+str(settings.dist),ROOT/"tests/native/https_client.c",settings.dist/"libquickjs.a","-lm","-lpthread","-ldl","-Wl,--wrap=_Exit,-u,__wrap__Exit,--wrap=socket,--wrap=close,--wrap=send,--wrap=recv,--wrap=js_malloc_rt,--wrap=js_malloc,--wrap=js_mallocz,--wrap=js_realloc","-o",scratch/"https-client-sdk.exe"],timeout=180)
+        if args.node_compat:
+            https_command=[sys.executable,ROOT/"scripts/test_https.py","--qjs",qjs,"--compiled",scratch/"https-standalone.exe","--sdk",scratch/"https-client-sdk.exe"]
+            if args.node:https_command += ["--node",str(Path(args.node).resolve())]
+            check("custom/https-all-entries",https_command,contains="PASS HTTPS all entries",timeout=300)
+        check("sdk/https-provenance",[sys.executable,ROOT/"scripts/probe_https.py","--output",scratch],contains="PASS HTTPS provenance",timeout=180)
         check("qjsc/compile-http-fetch",[qjsc,"-m","-D",ROOT/"tests/fixtures/http-worker.mjs","-o",scratch/"http-standalone.exe",ROOT/"tests/runtime_http.mjs"],timeout=180)
         if check("sdk/compile-http-parser",[settings.toolchain/"bin/cosmocc","-O2","-I"+str(settings.dist),ROOT/"tests/native/http_parser.c",settings.dist/"libquickjs.a","-lm","-lpthread","-ldl","-Wl,--wrap=_Exit,-u,__wrap__Exit,--wrap=js_realloc","-o",scratch/"http-parser-sdk.exe"],timeout=180):
             check("sdk/run-http-parser",[scratch/"http-parser-sdk.exe"],contains="PASS http-parser-sdk",timeout=120)
@@ -295,6 +302,10 @@ def main():
                  timeout=180):
             check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
+        if args.node_compat:
+            https_command=[sys.executable,ROOT/"scripts/test_https.py","--qjs",qjs,"--compiled",args.standalone.resolve().parent/"https-standalone.exe","--sdk",args.standalone.resolve().parent/"https-client-sdk.exe"]
+            if args.node:https_command += ["--node",str(Path(args.node).resolve())]
+            check("custom/cross-host-https",https_command,contains="PASS HTTPS all entries",timeout=300)
         check("sdk/cross-host-http-parser",[args.standalone.resolve().parent/"http-parser-sdk.exe"],contains="PASS http-parser-sdk",timeout=120)
         if args.node_compat:
             http_command=[sys.executable,ROOT/"scripts/test_http.py","--qjs",qjs,"--compiled",args.standalone.resolve().parent/"http-standalone.exe","--sdk",args.standalone.resolve().parent/"http-client-sdk.exe"]

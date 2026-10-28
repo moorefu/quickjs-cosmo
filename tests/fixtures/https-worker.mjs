@@ -1,0 +1,3 @@
+import * as os from 'os';import https from 'node:https';
+const parent=os.Worker.parent;
+parent.onmessage=async({data:base})=>{try{const c=new AbortController(),r=await fetch(base+'/echo',{signal:c.signal});await new Promise(resolve=>setTimeout(resolve,100));c.abort('worker-late');const reason=await r.text().then(()=>null,e=>e);if(reason!=='worker-late')throw Error('Worker delayed body abort failed: '+typeof reason+' '+String(reason));parent.postMessage({text:await fetch(base+'/gzip').then(r=>r.text()),alias:(await import('https')).default===https});}catch(e){parent.postMessage({error:String(e),stack:e.stack});}finally{parent.onmessage=null;}};

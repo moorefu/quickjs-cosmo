@@ -15,5 +15,6 @@ try{
     // Source cancel callbacks/locks are retained in fetch-upload-policy.mjs as
     // a documented divergence, rather than normalized in this comparison.
     const results=await Promise.all(Array.from({length:6},(_,i)=>fetch(base+'/echo?i='+i).then(r=>r.json()).then(v=>v.path)));out.concurrent=results;
+    for(const clone of [false,true]){const c=new AbortController(),r=await fetch(base+'/echo',{signal:c.signal}),copy=clone?r.clone():null;await new Promise(resolve=>setTimeout(resolve,100));c.abort('late-stop');out['late-'+clone]=await r.text().then(()=>null,e=>[typeof e,e?.name??e]);if(copy)out.lateClone=await copy.text().then(()=>null,e=>[typeof e,e?.name??e]);}
     result(out);
 }finally{await service.close();}

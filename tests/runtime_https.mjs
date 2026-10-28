@@ -1,0 +1,10 @@
+import https from 'node:https';import bare from 'https';import http from 'node:http';import assert from 'node:assert/strict';import * as os from 'os';
+const base='https://127.0.0.1:'+process.env.NODE_COMPAT_HTTPS_PORT;
+assert.equal(https,bare);assert.equal((await import('node:https')).default,https);
+const response=await fetch(base+'/gzip'),clone=response.clone();assert.equal(await response.text(),'HTTPS compressed 中文');assert.equal(await clone.text(),'HTTPS compressed 中文');
+assert.equal((await fetch('https://[::1]:'+process.env.NODE_COMPAT_HTTPS_PORT6+'/small').then(r=>r.bytes())).length,17003);
+const received=await new Promise((resolve,reject)=>{const req=https.get(base+'/bytes',{agent:false},res=>{assert(res instanceof http.IncomingMessage);let count=0;res.on('data',c=>count+=c.length);res.on('end',()=>resolve(count));res.on('error',reject);});assert(req instanceof http.ClientRequest);req.on('error',reject);});assert.equal(received,262147);
+const controller=new AbortController(),r=await fetch(base+'/stall-body',{signal:controller.signal}),reader=r.body.getReader();assert.equal(new TextDecoder().decode((await reader.read()).value),'first');controller.abort('https-cancel');assert.equal(await reader.read().then(()=>null,e=>e),'https-cancel');reader.releaseLock();
+const lateController=new AbortController(),late=await fetch(base+'/echo',{signal:lateController.signal}),lateClone=late.clone();await new Promise(resolve=>setTimeout(resolve,100));lateController.abort('late-cancel');for(const body of [late,lateClone])assert.equal(await body.text().then(()=>null,e=>e),'late-cancel');
+const worker=new os.Worker('./fixtures/https-worker.mjs');const message=await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('HTTPS Worker timeout')),15000);worker.onmessage=({data})=>{clearTimeout(timer);worker.onmessage=null;resolve(data);};worker.postMessage(base);});assert.equal(message.error,undefined);assert.equal(message.text,'HTTPS compressed 中文');assert.equal(message.alias,true);
+console.log('PASS runtime-https');

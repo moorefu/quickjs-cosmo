@@ -69,4 +69,6 @@ static const char *error(QjsTls *tls){uint32_t f=tls->flags;
 }
 static const char *cipher(QjsTls *tls){return mbedtls_ssl_get_ciphersuite(&tls->ssl);}
 static void release(QjsTls *tls){current=tls;mbedtls_ssl_free(&tls->ssl);qjs_tls_policy_free(&tls->policy);current=NULL;}
-const QjsTlsBackend *qjs_tls_backend_api(void){static const QjsTlsBackend api={create,handshake,read_bytes,write_bytes,end,pending,want_write,error,cipher,release};return &api;}
+static const char *default_ca(void){return (const char *)qjs_tls_ca;}
+static int validate_ca(void *memory,size_t size,const unsigned char *ca,size_t length){QjsTls *tls=create(memory,size,-1,"localhost",NULL,ca,length);if(!tls)return 0;int valid=!tls->rc;release(tls);return valid;}
+const QjsTlsBackend *qjs_tls_backend_api(void){static const QjsTlsBackend api={create,handshake,read_bytes,write_bytes,end,pending,want_write,error,cipher,release,default_ca,validate_ca};return &api;}

@@ -8,7 +8,7 @@
 
 - `connect(options, callback)` 与 TCP 端口重载；异步 DNS、IPv4/IPv6、连接回退及取消复用 `node:net`。
 - `TLSSocket` 继承 `Socket` / `Duplex`；`connect` 表示 TCP 建立，`secureConnect` 表示证书与握手验证成功。应用写入等待握手完成，读取的是解密数据。
-- `ca` 接受 PEM 字符串、Buffer 或数组，并替换默认 CA。默认信任仅为固定的 118 个 Mozilla 根；不读取宿主证书库及 Cosmo 开发证书。
+- `ca` 接受 PEM 字符串、Buffer 或数组，并替换默认 CA。默认信任为固定的 118 个 Mozilla 根；M5-05 支持启动时 NODE_EXTRA_CA_CERTS 的有效 PEM 扩展，显式 ca 仍替换全部默认根。不读取宿主证书库及 Cosmo 开发证书。
 - 证书的有效期、用途、签名、链、DNS 名称/IP SAN 均验证。DNS 验证复用固定 Nightly 的名称匹配器；IP 只匹配对应地址族的 iPAddress SAN。
 - `servername` 提供 DNS SNI 并作为验证身份；省略时按 `host` 验证且不发送 SNI。IP 身份不发送 SNI。
 - `getProtocol`、`getCipher`、`isSessionReused`、`encrypted`、`authorized` 和 Socket 的流、超时、ref/unref 接口。

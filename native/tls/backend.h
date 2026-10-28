@@ -15,6 +15,8 @@ typedef struct {
     const char *(*error)(QjsTls *);
     const char *(*cipher)(QjsTls *);
     void (*free)(QjsTls *);
+    const char *(*default_ca)(void);
+    int (*validate_ca)(void *,size_t,const unsigned char *,size_t);
 } QjsTlsBackend;
 const QjsTlsBackend *qjs_tls_backend_api(void);
 #endif

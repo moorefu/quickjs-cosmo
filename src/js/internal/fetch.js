@@ -106,7 +106,7 @@ function createFetch(transports,web,url,compression,streams) {
             }
             let node=res;const nullBody=method==='HEAD'||[204,205,304].includes(status);try{if(!nullBody&&responseHeaders.has('content-encoding'))node=decode(res,responseHeaders.get('content-encoding'));}catch(e){res.destroy();throw fetchError(e);}
             const response=Object.create(Response.prototype),address=new url.URL(current);address.hash='';Object.defineProperty(response,responseKey,{value:{status,statusText:res.statusMessage,headers:responseHeaders,url:address.href,redirected:redirects>0,type:'basic'}});
-            attachBody(response,{stream:nullBody?null:web.fromNode(node,e=>{if(signal.aborted)return signal.reason;const failure=new TypeError('terminated');failure.cause=e;return failure;},()=>{node.destroy();res.destroy();if(!req.destroyed)req.destroy();}),bytes:null,type:null,streaming:true});if(nullBody)res.resume();return response;
+            attachBody(response,{stream:nullBody?null:web.fromNode(node,e=>{if(signal.aborted)return signal.reason;const failure=new TypeError('terminated');failure.cause=e;return failure;},()=>{node.destroy();res.destroy();if(!req.destroyed)req.destroy();},signal),bytes:null,type:null,streaming:true});if(nullBody)res.resume();return response;
         }
     }
     return {api:{fetch,Headers,Request,Response}};

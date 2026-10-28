@@ -1,6 +1,6 @@
 # M5-04 HTTP/Fetch
 
-状态：实现及本地验收完成，等待完整 CI；本项完整 CI 全绿后进入 M5-05 HTTPS。
+状态：`9cdc98b` 已通过[完整 CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40670191020)，七个平台及 CI gate 全绿。后续 HTTPS 接入由 M5-05 验收。
 
 ## 传输与 HTTP 合同
 
@@ -18,7 +18,7 @@ Agent 支持按目标排队、maxSockets/maxTotalSockets、取消排队项、kee
 
 ## Fetch 与 Web body
 
-全局 fetch、Headers、Request、Response 独立处理 Fetch 语义，复用上述传输。当前只启用 http:；https: 由 M5-05 接入。支持 Headers 的重复值、Set-Cookie、迭代和网络响应不可变头，Request 的基本元数据、依赖 signal、克隆与 body 转移，Response 的静态构造、克隆和一次性 body 消费。
+全局 fetch、Headers、Request、Response 独立处理 Fetch 语义，复用上述传输。M5-04 验收 http:；https: 后续由 M5-05 接入并单独验收。支持 Headers 的重复值、Set-Cookie、迭代和网络响应不可变头，Request 的基本元数据、依赖 signal、克隆与 body 转移，Response 的静态构造、克隆和一次性 body 消费。
 
 响应 body 为默认 reader 的 Web ReadableStream 子集，具备锁、read/cancel/releaseLock/closed、异步迭代、tee、拉取与取消；它不是 Node Readable。Request 可发送字节/字符串/URLSearchParams，或带 duplex:half 的 Web stream/异步可迭代输入。支持 text/json/bytes/arrayBuffer；一次性消费上限 32 MiB，流式读取不预缓存完整 body。tee 遵循消费者速率，慢分支仍可能在 JS 堆中积累队列。
 
