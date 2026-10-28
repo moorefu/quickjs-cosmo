@@ -119,7 +119,12 @@ jobs:
         run: python scripts/ci_artifact.py unpack
       - name: Restore upstream tests from the pinned source archive
         run: python scripts/bootstrap.py --source-only --offline
-      - name: Prepare checksum-locked Node compatibility oracle
+        - name: Cache checksum-locked Node compatibility archives
+          uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+          with:
+            path: .cache/node-baseline/
+            key: node-oracle-${{ matrix.platform }}-${{ matrix.execution_arch }}-${{ hashFiles('compat/node-baseline.json') }}
+        - name: Prepare checksum-locked Node compatibility oracle
         run: python scripts/prepare_native.py --node
       - name: Run existing tests and cross-host standalone APEs
         run: >-

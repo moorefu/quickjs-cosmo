@@ -11,6 +11,7 @@ from pathlib import Path, PurePosixPath
 import shutil
 import subprocess
 import tarfile
+import time
 
 from host_runtime import node_oracle_key
 from node_contract import ROOT, read_json
@@ -37,9 +38,23 @@ def fetch(url, destination, expected, offline):
         raise ValueError("Input must have an HTTPS URL and a pinned SHA-256")
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_suffix(destination.suffix + ".part")
-    subprocess.run(["curl", "--fail", "--location", "--retry", "3", "--connect-timeout", "20",
-                    "--max-time", "180", "--output", str(temporary), url], check=True)
+    # Re-enter curl after a transient failure so -C - observes the new partial
+    # size. curl's internal retries otherwise restart a timed-out large input.
+    for attempt in range(4):
+        command=["curl", "--fail", "--location", "--silent", "--show-error", "--connect-timeout", "20",
+                 "--max-time", "180", "--output", str(temporary)]
+        if temporary.is_symlink():raise ValueError("Refusing symlink download output")
+        if temporary.is_file() and temporary.stat().st_size:command += ["--continue-at", "-"]
+        result=subprocess.run([*command,url])
+        if not result.returncode:break
+        if result.returncode==33:
+            temporary.unlink(missing_ok=True)  # Server cannot resume this input.
+        elif result.returncode not in {5,6,7,18,22,28,35,52,55,56,92}:
+            result.check_returncode()
+        if attempt<3:time.sleep(2**attempt)
+    else:result.check_returncode()
     if sha256(temporary) != expected:
+        temporary.unlink()
         raise ValueError("Downloaded input SHA-256 mismatch: " + str(destination))
     temporary.replace(destination)
 
