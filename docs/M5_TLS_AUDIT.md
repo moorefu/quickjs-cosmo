@@ -24,7 +24,7 @@
 | CVE-2026-35336 / ECDH 输出边界 | 按曲线固定输出长度检查容量；前导零秘密的 31 字节输出拒绝，金丝雀不变，32 字节成功 |
 | CVE-2026-49300 / basicConstraints | 严格 SEQUENCE 边界，不把 INTEGER 当作 CA BOOLEAN；直接 DER 与完整签名证书分别覆盖畸形输入 |
 
-补丁 `native/tls/mbedtls-security.patch` 已重新基于实际 Nightly 生成，保留其序列化宏变化。原始/修改后摘要、配置、167 文件候选源码闭包、补丁和 CA 锁位于 `native/tls/security.json`。构建拒绝混合或未知覆盖层、额外遮蔽文件、源码/补丁/CA/许可摘要变化；不修改 pristine 上游目录。
+补丁 `native/tls/mbedtls-security.patch` 已重新基于实际 Nightly 生成，保留其序列化宏变化。Unified diff 的空上下文行保留必需的空格前缀，按该文件设置 whitespace 例外，避免格式整理改变已锁定字节。原始/修改后摘要、配置、167 文件候选源码闭包、补丁和 CA 锁位于 `native/tls/security.json`。构建拒绝混合或未知覆盖层、额外遮蔽文件、源码/补丁/CA/许可摘要变化；不修改 pristine 上游目录。
 
 ## 当前 JS crypto 与旧报告的区别
 
