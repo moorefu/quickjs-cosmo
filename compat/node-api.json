@@ -443,6 +443,22 @@
       "task": "M4-01",
       "description": "Missing-tag and late-AAD safety, Worker and unsupported key formats",
       "timeout_seconds": 120
+    },
+    {
+      "id": "HASH-005",
+      "status": "runtime",
+      "file": "tests/runtime_hash_extra.mjs",
+      "task": "M4-02",
+      "description": "Extended digest source/Worker/qjsc and explicit HMAC/KDF scope",
+      "timeout_seconds": 60
+    },
+    {
+      "id": "HASH-006",
+      "status": "differential",
+      "file": "tests/node/crypto-extra.mjs",
+      "task": "M4-02",
+      "description": "SHA3/SHAKE/BLAKE2s independent boundary vectors, copy/XOF length, Transform and lifecycle",
+      "timeout_seconds": 60
     }
   ],
   "modules": [
@@ -12769,16 +12785,22 @@
             "HASH-001",
             "HASH-002",
             "KDF-001",
-            "HASH-003"
+            "HASH-003",
+            "HASH-006"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
+            "Fourteen declared digests, including SHA3-224/256/384/512, SHAKE128/256 and BLAKE2s256. SHAKE outputLength is a constructor/copy/hash option; copy without options resets to Node defaults (16/32 bytes). HMAC/KDF remain the declared MD5/SHA1/SHA2 subset. See docs/M4_EXTRA_DIGESTS.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
             "tests/node/crypto-state.mjs",
             "tests/node/crypto-kdf-random.mjs",
-            "tests/node/crypto-inputs.mjs"
+            "tests/node/crypto-inputs.mjs",
+            {
+              "test": "HASH-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "CPython hashlib vectors and same-source Node comparison; HASH-005 source/Worker/qjsc plus SDK failure/wipe/quota tests."
+            }
           ],
           "support": {
             "linux": {
@@ -12812,16 +12834,22 @@
             "KDF-001",
             "HASH-003",
             "STR-006",
-            "STR-007"
+            "STR-007",
+            "HASH-006"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
+            "Fourteen declared digests, including SHA3-224/256/384/512, SHAKE128/256 and BLAKE2s256. SHAKE outputLength is a constructor/copy/hash option; copy without options resets to Node defaults (16/32 bytes). HMAC/KDF remain the declared MD5/SHA1/SHA2 subset. See docs/M4_EXTRA_DIGESTS.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
             "tests/node/crypto-state.mjs",
             "tests/node/crypto-kdf-random.mjs",
-            "tests/node/crypto-inputs.mjs"
+            "tests/node/crypto-inputs.mjs",
+            {
+              "test": "HASH-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "CPython hashlib vectors and same-source Node comparison; HASH-005 source/Worker/qjsc plus SDK failure/wipe/quota tests."
+            }
           ],
           "support": {
             "linux": {
@@ -12853,16 +12881,22 @@
             "HASH-001",
             "HASH-002",
             "KDF-001",
-            "HASH-003"
+            "HASH-003",
+            "HASH-006"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
+            "Fourteen declared digests, including SHA3-224/256/384/512, SHAKE128/256 and BLAKE2s256. SHAKE outputLength is a constructor/copy/hash option; copy without options resets to Node defaults (16/32 bytes). HMAC/KDF remain the declared MD5/SHA1/SHA2 subset. See docs/M4_EXTRA_DIGESTS.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
             "tests/node/crypto-state.mjs",
             "tests/node/crypto-kdf-random.mjs",
-            "tests/node/crypto-inputs.mjs"
+            "tests/node/crypto-inputs.mjs",
+            {
+              "test": "HASH-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "CPython hashlib vectors and same-source Node comparison; HASH-005 source/Worker/qjsc plus SDK failure/wipe/quota tests."
+            }
           ],
           "support": {
             "linux": {
@@ -12894,16 +12928,22 @@
             "HASH-001",
             "HASH-002",
             "KDF-001",
-            "HASH-003"
+            "HASH-003",
+            "HASH-006"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
+            "Fourteen declared digests, including SHA3-224/256/384/512, SHAKE128/256 and BLAKE2s256. SHAKE outputLength is a constructor/copy/hash option; copy without options resets to Node defaults (16/32 bytes). HMAC/KDF remain the declared MD5/SHA1/SHA2 subset. See docs/M4_EXTRA_DIGESTS.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
             "tests/node/crypto-state.mjs",
             "tests/node/crypto-kdf-random.mjs",
-            "tests/node/crypto-inputs.mjs"
+            "tests/node/crypto-inputs.mjs",
+            {
+              "test": "HASH-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "CPython hashlib vectors and same-source Node comparison; HASH-005 source/Worker/qjsc plus SDK failure/wipe/quota tests."
+            }
           ],
           "support": {
             "linux": {
@@ -12937,16 +12977,22 @@
             "KDF-001",
             "HASH-003",
             "STR-006",
-            "STR-007"
+            "STR-007",
+            "HASH-006"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
+            "Fourteen declared digests, including SHA3-224/256/384/512, SHAKE128/256 and BLAKE2s256. SHAKE outputLength is a constructor/copy/hash option; copy without options resets to Node defaults (16/32 bytes). HMAC/KDF remain the declared MD5/SHA1/SHA2 subset. See docs/M4_EXTRA_DIGESTS.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
             "tests/node/crypto-state.mjs",
             "tests/node/crypto-kdf-random.mjs",
-            "tests/node/crypto-inputs.mjs"
+            "tests/node/crypto-inputs.mjs",
+            {
+              "test": "HASH-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "CPython hashlib vectors and same-source Node comparison; HASH-005 source/Worker/qjsc plus SDK failure/wipe/quota tests."
+            }
           ],
           "support": {
             "linux": {
@@ -12984,7 +13030,7 @@
             "KEY-001"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; Secret KeyObject input is implemented in M4-01. See docs/M2_CRYPTO.md."
+            "Declared digest subset (M4-02 adds SHA3/SHAKE/BLAKE2s); HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; Secret KeyObject input is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13025,7 +13071,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
+            "Declared digest subset (M4-02 adds SHA3/SHAKE/BLAKE2s); HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13066,7 +13112,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
+            "Declared digest subset (M4-02 adds SHA3/SHAKE/BLAKE2s); HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13108,7 +13154,7 @@
             "KEY-001"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; Secret KeyObject input is implemented in M4-01. See docs/M2_CRYPTO.md."
+            "Declared digest subset (M4-02 adds SHA3/SHAKE/BLAKE2s); HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; Secret KeyObject input is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13149,7 +13195,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
+            "Declared digest subset (M4-02 adds SHA3/SHAKE/BLAKE2s); HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13232,7 +13278,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
+            "Declared digest subset (M4-02 adds SHA3/SHAKE/BLAKE2s); HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13273,7 +13319,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
+            "Declared digest subset (M4-02 adds SHA3/SHAKE/BLAKE2s); HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -13314,7 +13360,7 @@
             "HASH-003"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
+            "Declared digest subset (M4-02 adds SHA3/SHAKE/BLAKE2s); HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -14146,16 +14192,22 @@
             "KDF-001",
             "HASH-003",
             "STR-006",
-            "STR-007"
+            "STR-007",
+            "HASH-006"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
+            "Fourteen declared digests, including SHA3-224/256/384/512, SHAKE128/256 and BLAKE2s256. SHAKE outputLength is a constructor/copy/hash option; copy without options resets to Node defaults (16/32 bytes). HMAC/KDF remain the declared MD5/SHA1/SHA2 subset. See docs/M4_EXTRA_DIGESTS.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
             "tests/node/crypto-state.mjs",
             "tests/node/crypto-kdf-random.mjs",
-            "tests/node/crypto-inputs.mjs"
+            "tests/node/crypto-inputs.mjs",
+            {
+              "test": "HASH-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "CPython hashlib vectors and same-source Node comparison; HASH-005 source/Worker/qjsc plus SDK failure/wipe/quota tests."
+            }
           ],
           "support": {
             "linux": {
@@ -14193,7 +14245,7 @@
             "KEY-001"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; Secret KeyObject input is implemented in M4-01. See docs/M2_CRYPTO.md."
+            "Declared digest subset (M4-02 adds SHA3/SHAKE/BLAKE2s); HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; Secret KeyObject input is implemented in M4-01. See docs/M2_CRYPTO.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
@@ -14231,16 +14283,22 @@
             "HASH-001",
             "HASH-002",
             "KDF-001",
-            "HASH-003"
+            "HASH-003",
+            "HASH-006"
           ],
           "differences": [
-            "Declared seven-hash subset; HMAC/KDF use MD5, SHA1 and SHA2 only. Hash/Hmac Transform usage is implemented in M3-05; KeyObject is implemented in M4-01. See docs/M2_CRYPTO.md."
+            "Fourteen declared digests, including SHA3-224/256/384/512, SHAKE128/256 and BLAKE2s256. SHAKE outputLength is a constructor/copy/hash option; copy without options resets to Node defaults (16/32 bytes). HMAC/KDF remain the declared MD5/SHA1/SHA2 subset. See docs/M4_EXTRA_DIGESTS.md."
           ],
           "evidence": [
             "tests/node/crypto.mjs",
             "tests/node/crypto-state.mjs",
             "tests/node/crypto-kdf-random.mjs",
-            "tests/node/crypto-inputs.mjs"
+            "tests/node/crypto-inputs.mjs",
+            {
+              "test": "HASH-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "CPython hashlib vectors and same-source Node comparison; HASH-005 source/Worker/qjsc plus SDK failure/wipe/quota tests."
+            }
           ],
           "support": {
             "linux": {
@@ -14270,10 +14328,11 @@
           "parameters": "Node v24.21.0 declared file/algorithm streaming subset",
           "tests": [
             "STR-006",
-            "STR-007"
+            "STR-007",
+            "HASH-006"
           ],
           "differences": [
-            "Transform integration uses the same incremental native hash state, supports encoded output and copy before finalization. Digest algorithms remain the declared M2 subset until M4-02."
+            "Fourteen declared digests, including SHA3-224/256/384/512, SHAKE128/256 and BLAKE2s256. SHAKE outputLength is a constructor/copy/hash option; copy without options resets to Node defaults (16/32 bytes). HMAC/KDF remain the declared MD5/SHA1/SHA2 subset. See docs/M4_EXTRA_DIGESTS.md."
           ],
           "support": {
             "linux": {
@@ -14300,6 +14359,11 @@
               "test": "STR-006",
               "report": "build/node-compat/<platform>.json",
               "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
+            },
+            {
+              "test": "HASH-006",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "CPython hashlib vectors and same-source Node comparison; HASH-005 source/Worker/qjsc plus SDK failure/wipe/quota tests."
             }
           ]
         },

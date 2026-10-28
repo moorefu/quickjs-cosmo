@@ -101,21 +101,25 @@ static JSValue call_impl(JSContext *ctx,int argc,JSValueConst *args,int magic) {
     }
     if (magic==CR_NEW || magic==CR_HKDF || magic==CR_PBKDF2) {
         if (number(ctx,args[0],QCR_ALGORITHMS-1,&algorithm)<0) return JS_EXCEPTION;
-        if (magic!=CR_NEW && algorithm==QCR_BLAKE512) return failure(ctx,"ERR_CRYPTO_INVALID_DIGEST","Digest unavailable for KDF");
+        if (magic!=CR_NEW && algorithm>=QCR_BLAKE512) return failure(ctx,"ERR_CRYPTO_INVALID_DIGEST","Digest unavailable for KDF");
     }
     if (magic==CR_NEW) {
         if (!JS_IsBool(args[1])) return JS_ThrowTypeError(ctx,"Expected HMAC boolean");
         int hmac=JS_ToBool(ctx,args[1]);
         /* The new-hash key uses (buffer, offset, length) at indices 2..4. */
         if (span(ctx,args+2,&a)<0) return JS_EXCEPTION;
-        if (hmac && algorithm==QCR_BLAKE512) return failure(ctx,"ERR_CRYPTO_INVALID_DIGEST","Digest unavailable for HMAC");
-        return wrap_state(ctx,qcrypto_hash_create(algorithm,hmac,a.data,a.length));
+        if (hmac && algorithm>=QCR_BLAKE512) return failure(ctx,"ERR_CRYPTO_INVALID_DIGEST","Digest unavailable for HMAC");
+        length=qcrypto_digest_size(algorithm);
+        if(argc>5 && number(ctx,args[5],UINT32_MAX,&length)<0)return JS_EXCEPTION;
+        return wrap_state(ctx,qcrypto_hash_create(algorithm,hmac,a.data,a.length,length));
     }
     if (magic==CR_UPDATE || magic==CR_DIGEST || magic==CR_COPY) {
         QCryptoHash *hash=state(ctx,args[0]); if (!hash) return JS_EXCEPTION;
         if (magic==CR_COPY) {
             if (qcrypto_hash_hmac(hash)) return JS_ThrowTypeError(ctx,"Cannot copy HMAC state");
-            return wrap_state(ctx,qcrypto_hash_copy(hash));
+            length=qcrypto_hash_size(hash);
+            if(argc>1 && number(ctx,args[1],UINT32_MAX,&length)<0)return JS_EXCEPTION;
+            return wrap_state(ctx,qcrypto_hash_copy(hash,length));
         }
         if (magic==CR_UPDATE) {
             if (span(ctx,args+1,&a)<0) return JS_EXCEPTION;
@@ -191,7 +195,7 @@ static JSValue call_async(JSContext *ctx,JSValueConst self,int argc,JSValueConst
     if(argc<(kind==CR_RANDOM?1:kind==CR_HKDF?11:9))return JS_ThrowTypeError(ctx,"Invalid native async crypto arguments");
     if(kind==CR_RANDOM){if(number(ctx,args[0],0x7fffffff,&length)<0)return JS_EXCEPTION;}
     else {
-        if(number(ctx,args[0],QCR_ALGORITHMS-2,&id)<0 || span(ctx,args+1,&request.a)<0 || span(ctx,args+4,&request.b)<0)return JS_EXCEPTION;
+        if(number(ctx,args[0],QCR_BLAKE512-1,&id)<0 || span(ctx,args+1,&request.a)<0 || span(ctx,args+4,&request.b)<0)return JS_EXCEPTION;
         if(kind==CR_HKDF && span(ctx,args+7,&request.c)<0)return JS_EXCEPTION;
         if(number(ctx,args[kind==CR_HKDF?10:8],0x7fffffff,&length)<0)return JS_EXCEPTION;
         if(kind==CR_PBKDF2 && number(ctx,args[7],0x7fffffff,&iterations)<0)return JS_EXCEPTION;

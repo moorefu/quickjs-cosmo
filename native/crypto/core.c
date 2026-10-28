@@ -11,6 +11,7 @@
 #include "third_party/mbedtls/pkcs5.h"
 #include "third_party/haclstar/haclstar.h"
 #include "core.h"
+#include "extra.h"
 
 static _Thread_local QCryptoAllocator allocator;
 static _Thread_local void *ed_workspace;
@@ -62,11 +63,13 @@ void qcrypto_ed_workspace_leave(void *previous){if(ed_workspace)__wrap_free(ed_w
 
 struct QCryptoHash {
     int algorithm,hmac,finished;
+    size_t output_length;
     mbedtls_md_context_t md;
     Hacl_Hash_Blake2b_state_t *blake;
+    QCryptoExtra *extra;
 };
 size_t qcrypto_digest_size(int algorithm) {
-    static const size_t sizes[]={16,20,28,32,48,64,64};
+    static const size_t sizes[]={16,20,28,32,48,64,64,28,32,48,64,16,32,32};
     return algorithm>=0 && algorithm<QCR_ALGORITHMS?sizes[algorithm]:0;
 }
 static const mbedtls_md_info_t *digest_info(int algorithm) {
@@ -74,13 +77,15 @@ static const mbedtls_md_info_t *digest_info(int algorithm) {
         MBEDTLS_MD_SHA256,MBEDTLS_MD_SHA384,MBEDTLS_MD_SHA512};
     return algorithm>=0 && algorithm<QCR_BLAKE512?mbedtls_md_info_from_type(kinds[algorithm]):NULL;
 }
-size_t qcrypto_hash_size(const QCryptoHash *state) { return state?qcrypto_digest_size(state->algorithm):0; }
+size_t qcrypto_hash_size(const QCryptoHash *state) { return state?state->output_length:0; }
 int qcrypto_hash_hmac(const QCryptoHash *state) { return state && state->hmac; }
-QCryptoHash *qcrypto_hash_create(int algorithm,int hmac,const uint8_t *key,size_t keylen) {
-    if (!qcrypto_digest_size(algorithm) || (hmac && algorithm==QCR_BLAKE512)) return NULL;
+QCryptoHash *qcrypto_hash_create(int algorithm,int hmac,const uint8_t *key,size_t keylen,size_t length) {
+    if (!qcrypto_digest_size(algorithm) || (hmac && algorithm>=QCR_BLAKE512) ||
+        (algorithm!=QCR_SHAKE128 && algorithm!=QCR_SHAKE256 && length!=qcrypto_digest_size(algorithm))) return NULL;
     QCryptoHash *state=calloc(1,sizeof(*state)); if (!state) return NULL;
-    state->algorithm=algorithm; state->hmac=hmac;
-    if (algorithm==QCR_BLAKE512) {
+    state->algorithm=algorithm; state->hmac=hmac;state->output_length=length;
+    if(algorithm>=QCR_SHA3_224){state->extra=qcrypto_extra_create(algorithm,length);if(!state->extra)goto fail;}
+    else if (algorithm==QCR_BLAKE512) {
         state->blake=Hacl_Hash_Blake2b_malloc();
         if (!state->blake) goto fail;
     } else {
@@ -94,13 +99,16 @@ fail: qcrypto_hash_free(state); return NULL;
 void qcrypto_hash_free(QCryptoHash *state) {
     if (!state) return;
     if (state->blake) Hacl_Hash_Blake2b_free(state->blake);
+    if (state->extra) qcrypto_extra_free(state->extra);
     mbedtls_md_free(&state->md); free(state);
 }
-QCryptoHash *qcrypto_hash_copy(const QCryptoHash *state) {
+QCryptoHash *qcrypto_hash_copy(const QCryptoHash *state,size_t length) {
     if (!state || state->finished || state->hmac) return NULL;
+    if(state->algorithm!=QCR_SHAKE128 && state->algorithm!=QCR_SHAKE256 && length!=qcrypto_digest_size(state->algorithm))return NULL;
     QCryptoHash *copy=calloc(1,sizeof(*copy)); if (!copy) return NULL;
-    copy->algorithm=state->algorithm;
-    if (state->blake) {
+    copy->algorithm=state->algorithm;copy->output_length=length;
+    if(state->extra){copy->extra=qcrypto_extra_copy(state->extra,length);if(!copy->extra)goto fail;}
+    else if (state->blake) {
         copy->blake=Hacl_Hash_Blake2b_copy(state->blake);
         if (!copy->blake) goto fail;
     } else {
@@ -112,6 +120,7 @@ fail: qcrypto_hash_free(copy); return NULL;
 }
 int qcrypto_hash_update(QCryptoHash *state,const uint8_t *data,size_t length) {
     if (!state || state->finished) return QCR_STATE;
+    if(state->extra)return qcrypto_extra_update(state->extra,data,length);
     if (state->blake) {
         while (length) {
             uint32_t chunk=length>UINT32_MAX?UINT32_MAX:(uint32_t)length;
@@ -126,7 +135,8 @@ int qcrypto_hash_update(QCryptoHash *state,const uint8_t *data,size_t length) {
 int qcrypto_hash_finish(QCryptoHash *state,uint8_t *output) {
     if (!state || state->finished) return QCR_STATE;
     int result;
-    if (state->blake) result=Hacl_Hash_Blake2b_digest(state->blake,output)==64?0:-1;
+    if(state->extra)result=qcrypto_extra_finish(state->extra,output);
+    else if (state->blake) result=Hacl_Hash_Blake2b_digest(state->blake,output)==64?0:-1;
     else result=state->hmac?mbedtls_md_hmac_finish(&state->md,output):mbedtls_md_finish(&state->md,output);
     state->finished=1; return result?QCR_BACKEND:QCR_OK;
 }

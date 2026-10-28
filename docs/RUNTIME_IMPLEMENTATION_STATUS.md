@@ -19,8 +19,8 @@
 | M3-03 Stream | 完成，CI 全绿 | `362a2af`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40546141176)，[记录](M3_STREAMS.md) |
 | M3-04 异步子进程 | 完成，CI 全绿 | `dab3a8a`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40569582305)，[记录](M3_CHILD_PROCESS_ASYNC.md) |
 | M3-05 文件/算法流 | 完成，CI 全绿 | `f90d02d`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40581885448)，[记录](M3_FILE_ALGORITHM_STREAMS.md) |
-| M4-01 密钥与 AEAD | 本地验收通过，待 CI | KeyObject/DER/PEM、Ed/X25519、Cipher，[记录](M4_KEYS_AEAD.md) |
-| M4-02 扩展摘要 | 待实现 | SHA3/SHAKE/BLAKE2s |
+| M4-01 密钥与 AEAD | 完成，CI 全绿 | `111ec61`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40603741483)，[记录](M4_KEYS_AEAD.md) |
+| M4-02 扩展摘要 | 本地验收通过，待 CI | SHA3/SHAKE/BLAKE2s，[记录](M4_EXTRA_DIGESTS.md) |
 | M5-01 DNS/TCP/URL | 待实现 | lookup、Socket 与 URL |
 | M5-02 TLS 审计 | 待实现 | 新 Nightly、旧缺陷、CA 与 SDK 范围 |
 | M5-03 TLS 接入 | 待实现 | 客户端 TLS、证书、SNI 与取消 |

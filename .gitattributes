@@ -1,1 +1,3 @@
 * text=auto eol=lf
+native/vendor/haclstar-0.3/** -text
+native/vendor/haclstar-0.3/dist/gcc-compatible/*.c whitespace=-blank-at-eof

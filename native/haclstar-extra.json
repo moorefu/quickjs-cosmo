@@ -1,0 +1,121 @@
+{
+  "format": 1,
+  "repository": "https://github.com/hacl-star/hacl-star",
+  "version": "0.3.0",
+  "commit": "b5343363688fbe0e3cdc0c488188708f09eb8a14",
+  "archive_sha256": "4196291e444e17851aeaf7418ea64ff91870ab8a8baaf6f66a2e9da8306b5a97",
+  "archive_url": "https://codeload.github.com/hacl-star/hacl-star/tar.gz/b5343363688fbe0e3cdc0c488188708f09eb8a14",
+  "files": [
+    {
+      "path": "native/vendor/haclstar-0.3/LICENSE",
+      "upstream_path": "LICENSE",
+      "sha256": "c5accbbd8546e94c34aed24afe689a617627d18eed5a6c48277e48db57c23851"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/gcc-compatible/Hacl_Blake2s_32.c",
+      "upstream_path": "dist/gcc-compatible/Hacl_Blake2s_32.c",
+      "sha256": "4fea0a5cea8ef6433b959e7a342e36645347bd1e1ceae5cdd51f5a2f571e516f"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/gcc-compatible/Hacl_Blake2s_32.h",
+      "upstream_path": "dist/gcc-compatible/Hacl_Blake2s_32.h",
+      "sha256": "206bed38ff043072630225c4a765b4399418ed4c752c86f75bcc973ff0622651"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/gcc-compatible/Hacl_Impl_Blake2_Constants.h",
+      "upstream_path": "dist/gcc-compatible/Hacl_Impl_Blake2_Constants.h",
+      "sha256": "8d9f75b1f58b9566b6445014a48b734efab546613cbca8dac0ca858966131327"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/gcc-compatible/Hacl_Kremlib.h",
+      "upstream_path": "dist/gcc-compatible/Hacl_Kremlib.h",
+      "sha256": "bfb4995cf8ff9b9075f16a83db1700a80e1f01fdcdbf77ba3f4282558a89e781"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/gcc-compatible/Hacl_SHA3.c",
+      "upstream_path": "dist/gcc-compatible/Hacl_SHA3.c",
+      "sha256": "389f1a183a8d54e8f02bf2154f29af7a0f2dbcccad6b5f2af96ac349f72af4e5"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/gcc-compatible/Hacl_SHA3.h",
+      "upstream_path": "dist/gcc-compatible/Hacl_SHA3.h",
+      "sha256": "e6c330e1980e7b17cf54c5a5a63b087199692033186d77e6183aa998358a651c"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/gcc-compatible/Lib_Memzero0.h",
+      "upstream_path": "dist/gcc-compatible/Lib_Memzero0.h",
+      "sha256": "92b382e7deea9a3a8056b3a2cd61522e96244b95af1a72cd9c8166e113ab139a"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/gcc-compatible/evercrypt_targetconfig.h",
+      "upstream_path": "dist/gcc-compatible/evercrypt_targetconfig.h",
+      "sha256": "f04976ff42824326042ee345369b3fd16418bbf36f3372076729f315eaf1e69e"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/gcc-compatible/libintvector.h",
+      "upstream_path": "dist/gcc-compatible/libintvector.h",
+      "sha256": "860e5eed65a4c7b7e30576059c580c868361f9e3147aa16cea98462f45a121a0"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/kremlin/include/kremlin/internal/callconv.h",
+      "upstream_path": "dist/kremlin/include/kremlin/internal/callconv.h",
+      "sha256": "d62185807f5b016b46f9fd10bcf5ec1debdaba721909e4c59c8b181cb9268120"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/kremlin/include/kremlin/internal/compat.h",
+      "upstream_path": "dist/kremlin/include/kremlin/internal/compat.h",
+      "sha256": "94f968c2313c36499cdf1712378b465b13f60e2ac6a59bc041a865658b2ced83"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/kremlin/include/kremlin/internal/target.h",
+      "upstream_path": "dist/kremlin/include/kremlin/internal/target.h",
+      "sha256": "e1b3e14a23a592905558d6f6d5e69f6c98089a9a30e8d58788e6b8bedd6434d8"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/kremlin/include/kremlin/internal/types.h",
+      "upstream_path": "dist/kremlin/include/kremlin/internal/types.h",
+      "sha256": "e460094248c2d2be42655dab3ece781f7d32c1d7decbc80228b2b4d270a1cc90"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/kremlin/include/kremlin/lowstar_endianness.h",
+      "upstream_path": "dist/kremlin/include/kremlin/lowstar_endianness.h",
+      "sha256": "6e443428900331ec540344138d54b1bd48e0bd520af2fd5474a908b1ef94428f"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/kremlin/kremlib/dist/minimal/FStar_UInt128.h",
+      "upstream_path": "dist/kremlin/kremlib/dist/minimal/FStar_UInt128.h",
+      "sha256": "941f4ce270d23ddfc0ba3e92e8cfe018b7050f08ed98a480ca4b227b47b177d5"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/kremlin/kremlib/dist/minimal/FStar_UInt128_Verified.h",
+      "upstream_path": "dist/kremlin/kremlib/dist/minimal/FStar_UInt128_Verified.h",
+      "sha256": "bbd7c2771e4bcbfe464fbc5f87325a97171b1770817518912cf72266ff882c65"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/kremlin/kremlib/dist/minimal/FStar_UInt_8_16_32_64.h",
+      "upstream_path": "dist/kremlin/kremlib/dist/minimal/FStar_UInt_8_16_32_64.h",
+      "sha256": "0ac1f566c572aa7f4d76bbee535c3f3fa6494e62cfb89fb1ba5c8846ab5e94c2"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/kremlin/kremlib/dist/minimal/LowStar_Endianness.h",
+      "upstream_path": "dist/kremlin/kremlib/dist/minimal/LowStar_Endianness.h",
+      "sha256": "489f113e68901059a8e123904d4a97f6047f47e17e3b70158148e4597c958335"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/kremlin/kremlib/dist/minimal/fstar_uint128_gcc64.h",
+      "upstream_path": "dist/kremlin/kremlib/dist/minimal/fstar_uint128_gcc64.h",
+      "sha256": "2cd3347e59f8543f916428644689cdf12eeab2c149eb2a4b938b24cafce914b4"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/kremlin/kremlib/dist/minimal/fstar_uint128_msvc.h",
+      "upstream_path": "dist/kremlin/kremlib/dist/minimal/fstar_uint128_msvc.h",
+      "sha256": "9393ad976f264ec390da95915bc8d8f808f4c8cadb40ce970da5ca0dcd98ae4b"
+    },
+    {
+      "path": "native/vendor/haclstar-0.3/dist/kremlin/kremlib/dist/minimal/fstar_uint128_struct_endianness.h",
+      "upstream_path": "dist/kremlin/kremlib/dist/minimal/fstar_uint128_struct_endianness.h",
+      "sha256": "fe57e1bc5ce3224d106e36cb8829b5399c63a68a70b0ccd0c91d82a4565c8869"
+    }
+  ],
+  "scope": "SHA3/SHAKE and BLAKE2s scalar generated C plus GNU x86_64/aarch64 header closure; no general HACL archive"
+}

@@ -1,5 +1,7 @@
 """Verify transported native probes without requiring a compiler or source tar."""
 import re
+import hashlib
+from build_crypto_extra import license_text
 
 from node_contract import read_json
 from prepare_native import sha256
@@ -10,7 +12,8 @@ def source_names(backend):
     if backend:
         return common | {'native/probes/backends.c', 'native/build-inputs.json', 'scripts/build_native.py',
                          'scripts/probe_backends.py', 'compat/versions.json', 'native/versions.json',
-                         'scripts/native_provenance.py', 'scripts/prepare_native.py'}
+                         'scripts/native_provenance.py', 'scripts/prepare_native.py',
+                         'scripts/build_crypto_extra.py', 'native/haclstar-extra.json'}
     return common | {'native/probes/toolchain.c', 'scripts/probe_native.py', 'native/versions.json',
                      'scripts/native_provenance.py'}
 
@@ -41,7 +44,11 @@ def verify_probe(settings, binary, backend=False):
             raise ValueError('Native backend build inputs mismatch')
         if set(build['symbols']) != {'x86_64', 'aarch64'}:
             raise ValueError('Missing native backend symbol audit')
-        if sha256(root / 'dist/NATIVE-MODULES-LICENSES') != build['files']['LICENSES.txt']['sha256']:
+        license_record=build['files']['LICENSES.txt']
+        combined=(root/'dist/NATIVE-MODULES-LICENSES').read_bytes()
+        original=combined[:license_record['bytes']]
+        if (hashlib.sha256(original).hexdigest()!=license_record['sha256'] or
+                combined[license_record['bytes']:]!=license_text(root).encode('utf-8')):
             raise ValueError('Native backend license mismatch')
     elif value['compatibility'] != read_json(root / 'compat/versions.json'):
         raise ValueError('Native toolchain probe compatibility mismatch')

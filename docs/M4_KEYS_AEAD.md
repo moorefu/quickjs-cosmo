@@ -45,4 +45,4 @@ KeyObject 导入时自建的字符串编码/PEM 解码 Buffer 在导入结束（
 
 本地最终验收：Linux 105/105；Windows 78/78，另跳过一项 Unix 专用检查。两端 Node 同源差分均为 41/41，调度生命周期均为 19/19；独立压缩互操作 50 组双向通过。新增 source/Worker/qjsc 与 SDK 密钥/AEAD 测试全部通过。
 
-Python 80 项检查及 TypeScript 5.9.3 的 ES2022、ES2022+DOM 正反向编译通过。三文件运行包、双架构 SDK、包含 30 个测试/探针 APE 的 CI 传输包均通过校验。本项等待完整七目标 CI；全绿后进入 M4-02。
+Python 80 项检查及 TypeScript 5.9.3 的 ES2022、ES2022+DOM 正反向编译通过。三文件运行包、双架构 SDK、包含 30 个测试/探针 APE 的 CI 传输包均通过校验。本项完整 CI 已全绿：`111ec61`，[运行记录](https://github.com/moorefu/quickjs-cosmo/actions/runs/40603741483)。后续进入 M4-02。

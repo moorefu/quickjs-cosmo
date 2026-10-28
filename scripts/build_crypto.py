@@ -8,12 +8,14 @@ from build_config import load_config
 from build_native import architecture_peer, elf_machine, run
 from node_contract import ROOT, read_json
 from prepare_native import sha256
+from build_crypto_extra import build as build_extra
 
 ROOT_SYMBOL = 'js_cosmo_crypto_api'
 
 
 def build(root=ROOT):
     settings = load_config()
+    extra_archive=build_extra(root)
     os.environ['SOURCE_DATE_EPOCH'] = str(settings.source_epoch)
     backend = root / 'build/native/backends'
     manifest = read_json(backend / 'build.json')
@@ -28,12 +30,15 @@ def build(root=ROOT):
                     if record['path'] == 'third_party/mbedtls/pkcs5.c')
     if sha256(settings.native_source / included['path']) != included['sha256']:
         raise ValueError('PBKDF2 cancellation source pin mismatch')
-    for name in ('core', 'keys', 'aead', 'gcm-ecb', 'binding', 'pbkdf2'):
+    vendor=root/'native/vendor/haclstar-0.3'
+    for name in ('core', 'extra', 'keys', 'aead', 'gcm-ecb', 'binding', 'pbkdf2'):
         target = output / (name + '.o')
         command = [settings.toolchain / 'bin/cosmocc', '-std=gnu23', '-D_COSMO_SOURCE', '-D_GNU_SOURCE',
                    '-O2', '-Wall', '-Werror=implicit-function-declaration', '-ffunction-sections', '-fdata-sections',
                    '-ffile-prefix-map=' + str(root) + '=.', '-I' + str(settings.build),
-                   '-I' + str(settings.native_source), '-c', root / 'native/crypto' / (name + '.c'), '-o', target]
+                   '-I' + str(settings.native_source), '-I'+str(vendor/'dist/gcc-compatible'),
+                   '-I'+str(vendor/'dist/kremlin/include'),'-I'+str(vendor/'dist/kremlin/kremlib/dist/minimal'),
+                   '-c', root / 'native/crypto' / (name + '.c'), '-o', target]
         diagnostics = run(command, root)
         commands.append(dict(command=list(map(str, command)), diagnostics=diagnostics))
         objects.append(target)
@@ -47,7 +52,7 @@ def build(root=ROOT):
                    '-u', 'mbedtls_notice', '-u', 'hacl_star_notice',
                    '--wrap=malloc', '--wrap=calloc', '--wrap=free', '-o', target,
                    *map(peer, objects), '--start-group', peer(backend / 'mbedtls-core.a'),
-                   peer(backend / 'haclstar-blake2b.a'), peer(backend / 'mbedtls-aead.a'), peer(backend / 'haclstar-25519.a'), '--end-group']
+                   peer(backend / 'haclstar-blake2b.a'), peer(backend / 'mbedtls-aead.a'), peer(backend / 'haclstar-25519.a'),peer(extra_archive), '--end-group']
         run(command, root)
         commands.append(dict(command=list(map(str, command))))
         command = [str(tools) + 'objcopy', '-G', ROOT_SYMBOL, '--strip-unneeded', target]
@@ -74,7 +79,7 @@ def build(root=ROOT):
         reports[arch] = dict(elf_machine=machine, sha256=sha256(target),
                              exported=[ROOT_SYMBOL], undefined=undefined)
     inputs = {name: sha256(root / name) for name in (
-        'native/crypto/core.c', 'native/crypto/core.h', 'native/crypto/binding.c',
+        'native/crypto/core.c', 'native/crypto/core.h', 'native/crypto/extra.c', 'native/crypto/extra.h', 'native/haclstar-extra.json', 'scripts/build_crypto_extra.py', 'native/crypto/binding.c',
         'native/crypto/binding.h', 'native/crypto/extended-binding.h', 'native/crypto/extended-async.h', 'native/crypto/keys.c', 'native/crypto/keys.h', 'native/crypto/aead.c', 'native/crypto/aead.h', 'native/crypto/gcm-ecb.c', 'native/crypto/pbkdf2.c', 'native/tasks.h', 'scripts/build_crypto.py', 'native/build-inputs.json')}
     (output / 'build.json').write_text(json.dumps(dict(format=1, inputs=inputs,
         backend_fingerprint=manifest['fingerprint'], architectures=reports, commands=commands,

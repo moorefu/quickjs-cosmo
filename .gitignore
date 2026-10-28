@@ -2,7 +2,7 @@
 toolchains/
 upstream/
 build/
-dist/
+/dist/
 releases/
 __pycache__/
 *.pyc

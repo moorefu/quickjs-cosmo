@@ -83,8 +83,8 @@ int main(void) {
             "const {c,a,blake2b256}=fixture;"
             "a.equal(c.createHash('sha256').update('abc').digest('hex'),'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad');"
             "a.equal(blake2b256('abc').toString('hex'),'bddd813c634239723171ef3fee98579b94964e3bb1cb3e427262c8c068d52319');"
-            "for(const name of ['sha256','blake2b512']) {"
-            " for(let fail=1;fail<=(name==='sha256'?2:5);fail++) {"
+            "for(const name of ['sha256','blake2b512','sha3-224','sha3-256','sha3-384','sha3-512','shake128','shake256','blake2s256']) {"
+            " for(let fail=1;fail<=(name==='blake2b512'?5:2);fail++) {"
             "  cryptoFault(fail,0); let failed=false; try {c.createHash(name);} catch {failed=true;} finally {cryptoFault(0,0);} a(failed,'constructor allocation');"
             "  const original=c.createHash(name).update('abc'); cryptoFault(fail,0); failed=false;"
             "  try {original.copy();} catch {failed=true;} finally {cryptoFault(0,0);} a(failed,'copy allocation');"
@@ -104,6 +104,11 @@ int main(void) {
             "cryptoFault(0,0);"
             "allocationLimit(8*1024*1024); const chunk=Buffer.alloc(65536,97); const hash=c.createHash('sha256');"
             "for(let i=0;i<256;i++) hash.update(chunk); a.equal(hash.digest('hex'),'5b6ff2e19d0da0fe323061018fc381393492884e74af8296c81ab9cb2694783a');"
+            "const extended=c.createHash('shake256',{outputLength:32});for(let i=0;i<128;i++)extended.update(chunk);"
+            "a.equal(extended.digest('hex'),'9a53d2fd1bf7ad084f9e1ddda7d2f0585f50ddc91d71a0cda35141d3fbdd08e4');"
+            "const oversized=c.createHash('shake128',{outputLength:16*1024*1024}).update('pending');let failed=false;"
+            "try{oversized.digest();}catch{failed=true;}a(failed,'SHAKE output quota');"
+            "a.equal(oversized.copy({outputLength:16}).digest('hex'),c.createHash('shake128',{outputLength:16}).update('pending').digest('hex'));"
             "allocationLimit(64*1024*1024); globalThis.unfinishedCrypto=c.createHmac('sha512','secret').update('unfinalized');"
         )==0);
         assert(JS_GetContextOpaque(ctx)==(void *)(uintptr_t)0x1234);

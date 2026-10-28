@@ -1,8 +1,9 @@
 function createCrypto(native, streams, decoderFactory) {
     const binding = native.crypto;
     const keys = createKeys(binding), ciphers = createCiphers(binding,streams,keys,decoderFactory);
-    const algorithms = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'blake2b512'];
-    const sizes = [16, 20, 28, 32, 48, 64, 64];
+    const algorithms = ['md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'blake2b512',
+        'sha3-224','sha3-256','sha3-384','sha3-512','shake128','shake256','blake2s256'];
+    const sizes = [16, 20, 28, 32, 48, 64, 64,28,32,48,64,16,32,32];
     const states = new WeakMap();
     const empty = new ArrayBuffer(0);
     function algorithmId(name, keyed = false) {
@@ -12,7 +13,7 @@ function createCrypto(native, streams, decoderFactory) {
         if (/^sha-?(1|224|256|384|512)$/.test(normalized)) normalized = normalized.replace('-', '');
         if (/^sha2-(224|256|384|512)$/.test(normalized)) normalized = normalized.replace('sha2-', 'sha');
         const id = algorithms.indexOf(normalized);
-        if (id < 0 || keyed && id === 6) {
+        if (id < 0 || keyed && id >= 6) {
             if (keyed) throw codedError(TypeError, 'ERR_CRYPTO_INVALID_DIGEST', 'Invalid digest: ' + name);
             throw new Error('Digest method not supported');
         }
@@ -39,15 +40,16 @@ function createCrypto(native, streams, decoderFactory) {
         const length = options !== null && typeof options === 'object' ? options.outputLength : undefined;
         if (length !== undefined) {
             integer(length, 'options.outputLength', 0, 0xffffffff);
-            if (length !== sizes[id]) throw codedError(Error, 'ERR_OSSL_EVP_NOT_XOF_OR_INVALID_LENGTH', 'Invalid output length');
+            if (id!==11 && id!==12 && length !== sizes[id]) throw codedError(Error, 'ERR_OSSL_EVP_NOT_XOF_OR_INVALID_LENGTH', 'Invalid output length');
         }
+        return length??sizes[id];
     }
     function Hash(name, options) {
         if (!new.target) return new Hash(name, options);
         const id = algorithmId(name);
-        outputLength(options, id);
+        const length=outputLength(options, id);
         streams.Transform.call(this, options);
-        states.set(this, {id, handle: binding.create(id, false, empty, 0, 0), done: false, hmac: false});
+        states.set(this, {id, handle: binding.create(id, false, empty, 0, 0,length), done: false, hmac: false});
     }
     function Hmac(name, key, options) {
         if (!new.target) return new Hmac(name, key, options);
@@ -80,10 +82,10 @@ function createCrypto(native, streams, decoderFactory) {
     };
     Hash.prototype.copy = function copy(options) {
         const state = active(this);
-        outputLength(options, state.id);
+        const length=outputLength(options, state.id);
         const value = new streams.Transform(options);
         Object.setPrototypeOf(value, Hash.prototype);
-        states.set(value, {id: state.id, handle: binding.copy(state.handle), done: false, hmac: false});
+        states.set(value, {id: state.id, handle: binding.copy(state.handle,length), done: false, hmac: false});
         return value;
     };
     Hmac.prototype.update = Hash.prototype.update;
@@ -211,8 +213,8 @@ function createCrypto(native, streams, decoderFactory) {
             throw codedError(TypeError, 'ERR_INVALID_ARG_VALUE', 'Invalid output encoding');
         if (outputSize !== undefined) integer(outputSize, 'outputLength', 0, 0xffffffff);
         const id = algorithmId(algorithm);
-        if (outputSize !== undefined && outputSize !== sizes[id]) throw new Error('Invalid output length for digest');
-        return createHash(algorithm).update(data).digest(outputEncoding);
+        if (outputSize !== undefined && id!==11 && id!==12 && outputSize !== sizes[id]) throw new Error('Invalid output length for digest');
+        return createHash(algorithm,{outputLength:outputSize}).update(data).digest(outputEncoding);
     }
     function blake2b256(data) {
         if (arguments.length !== 1) throw invalidType('arguments', 'one data argument');

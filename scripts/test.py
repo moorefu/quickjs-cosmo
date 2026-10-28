@@ -106,6 +106,7 @@ def main():
     check("custom/runtime-fs", [qjs, "-m", ROOT / "tests/runtime_fs.mjs"], contains="PASS runtime-fs")
     check("custom/runtime-crypto", [qjs, "-m", ROOT / "tests/runtime_crypto.mjs"], contains="PASS runtime-crypto")
     check("custom/runtime-crypto-advanced", [qjs, "-m", ROOT / "tests/runtime_crypto_advanced.mjs"], contains="PASS runtime-crypto-advanced", timeout=120)
+    check("custom/runtime-hash-extra", [qjs, "-m", ROOT / "tests/runtime_hash_extra.mjs"], contains="PASS runtime-hash-extra", timeout=120)
     check("custom/runtime-compression", [qjs, "-m", ROOT / "tests/runtime_compression.mjs"], contains="PASS runtime-compression")
     check("custom/runtime-child-process", [qjs, "-m", ROOT / "tests/runtime_child_process.mjs"], contains="PASS runtime-child-process")
     check("custom/runtime-async", [qjs, "-m", ROOT / "tests/runtime_async.mjs"], contains="PASS runtime-async", timeout=120)
@@ -153,6 +154,9 @@ def main():
         if not valid:
             print("FAIL generated C has no bytecode array", flush=True)
     if args.compile:
+        if check("qjsc/compile-hash-extra-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/hash-extra-worker.mjs",
+                 "-o", scratch / "hash-extra-standalone.exe", ROOT / "tests/runtime_hash_extra.mjs"], timeout=180):
+            check("qjsc/run-hash-extra-ape", [scratch / "hash-extra-standalone.exe"], contains="PASS runtime-hash-extra", timeout=120)
         if check("qjsc/compile-crypto-advanced-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/crypto-advanced-worker.mjs",
                  "-o", scratch / "crypto-advanced-standalone.exe", ROOT / "tests/runtime_crypto_advanced.mjs"], timeout=180):
             check("qjsc/run-crypto-advanced-ape", [scratch / "crypto-advanced-standalone.exe"], contains="PASS runtime-crypto-advanced", timeout=120)
@@ -259,6 +263,7 @@ def main():
                  timeout=180):
             check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
+        check("qjsc/cross-host-hash-extra", [args.standalone.resolve().parent / "hash-extra-standalone.exe"], contains="PASS runtime-hash-extra", timeout=120)
         check("qjsc/cross-host-crypto-advanced", [args.standalone.resolve().parent / "crypto-advanced-standalone.exe"], contains="PASS runtime-crypto-advanced", timeout=120)
         check("sdk/cross-host-crypto-advanced", [args.standalone.resolve().parent / "crypto-advanced-sdk.exe"], contains="PASS crypto-advanced-sdk", timeout=120)
         check("qjsc/cross-host-file-algorithm-streams", [args.standalone.resolve().parent / "file-algorithm-streams-standalone.exe"], contains="PASS runtime-file-algorithm-streams", timeout=120)

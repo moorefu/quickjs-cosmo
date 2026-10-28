@@ -2,6 +2,7 @@ declare module 'node:crypto' {
     import { Buffer, BufferEncoding } from 'node:buffer';
     import {Transform, TransformOptions} from 'node:stream';
     export type BinaryLike = string | ArrayBuffer | SharedArrayBuffer | ArrayBufferView;
+    /** SHAKE output bytes; fixed digests only accept their normal length. Copy without options resets SHAKE to its default. */
     export interface HashOptions extends TransformOptions { outputLength?: number; }
     export interface HmacOptions extends TransformOptions {encoding?: BufferEncoding;}
     export class Hash extends Transform {
