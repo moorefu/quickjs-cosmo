@@ -58,9 +58,11 @@ def validate(inventory, root=ROOT):
             raise ValueError("Invalid output comparison flag: " + identifier)
         tests[identifier] = test
     names, identifiers = set(), set()
-    for module in inventory["modules"]:
+    collections=[(module,False) for module in inventory["modules"]]
+    if inventory.get('globals'):collections.append((dict(specifier='globalThis',aliases=[],entries=inventory['globals']),True))
+    for module,global_entries in collections:
         name = module["specifier"]
-        if not name.startswith(("node:", "cosmo:")):
+        if not global_entries and not name.startswith(("node:", "cosmo:")):
             raise ValueError("Invalid public module: " + name)
         for alias in [name, *module["aliases"]]:
             if alias in names or alias in {"os", "std"} or alias.startswith("@runtime/"):
@@ -85,11 +87,13 @@ def validate(inventory, root=ROOT):
                     raise ValueError("Invalid execution target coverage: " + identifier)
             claims = [entry["status"], *(s for targets in support.values() for s in targets.values())]
             if any(s in {"partial", "supported"} for s in claims):
-                accepted = {"differential", "runtime"} if name.startswith("cosmo:") else {"differential"}
+                accepted = {"differential", "runtime"} if global_entries or name.startswith("cosmo:") else {"differential"}
                 if any(tests[t]["status"] not in accepted for t in entry["tests"]):
                     raise ValueError("Supported API requires differential tests: " + identifier)
                 if not entry.get("evidence"):
                     raise ValueError("Supported API requires evidence: " + identifier)
+                if global_entries and not any(tests[t]['status']=='differential' for t in entry['tests']):
+                    raise ValueError('Supported globals require a same-source differential contract: '+identifier)
     if not identifiers or not any(t["status"] == "differential" for t in tests.values()):
         raise ValueError("Inventory needs API entries and a differential bootstrap test")
     checked_file(root, inventory["entry_contract"]).read_text(encoding="utf-8")
@@ -105,12 +109,12 @@ def validate(inventory, root=ROOT):
             checked_file(root, record["path"])
             if not re.fullmatch(r"[0-9a-f]{64}", record["sha256"]):
                 raise ValueError("Invalid native source anchor checksum")
-    return dict(modules=len(inventory["modules"]), apis=len(identifiers), tests=len(tests),
+    return dict(modules=len(inventory["modules"]), globals=len(inventory.get('globals',[])), apis=len(identifiers), tests=len(tests),
                 implemented_node_apis=sum(e["status"] in {"partial", "supported"}
                                          for m in inventory["modules"] if m["specifier"].startswith("node:")
                                          for e in m["entries"]),
                 implemented=sum(e["status"] in {"partial", "supported"}
-                                for m in inventory["modules"] for e in m["entries"]))
+                                for m in inventory["modules"] for e in m["entries"])+sum(e['status'] in {'partial','supported'} for e in inventory.get('globals',[])))
 
 
 def load_contract(root=ROOT):

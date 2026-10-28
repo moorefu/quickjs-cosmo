@@ -14,7 +14,8 @@ def source_names(backend):
                          'scripts/probe_backends.py', 'compat/versions.json', 'native/versions.json',
                          'scripts/native_provenance.py', 'scripts/prepare_native.py',
                          'scripts/build_crypto_extra.py', 'native/haclstar-extra.json',
-                         'native/tls/security.json','native/tls/LICENSE'}
+                         'native/tls/security.json','native/tls/LICENSE',
+                         'native/http/sources.json','native/http/LICENSE'}
     return common | {'native/probes/toolchain.c', 'scripts/probe_native.py', 'native/versions.json',
                      'scripts/native_provenance.py'}
 
@@ -51,8 +52,10 @@ def verify_probe(settings, binary, backend=False):
         ca=read_json(root/'native/tls/security.json')['ca']
         tls_license=(root/ca['license_path']).read_bytes()
         if hashlib.sha256(tls_license).hexdigest()!=ca['license_sha256']:raise ValueError('TLS CA license pin mismatch')
+        http=read_json(root/'native/http/sources.json')['license'];http_license=(root/http['path']).read_bytes()
+        if hashlib.sha256(http_license).hexdigest()!=http['sha256']:raise ValueError('HTTP parser license pin mismatch')
         if (hashlib.sha256(original).hexdigest()!=license_record['sha256'] or
-                combined[license_record['bytes']:]!=license_text(root).encode('utf-8')+tls_license):
+                combined[license_record['bytes']:]!=license_text(root).encode('utf-8')+tls_license+http_license):
             raise ValueError('Native backend license mismatch')
     elif value['compatibility'] != read_json(root / 'compat/versions.json'):
         raise ValueError('Native toolchain probe compatibility mismatch')

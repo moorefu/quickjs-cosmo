@@ -1,6 +1,6 @@
 # M5-03 TLS 客户端
 
-状态：本地完整验收通过，等待本项提交的完整七平台 CI。
+状态：`f1494c1` 的[完整七平台 CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40648737327) 已全绿，包括最终 CI gate。
 
 `node:tls` 与裸 `tls` 使用同一模块实例，导出 `connect`、`TLSSocket`。接口以固定 [Node v24.21.0 合同](https://nodejs.org/download/release/v24.21.0/docs/api/tls.html)为参照。TLS1.2、算法及证书策略继承 [M5-02 审计](M5_TLS_AUDIT.md)。
 
@@ -40,6 +40,6 @@
 
 最终本地回归：Linux 120/120；Windows 86/86，另跳过一项 Unix 专用检查。两端 Node 差分 47/47、调度生命周期 19/19；Python 94 项检查及 TypeScript 5.9.3 的 ES2022、ES2022+DOM 声明用例通过。
 
-38 份独立/探测 APE、双架构 SDK、来源/许可/符号闭包及三文件发行包的 CI 传输完整性验证通过。发行 ZIP SHA-256：`6230f478c93ba8458b60f74394f58694df4b4d91b98f1157e074704482105aee`。待该提交完整 CI 全绿后进入 M5-04。
+38 份独立/探测 APE、双架构 SDK、来源/许可/符号闭包及三文件发行包的 CI 传输完整性验证通过。发行 ZIP SHA-256：`6230f478c93ba8458b60f74394f58694df4b4d91b98f1157e074704482105aee`。本项完整 CI 已全绿，后续进入 M5-04。
 
 首轮 `3c62faf` CI 有 6/7 平台通过，macOS Intel 的独立程序取消用例先于 TCP connect 触发了 40 ms 定时器，事件轨迹因此与已建立连接的 Node 不同。测试现改为 connect 后再取消/超时，固定验收握手中的取消，不依赖宿主启动耗时；取消用例还强制 lookup 延迟 100 ms，断言已经建立 TCP，仍逐项比较完整事件、错误和关闭状态。

@@ -133,11 +133,11 @@
     },
     {
       "id": "HTTP-001",
-      "status": "planned",
-      "file": null,
+      "status": "differential",
+      "file": "tests/node/http.mjs",
       "task": "M5-04",
-      "description": "Node HTTP client and Fetch semantics",
-      "timeout_seconds": 30
+      "description": "HTTP status/headers, chunking/trailers, obs-text, pause, EOF/truncation and reuse",
+      "timeout_seconds": 90
     },
     {
       "id": "APE-001",
@@ -490,6 +490,54 @@
       "file": "tests/runtime_network.mjs",
       "task": "M5-01",
       "description": "Source, Worker, qjsc and unref exit with loopback fixture; file URL fs integration",
+      "timeout_seconds": 90
+    },
+    {
+      "id": "HTTP-002",
+      "status": "differential",
+      "file": "tests/node/http-lifecycle.mjs",
+      "task": "M5-04",
+      "description": "HTTP queue cancellation, timeouts, upload framing and protocol faults",
+      "timeout_seconds": 90
+    },
+    {
+      "id": "WEB-001",
+      "status": "differential",
+      "file": "tests/node/web-streams.mjs",
+      "task": "M5-04",
+      "description": "Default Web reader locks, pulls, tee, cancellation and async iteration",
+      "timeout_seconds": 90
+    },
+    {
+      "id": "FETCH-001",
+      "status": "differential",
+      "file": "tests/node/fetch-api.mjs",
+      "task": "M5-04",
+      "description": "Headers/Request/Response construction, body transfer/clone and validation",
+      "timeout_seconds": 90
+    },
+    {
+      "id": "FETCH-002",
+      "status": "differential",
+      "file": "tests/node/fetch.mjs",
+      "task": "M5-04",
+      "description": "Fetch response streaming, gzip, redirects, upload, immutable headers and abort",
+      "timeout_seconds": 90
+    },
+    {
+      "id": "FETCH-003",
+      "status": "differential",
+      "file": "tests/node/fetch-lifecycle.mjs",
+      "task": "M5-04",
+      "description": "Decode faults/raw deflate, body abort/cancel, redirects, sensitive-header removal and concurrency",
+      "timeout_seconds": 90
+    },
+    {
+      "id": "FETCH-004",
+      "status": "runtime",
+      "file": "tests/node/fetch-upload-policy.mjs",
+      "task": "M5-04",
+      "description": "Node reference observations versus explicit input-stream cancel/release policy; documented divergence, not a same-semantics pass",
       "timeout_seconds": 90
     }
   ],
@@ -22043,62 +22091,2442 @@
       "entries": [
         {
           "name": "request",
-          "status": "planned",
+          "status": "partial",
           "task": "M5-04",
-          "parameters": "HTTP1.1 client request/response streams; redirects and decoding distinct from Fetch",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
           "tests": [
-            "HTTP-001"
+            "HTTP-001",
+            "HTTP-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
           ]
         },
         {
           "name": "get",
-          "status": "planned",
+          "status": "partial",
           "task": "M5-04",
-          "parameters": "HTTP1.1 client request/response streams; redirects and decoding distinct from Fetch",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
           "tests": [
-            "HTTP-001"
+            "HTTP-001",
+            "HTTP-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
           ]
         },
         {
           "name": "ClientRequest",
-          "status": "planned",
+          "status": "partial",
           "task": "M5-04",
-          "parameters": "HTTP1.1 client request/response streams; redirects and decoding distinct from Fetch",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
           "tests": [
-            "HTTP-001"
+            "HTTP-001",
+            "HTTP-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
           ]
         },
         {
           "name": "IncomingMessage",
-          "status": "planned",
+          "status": "partial",
           "task": "M5-04",
-          "parameters": "HTTP1.1 client request/response streams; redirects and decoding distinct from Fetch",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
           "tests": [
-            "HTTP-001"
+            "HTTP-001",
+            "HTTP-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
           ]
         },
         {
           "name": "Agent",
-          "status": "planned",
+          "status": "partial",
           "task": "M5-04",
-          "parameters": "HTTP1.1 client request/response streams; redirects and decoding distinct from Fetch",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
           "tests": [
-            "HTTP-001"
+            "HTTP-001",
+            "HTTP-002"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "globalAgent",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "maxHeaderSize",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "validateHeaderName",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "validateHeaderValue",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.setHeader",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.appendHeader",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.getHeader",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.getHeaders",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.getHeaderNames",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.getRawHeaderNames",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.hasHeader",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.removeHeader",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.flushHeaders",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.abort",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.setTimeout",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.setNoDelay",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.setSocketKeepAlive",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.method",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.path",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.host",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.protocol",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.socket",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.connection",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.reusedSocket",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.aborted",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.headersSent",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.finished",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.res",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "ClientRequest.maxHeadersCount",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "IncomingMessage.statusCode",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "IncomingMessage.statusMessage",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "IncomingMessage.httpVersion",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "IncomingMessage.httpVersionMajor",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "IncomingMessage.httpVersionMinor",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "IncomingMessage.headers",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "IncomingMessage.headersDistinct",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "IncomingMessage.rawHeaders",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "IncomingMessage.trailers",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "IncomingMessage.trailersDistinct",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "IncomingMessage.rawTrailers",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "IncomingMessage.complete",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "IncomingMessage.aborted",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "IncomingMessage.socket",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "IncomingMessage.connection",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "IncomingMessage.setTimeout",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "Agent.getName",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "Agent.createConnection",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "Agent.destroy",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "Agent.keepAlive",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "Agent.maxSockets",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "Agent.maxTotalSockets",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "Agent.maxFreeSockets",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "Agent.totalSocketCount",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "Agent.sockets",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "Agent.freeSockets",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
+          ]
+        },
+        {
+          "name": "Agent.requests",
+          "status": "partial",
+          "task": "M5-04",
+          "parameters": "Node-style client HTTP streams, headers, agent queues and transport lifetime",
+          "tests": [
+            "HTTP-001",
+            "HTTP-002"
+          ],
+          "differences": [
+            "HTTP/1.0/1.1 clients; response/trailer metadata bounded to 16 KiB by default, at most 32 native sockets per Runtime and 128 queued requests per Agent; globalAgent defaults keepAlive=false. Strict CL/TE and request-length checks. No server/CONNECT/upgrade/proxy/IPC. See docs/M5_HTTP_FETCH.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "HTTP-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+            }
           ]
         }
       ]
@@ -22686,5 +25114,2649 @@
       "sdk": "planned"
     }
   },
-  "native_lock": "native/versions.json"
+  "native_lock": "native/versions.json",
+  "globals": [
+    {
+      "name": "fetch",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "fetch(input,init) returns a streamed Response, with redirects and decoding distinct from Node HTTP",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003",
+        "FETCH-004"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Headers",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "ByteString header fields, combined values/Set-Cookie and immutable fetched responses",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Headers.append",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "ByteString header fields, combined values/Set-Cookie and immutable fetched responses",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Headers.set",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "ByteString header fields, combined values/Set-Cookie and immutable fetched responses",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Headers.delete",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "ByteString header fields, combined values/Set-Cookie and immutable fetched responses",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Headers.get",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "ByteString header fields, combined values/Set-Cookie and immutable fetched responses",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Headers.has",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "ByteString header fields, combined values/Set-Cookie and immutable fetched responses",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Headers.getSetCookie",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "ByteString header fields, combined values/Set-Cookie and immutable fetched responses",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Headers.entries",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "ByteString header fields, combined values/Set-Cookie and immutable fetched responses",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Headers.keys",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "ByteString header fields, combined values/Set-Cookie and immutable fetched responses",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Headers.values",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "ByteString header fields, combined values/Set-Cookie and immutable fetched responses",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Headers.forEach",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "ByteString header fields, combined values/Set-Cookie and immutable fetched responses",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Headers.[Symbol.iterator]",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "ByteString header fields, combined values/Set-Cookie and immutable fetched responses",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.clone",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.body",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.bodyUsed",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.arrayBuffer",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.bytes",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.text",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.json",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.headers",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.url",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.method",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.signal",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.redirect",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.mode",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.credentials",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.cache",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.referrer",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.referrerPolicy",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.integrity",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.keepalive",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.duplex",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Request.destination",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Response",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Response.clone",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Response.body",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Response.bodyUsed",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Response.arrayBuffer",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Response.bytes",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Response.text",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Response.prototype.json",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Response.headers",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Response.status",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Response.statusText",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Response.ok",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Response.url",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Response.redirected",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Response.type",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Response.error",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Response.redirect",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "Response.json",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Fetch body construction/transfer/clone and one-time consumption; no Blob/FormData",
+      "tests": [
+        "FETCH-001",
+        "FETCH-002",
+        "FETCH-003"
+      ],
+      "differences": [
+        "HTTP-only until M5-05; gzip/deflate streams, up to 20 redirects, response immutability and AbortSignal.reason. Bulk text/json/bytes/arrayBuffer limited to 32 MiB. User-Agent=quickjs-cosmo; no Undici dispatcher/default timeout, Brotli, Blob/FormData or browser CORS/cookie/referrer enforcement. Upload abort actively cancels/releases input; Node observations retained separately in FETCH-004. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "FETCH-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "ReadableStream",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Default-reader Web streams, pull/backpressure, errors, cancel, tee and async iteration",
+      "tests": [
+        "WEB-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "Declared default-reader subset only; no byte/BYOB, writable/transform Web streams, pipeTo/pipeThrough or node:stream/web module. Tee can queue behind a slower consumer. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "WEB-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "ReadableStream.locked",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Default-reader Web streams, pull/backpressure, errors, cancel, tee and async iteration",
+      "tests": [
+        "WEB-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "Declared default-reader subset only; no byte/BYOB, writable/transform Web streams, pipeTo/pipeThrough or node:stream/web module. Tee can queue behind a slower consumer. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "WEB-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "ReadableStream.getReader",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Default-reader Web streams, pull/backpressure, errors, cancel, tee and async iteration",
+      "tests": [
+        "WEB-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "Declared default-reader subset only; no byte/BYOB, writable/transform Web streams, pipeTo/pipeThrough or node:stream/web module. Tee can queue behind a slower consumer. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "WEB-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "ReadableStream.cancel",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Default-reader Web streams, pull/backpressure, errors, cancel, tee and async iteration",
+      "tests": [
+        "WEB-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "Declared default-reader subset only; no byte/BYOB, writable/transform Web streams, pipeTo/pipeThrough or node:stream/web module. Tee can queue behind a slower consumer. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "WEB-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "ReadableStream.tee",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Default-reader Web streams, pull/backpressure, errors, cancel, tee and async iteration",
+      "tests": [
+        "WEB-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "Declared default-reader subset only; no byte/BYOB, writable/transform Web streams, pipeTo/pipeThrough or node:stream/web module. Tee can queue behind a slower consumer. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "WEB-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "ReadableStream.values",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Default-reader Web streams, pull/backpressure, errors, cancel, tee and async iteration",
+      "tests": [
+        "WEB-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "Declared default-reader subset only; no byte/BYOB, writable/transform Web streams, pipeTo/pipeThrough or node:stream/web module. Tee can queue behind a slower consumer. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "WEB-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "ReadableStream.[Symbol.asyncIterator]",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Default-reader Web streams, pull/backpressure, errors, cancel, tee and async iteration",
+      "tests": [
+        "WEB-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "Declared default-reader subset only; no byte/BYOB, writable/transform Web streams, pipeTo/pipeThrough or node:stream/web module. Tee can queue behind a slower consumer. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "WEB-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "ReadableStreamDefaultReader",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Default-reader Web streams, pull/backpressure, errors, cancel, tee and async iteration",
+      "tests": [
+        "WEB-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "Declared default-reader subset only; no byte/BYOB, writable/transform Web streams, pipeTo/pipeThrough or node:stream/web module. Tee can queue behind a slower consumer. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "WEB-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "ReadableStreamDefaultReader.read",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Default-reader Web streams, pull/backpressure, errors, cancel, tee and async iteration",
+      "tests": [
+        "WEB-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "Declared default-reader subset only; no byte/BYOB, writable/transform Web streams, pipeTo/pipeThrough or node:stream/web module. Tee can queue behind a slower consumer. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "WEB-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "ReadableStreamDefaultReader.cancel",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Default-reader Web streams, pull/backpressure, errors, cancel, tee and async iteration",
+      "tests": [
+        "WEB-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "Declared default-reader subset only; no byte/BYOB, writable/transform Web streams, pipeTo/pipeThrough or node:stream/web module. Tee can queue behind a slower consumer. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "WEB-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "ReadableStreamDefaultReader.releaseLock",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Default-reader Web streams, pull/backpressure, errors, cancel, tee and async iteration",
+      "tests": [
+        "WEB-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "Declared default-reader subset only; no byte/BYOB, writable/transform Web streams, pipeTo/pipeThrough or node:stream/web module. Tee can queue behind a slower consumer. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "WEB-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    },
+    {
+      "name": "ReadableStreamDefaultReader.closed",
+      "status": "partial",
+      "task": "M5-04",
+      "parameters": "Default-reader Web streams, pull/backpressure, errors, cancel, tee and async iteration",
+      "tests": [
+        "WEB-001",
+        "FETCH-002"
+      ],
+      "differences": [
+        "Declared default-reader subset only; no byte/BYOB, writable/transform Web streams, pipeTo/pipeThrough or node:stream/web module. Tee can queue behind a slower consumer. See docs/M5_HTTP_FETCH.md."
+      ],
+      "support": {
+        "linux": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "darwin": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        },
+        "win32": {
+          "qjs": "partial",
+          "worker": "partial",
+          "qjsc": "partial",
+          "sdk": "partial"
+        }
+      },
+      "evidence": [
+        {
+          "test": "WEB-001",
+          "report": "build/node-compat/<platform>.json",
+          "scope": "Same-source differential; scripts/test_http.py and native SDK/Worker/qjsc checks in build/test-results/<platform>.json; docs/M5_HTTP_FETCH.md"
+        }
+      ]
+    }
+  ]
 }

@@ -31,12 +31,14 @@ STANDALONES = ("build/test-linux/hello-standalone.exe", "build/test-linux/runtim
                "build/test-linux/crypto-advanced-standalone.exe", "build/test-linux/crypto-advanced-sdk.exe",
                "build/test-linux/hash-extra-standalone.exe", "build/test-linux/network-standalone.exe", "build/test-linux/network-sdk.exe",
                "build/test-linux/tls-security-sdk.exe", "build/test-linux/tls-policy-sdk.exe",
-               "build/test-linux/tls-client-standalone.exe", "build/test-linux/tls-worker-standalone.exe", "build/test-linux/tls-client-sdk.exe")
+               "build/test-linux/tls-client-standalone.exe", "build/test-linux/tls-worker-standalone.exe", "build/test-linux/tls-client-sdk.exe",
+               "build/test-linux/http-standalone.exe", "build/test-linux/http-parser-sdk.exe", "build/test-linux/http-client-sdk.exe")
 SOURCE = ".cache/quickjs-source.tar.gz"
 NATIVE_PROBES = tuple("build/native/" + name + suffix
                      for name in ("toolchain-probe.exe", "backends-probe.exe")
                      for suffix in ("", ".build.json"))
 TLS_METADATA = ("build/native/tls/probes.json",)
+HTTP_METADATA = ("build/native/http/probes.json",)
 
 
 def sha256(path):
@@ -56,7 +58,7 @@ def checked_name(name, version):
     if path.is_absolute() or ".." in path.parts or "\\" in name or ":" in name or str(path) != name:
         raise ValueError("Unsafe CI artifact path: " + name)
     release = f"releases/quickjs-cosmo-{version}.zip"
-    allowed = name in (MANIFEST, SOURCE, *STANDALONES, *NATIVE_PROBES, *TLS_METADATA, release, release + ".sha256")
+    allowed = name in (MANIFEST, SOURCE, *STANDALONES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA, release, release + ".sha256")
     allowed |= len(path.parts) == 2 and path.parts[0] == "dist"
     allowed |= len(path.parts) == 3 and path.parts[:2] == ("dist", ".aarch64")
     if not allowed:
@@ -83,7 +85,7 @@ def verify_dist(settings):
         raise ValueError("Artifact runtime sources do not match this checkout")
     required = {"qjs.exe", "qjsc.exe", "run-test262.exe", "libquickjs.a", ".aarch64/libquickjs.a",
                 "quickjs.h", "quickjs-libc.h", "qjs-cosmo.h", "qjs-tasks.h", "node-compat.d.ts", "stream.d.ts", "file-streams.d.ts", "zlib-streams.d.ts", "fs.d.ts", "fs-async.d.ts", "crypto.d.ts", "crypto-advanced.d.ts", "zlib.d.ts", "algorithms-async.d.ts", "child_process.d.ts", "child-process-async.d.ts", "cosmo.d.ts", "ape-x86_64.elf", "ape-aarch64.elf",
-                "qjs", "qjsc", "run-test262", "versions.json", "QUICKJS-LICENSE", "NODE-MODULES-LICENSE", "NATIVE-MODULES-LICENSES"}
+                "http.d.ts", "fetch.d.ts", "qjs", "qjsc", "run-test262", "versions.json", "QUICKJS-LICENSE", "NODE-MODULES-LICENSE", "NATIVE-MODULES-LICENSES"}
     if not required.issubset(manifest["files"]):
         raise ValueError("Incomplete SDK in CI artifact")
     for name, record in manifest["files"].items():
@@ -159,7 +161,7 @@ def verify(settings):
             raise ValueError("CI payload hash mismatch: " + name)
     sdk = verify_dist(settings)
     expected = {"dist/" + name for name in sdk["files"]} | {
-        "dist/manifest.json", SOURCE, *STANDALONES, *NATIVE_PROBES, *TLS_METADATA,
+        "dist/manifest.json", SOURCE, *STANDALONES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA,
         "releases/" + release["archive"], "releases/" + release["archive"] + ".sha256"}
     if set(metadata["files"]) != expected:
         raise ValueError("CI bundle payload inventory mismatch")
@@ -177,6 +179,14 @@ def verify(settings):
     if set(tls['sdk'])!=set(expected_sdk):raise ValueError('TLS SDK architecture inventory mismatch')
     for arch,record in tls['sdk'].items():
         if record['archive']!=expected_sdk[arch] or record['general_backend_symbols'] or sha256(settings.root/record['archive'])!=record['sha256']:raise ValueError('TLS SDK closure mismatch')
+    http=json.loads((settings.root/HTTP_METADATA[0]).read_text(encoding='utf8'))
+    if http['lock_sha256']!=sha256(settings.root/'native/http/sources.json'):raise ValueError('HTTP parser lock mismatch')
+    for name,digest in {**http['sources'],**http['binaries']}.items():
+        path=(settings.root/name).resolve()
+        if not path.is_relative_to(settings.root.resolve()) or sha256(path)!=digest:raise ValueError('HTTP input or binary mismatch: '+name)
+    if set(http['sdk'])!=set(expected_sdk):raise ValueError('HTTP SDK architecture inventory mismatch')
+    for arch,record in http['sdk'].items():
+        if record['archive']!=expected_sdk[arch] or record['general_parser_symbols'] or sha256(settings.root/record['archive'])!=record['sha256']:raise ValueError('HTTP SDK closure mismatch')
     print("PASS CI artifact integrity: SDK, sources, standalone APEs and release ZIP", flush=True)
     return metadata
 
@@ -190,7 +200,7 @@ def pack(settings, output, tag=None):
         raise ValueError("Build host tests must pass for the packaged qjs")
     archive = "releases/" + release["archive"]
     files = sorted({"dist/" + name for name in sdk["files"]} | {
-        "dist/manifest.json", SOURCE, *STANDALONES, *NATIVE_PROBES, *TLS_METADATA, archive, archive + ".sha256"})
+        "dist/manifest.json", SOURCE, *STANDALONES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA, archive, archive + ".sha256"})
     for name in ("probe-linux.json", "backends-linux.json"):
         native = json.loads((settings.root / "build/native" / name).read_text(encoding="utf-8"))
         if not native["passed"]:

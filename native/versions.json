@@ -475,6 +475,52 @@
         "tests/native/child_process_async.c",
         "docs/M3_CHILD_PROCESS_ASYNC.md"
       ]
+    },
+    {
+      "id": "http-headers",
+      "delivery": "private-source-closure",
+      "admission": "E2",
+      "files": [
+        {
+          "path": "net/http/parsehttpmessage.c",
+          "sha256": "d10e2f8512a0e6bf5f115bb16e322455e9655dc03975aebf1ff1c91a6eb0d20c"
+        },
+        {
+          "path": "net/http/gethttpheader.c",
+          "sha256": "e1686b20388ab01d2752276f2e84e77b99920164144dec7bd77f124efe4382a0"
+        },
+        {
+          "path": "net/http/gethttpheader.inc",
+          "sha256": "582631f10f7449b17e8d149a44914c0147a2ece8019d3094c3150aca89d99f4f"
+        },
+        {
+          "path": "net/http/khttptoken.c",
+          "sha256": "9905c40e59a50eed84a44b18a3acbcb5fac172c4813221849532715d1730a33a"
+        },
+        {
+          "path": "net/http/khttprepeatable.c",
+          "sha256": "fe729b8905c0315c9058b6933b3755397485db92055fd128bae618f1816e8645"
+        },
+        {
+          "path": "net/http/http.h",
+          "sha256": "def0b546c682eb13711608b58a5281848caf814ca8c26ab3ad9a5a13ee462cb3"
+        }
+      ],
+      "tests": [
+        "test/net/http/parsehttpmessage_test.c"
+      ],
+      "notes": [
+        "Response-header parser subset only; source upstream test is a reference, project SDK/JS regressions are the executed evidence; no general HTTP parser SDK API."
+      ],
+      "evidence_scope": "Pinned Nightly header parser, owner OOM adaptation and localized dual-architecture build; M5-04 complete delivery evidence pending",
+      "evidence": [
+        "native/http/sources.json",
+        "scripts/build_http.py",
+        "tests/native/http_parser.c",
+        "tests/node/http.mjs",
+        "tests/node/http-lifecycle.mjs",
+        "docs/M5_HTTP_FETCH.md"
+      ]
     }
   ],
   "deferred": [

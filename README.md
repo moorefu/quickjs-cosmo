@@ -250,7 +250,7 @@ Windows 上返回**原始退出码**：`std.exit(7)` 为 `7`，语法错误/未�
 
 本机验证范围和结果记录在 `VALIDATION.md`。不能把生成了双架构 APE 等同于已在所有系统上实测。部分 Linux 的 binfmt_misc/Wine 配置会误识别 APE；可先尝试 `sh ./dist/qjs.exe examples/hello.js`，参阅[官方故障说明](https://github.com/jart/cosmopolitan/blob/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/tool/cosmocc/README.md#gotchas)。macOS 可能需要按系统规则处理下载文件的隔离属性，Apple Silicon 的默认启动过程可能需要系统 C 编译器来准备 APE loader。
 
-当前产物提供已声明的 Node 基础、同步/异步文件、子进程、流、摘要/KDF、密钥/AEAD、压缩、[DNS/TCP/URL 子集](docs/M5_NETWORK.md)与 [TLS1.2 客户端](docs/M5_TLS_CLIENT.md)。HTTP/Fetch、npm 模块系统和完整浏览器 DOM 仍按规划推进。运行时 API 同时保留 QuickJS 的 `std`/`os` 及项目元数据模块 `cosmo:runtime`。原生动态模块通常与操作系统和架构相关，不属于这里的跨平台交付范围。QuickJS 和 Cosmopolitan 的许可证保留在上游源码及工具链内，产物中的 Cosmopolitan 许可声明由官方工具链嵌入。
+当前产物提供已声明的 Node 基础、同步/异步文件、子进程、流、摘要/KDF、密钥/AEAD、压缩、[DNS/TCP/URL 子集](docs/M5_NETWORK.md)与 [TLS1.2 客户端](docs/M5_TLS_CLIENT.md)。当前新增 [HTTP/1.1 客户端与 Fetch 声明子集](docs/M5_HTTP_FETCH.md)，https: 将在 HTTP/TLS 集成任务中启用。CommonJS/npm 模块加载单独立项，完整浏览器 DOM 不属于首轮范围。运行时 API 同时保留 QuickJS 的 `std`/`os` 及项目元数据模块 `cosmo:runtime`。原生动态模块通常与操作系统和架构相关，不属于这里的跨平台交付范围。QuickJS 和 Cosmopolitan 的许可证保留在上游源码及工具链内，产物中的 Cosmopolitan 许可声明由官方工具链嵌入。
 
 Windows 的原始退出码约定是本项目的兼容修正，与未经修补的 4.0.2 的 `status << 8` 编码不同。测试严格核对返回值，非零错误仍视为失败。
 

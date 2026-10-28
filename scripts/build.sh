@@ -45,6 +45,7 @@ python3 scripts/build_native.py $OFFLINE --jobs "$JOBS"
 python3 scripts/build_crypto.py
 python3 scripts/build_compression.py
 python3 scripts/build_tls_client.py $OFFLINE
+python3 scripts/build_http.py
 cp native/module_registry.h "$BUILD/qjs-cosmo.h"
 cp native/tasks.h "$BUILD/qjs-tasks.h"
 python3 scripts/generate_runtime_config.py --output "$BUILD/qjs-cosmo-config.h"
@@ -76,6 +77,7 @@ cat src/js/vendor/punycode/LICENSE >> "$DIST/NODE-MODULES-LICENSE"
 cp build/native/backends/LICENSES.txt "$DIST/NATIVE-MODULES-LICENSES"
 cat build/native/crypto-extra/LICENSES.txt >> "$DIST/NATIVE-MODULES-LICENSES"
 cat native/tls/LICENSE >> "$DIST/NATIVE-MODULES-LICENSES"
+cat native/http/LICENSE >> "$DIST/NATIVE-MODULES-LICENSES"
 cp "$BUILD/libquickjs.a" "$DIST/"
 mkdir -p "$DIST/.aarch64"
 cp "$BUILD/.aarch64/libquickjs.a" "$DIST/.aarch64/"

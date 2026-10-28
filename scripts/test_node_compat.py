@@ -130,7 +130,7 @@ def compare_case(case, node, qjs, scratch, reference_only=False):
     fixture = checked_file(ROOT, case["file"])
     result = dict(id=case["id"], file=case["file"], mode="reference" if reference_only else "differential")
     try:
-        child_environment = {"NODE_COMPAT_CHILD_EXECUTABLE": str(node)} if case['id'].startswith(('PROC-', 'NET-')) else None
+        child_environment = {"NODE_COMPAT_CHILD_EXECUTABLE": str(node)} if case['id'].startswith(('PROC-', 'NET-', 'HTTP-', 'FETCH-')) else None
         result["node"] = run_command([node, fixture], scratch, case["timeout_seconds"], env_overrides=child_environment)
         reference = result_value(result["node"])
         result["reference"] = reference

@@ -1,0 +1,11 @@
+import {result,check} from './fixtures/result.mjs';
+const out={},events=[];let controller;
+const stream=new ReadableStream({start(c){controller=c;events.push('start');},pull(c){events.push('pull');if(events.length===2)c.enqueue(new Uint8Array([1,2]));else c.close();},cancel(reason){events.push('cancel:'+reason);}});
+out.locked=[stream.locked];const reader=stream.getReader();out.locked.push(stream.locked);out.first=Array.from((await reader.read()).value);out.end=await reader.read();await reader.closed;reader.releaseLock();out.locked.push(stream.locked);out.events=events;
+let cancelReason;const cancelled=new ReadableStream({cancel(reason){cancelReason=reason;}});await cancelled.cancel('stop');out.cancel=[cancelReason,cancelled.locked,(await cancelled.getReader().read()).done];
+let source;const broken=new ReadableStream({start(c){source=c;}},{highWaterMark:0});const br=broken.getReader(),pending=br.read();source.error('broken');try{await pending;}catch(e){out.error=e;}try{await br.closed;}catch(e){out.closedError=e;}br.releaseLock();
+const data=new ReadableStream({start(c){c.enqueue('a');c.enqueue('b');c.close();}}),branches=data.tee();out.tee=await Promise.all(branches.map(async s=>{const values=[];for await(const v of s)values.push(v);return values;}));out.originalLocked=data.locked;
+let cancelledEarly;const iterated=new ReadableStream({start(c){c.enqueue(1);c.enqueue(2);},cancel(reason){cancelledEarly=reason??null;}});for await(const value of iterated){out.iterated=value;break;}out.early=[cancelledEarly,iterated.locked];
+const retained=new ReadableStream({start(c){c.enqueue(1);c.enqueue(2);c.close();}});for await(const value of retained.values({preventCancel:true})){out.retainedFirst=value;break;}out.retainedNext=await retained.getReader().read();
+const queued=new ReadableStream({start(c){c.enqueue('x');c.close();}}),qr=queued.getReader();out.concurrent=await Promise.all([qr.read(),qr.read()]);qr.releaseLock();out.tags=[Object.prototype.toString.call(stream),Object.prototype.toString.call(reader)];
+result(out);

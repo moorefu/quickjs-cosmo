@@ -76,6 +76,21 @@ class InventoryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Invalid contract path"):
             node_contract.validate(self.inventory)
 
+    def test_global_support_cannot_use_only_project_runtime_checks(self):
+        entry=self.inventory['globals'][0];entry['tests']=['FETCH-004']
+        with self.assertRaisesRegex(ValueError,'same-source differential'):
+            node_contract.validate(self.inventory)
+
+    def test_global_reference_observation_cannot_back_support_claim(self):
+        next(t for t in self.inventory['tests'] if t['id']=='FETCH-001')['status']='reference'
+        with self.assertRaisesRegex(ValueError,'differential tests'):
+            node_contract.validate(self.inventory)
+
+    def test_duplicate_global_names_are_rejected(self):
+        self.inventory['globals'].append(copy.deepcopy(self.inventory['globals'][0]))
+        with self.assertRaisesRegex(ValueError,'duplicate API'):
+            node_contract.validate(self.inventory)
+
 
 class ResultProtocolTests(unittest.TestCase):
     def result(self, stdout, code=0, failure=None):

@@ -46,6 +46,7 @@ static const Builtin builtins[] = {
     { "node:dns/promises", core_module },
     { "node:net", core_module },
     { "node:tls", core_module },
+    { "node:http", core_module },
     { "node:url", core_module },
 };
 

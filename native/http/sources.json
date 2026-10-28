@@ -1,0 +1,38 @@
+{
+  "format": 1,
+  "commit": "aefad27c09ffda64c6ac64bd69f758e9f9c7b91d",
+  "sources": [
+    {
+      "path": "net/http/parsehttpmessage.c",
+      "sha256": "d10e2f8512a0e6bf5f115bb16e322455e9655dc03975aebf1ff1c91a6eb0d20c"
+    },
+    {
+      "path": "net/http/gethttpheader.c",
+      "sha256": "e1686b20388ab01d2752276f2e84e77b99920164144dec7bd77f124efe4382a0"
+    },
+    {
+      "path": "net/http/gethttpheader.inc",
+      "sha256": "582631f10f7449b17e8d149a44914c0147a2ece8019d3094c3150aca89d99f4f"
+    },
+    {
+      "path": "net/http/khttptoken.c",
+      "sha256": "9905c40e59a50eed84a44b18a3acbcb5fac172c4813221849532715d1730a33a"
+    },
+    {
+      "path": "net/http/khttprepeatable.c",
+      "sha256": "fe729b8905c0315c9058b6933b3755397485db92055fd128bae618f1816e8645"
+    },
+    {
+      "path": "net/http/http.h",
+      "sha256": "def0b546c682eb13711608b58a5281848caf814ca8c26ab3ad9a5a13ee462cb3"
+    }
+  ],
+  "license": {
+    "path": "native/http/LICENSE",
+    "sha256": "58f91ca2a865fb8bcc84871ca7a270fc38405dccfd17e8f00186e376d4d7587d"
+  },
+  "scope": "HTTP response-header parser only; owner allocator; strict CRLF/token/framing validation in Node HTTP adapter; no general HTTP SDK API",
+  "upstream_tests": [
+    "cosmopolitan-aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/test/net/http/parsehttpmessage_test.c"
+  ]
+}

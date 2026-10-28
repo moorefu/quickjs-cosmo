@@ -1,0 +1,9 @@
+import http from 'node:http';import bare from 'http';import assert from 'node:assert/strict';import * as os from 'os';
+const port=Number(process.env.NODE_COMPAT_HTTP_PORT),base='http://127.0.0.1:'+port;assert(port>0);assert.equal(http,bare);assert.equal((await import('node:http')).default,http);
+const response=await fetch(base+'/gzip');assert(response.body instanceof ReadableStream);const clone=response.clone();assert.equal(await response.text(),'compressed 中文');assert.equal(await clone.text(),'compressed 中文');
+assert.equal((await fetch('http://[::1]:'+process.env.NODE_COMPAT_HTTP_PORT6+'/small').then(r=>r.bytes())).length,17003);
+let inputCancelled;const abort=new AbortController(),body=new ReadableStream({start(c){c.enqueue(new Uint8Array([65]));},pull(){abort.abort('upload-stop');},cancel(reason){inputCancelled=reason;}},{highWaterMark:0});
+assert.equal(await fetch(base+'/echo',{method:'POST',body,duplex:'half',signal:abort.signal}).then(()=>null,e=>e),'upload-stop');await new Promise(resolve=>setTimeout(resolve,0));assert.equal(inputCancelled,'upload-stop');assert.equal(body.locked,false);
+const raw=await new Promise((resolve,reject)=>{http.get(base+'/bytes',{agent:false},res=>{let count=0;res.on('data',chunk=>{count+=chunk.length;});res.on('error',reject);res.on('end',()=>resolve([count,res.complete,res.httpVersion]));}).on('error',reject);});assert.equal(raw.length,3);assert.equal(raw[0],262147);assert.equal(raw[1],true);assert.equal(raw[2],'1.1');
+const worker=new os.Worker('./fixtures/http-worker.mjs');const message=await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('HTTP Worker timeout')),15000);worker.onmessage=({data})=>{clearTimeout(timer);worker.onmessage=null;resolve(data);};worker.postMessage(port);});assert.equal(message.error,undefined);assert.equal(message.echo,'worker HTTP');assert.equal(message.decoded,'compressed 中文');assert.equal(message.alias,true);
+console.log('PASS runtime-http-fetch');

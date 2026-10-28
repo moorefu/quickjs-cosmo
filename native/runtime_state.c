@@ -19,6 +19,7 @@
 #include "compression/binding.h"
 #include "process/binding.h"
 #include "net/net.h"
+#include "http/binding.h"
 #include "qjs-cosmo-config.h"
 
 extern char **environ;
@@ -484,6 +485,8 @@ JSValue js_cosmo_native_api(JSContext *ctx, CosmoRuntimeState *state) {
     if (JS_IsException(dns) || JS_SetPropertyStr(ctx, api, "dns", dns) < 0) goto fail;
     JSValue net = js_cosmo_net_api(ctx);
     if (JS_IsException(net) || JS_SetPropertyStr(ctx, api, "net", net) < 0) goto fail;
+    JSValue http = js_cosmo_http_api(ctx);
+    if (JS_IsException(http) || JS_SetPropertyStr(ctx, api, "http", http) < 0) goto fail;
     return api;
 fail:
     JS_FreeValue(ctx, api); return JS_EXCEPTION;
