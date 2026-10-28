@@ -1,6 +1,6 @@
 declare module 'node:fs' {
     import type { Buffer, BufferEncoding } from 'node:buffer';
-    /** Requires a host URL constructor until the URL milestone. */
+    /** Runtime URL objects are accepted by synchronous and asynchronous paths. */
     export interface FileURLPath { readonly href: string; readonly protocol: string; readonly hostname: string; readonly pathname: string; }
     export type PathLike = string | Uint8Array | FileURLPath;
     export interface StatsBase<T extends number | bigint> {

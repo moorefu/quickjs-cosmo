@@ -107,6 +107,7 @@ def main():
     check("custom/runtime-crypto", [qjs, "-m", ROOT / "tests/runtime_crypto.mjs"], contains="PASS runtime-crypto")
     check("custom/runtime-crypto-advanced", [qjs, "-m", ROOT / "tests/runtime_crypto_advanced.mjs"], contains="PASS runtime-crypto-advanced", timeout=120)
     check("custom/runtime-hash-extra", [qjs, "-m", ROOT / "tests/runtime_hash_extra.mjs"], contains="PASS runtime-hash-extra", timeout=120)
+    check("custom/runtime-network", [sys.executable, ROOT / "scripts/test_network.py", "--executable", qjs, "--source"], contains="PASS runtime-network", timeout=120)
     check("custom/runtime-compression", [qjs, "-m", ROOT / "tests/runtime_compression.mjs"], contains="PASS runtime-compression")
     check("custom/runtime-child-process", [qjs, "-m", ROOT / "tests/runtime_child_process.mjs"], contains="PASS runtime-child-process")
     check("custom/runtime-async", [qjs, "-m", ROOT / "tests/runtime_async.mjs"], contains="PASS runtime-async", timeout=120)
@@ -154,6 +155,14 @@ def main():
         if not valid:
             print("FAIL generated C has no bytecode array", flush=True)
     if args.compile:
+        if check("qjsc/compile-network-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/network-worker.mjs",
+                 "-o", scratch / "network-standalone.exe", ROOT / "tests/runtime_network.mjs"], timeout=180):
+            check("qjsc/run-network-ape", [sys.executable, ROOT / "scripts/test_network.py", "--executable", scratch / "network-standalone.exe"], contains="PASS runtime-network", timeout=120)
+        if check("sdk/compile-network", [settings.toolchain / "bin/cosmocc", "-O2", "-I" + str(settings.dist),
+                 ROOT / "tests/native/network.c", settings.dist / "libquickjs.a", "-lm", "-lpthread", "-ldl",
+                 "-Wl,--wrap=_Exit,-u,__wrap__Exit", "-Wl,--wrap=socket,--wrap=close,--wrap=send,--wrap=recv,--wrap=getaddrinfo,--wrap=js_malloc_rt,--wrap=js_malloc,--wrap=js_mallocz",
+                 "-o", scratch / "network-sdk.exe"], timeout=180):
+            check("sdk/run-network", [scratch / "network-sdk.exe"], contains="PASS network-sdk", timeout=120)
         if check("qjsc/compile-hash-extra-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/hash-extra-worker.mjs",
                  "-o", scratch / "hash-extra-standalone.exe", ROOT / "tests/runtime_hash_extra.mjs"], timeout=180):
             check("qjsc/run-hash-extra-ape", [scratch / "hash-extra-standalone.exe"], contains="PASS runtime-hash-extra", timeout=120)
@@ -264,6 +273,8 @@ def main():
             check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
         check("qjsc/cross-host-hash-extra", [args.standalone.resolve().parent / "hash-extra-standalone.exe"], contains="PASS runtime-hash-extra", timeout=120)
+        check("qjsc/cross-host-network", [sys.executable, ROOT / "scripts/test_network.py", "--executable", args.standalone.resolve().parent / "network-standalone.exe"], contains="PASS runtime-network", timeout=120)
+        check("sdk/cross-host-network", [args.standalone.resolve().parent / "network-sdk.exe"], contains="PASS network-sdk", timeout=120)
         check("qjsc/cross-host-crypto-advanced", [args.standalone.resolve().parent / "crypto-advanced-standalone.exe"], contains="PASS runtime-crypto-advanced", timeout=120)
         check("sdk/cross-host-crypto-advanced", [args.standalone.resolve().parent / "crypto-advanced-sdk.exe"], contains="PASS crypto-advanced-sdk", timeout=120)
         check("qjsc/cross-host-file-algorithm-streams", [args.standalone.resolve().parent / "file-algorithm-streams-standalone.exe"], contains="PASS runtime-file-algorithm-streams", timeout=120)

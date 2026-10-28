@@ -71,6 +71,7 @@ done
 cp "$BUILD/quickjs.h" "$BUILD/quickjs-libc.h" "$BUILD/qjs-cosmo.h" "$BUILD/qjs-tasks.h" "$DIST/"
 cp types/*.d.ts "$DIST/"
 cp src/js/vendor/node/LICENSE "$DIST/NODE-MODULES-LICENSE"
+cat src/js/vendor/punycode/LICENSE >> "$DIST/NODE-MODULES-LICENSE"
 cp build/native/backends/LICENSES.txt "$DIST/NATIVE-MODULES-LICENSES"
 cat build/native/crypto-extra/LICENSES.txt >> "$DIST/NATIVE-MODULES-LICENSES"
 cp "$BUILD/libquickjs.a" "$DIST/"

@@ -117,10 +117,10 @@
     },
     {
       "id": "NET-001",
-      "status": "planned",
-      "file": null,
+      "status": "differential",
+      "file": "tests/node/dns.mjs",
       "task": "M5-01",
-      "description": "DNS/TCP client lifecycle and URL handling",
+      "description": "lookup literals/order/validation and host resolver callback/promises",
       "timeout_seconds": 30
     },
     {
@@ -459,6 +459,38 @@
       "task": "M4-02",
       "description": "SHA3/SHAKE/BLAKE2s independent boundary vectors, copy/XOF length, Transform and lifecycle",
       "timeout_seconds": 60
+    },
+    {
+      "id": "NET-002",
+      "status": "differential",
+      "file": "tests/node/net.mjs",
+      "task": "M5-01",
+      "description": "IPv4/IPv6 TCP echo, errors, metadata and idle timeout",
+      "timeout_seconds": 45
+    },
+    {
+      "id": "NET-003",
+      "status": "differential",
+      "file": "tests/node/net-lifecycle.mjs",
+      "task": "M5-01",
+      "description": "TCP backpressure, half-close, abort, late lookup and peer reset",
+      "timeout_seconds": 60
+    },
+    {
+      "id": "NET-004",
+      "status": "differential",
+      "file": "tests/node/url.mjs",
+      "task": "M5-01",
+      "description": "URL/relative setters, form parameters, IDNA subset and platform file URLs",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "NET-005",
+      "status": "runtime",
+      "file": "tests/runtime_network.mjs",
+      "task": "M5-01",
+      "description": "Source, Worker, qjsc and unref exit with loopback fixture; file URL fs integration",
+      "timeout_seconds": 90
     }
   ],
   "modules": [
@@ -18507,50 +18539,1406 @@
       "entries": [
         {
           "name": "URL",
-          "status": "planned",
+          "status": "partial",
           "task": "M5-01",
-          "parameters": "WHATWG URL subset and platform-aware file URL conversion",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
           "tests": [
-            "NET-001"
+            "NET-004"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
           ]
         },
         {
           "name": "URLSearchParams",
-          "status": "planned",
+          "status": "partial",
           "task": "M5-01",
-          "parameters": "WHATWG URL subset and platform-aware file URL conversion",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
           "tests": [
-            "NET-001"
+            "NET-004"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
           ]
         },
         {
           "name": "fileURLToPath",
-          "status": "planned",
+          "status": "partial",
           "task": "M5-01",
-          "parameters": "WHATWG URL subset and platform-aware file URL conversion",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
           "tests": [
-            "NET-001"
+            "NET-004"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
           ]
         },
         {
           "name": "pathToFileURL",
-          "status": "planned",
+          "status": "partial",
           "task": "M5-01",
-          "parameters": "WHATWG URL subset and platform-aware file URL conversion",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
           "tests": [
-            "NET-001"
+            "NET-004"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "domainToASCII",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "domainToUnicode",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URL.href",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URL.protocol",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URL.username",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URL.password",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URL.host",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URL.hostname",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URL.port",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URL.pathname",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URL.search",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URL.hash",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URL.origin",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URL.searchParams",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URL.toString",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URL.toJSON",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URL.canParse",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URL.parse",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URLSearchParams.size",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URLSearchParams.append",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URLSearchParams.delete",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URLSearchParams.get",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URLSearchParams.getAll",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URLSearchParams.has",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URLSearchParams.set",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URLSearchParams.sort",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URLSearchParams.entries",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URLSearchParams.keys",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URLSearchParams.values",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URLSearchParams.forEach",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URLSearchParams.toString",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "URLSearchParams.Symbol.iterator",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Global/module URL and live URLSearchParams, relative/absolute URLs, file conversion with windows option",
+          "tests": [
+            "NET-004"
+          ],
+          "differences": [
+            "Declared WHATWG subset, not full WPT/UTS46/Bidi conformance. Punycode from pinned Node 24.21.0; NFKC/case/dot mapping, common ignored characters; contextual joiners rejected. No legacy url.parse/format/resolve, Blob URLs or Unicode security-policy guarantee."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
           ]
         }
       ]
@@ -18563,14 +19951,275 @@
       "entries": [
         {
           "name": "lookup",
-          "status": "planned",
+          "status": "partial",
           "task": "M5-01",
-          "parameters": "lookup only initially; resolve protocols are distinct later work",
+          "parameters": "Async getaddrinfo host lookup, callback/promises, family/hints/order/all; context-local default order",
           "tests": [
             "NET-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Host resolver only, at most 64 deduplicated addresses; no resolve* or Resolver. Active getaddrinfo cannot be interrupted; teardown joins the resolver task."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "getDefaultResultOrder",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Async getaddrinfo host lookup, callback/promises, family/hints/order/all; context-local default order",
+          "tests": [
+            "NET-001"
+          ],
+          "differences": [
+            "Host resolver only, at most 64 deduplicated addresses; no resolve* or Resolver. Active getaddrinfo cannot be interrupted; teardown joins the resolver task."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "setDefaultResultOrder",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Async getaddrinfo host lookup, callback/promises, family/hints/order/all; context-local default order",
+          "tests": [
+            "NET-001"
+          ],
+          "differences": [
+            "Host resolver only, at most 64 deduplicated addresses; no resolve* or Resolver. Active getaddrinfo cannot be interrupted; teardown joins the resolver task."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "ADDRCONFIG",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Async getaddrinfo host lookup, callback/promises, family/hints/order/all; context-local default order",
+          "tests": [
+            "NET-001"
+          ],
+          "differences": [
+            "Host resolver only, at most 64 deduplicated addresses; no resolve* or Resolver. Active getaddrinfo cannot be interrupted; teardown joins the resolver task."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "ALL",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Async getaddrinfo host lookup, callback/promises, family/hints/order/all; context-local default order",
+          "tests": [
+            "NET-001"
+          ],
+          "differences": [
+            "Host resolver only, at most 64 deduplicated addresses; no resolve* or Resolver. Active getaddrinfo cannot be interrupted; teardown joins the resolver task."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "V4MAPPED",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Async getaddrinfo host lookup, callback/promises, family/hints/order/all; context-local default order",
+          "tests": [
+            "NET-001"
+          ],
+          "differences": [
+            "Host resolver only, at most 64 deduplicated addresses; no resolve* or Resolver. Active getaddrinfo cannot be interrupted; teardown joins the resolver task."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "promises",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Async getaddrinfo host lookup, callback/promises, family/hints/order/all; context-local default order",
+          "tests": [
+            "NET-001"
+          ],
+          "differences": [
+            "Host resolver only, at most 64 deduplicated addresses; no resolve* or Resolver. Active getaddrinfo cannot be interrupted; teardown joins the resolver task."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
           ]
         }
       ]
@@ -18583,14 +20232,119 @@
       "entries": [
         {
           "name": "lookup",
-          "status": "planned",
+          "status": "partial",
           "task": "M5-01",
-          "parameters": "Promise lookup; same host address selection contract as callback form",
+          "parameters": "Promise form of host lookup and shared context-local result order",
           "tests": [
             "NET-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "Same resolver/IDNA limits as node:dns; no wire DNS API."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "getDefaultResultOrder",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Promise form of host lookup and shared context-local result order",
+          "tests": [
+            "NET-001"
+          ],
+          "differences": [
+            "Same resolver/IDNA limits as node:dns; no wire DNS API."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "setDefaultResultOrder",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "Promise form of host lookup and shared context-local result order",
+          "tests": [
+            "NET-001"
+          ],
+          "differences": [
+            "Same resolver/IDNA limits as node:dns; no wire DNS API."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
           ]
         }
       ]
@@ -18602,39 +20356,1283 @@
       ],
       "entries": [
         {
-          "name": "createConnection",
-          "status": "planned",
+          "name": "Socket",
+          "status": "partial",
           "task": "M5-01",
-          "parameters": "TCP clients only initially; no server or UDP claim",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
           "tests": [
-            "NET-001"
+            "NET-002",
+            "NET-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "createConnection",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
           ]
         },
         {
           "name": "connect",
-          "status": "planned",
+          "status": "partial",
           "task": "M5-01",
-          "parameters": "TCP clients only initially; no server or UDP claim",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
           "tests": [
-            "NET-001"
+            "NET-002",
+            "NET-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
           ]
         },
         {
-          "name": "Socket",
-          "status": "planned",
+          "name": "isIP",
+          "status": "partial",
           "task": "M5-01",
-          "parameters": "TCP clients only initially; no server or UDP claim",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
           "tests": [
-            "NET-001"
+            "NET-002",
+            "NET-003"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "isIPv4",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "isIPv6",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "getDefaultAutoSelectFamily",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "setDefaultAutoSelectFamily",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "getDefaultAutoSelectFamilyAttemptTimeout",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "setDefaultAutoSelectFamilyAttemptTimeout",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.connect",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.setTimeout",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.setNoDelay",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.setKeepAlive",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.ref",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.unref",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.destroySoon",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.address",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.connecting",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.pending",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.bytesRead",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.bytesWritten",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.bufferSize",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.timeout",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.readyState",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.localAddress",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.localPort",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.localFamily",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.remoteAddress",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.remotePort",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.remoteFamily",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
+          ]
+        },
+        {
+          "name": "Socket.autoSelectFamilyAttemptedAddresses",
+          "status": "partial",
+          "task": "M5-01",
+          "parameters": "TCP client Duplex with numeric/hostname connect, backpressure, half-close, abort, timeout, endpoint and byte metadata",
+          "tests": [
+            "NET-002",
+            "NET-003"
+          ],
+          "differences": [
+            "At most 32 sockets per Runtime, one bounded pump thread and 64 KiB buffer per direction each. Sequential family fallback; no server, IPC, adopted fd, scoped IPv6 or reconnect of a destroyed Socket. No exact Happy Eyeballs timing claim."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "NET-002",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node/qjs; tests/runtime_network.mjs and tests/native/network.c in build/test-results/<platform>.json; docs/M5_NETWORK.md"
+            }
           ]
         }
       ]

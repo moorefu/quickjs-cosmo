@@ -1,6 +1,6 @@
 --- a/quickjs-libc.c
 +++ b/quickjs-libc.c
-@@ -2584,11 +2584,43 @@
+@@ -2584,11 +2584,47 @@
      return 0;
  }
  
@@ -13,8 +13,12 @@
 +    int64_t deadline;
 +    int offset, count, ret, ready, remaining;
 +
-+    if (!IsWindows() || nfds <= 63)
++    if (!IsWindows())
 +        return poll(fds, nfds, timeout);
++    /* NT pipe readiness is sampled before its wait. Cap that wait so the
++       task/Worker waker cannot add a 200 ms delay to every TCP read. */
++    if (nfds <= 63)
++        return poll(fds, nfds, min_int(timeout, 10));
 +    deadline = get_time_ms() + timeout;
 +    for (;;) {
 +        ready = 0;

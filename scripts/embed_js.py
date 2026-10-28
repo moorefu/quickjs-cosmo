@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CORE_SOURCES = ("src/js/internal/errors.js", "src/js/internal/encoding.js", "src/js/node/buffer.js",
                 "src/js/node/events.js", "src/js/node/process.js", "src/js/node/path-adapter.js",
                 "src/js/node/os.js", "src/js/node/util.js", "src/js/node/assert.js", "src/js/node/console.js",
-                "src/js/internal/abort.js", "src/js/node/timers.js", "src/js/node/stream.js", "src/js/node/fs-async.js", "src/js/node/fs-streams.js", "src/js/node/fs.js", "src/js/node/crypto-keys.js", "src/js/node/crypto-cipher.js", "src/js/node/crypto.js",
+                "src/js/internal/abort.js", "src/js/node/timers.js", "src/js/node/stream.js", "src/js/node/dns.js", "src/js/node/net.js", "src/js/node/url.js", "src/js/node/fs-async.js", "src/js/node/fs-streams.js", "src/js/node/fs.js", "src/js/node/crypto-keys.js", "src/js/node/crypto-cipher.js", "src/js/node/crypto.js",
                 "src/js/internal/compression-constants.js", "src/js/node/zlib.js", "src/js/node/child-process-async.js", "src/js/node/child_process.js")
 
 
@@ -17,6 +17,8 @@ def generate(root=ROOT):
     for entry in json.loads((root / "compat/node-sources.json").read_text(encoding="utf-8"))["files"]:
         if hashlib.sha256((root / entry["path"]).read_bytes()).hexdigest() != entry["sha256"]:
             raise ValueError("Pinned Node source changed: " + entry["path"])
+        if entry.get('license_path') and hashlib.sha256((root / entry['license_path']).read_bytes()).hexdigest()!=entry['license_sha256']:
+            raise ValueError('Pinned Node source license changed: '+entry['license_path'])
     path_source = (root / "src/js/vendor/node/path.js").read_text(encoding="utf-8")
     path_factory = ("function createPathModule(process) {\n"
                     "const environment = createPathEnvironment(process);\n"
@@ -31,8 +33,12 @@ let scheduler;
 const abort = createAbortPrimitives(() => scheduler);
 scheduler = createScheduler(native, process, abort);
 const streams = createStreams(process);
+const dns = createDNS(native, process);
+const net = createNet(native, dns, process, streams);
 path = createPathModule(process);
 const os = createOs(native, process, path);
+const url = createURLModule(native, process, path, dns.isIP);
+dns.setDomainNormalizer(url.domainToASCII);
 const fs = createFs(native, path, streams.api);
 const crypto = createCrypto(native, streams.api, streams.decoder);
 const compression = createCompression(native, streams.api);
@@ -61,6 +67,9 @@ return {
     'node:crypto': exportObject(crypto.api), 'cosmo:crypto': exportObject(crypto.extensions),
     'node:zlib': exportObject(compression.api), 'cosmo:compression': exportObject(compression.extensions),
     'node:child_process': exportObject(childProcess),
+    'node:dns': exportObject(dns.api), 'node:dns/promises': exportObject(dns.promises),
+    'node:net': exportObject(net),
+    'node:url': exportObject(url),
     _drainTicks: scheduler.drainTicks,
     _beforeExit: processStates.get(process).beforeExit,
     _exit: processStates.get(process).emitExit,
@@ -70,7 +79,12 @@ return {
     _snapshot: () => ({...data, argv: process.argv, execArgv: process.execArgv, env: {...process.env}})
 };
 """
-    source = "(function(native, data) {\n'use strict';\n" + "\n".join(
+    punycode_factory = ("function createPunycode() { const module={exports:{}}; "
+        "const internalBinding=name=>{if(name!=='util')throw Error('Unknown private Punycode binding');"
+        "return {isInsideNodeModules:()=>true};};\n"+
+        (root/'src/js/vendor/punycode/punycode.js').read_text(encoding='utf-8')+
+        "\nreturn module.exports;\n}\n")
+    source = "(function(native, data) {\n'use strict';\n" + punycode_factory + "\n".join(
         (root / name).read_text(encoding="utf-8") for name in CORE_SOURCES) + "\n" + path_factory + finish + "\n})\n"
     lines = ["/* Generated from src/js; no runtime filesystem dependency. */",
              "static const char qjs_core_source[] ="]

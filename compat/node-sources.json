@@ -7,6 +7,16 @@
       "url": "https://raw.githubusercontent.com/nodejs/node/v24.21.0/lib/path.js",
       "sha256": "dd326ecdc2d6ad2025c4991f4b480d76a9f1d52b7f6d0988a5dc0a1d02de5209",
       "license": "MIT; original notice retained in the source and LICENSE"
+    },
+    {
+      "path": "src/js/vendor/punycode/punycode.js",
+      "url": "https://raw.githubusercontent.com/nodejs/node/v24.21.0/lib/punycode.js",
+      "sha256": "c5c75d5f31323affefa3595e63b3c50bca8bf7a2766936699e20460398e61717",
+      "license": "MIT; Mathias Bynens notice from the pinned Node LICENSE Punycode.js section",
+      "license_path": "src/js/vendor/punycode/LICENSE",
+      "license_sha256": "64eb360de1b43f1603abe9f550486c0295af2fac4989e6e9f7d96a9ec06e18a9",
+      "license_source_url": "https://raw.githubusercontent.com/nodejs/node/v24.21.0/LICENSE",
+      "license_source_sha256": "5888dbb9a1d2b18f2c3e6c5f6af1b39de658372b402a0577b002777f14c62ace"
     }
   ]
 }

@@ -20,8 +20,8 @@
 | M3-04 异步子进程 | 完成，CI 全绿 | `dab3a8a`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40569582305)，[记录](M3_CHILD_PROCESS_ASYNC.md) |
 | M3-05 文件/算法流 | 完成，CI 全绿 | `f90d02d`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40581885448)，[记录](M3_FILE_ALGORITHM_STREAMS.md) |
 | M4-01 密钥与 AEAD | 完成，CI 全绿 | `111ec61`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40603741483)，[记录](M4_KEYS_AEAD.md) |
-| M4-02 扩展摘要 | 本地验收通过，待 CI | SHA3/SHAKE/BLAKE2s，[记录](M4_EXTRA_DIGESTS.md) |
-| M5-01 DNS/TCP/URL | 待实现 | lookup、Socket 与 URL |
+| M4-02 扩展摘要 | 完成，CI 全绿 | `a7e6da7`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40609066017)，[记录](M4_EXTRA_DIGESTS.md) |
+| M5-01 DNS/TCP/URL | 本地验收完成，待完整 CI | Linux 113/113、Windows 83/83；差分 46/46，[记录](M5_NETWORK.md) |
 | M5-02 TLS 审计 | 待实现 | 新 Nightly、旧缺陷、CA 与 SDK 范围 |
 | M5-03 TLS 接入 | 待实现 | 客户端 TLS、证书、SNI 与取消 |
 | M5-04 HTTP/Fetch | 待实现 | HTTP/1.1 与 Fetch 声明子集 |
@@ -32,4 +32,4 @@
 
 局部实现与平台差异由 `compat/node-api.json` 描述；本表不以“已有同名导出”替代任务退出条件。未完成任务继续保持待实现，TLS 如遇真实准入阻碍需按规划记录并解决，不能伪造通过。
 
-M6 另需复核私有状态表的循环引用：Timer 的 WeakMap 值持有 handle，存在与本次 EventEmitter 相同的回指模式；应以循环 GC 用例确认并修复，避免只验证 Runtime 整体销毁。
+M5-01 的 SDK 循环 GC 用例已确认并修复 Timer 状态回指，以及销毁流保留活动写回调的问题。M6 继续复核其余私有状态表、各入口与平台差异。

@@ -1,5 +1,9 @@
 function createScheduler(native, process, abort) {
-    const timers = new Map(), immediates = new Map(), handles = new WeakMap(), ticks = [];
+    const timers = new Map(), immediates = new Map(), ticks = [], handleKey = Symbol('timer.state');
+    // State may retain a callback which points back to the handle. Keep that
+    // cycle on the instance; a module WeakMap value roots it in QuickJS.
+    const handles = {get: handle => handle?.[handleKey],
+        set: (handle, state) => Object.defineProperty(handle, handleKey, {value: state})};
     let nextID = 1, timerWake = 0, immediateWake = 0, timerDeadline = 0, immediateDeadline = 0;
     let runningTimers = false, runningImmediates = false;
     const now = () => Number(native.clock() / 1000000n);

@@ -82,7 +82,7 @@
     {
       "id": "sockets",
       "delivery": "toolchain",
-      "admission": "E2",
+      "admission": "E4",
       "files": [
         {
           "path": "libc/sock/socket.c",
@@ -101,12 +101,16 @@
         "test/libc/sock/socket_test.c"
       ],
       "notes": [
-        "Scoped native probe evidence; no JS support or general SDK archive admission."
+        "Scoped DNS/TCP client bindings only; no TCP server or general socket SDK API admission."
       ],
-      "evidence_scope": "numeric IPv4 resolution and socket creation/close; DNS/TCP exchange pending M5-01",
+      "evidence_scope": "M5-01 host lookup and bounded TCP client; source/Worker/qjsc/SDK with injected partial I/O, cancellation, quota, OOM and teardown; complete matrix tracked in RUNTIME_IMPLEMENTATION_STATUS.md",
       "evidence": [
         "native/probes/toolchain.c",
-        "scripts/probe_native.py"
+        "native/net/dns.c",
+        "native/net/socket.c",
+        "tests/native/network.c",
+        "tests/runtime_network.mjs",
+        "docs/M5_NETWORK.md"
       ]
     },
     {

@@ -37,4 +37,4 @@ HMAC/HKDF/PBKDF2 保持既有 MD5/SHA1/SHA2 声明范围，本次不扩大摘要
 
 本地最终验收：Linux 108/108；Windows 80/80，另跳过一项 Unix 专用检查。两端 Node 同源差分均为 42/42，调度生命周期均为 19/19。Python 83 项检查、TypeScript 5.9.3 两套 lib 的声明用例、全部 Worker/qjsc/SDK 检查通过。
 
-三文件运行包、双架构 SDK 与包含 31 个测试/探针 APE 的 CI 传输包通过校验。清单为 29 个模块、479 项 API、56 个测试条目。本项等待完整七平台 CI；全绿后进入 M5-01。
+三文件运行包、双架构 SDK 与包含 31 个测试/探针 APE 的 CI 传输包通过校验。该项交付清单为 29 个模块、479 项 API、56 个测试条目。`a7e6da7` 的[完整七平台 CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40609066017) 已全绿；后续进入 M5-01。
