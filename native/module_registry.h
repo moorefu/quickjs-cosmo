@@ -24,6 +24,8 @@ int js_cosmo_exit_code(JSContext *ctx);
 uint8_t *js_cosmo_worker_snapshot(JSContext *ctx, size_t *size);
 void js_cosmo_worker_enter(const uint8_t *data, size_t size, const char *base, const char *filename);
 char *js_cosmo_absolute_filename(JSContext *ctx, const char *filename);
+/* Filesystem resolution with legacy std/os slash-path results. */
+char *js_cosmo_legacy_realpath(const char *path, char *resolved);
 /* Returns 1 only when this is a plain upstream context, with no project state. */
 int js_cosmo_import_meta(JSContext *ctx, JSValueConst module, int realpath, int main);
 int js_cosmo_install_helpers(JSContext *ctx);

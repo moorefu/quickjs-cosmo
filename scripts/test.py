@@ -162,6 +162,9 @@ def main():
     check("qjsc/module-nul", [qjsc,"-c","-m","-o",scratch/"module-nul.c",ROOT/"tests/fixtures/module-nul.mjs"], expected=1, contains="ERR_UNKNOWN_BUILTIN_MODULE")
 
     if args.compile:
+        check('qjsc/compile-host-filesystem',[qjsc,'-m','-D',ROOT/'tests/fixtures/host-filesystem-worker.mjs','-o',scratch/'host-filesystem-standalone.exe',ROOT/'tests/runtime_host_filesystem.mjs'],timeout=180)
+        check('sdk/compile-host-filesystem',[settings.toolchain/'bin/cosmocc','-O2','-I'+str(settings.dist),ROOT/'tests/native/host_filesystem.c',settings.dist/'libquickjs.a','-lm','-lpthread','-ldl','-Wl,--wrap=_Exit,-u,__wrap__Exit','-o',scratch/'host-filesystem-sdk.exe'],timeout=180)
+        check('custom/host-filesystem-all-entries',[sys.executable,ROOT/'scripts/test_host_filesystem.py','--qjs',qjs,'--compiled',scratch/'host-filesystem-standalone.exe','--sdk',scratch/'host-filesystem-sdk.exe'],contains='PASS host filesystem:',timeout=180)
         check('qjsc/compile-portable-example',[qjsc,'-m','-o',scratch/'portable-example.exe',ROOT/'examples/portable-core.mjs'],timeout=180)
         check('qjsc/run-portable-example',[scratch/'portable-example.exe'],contains='"example":"core"',timeout=60)
         check("qjsc/compile-delivery",[qjsc,"-m","-D",ROOT/"tests/fixtures/delivery-worker.mjs","-o",scratch/"delivery-standalone.exe",ROOT/"tests/runtime_delivery.mjs"],timeout=180)
@@ -320,6 +323,7 @@ def main():
                  timeout=180):
             check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
+        check('custom/host-filesystem-all-entries',[sys.executable,ROOT/'scripts/test_host_filesystem.py','--qjs',qjs,'--compiled',args.standalone.resolve().parent/'host-filesystem-standalone.exe','--sdk',args.standalone.resolve().parent/'host-filesystem-sdk.exe'],contains='PASS host filesystem:',timeout=180)
         check('qjsc/cross-host-portable-example',[args.standalone.resolve().parent/'portable-example.exe'],contains='"example":"core"',timeout=60)
         check("qjsc/cross-host-delivery",[args.standalone.resolve().parent/"delivery-standalone.exe"],contains="PASS runtime-delivery",timeout=60)
         check("sdk/cross-host-lifecycle",[args.standalone.resolve().parent/"lifecycle-sdk.exe"],contains="PASS lifecycle-sdk",timeout=180)

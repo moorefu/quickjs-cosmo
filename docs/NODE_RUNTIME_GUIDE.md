@@ -56,6 +56,8 @@ node examples/portable-fetch.mjs http://127.0.0.1:8080/data.json
 
 嵌入 C 程序使用 SDK 的 quickjs.h、quickjs-libc.h、qjs-cosmo.h 和对应架构 libquickjs.a。创建 Context 后调用 js_cosmo_init_modules，并安装 js_cosmo_module_normalize 与宿主 loader；进入事件循环后，销毁前调用 js_std_free_handlers，再释放 Context/Runtime。可以从 [最小 SDK 验收程序](../tests/native/module_registry.c) 开始；异步和标准流例子见 tests/native 中对应文件。SDK 保留 .aarch64 目录。
 
+需要 Worker 时，先用 js_std_set_worker_new_context_func 注册 Context 工厂；工厂创建子 Context 后同样调用 js_cosmo_init_modules。完整的 SDK/Worker 初始化及调用方 opaque 保持检查见 [文件系统 SDK 用例](../tests/native/host_filesystem.c)。
+
 ## TypeScript
 
 只需将 SDK 的 node-compat.d.ts 作为公开入口，它会引用全部分拆声明。示例配置：

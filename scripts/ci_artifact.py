@@ -19,7 +19,7 @@ from release_evidence import validate_reports, validate_evidence
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = "build/ci/bundle-manifest.json"
 BUILD_EVIDENCE = "build/ci/build-evidence.json"
-STANDALONES = ("build/test-linux/portable-example.exe", "build/test-linux/hello-standalone.exe", "build/test-linux/runtime-standalone.exe",
+STANDALONES = ("build/test-linux/host-filesystem-standalone.exe", "build/test-linux/host-filesystem-sdk.exe", "build/test-linux/portable-example.exe", "build/test-linux/hello-standalone.exe", "build/test-linux/runtime-standalone.exe",
                "build/test-linux/registry-standalone.exe", "build/test-linux/registry-sdk.exe",
                "build/test-linux/buffer-standalone.exe", "build/test-linux/foundation-standalone.exe",
                "build/test-linux/entry-standalone.exe", "build/test-linux/scheduling-standalone.exe",

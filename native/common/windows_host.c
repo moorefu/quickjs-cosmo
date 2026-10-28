@@ -50,6 +50,7 @@ fail:
 }
 
 char *js_cosmo_host_realpath(const char *path, char *resolved) {
+    if (!path) { errno=EINVAL; return NULL; }
     if (!IsWindows() || !strncmp(path, "/zip/", 5)) return realpath(path, resolved);
     char16_t input[PATH_MAX], output[PATH_MAX];
     if (__mkntpath(path, input) < 0) return NULL;
@@ -243,3 +244,13 @@ uint32_t js_cosmo_windows_pid(void) { return 0; }
 uint32_t js_cosmo_windows_ppid(void) { return 0; }
 char js_cosmo_windows_root_drive(void) { return 0; }
 #endif
+
+/* Legacy std/os keeps Cosmo slash paths; Node fs keeps native host spelling. */
+char *js_cosmo_legacy_realpath(const char *path, char *resolved) {
+    char *result=js_cosmo_host_realpath(path,resolved);
+    if(result&&IsWindows()) {
+        if(result[0]&&result[1]==':') {result[1]=result[0];result[0]='/';}
+        for(char *p=result;*p;p++)if(*p=='\\')*p='/';
+    }
+    return result;
+}

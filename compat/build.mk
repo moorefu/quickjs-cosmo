@@ -100,4 +100,4 @@ $(OBJDIR)/qjs-host-process.o: $(QJS_COSMO_ROOT)/compat/host_process.c \
     $(wildcard $(QJS_COSMO_COMPAT)/libc/calls/*.c) \
     $(wildcard $(QJS_COSMO_COMPAT)/libc/intrin/*.c) \
     $(wildcard $(QJS_COSMO_COMPAT)/libc/proc/*.c) | $(OBJDIR)
-	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE $(QJS_COMPAT_CFLAGS) -I$(QJS_COSMO_COMPAT) -c -o $@ $<
+	$(CC) $(CFLAGS_OPT) -fstack-clash-protection -std=gnu23 -D_COSMO_SOURCE $(QJS_COMPAT_CFLAGS) -I$(QJS_COSMO_COMPAT) -c -o $@ $<

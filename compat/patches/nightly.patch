@@ -200,6 +200,17 @@
  textwindows static int __proc_unstop(struct Proc *pr, int *wstatus,
 --- a/libc/intrin/terminatethisprocess.c
 +++ b/libc/intrin/terminatethisprocess.c
+@@ -112,8 +112,8 @@
+     if (__get_pib()->sigpending != &__fake_process_signals) {
+       if (__sig_trylock()) {
+         __imp_UnmapViewOfFile(__get_pib()->sigpending);
+-        char16_t path[128];
+-        __imp_DeleteFileW(__sig_process_path(path, __get_pib()->pid));
++        char16_t path[4096];
++        if (__sig_process_path(path, __get_pib()->pid)) __imp_DeleteFileW(path);
+         __get_pib()->sigpending = &__fake_process_signals;
+         __sig_unlock();
+         break;
 @@ -131,7 +131,7 @@
  
    // "When a process terminates itself, TerminateProcess stops execution
@@ -211,7 +222,7 @@
  
 --- a/libc/intrin/sigproc.c
 +++ b/libc/intrin/sigproc.c
-@@ -34,6 +34,7 @@
+@@ -34,9 +34,12 @@
  #include "libc/nt/memory.h"
  #include "libc/nt/process.h"
  #include "libc/nt/runtime.h"
@@ -219,46 +230,184 @@
  #include "libc/nt/thunk/msabi.h"
  #include "libc/str/str.h"
  #ifdef __x86_64__
-@@ -80,6 +81,12 @@
-         COSMO_PID_LOWER_BOUND + 1;
-     if ((*sigpending = __sig_map_process(pid, kNtCreateNew)))
-       return pid;
-+    /* Permission and mapping failures do not improve with another random pid. */
-+    uint32_t error = __imp_GetLastError();
-+    if (error != kNtErrorFileExists && error != kNtErrorAlreadyExists) {
-+      kprintf("QuickJS: cannot initialize Windows signal state (error %u)\n", error);
-+      ExitProcess(1);
-+    }
-   }
++
++#define QJS_SIG_PATH_CAP 4096
+ 
+ #define COSMO_PID_UPPER_BOUND 0x100000  // about one million
+ #define COSMO_PID_LOWER_BOUND 0x10000   // avoid pids windows likes
+@@ -48,6 +51,8 @@
+ __msabi extern typeof(CreateFile) *const __imp_CreateFileW;
+ __msabi extern typeof(CreateFileMapping) *const __imp_CreateFileMappingW;
+ __msabi extern typeof(GetLastError) *const __imp_GetLastError;
++__msabi extern typeof(GetFileAttributes) *const __imp_GetFileAttributesW;
++__msabi extern typeof(SetLastError) *const __imp_SetLastError;
+ __msabi extern typeof(MapViewOfFileEx) *const __imp_MapViewOfFileEx;
+ __msabi extern typeof(SetEndOfFile) *const __imp_SetEndOfFile;
+ __msabi extern typeof(SetFilePointerEx) *const __imp_SetFilePointerEx;
+@@ -73,85 +78,89 @@
+   return product >> 32;
  }
  
-@@ -110,7 +117,17 @@
++textwindows static void qjs_sig_startup_error(uint32_t error) {
++  char16_t path[QJS_SIG_PATH_CAP] = {0};
++  __sig_process_path(path, 0);
++  kprintf("QuickJS: cannot initialize Windows signal state (error %u, path %!hs)\n", error, path);
++  ExitProcess(1);
++}
++
+ textwindows int __generate_pid(atomic_ulong **sigpending) {
+-  for (;;) {
+-    int pid =
+-        ProcessPrngUniform(COSMO_PID_UPPER_BOUND - COSMO_PID_LOWER_BOUND - 1) +
+-        COSMO_PID_LOWER_BOUND + 1;
+-    if ((*sigpending = __sig_map_process(pid, kNtCreateNew)))
+-      return pid;
++  for (unsigned attempt = 0; attempt < 64; ++attempt) {
++    int pid = ProcessPrngUniform(COSMO_PID_UPPER_BOUND - COSMO_PID_LOWER_BOUND - 1) + COSMO_PID_LOWER_BOUND + 1;
++    if ((*sigpending = __sig_map_process(pid, kNtCreateNew))) return pid;
++    uint32_t error = __imp_GetLastError();
++    if (error != kNtErrorFileExists && error != kNtErrorAlreadyExists) qjs_sig_startup_error(error);
+   }
++  qjs_sig_startup_error(kNtErrorAlreadyExists);
++  __builtin_unreachable();
+ }
  
- // Generates C:\ProgramData\cosmo\sig\x\y.pid like path
+ textwindows static bool __sig_makedirs(char16_t *p, char16_t *e) {
+-  while (e > p) {
+-    --e;
+-    if (*e == '\\')
+-      break;
++  while (e > p) { --e; if (*e == '\\') break; }
++  if (e - p < 3) return true;
++  for (unsigned attempt = 0; attempt < 2; ++attempt) {
++    char16_t c = *e; *e = 0;
++    bool32 ok = __imp_CreateDirectoryW(p, 0);
++    uint32_t error = ok ? 0 : __imp_GetLastError();
++    if (error == kNtErrorAlreadyExists) {
++      uint32_t attributes = __imp_GetFileAttributesW(p);
++      ok = attributes != -1u && (attributes & kNtFileAttributeDirectory);
++      if (!ok) { error = kNtErrorDirectory; __imp_SetLastError(error); }
++    }
++    *e = c;
++    if (ok) return true;
++    if (error != kNtErrorPathNotFound || !__sig_makedirs(p, e)) return false;
+   }
+-  if (e - p < 3)
+-    return true;
+-  for (;;) {
+-    char16_t c = *e;
+-    *e = 0;
+-    bool32 ok = __imp_CreateDirectoryW(p, 0);
+-    *e = c;
+-    if (ok)
+-      return true;
+-    uint32_t err = __imp_GetLastError();
+-    if (err == kNtErrorAlreadyExists)
+-      return true;
+-    if (err != kNtErrorPathNotFound)
+-      return false;
+-    if (!__sig_makedirs(p, e))
+-      return false;
+-  }
++  __imp_SetLastError(kNtErrorPathNotFound);
++  return false;
+ }
+ 
+-// Generates C:\ProgramData\cosmo\sig\x\y.pid like path
++/* Stable per-temp namespace, shared by parent/child logical signal PIDs.
++   Every caller supplies QJS_SIG_PATH_CAP UTF-16 units, including exit/fork. */
  textwindows char16_t *__sig_process_path(char16_t *path, uint32_t pid) {
 -  char16_t *p = path;
-+  /* Keep this runtime's signal files in the user's writable temp directory. */
-+  uint32_t length = GetTempPath(88, path);
-+  char16_t *p;
-+  if (length && length < 88) {
-+    p = path + length;
-+    const char16_t suffix[] = u"quickjs-cosmo-sig\\";
-+    memcpy(p, suffix, sizeof(suffix) - sizeof(*suffix));
-+    p += sizeof(suffix) / sizeof(*suffix) - 1;
-+    goto pid_suffix;
+-  *p++ = __getcosmosdrive();
+-  *p++ = ':';
+-  *p++ = '\\';
+-  *p++ = 'P';
+-  *p++ = 'r';
+-  *p++ = 'o';
+-  *p++ = 'g';
+-  *p++ = 'r';
+-  *p++ = 'a';
+-  *p++ = 'm';
+-  *p++ = 'D';
+-  *p++ = 'a';
+-  *p++ = 't';
+-  *p++ = 'a';
+-  *p++ = '\\';
+-  *p++ = 'c';
+-  *p++ = 'o';
+-  *p++ = 's';
+-  *p++ = 'm';
+-  *p++ = 'o';
+-  *p++ = '\\';
+-  *p++ = 's';
+-  *p++ = 'i';
+-  *p++ = 'g';
+-  *p++ = '\\';
+-  p = __itoa16(p, (pid & 0x000ff800) >> 11);
+-  *p++ = '\\';
+-  p = __itoa16(p, pid);
+-  *p++ = '.';
+-  *p++ = 'p';
+-  *p++ = 'i';
+-  *p++ = 'd';
+-  *p = 0;
++  uint32_t length = GetTempPath(QJS_SIG_PATH_CAP - 64, path);
++  if (!length || length >= QJS_SIG_PATH_CAP - 64) {
++    if (length) __imp_SetLastError(kNtErrorFilenameExcedRange);
++    return 0;
 +  }
-+  p = path;
-   *p++ = __getcosmosdrive();
-   *p++ = ':';
-   *p++ = '\\';
-@@ -136,6 +153,7 @@
-   *p++ = 'i';
-   *p++ = 'g';
-   *p++ = '\\';
-+pid_suffix:
-   p = __itoa16(p, (pid & 0x000ff800) >> 11);
-   *p++ = '\\';
-   p = __itoa16(p, pid);
++  for (uint32_t i = 0; i < length; ++i) if (path[i] == '/') path[i] = '\\';
++  /* GetTempPath does not validate existence or directory type. */
++  uint32_t attributes = __imp_GetFileAttributesW(path);
++  if (attributes == -1u && length > 3 && path[length - 1] == '\\') {
++    path[length - 1] = 0;
++    attributes = __imp_GetFileAttributesW(path);
++    path[length - 1] = '\\';
++  }
++  if (attributes == -1u) {
++    path[length] = '.'; path[length + 1] = 0;
++    attributes = __imp_GetFileAttributesW(path);
++    path[length] = 0;
++  }
++  if (attributes == -1u) return 0;
++  if (!(attributes & kNtFileAttributeDirectory)) { __imp_SetLastError(kNtErrorDirectory); return 0; }
++  /* Use Win32 extended spelling without changing the selected temp root. */
++  if (length > 2 && path[1] == ':') {
++    /* Signal bootstrap precedes normal libc initialization. */
++    for (uint32_t i = length + 1; i; --i) *(volatile char16_t *)(path + i + 3) = path[i - 1];
++    memcpy(path, u"\\\\?\\", 4 * sizeof(*path)); length += 4;
++  } else if (length > 2 && path[0] == '\\' && path[1] == '\\' && path[2] != '?' && path[2] != '.') {
++    for (uint32_t i = length + 1; i > 2; --i) *(volatile char16_t *)(path + i + 5) = path[i - 1];
++    memcpy(path, u"\\\\?\\UNC\\", 8 * sizeof(*path)); length += 6;
++  }
++  char16_t *p = path + length;
++  const char16_t suffix[] = u"quickjs-cosmo-sig\\";
++  memcpy(p, suffix, sizeof(suffix) - sizeof(*suffix)); p += sizeof(suffix) / sizeof(*suffix) - 1;
++  p = __itoa16(p, (pid & 0x000ff800) >> 11); *p++ = '\\';
++  p = __itoa16(p, pid); *p++ = '.'; *p++ = 'p'; *p++ = 'i'; *p++ = 'd'; *p = 0;
+   return path;
+ }
+ 
+ textwindows atomic_ulong *__sig_map_process(int pid, int disposition) {
+-  char16_t path[128];
+-  __sig_process_path(path, pid);
++  char16_t path[QJS_SIG_PATH_CAP];
++  if (!__sig_process_path(path, pid)) return 0;
+   intptr_t hand;
+-  for (;;) {
++  for (unsigned attempt = 0;; ++attempt) {
+     hand = __imp_CreateFileW(path, kNtGenericRead | kNtGenericWrite,
+                              kNtFileShareRead | kNtFileShareWrite, 0,
+                              disposition, kNtFileAttributeNormal, 0);
+@@ -159,7 +168,7 @@
+       break;
+     if (disposition == kNtOpenAlways || disposition == kNtCreateNew) {
+       uint32_t err = __imp_GetLastError();
+-      if (err == kNtErrorPathNotFound)
++      if (err == kNtErrorPathNotFound && attempt < 2)
+         if (__sig_makedirs(path, path + strlen16(path)))
+           continue;
+     }
 --- a/libc/calls/openat.c
 +++ b/libc/calls/openat.c
 @@ -206,7 +206,7 @@
@@ -270,3 +419,57 @@
      // Every operating system we've tested (with the notable exception
      // of OpenBSD) will gladly truncate files opened in read-only mode
      rc = einval();
+--- a/libc/calls/open-nt.c
++++ b/libc/calls/open-nt.c
+@@ -64,19 +64,6 @@
+   return x;
+ }
+ 
+-textwindows static bool sys_open_nt_ishiddenpath(const char16_t *p, int n) {
+-  int i = n;
+-  while (i) {
+-    if (p[i - 1] == '\\')
+-      break;
+-    --i;
+-  }
+-  if (i < n)
+-    if (p[i] == '.')
+-      return true;
+-  return false;
+-}
+-
+ textwindows static intptr_t sys_open_nt_impl(int dirfd, const char *path,
+                                              uint32_t flags, int32_t mode,
+                                              uint32_t extra_attr) {
+@@ -125,10 +112,12 @@
+   if (GetNtOpenFlags(flags, mode, &perm, &share, &disp, &attr) == -1)
+     return -1;
+ 
+-  // set hidden attribute on new files if last component starts with dot
+-  if (flags & O_CREAT)
+-    if (sys_open_nt_ishiddenpath(path16, path16len))
+-      attr |= kNtFileAttributeHidden;
++  /* A leading dot is a filename convention, not a Windows attribute. */
++  if (fattr != -1u && (disp == kNtCreateAlways || disp == kNtTruncateExisting)) {
++    attr |= fattr & (kNtFileAttributeHidden | kNtFileAttributeSystem);
++    if (attr & (kNtFileAttributeHidden | kNtFileAttributeSystem))
++      attr &= ~kNtFileAttributeNormal;
++  }
+ 
+   // the mode parameter should do nothing when file already exists
+   if (fattr != -1u) {
+--- a/libc/proc/fork-nt.c
++++ b/libc/proc/fork-nt.c
+@@ -351,8 +351,10 @@
+   __winmain_tib = __get_tls_win32();
+   if (!__builtin_setjmp(__winmain_jmpbuf)) {
+     rc = sys_fork_nt_parent(child_pid, hStopEvent);
+-    if (rc == -1)
+-      DeleteFile(__sig_process_path(alloca(256), child_pid));
++    if (rc == -1) {
++      char16_t path[4096];
++      if (__sig_process_path(path, child_pid)) DeleteFile(path);
++    }
+   } else {
+     sys_fork_nt_child();
+     __get_pib()->pid = child_pid;

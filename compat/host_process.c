@@ -1,9 +1,11 @@
 /* These files are the checksum-verified sources of the selected toolchain. */
 #if defined(__x86_64__)
+#include "libc/calls/open-nt.c"
 #include "libc/calls/ntspawn.c"
 #include "libc/intrin/fds.c"
 #include "libc/proc/wait4-nt.c"
 #include "libc/intrin/terminatethisprocess.c"
+#include "libc/proc/fork-nt.c"
 #ifdef QJS_COSMO_SIGPROC
 #include "libc/intrin/sigproc.c"
 #endif

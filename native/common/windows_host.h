@@ -4,6 +4,7 @@
 JSValue js_cosmo_windows_environment(JSContext *ctx);
 JSValue js_cosmo_windows_arguments(JSContext *ctx);
 char *js_cosmo_host_realpath(const char *path, char *resolved);
+char *js_cosmo_legacy_realpath(const char *path, char *resolved);
 JSValue js_cosmo_windows_getenv(JSContext *ctx, JSValueConst name);
 JSValue js_cosmo_windows_setenv(JSContext *ctx, JSValueConst name, JSValueConst value, int remove);
 JSValue js_cosmo_windows_release(JSContext *ctx);

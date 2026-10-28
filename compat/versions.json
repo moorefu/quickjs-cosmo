@@ -24,20 +24,32 @@
       "path": "libc/intrin/terminatethisprocess.c",
       "url": "https://raw.githubusercontent.com/jart/cosmopolitan/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/libc/intrin/terminatethisprocess.c",
       "sha256": "941bc889896e337ed4c8ecd22da4ecd6bf17c076db2567e3ddb70a97fa3e43f8",
-      "patched_sha256": "d1a03a1f4806fd06449c0075d400a2723024192b4fb7c48227a623afc3fd4b08"
+      "patched_sha256": "e2a26b3e76ba2f6ef5c24015a083d8fdab399c6cddf900c9e108b8e727edbf44"
     },
     {
       "path": "libc/intrin/sigproc.c",
       "url": "https://raw.githubusercontent.com/jart/cosmopolitan/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/libc/intrin/sigproc.c",
       "sha256": "48be3f0e08fe6640aaae21d5c2b9baecda0fecf7d1ab990a2bb4dbef711f4444",
-      "patched_sha256": "ca0e9e841a55bcce8ab2226e36d5b2e5beea7ea66685758fd44c9e2c345f7727"
+      "patched_sha256": "5c6c8e3ccd00be8c04b2587a815429fb5db9a2ff43fba88204286e184c812e62"
     },
     {
       "path": "libc/calls/openat.c",
       "url": "https://raw.githubusercontent.com/jart/cosmopolitan/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/libc/calls/openat.c",
       "sha256": "9a12a1ff6b62d04b34e24c38664dd8f87e794c280b41828c592fe7c05275ea34",
       "patched_sha256": "b89bb8bc25db55d571ceea85d267946ec851f30eb28151c2a0f3ca29c002b3e2"
+    },
+    {
+      "path": "libc/calls/open-nt.c",
+      "url": "https://raw.githubusercontent.com/jart/cosmopolitan/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/libc/calls/open-nt.c",
+      "sha256": "8a11bf1079b4ba452dfdfeda108547df333fa93e1d3f03e349786f75b244b60a",
+      "patched_sha256": "96f860c7ee1b52dbd8a3c5e56a71410cdd9b5ae44b1f7f7c9e4585fc3f1450cd"
+    },
+    {
+      "path": "libc/proc/fork-nt.c",
+      "url": "https://raw.githubusercontent.com/jart/cosmopolitan/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/libc/proc/fork-nt.c",
+      "sha256": "98d3617b81a1cf4afdcbe8853c73438e0c1fe95ea4f0b0d3995f4473c3de780e",
+      "patched_sha256": "613ae4bfff3096ab37493c45102bda975cd72de49fd5fdf9fdbdb9227e51d77b"
     }
   ],
-  "patch_sha256": "0bfa61d8e9fdd5826e0acc2f0b3736e63cabccc48476a3892437a005c30e8a5f"
+  "patch_sha256": "6d90a3107834735aaaf9b35be6ba3cb2cbbe2add166a34cf75f0432290cdaeaa"
 }
