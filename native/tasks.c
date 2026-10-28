@@ -10,6 +10,7 @@
 #include "module_registry.h"
 #include "process/async.h"
 #include "net/net.h"
+#include "stdio/binding.h"
 
 enum { THREADS=2,CAPACITY=64,MAX_RESERVED=64*1024*1024 };
 enum { PREPARED,QUEUED,RUNNING,READY };
@@ -212,13 +213,15 @@ void js_cosmo_tasks_stats(JSRuntime *rt,QJSCosmoTaskStats *out) {
 }
 int js_cosmo_tasks_pending(JSRuntime *rt) {
     Pool *p=find_pool(rt);int pending=0;
-    if(p){pthread_mutex_lock(&p->mutex);pending=p->active!=0;pthread_mutex_unlock(&p->mutex);}return pending || js_cosmo_process_pending(rt) || js_cosmo_net_pending(rt);
+    if(p){pthread_mutex_lock(&p->mutex);pending=p->active!=0;pthread_mutex_unlock(&p->mutex);}return pending || js_cosmo_process_pending(rt) || js_cosmo_net_pending(rt) || js_cosmo_stdio_pending(rt);
 }
+int js_cosmo_tasks_wait_ms(JSRuntime *rt,int maximum){return js_cosmo_stdio_active(rt)&&(maximum<0||maximum>10)?10:maximum;}
 static _Thread_local int next_external;
 static int external_poll(JSContext *ctx){
-    next_external^=1;
-    if(next_external)return js_cosmo_net_poll(ctx) || js_cosmo_process_poll(ctx);
-    return js_cosmo_process_poll(ctx) || js_cosmo_net_poll(ctx);
+    next_external=(next_external+1)%3;
+    if(next_external==0)return js_cosmo_net_poll(ctx) || js_cosmo_process_poll(ctx) || js_cosmo_stdio_poll(ctx);
+    if(next_external==1)return js_cosmo_process_poll(ctx) || js_cosmo_stdio_poll(ctx) || js_cosmo_net_poll(ctx);
+    return js_cosmo_stdio_poll(ctx) || js_cosmo_net_poll(ctx) || js_cosmo_process_poll(ctx);
 }
 int js_cosmo_tasks_poll(JSContext *ctx) {
     Pool *p=find_pool(JS_GetRuntime(ctx));if(!p)return external_poll(ctx);
@@ -240,6 +243,7 @@ int js_cosmo_tasks_poll(JSContext *ctx) {
     release_task(t);js_cosmo_checkpoint(owner,1);JS_FreeContext(owner);return 1;
 }
 void js_cosmo_tasks_close_context(JSContext *ctx) {
+    js_cosmo_stdio_close_context(ctx);
     js_cosmo_net_close_context(ctx);
     js_cosmo_process_close_context(ctx);
     Pool *p=find_pool(JS_GetRuntime(ctx));if(!p)return;
@@ -263,6 +267,7 @@ void js_cosmo_tasks_close_context(JSContext *ctx) {
     while(removed){QJSCosmoTask *next=removed->all_next;destroy_task(removed);removed=next;}
 }
 void js_cosmo_tasks_shutdown(JSRuntime *rt) {
+    js_cosmo_stdio_shutdown(rt);
     js_cosmo_net_shutdown(rt);
     js_cosmo_process_shutdown(rt);
     pthread_mutex_lock(&registry_mutex);Pool **link=&registry;

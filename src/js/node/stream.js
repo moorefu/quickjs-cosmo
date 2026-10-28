@@ -1,6 +1,6 @@
 /* Node-style streams. State is per instance; hooks execute only on its JS thread. */
 function createStreams(process) {
-    const readers=new WeakMap(),writers=new WeakMap(),states=new WeakMap();
+    const readers=instanceState('stream.readable'),writers=instanceState('stream.writable'),states=instanceState('stream.state');
     const tick=(fn,...args)=>process.nextTick(fn,...args);
     const error=(code,message=code)=>codedError(Error,code,message);
     function options(value) {if(value==null)return {};if(typeof value!=='object')throw invalidType('options','an object');return value;}
@@ -165,7 +165,7 @@ function createStreams(process) {
         const source=this,r=readers.get(source);if(r.pipes.has(destination))return destination;
         const data=chunk=>{if(destination.write(chunk)===false){r.awaitDrain.add(destination);source.pause();}};
         const drain=()=>{r.awaitDrain.delete(destination);if(!r.awaitDrain.size && r.pipes.size)source.resume();};
-        const end=()=>{if(opts.end!==false)destination.end();else cleanup();};
+        const end=()=>{if(opts.end!==false&&!states.get(destination)?.stdioSink)destination.end();else cleanup();};
         const failure=e=>{cleanup();if(!destination.listenerCount('error'))destination.emit('error',e);};
         const cleanup=()=>{if(!r.pipes.delete(destination))return;source.removeListener('data',data);source.removeListener('end',end);source.removeListener('close',cleanup);destination.removeListener('drain',drain);destination.removeListener('finish',cleanup);destination.removeListener('close',cleanup);destination.removeListener('error',failure);r.awaitDrain.delete(destination);destination.emit('unpipe',source,{hasUnpiped:false});if(!r.pipes.size)source.pause();else if(!r.awaitDrain.size)source.resume();};
         r.pipes.set(destination,cleanup);source.on('data',data);source.once('end',end);source.once('close',cleanup);destination.on('drain',drain);destination.once('finish',cleanup);destination.once('close',cleanup);destination.prependListener('error',failure);destination.emit('pipe',source);
@@ -302,7 +302,13 @@ function createStreams(process) {
         const abort=()=>fail(aborted(opts.signal));
         const fail=e=>{if(!failure)failure=e;for(const stream of args)if(!stream.destroyed){const r=readers.get(stream),w=writers.get(stream),complete=(!r || r.ended && !r.length) && (!w || w.ending && !w.length);stream.destroy(complete?undefined:failure);}};
         const done=e=>{if(e)fail(e);if(--remaining || settled)return;settled=true;opts.signal?.removeEventListener('abort',abort);tick(callback,failure);};
-        args.forEach((stream,i)=>finished(stream,{readable:i<args.length-1,writable:i>0},done));
+        args.forEach((stream,i)=>{
+            if(i===args.length-1&&states.get(stream).stdioSink){
+                let complete=false;const finish=e=>{if(complete)return;complete=true;tick(()=>{stream.removeListener('error',onError);stream.removeListener('close',onClose);done(e);});};
+                const onError=e=>finish(e),onClose=()=>finish(stream.errored??error('ERR_STREAM_PREMATURE_CLOSE'));
+                stream.on('error',onError);stream.on('close',onClose);args[i-1].once('end',()=>{const w=writers.get(stream);if(!w.length)finish(stream.errored);else w.idle.push(finish);});
+            }else finished(stream,{readable:i<args.length-1,writable:i>0},done);
+        });
         opts.signal?.addEventListener('abort',abort,{once:true});
         for(let i=0;i<args.length-1;i++)args[i].pipe(args[i+1]);if(opts.signal?.aborted)tick(abort);
         return args[args.length-1];
@@ -311,5 +317,5 @@ function createStreams(process) {
     const promises={finished(stream,opts){return new Promise((resolve,reject)=>finished(stream,opts,e=>e?reject(e):resolve()));},pipeline(...args){let opts={};if(args.length && !states.has(args[args.length-1]) && !Array.isArray(args[args.length-1]) && typeof args[args.length-1]==='object')opts=args.pop();return new Promise((resolve,reject)=>pipelineRun(args,opts,e=>e?reject(e):resolve()));}};
     function addAbortSignal(value,stream){if(value===undefined)throw invalidType('signal','an AbortSignal');signal(value);if(!states.has(stream))throw invalidType('stream','a Stream');const state=states.get(stream),abort=()=>stream.destroy(aborted(value));if(value.aborted)tick(abort);else if(!state.closed){value.addEventListener('abort',abort,{once:true});state.abortCleanups.push(()=>value.removeEventListener('abort',abort));}return stream;}
     if(Symbol.asyncDispose)Stream.prototype[Symbol.asyncDispose]=function(){if(!this.destroyed)this.destroy(aborted());return promises.finished(this,{cleanup:true}).catch(e=>{if(e.code!=='ABORT_ERR')throw e;});};
-    const api={Stream,Readable,Writable,Duplex,Transform,PassThrough,pipeline,finished,addAbortSignal,promises};Object.assign(Stream,api);return {api,default:Stream,promises,decoder:encoding=>new Decoder(encoding),socketClose:stream=>{states.get(stream).socketClose=true;},httpOutgoing:stream=>{writers.get(stream).httpOutgoing=true;}};
+    const api={Stream,Readable,Writable,Duplex,Transform,PassThrough,pipeline,finished,addAbortSignal,promises};Object.assign(Stream,api);return {api,default:Stream,promises,decoder:encoding=>new Decoder(encoding),socketClose:stream=>{states.get(stream).socketClose=true;},httpOutgoing:stream=>{writers.get(stream).httpOutgoing=true;},stdioSink:stream=>{states.get(stream).stdioSink=true;}};
 }

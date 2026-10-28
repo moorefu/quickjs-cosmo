@@ -212,7 +212,7 @@ static JSValue call(JSContext *ctx, JSValueConst self, int argc, JSValueConst *a
     case FS_UNLINK: name="unlink"; result=unlink(a); break;
     case FS_RMDIR: name="rmdir"; result=rmdir(a); break;
     case FS_REALPATH: {
-        name="realpath"; char *resolved=realpath(a,NULL);
+        name="realpath"; char *resolved=js_cosmo_host_realpath(a,NULL);
         if (!resolved) { result=-1; break; }
         if (IsWindows()) {
             size_t len=strlen(resolved); char *p=js_malloc(ctx,len+3);

@@ -571,6 +571,22 @@
       "task": "M5-05",
       "description": "Independent Python HTTPS services with IPv4/IPv6, source/Worker/qjsc and manual SDK GC/teardown",
       "timeout_seconds": 120
+    },
+    {
+      "id": "PROC-007",
+      "status": "differential",
+      "file": "tests/node/process-stdio.mjs",
+      "task": "M6-01",
+      "description": "Stdio streams, pipe and pipeline lifetime, input references and verbatim user arguments",
+      "timeout_seconds": 60
+    },
+    {
+      "id": "ENTRY-002",
+      "status": "differential",
+      "file": "tests/node/entry-boundaries.mjs",
+      "task": "M6-01",
+      "description": "Module NUL rejection, file metadata and host realpath boundaries",
+      "timeout_seconds": 30
     }
   ],
   "modules": [
@@ -4997,6 +5013,123 @@
               "sdk": "partial"
             }
           }
+        },
+        {
+          "name": "stdin",
+          "status": "partial",
+          "task": "M6-01",
+          "parameters": "Inherited standard descriptor as a Readable or Writable stream",
+          "tests": [
+            "PROC-007"
+          ],
+          "differences": [
+            "Synchronous output in bounded chunks, deferred callbacks; stdin readiness and ref/unref. Worker shared stdin is unavailable. No raw mode or terminal control. See docs/M6_DELIVERY.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "unsupported",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "unsupported",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "unsupported",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "PROC-007",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential and scripts/test_stdio.py across interpreter, qjsc and manual SDK; delivery Worker and SDK lifecycle checks"
+            }
+          ]
+        },
+        {
+          "name": "stdout",
+          "status": "partial",
+          "task": "M6-01",
+          "parameters": "Inherited standard descriptor as a Readable or Writable stream",
+          "tests": [
+            "PROC-007"
+          ],
+          "differences": [
+            "Synchronous output in bounded chunks, deferred callbacks; stdin readiness and ref/unref. Worker shared stdin is unavailable. No raw mode or terminal control. See docs/M6_DELIVERY.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "PROC-007",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential and scripts/test_stdio.py across interpreter, qjsc and manual SDK; delivery Worker and SDK lifecycle checks"
+            }
+          ]
+        },
+        {
+          "name": "stderr",
+          "status": "partial",
+          "task": "M6-01",
+          "parameters": "Inherited standard descriptor as a Readable or Writable stream",
+          "tests": [
+            "PROC-007"
+          ],
+          "differences": [
+            "Synchronous output in bounded chunks, deferred callbacks; stdin readiness and ref/unref. Worker shared stdin is unavailable. No raw mode or terminal control. See docs/M6_DELIVERY.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "PROC-007",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source Node differential and scripts/test_stdio.py across interpreter, qjsc and manual SDK; delivery Worker and SDK lifecycle checks"
+            }
+          ]
         }
       ]
     },

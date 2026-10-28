@@ -20,6 +20,7 @@
 #include "process/binding.h"
 #include "net/net.h"
 #include "http/binding.h"
+#include "stdio/binding.h"
 #include "qjs-cosmo-config.h"
 
 extern char **environ;
@@ -112,6 +113,7 @@ static JSValue system_error(JSContext *ctx, int number, const char *syscall, con
         number == EACCES ? -4092 : number == EPERM ? -4048 : number == EINVAL ? -4071 :
         number == ENOMEM ? -4057 : number == ENAMETOOLONG ? -4064 : number == ELOOP ? -4067 :
         number == ERANGE ? -4034 : number == ENOSYS ? -4054 : -4070;
+    if (IsXnu()) node_errno = number == ENAMETOOLONG ? -63 : number == ELOOP ? -62 : number == ENOSYS ? -78 : -number;
     if (JS_IsException(error)) return error;
     if (put_string(ctx, error, "code", code) < 0 || put_string(ctx, error, "syscall", syscall) < 0 ||
         put_string(ctx, error, "message", strerror(number)) < 0 ||
@@ -487,6 +489,8 @@ JSValue js_cosmo_native_api(JSContext *ctx, CosmoRuntimeState *state) {
     if (JS_IsException(net) || JS_SetPropertyStr(ctx, api, "net", net) < 0) goto fail;
     JSValue http = js_cosmo_http_api(ctx);
     if (JS_IsException(http) || JS_SetPropertyStr(ctx, api, "http", http) < 0) goto fail;
+    JSValue stdio = js_cosmo_stdio_api(ctx);
+    if (JS_IsException(stdio) || JS_SetPropertyStr(ctx, api, "stdio", stdio) < 0) goto fail;
     return api;
 fail:
     JS_FreeValue(ctx, api); return JS_EXCEPTION;
@@ -523,7 +527,15 @@ int js_cosmo_set_cli(JSContext *ctx, int argc, char **argv, int first, int mode)
     if (!state) return -1;
     state->mode = mode;
     JSValue args = JS_NewArray(ctx), options = JS_NewArray(ctx);
-    if (JS_IsException(args) || JS_IsException(options)) goto fail;
+    JSValue raw = IsWindows() ? js_cosmo_windows_arguments(ctx) : JS_UNDEFINED;
+    if (JS_IsException(args) || JS_IsException(options) || JS_IsException(raw)) goto fail;
+    int raw_count = argc;
+    if (IsWindows()) {
+        JSValue length = JS_GetPropertyStr(ctx, raw, "length");
+        int rc = JS_ToInt32(ctx, &raw_count, length);
+        JS_FreeValue(ctx, length);
+        if (rc < 0) goto fail;
+    }
     JSValue exe = JS_GetPropertyStr(ctx, state->data, "execPath");
     if (JS_IsException(exe) || JS_SetPropertyUint32(ctx, args, 0, exe) < 0) goto fail;
     unsigned index = 1;
@@ -539,12 +551,12 @@ int js_cosmo_set_cli(JSContext *ctx, int argc, char **argv, int first, int mode)
         js_free(ctx, entry);
         if (JS_IsException(path) || JS_SetPropertyUint32(ctx, args, index++, path) < 0) goto fail;
     }
-    for (int i = first; i < argc; i++) {
-        JSValue arg = JS_NewString(ctx, argv[i]);
+    for (int i = first; i < raw_count; i++) {
+        JSValue arg = IsWindows() ? JS_GetPropertyUint32(ctx, raw, i) : JS_NewString(ctx, argv[i]);
         if (JS_IsException(arg) || JS_SetPropertyUint32(ctx, args, index++, arg) < 0) goto fail;
     }
     if (mode != 2) for (int i = 1; i < (mode == 0 ? first - 1 : first); i++) {
-        JSValue arg = JS_NewString(ctx, argv[i]);
+        JSValue arg = IsWindows() ? JS_GetPropertyUint32(ctx, raw, i) : JS_NewString(ctx, argv[i]);
         if (JS_IsException(arg) || JS_SetPropertyUint32(ctx, options, i - 1, arg) < 0) goto fail;
     }
     int result = JS_SetPropertyStr(ctx, state->data, "argv", args);
@@ -552,9 +564,10 @@ int js_cosmo_set_cli(JSContext *ctx, int argc, char **argv, int first, int mode)
     if (result < 0) goto fail;
     result = JS_SetPropertyStr(ctx, state->data, "execArgv", options);
     options = JS_UNDEFINED;
+    JS_FreeValue(ctx, raw);
     return result;
 fail:
-    JS_FreeValue(ctx, args); JS_FreeValue(ctx, options); return -1;
+    JS_FreeValue(ctx, args); JS_FreeValue(ctx, options); JS_FreeValue(ctx, raw); return -1;
 }
 
 int js_cosmo_set_compiled_root(JSContext *ctx, const char *root) {
@@ -605,7 +618,7 @@ int js_cosmo_import_meta(JSContext *ctx, JSValueConst value, int use_realpath, i
     if (internal) main = 0;
     if (!internal && state->mode != 2 && !(state->mode == 1 && main) && use_realpath) {
         char buffer[PATH_MAX];
-        path = realpath(filename, buffer) ? path_padding(ctx, js_strdup(ctx, buffer)) : NULL;
+        path = js_cosmo_host_realpath(filename, buffer) ? path_padding(ctx, js_strdup(ctx, buffer)) : NULL;
         if (!path) system_error(ctx, errno, "realpath", filename);
     } else path = internal ? js_strdup(ctx, filename) : js_cosmo_absolute_filename(ctx, filename);
     JS_FreeCString(ctx, filename);
@@ -617,13 +630,21 @@ int js_cosmo_import_meta(JSContext *ctx, JSValueConst value, int use_realpath, i
                       state->compiled_root ? JS_NewString(ctx, state->compiled_root) : JS_UNDEFINED};
     js_free(ctx, path);
     int failed = JS_IsException(args[0]) || JS_IsException(args[3]);
-    JSValue url = failed ? JS_EXCEPTION : JS_Call(ctx, factory, JS_UNDEFINED, 4, args);
+    JSValue fields = failed ? JS_EXCEPTION : JS_Call(ctx, factory, JS_UNDEFINED, 4, args);
     JS_FreeValue(ctx, factory);
     for (int i = 0; i < 4; i++) JS_FreeValue(ctx, args[i]);
-    if (JS_IsException(url)) return -1;
+    if (JS_IsException(fields)) return -1;
     JSValue meta = JS_GetImportMeta(ctx, module);
-    if (JS_IsException(meta)) { JS_FreeValue(ctx, url); return -1; }
-    int result = JS_DefinePropertyValueStr(ctx, meta, "url", url, JS_PROP_C_W_E);
+    if (JS_IsException(meta)) { JS_FreeValue(ctx, fields); return -1; }
+    int result = 0;
+    const char *keys[] = {"url", "filename", "dirname"};
+    for (unsigned i = 0; i < sizeof(keys) / sizeof(*keys) && result >= 0; i++) {
+        JSValue field = JS_GetPropertyStr(ctx, fields, keys[i]);
+        if (JS_IsException(field)) result = -1;
+        else if (!JS_IsUndefined(field)) result = JS_DefinePropertyValueStr(ctx, meta, keys[i], field, JS_PROP_C_W_E);
+        else JS_FreeValue(ctx, field);
+    }
+    JS_FreeValue(ctx, fields);
     if (result >= 0) result = JS_DefinePropertyValueStr(ctx, meta, "main", JS_NewBool(ctx, main), JS_PROP_C_W_E);
     JS_FreeValue(ctx, meta);
     return result < 0 ? -1 : 0;

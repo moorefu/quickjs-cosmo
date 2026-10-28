@@ -25,8 +25,8 @@
 | M5-02 TLS 审计 | 完成，CI 全绿 | `c254a54`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40639261668)，[记录](M5_TLS_AUDIT.md) |
 | M5-03 TLS 接入 | 完成，CI 全绿 | `f1494c1`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40648737327)，[记录](M5_TLS_CLIENT.md) |
 | M5-04 HTTP/Fetch | 完成，CI 全绿 | `9cdc98b`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40670191020)，[记录](M5_HTTP_FETCH.md) |
-| M5-05 HTTPS | 本地验收通过，等待 CI | 最终全入口 Linux 87/87、Windows 89/89，Node 差分均 56/56；[记录](M5_HTTPS.md) |
-| M6-01 全入口交付 | 待实现 | 全部已启用能力的 Worker/qjsc/SDK/包验收 |
+| M5-05 HTTPS | 完成，CI 全绿 | `68373b7`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40684836385)，[记录](M5_HTTPS.md) |
+| M6-01 全入口交付 | 本地验收通过，待 CI | 标准流、入口边界、状态回收；Linux 139/139、共享 APE 92/92、Windows 94/94；[记录](M6_DELIVERY.md) |
 | M6-02 CI 与发布 | 待实现 | 全目标矩阵、能力清单与发布产物 |
 | M6-03 文档与类型 | 持续更新，最终验收待完成 | 已增加 Buffer、公共基础、调度/取消与 cosmo:runtime 类型 |
 

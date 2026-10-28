@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CORE_SOURCES = ("src/js/internal/errors.js", "src/js/internal/encoding.js", "src/js/node/buffer.js",
                 "src/js/node/events.js", "src/js/node/process.js", "src/js/node/path-adapter.js",
                 "src/js/node/os.js", "src/js/node/util.js", "src/js/node/assert.js", "src/js/node/console.js",
-                "src/js/internal/abort.js", "src/js/node/timers.js", "src/js/node/stream.js", "src/js/node/dns.js", "src/js/node/net.js", "src/js/node/tls.js", "src/js/node/url.js", "src/js/node/fs-async.js", "src/js/node/fs-streams.js", "src/js/node/fs.js", "src/js/node/crypto-keys.js", "src/js/node/crypto-cipher.js", "src/js/node/crypto.js",
+                "src/js/internal/abort.js", "src/js/node/timers.js", "src/js/node/stream.js", "src/js/internal/stdio.js", "src/js/node/dns.js", "src/js/node/net.js", "src/js/node/tls.js", "src/js/node/url.js", "src/js/node/fs-async.js", "src/js/node/fs-streams.js", "src/js/node/fs.js", "src/js/node/crypto-keys.js", "src/js/node/crypto-cipher.js", "src/js/node/crypto.js",
                 "src/js/internal/compression-constants.js", "src/js/node/zlib.js", "src/js/node/http.js", "src/js/node/https.js", "src/js/internal/web-streams.js", "src/js/internal/fetch.js", "src/js/node/child-process-async.js", "src/js/node/child_process.js")
 
 
@@ -40,6 +40,7 @@ const os = createOs(native, process, path);
 const url = createURLModule(native, process, path, dns.isIP);
 dns.setDomainNormalizer(url.domainToASCII);
 const fs = createFs(native, path, streams.api);
+installStdio(native,process,streams,fs);
 let extraCA=null;
 const extraCAFile=process.env.NODE_EXTRA_CA_CERTS;
 if(extraCAFile){
@@ -93,8 +94,13 @@ return {
     _beforeExit: processStates.get(process).beforeExit,
     _exit: processStates.get(process).emitExit,
     _console: console,
-    _importMeta: (name, main, mode, root) => name.startsWith('<') ? 'qjs:internal' : mode === 1 && main ? 'qjs:eval' : mode === 2 ? main ? fileURL(native.executablePath) :
-        'qjs:embedded/' + path.posix.relative(root ?? '.', name).split('/').map(encodeURIComponent).join('/') : fileURL(name),
+    _importMeta: (name, main, mode, root) => {
+        const url = name.startsWith('<') ? 'qjs:internal' : mode === 1 && main ? 'qjs:eval' : mode === 2 ? main ? fileURL(native.executablePath) :
+            'qjs:embedded/' + path.posix.relative(root ?? '.', name).split('/').map(encodeURIComponent).join('/') : fileURL(name);
+        if (!url.startsWith('file:')) return {url};
+        const filename = mode === 2 && main ? native.executablePath : name;
+        return {url, filename, dirname:path.dirname(filename)};
+    },
     _snapshot: () => ({...data, argv: process.argv, execArgv: process.execArgv, env: {...process.env}})
 };
 """

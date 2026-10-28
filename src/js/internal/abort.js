@@ -1,5 +1,5 @@
 function createAbortPrimitives(getTimers) {
-    const targets = new WeakMap(), events = new WeakMap(), signals = new WeakMap();
+    const targets = instanceState('event-target.state'), events = instanceState('event.state'), signals = instanceState('abort.state');
     const dependencyCleanup = new FinalizationRegistry(records => {
         for (const [source, dependent] of records) {
             const original = source.deref();

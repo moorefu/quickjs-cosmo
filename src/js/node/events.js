@@ -39,7 +39,8 @@ function onceListener(emitter, type, listener, prepend) {
         return Reflect.apply(listener, emitter, args);
     }
     wrapped.listener = listener;
-    return addEventListener(emitter, type, wrapped, prepend);
+    if(prepend)emitter.prependListener(type,wrapped);else emitter.on(type,wrapped);
+    return emitter;
 }
 EventEmitter.prototype.once = function once(type, listener) { return onceListener(this, type, listener, false); };
 EventEmitter.prototype.prependOnceListener = function prependOnceListener(type, listener) { return onceListener(this, type, listener, true); };

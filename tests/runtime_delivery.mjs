@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import * as os from 'os';
+assert.equal(import.meta.filename,fileURLToPath(import.meta.url));
+assert.equal(import.meta.dirname,path.dirname(import.meta.filename));
+assert.equal(import.meta.main,true);
+assert.equal(fs.realpathSync(process.cwd()),await fs.promises.realpath(process.cwd()));
+for(const [specifier,code] of [['node:fs\0ignored','ERR_UNKNOWN_BUILTIN_MODULE'],['fs\0ignored','ERR_MODULE_NOT_FOUND'],['./runtime_delivery.mjs\0ignored','ERR_INVALID_ARG_VALUE']])await assert.rejects(import(specifier),{code});
+const controller=Object.freeze(new AbortController());Object.freeze(controller.signal);controller.abort(controller.signal);assert.equal(controller.signal.reason,controller.signal);
+const worker=new os.Worker('./fixtures/delivery-worker.mjs');
+await new Promise((resolve,reject)=>{const deadline=setTimeout(()=>reject(Error('Delivery Worker timeout')),15000);worker.onmessage=({data})=>{clearTimeout(deadline);worker.onmessage=null;data.ok?resolve():reject(Error(data.error));};worker.postMessage({});});
+console.log('PASS runtime-delivery');

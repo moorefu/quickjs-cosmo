@@ -104,7 +104,7 @@ function createCompression(native, streams) {
     const names = ['deflateSync','inflateSync','gzipSync','gunzipSync','deflateRawSync','inflateRawSync','unzipSync',
         'zstdCompressSync','zstdDecompressSync','lz4CompressSync','lz4DecompressSync','bzip2CompressSync','bzip2DecompressSync'];
     const extensions = {};
-    const streamStates=new WeakMap(),markers=new WeakMap(),constructors=[];
+    const streamStates=instanceState('zlib.stream'),markers=new WeakMap(),constructors=[];
     const constructorNames=['Deflate','Inflate','Gzip','Gunzip','DeflateRaw','InflateRaw','Unzip','ZstdCompress','ZstdDecompress'];
     function Codec() {}
     Object.setPrototypeOf(Codec.prototype,streams.Transform.prototype);Object.setPrototypeOf(Codec,streams.Transform);

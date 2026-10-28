@@ -1,0 +1,18 @@
+--- a/quickjs-libc.c
++++ b/quickjs-libc.c
+@@ -2591,6 +2591,7 @@
+ 
+     if (poll_timer(ctx, &min_delay)) return 0;
+     if (js_cosmo_tasks_poll(ctx)) return 0;
++    min_delay = js_cosmo_tasks_wait_ms(rt, min_delay);
+ 
+     count = 0;
+     list_for_each(el, &ts->os_rw_handlers) {
+@@ -2759,6 +2760,7 @@
+     
+     if (poll_timer(ctx, &min_delay)) return 0;
+     if (js_cosmo_tasks_poll(ctx)) return 0;
++    min_delay = js_cosmo_tasks_wait_ms(rt, min_delay);
+     
+     nfds = 0;
+     list_for_each(el, &ts->os_rw_handlers) {

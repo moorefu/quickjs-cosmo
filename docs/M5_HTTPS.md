@@ -1,6 +1,6 @@
 # M5-05 HTTPS
 
-状态：实现及本地验收完成，等待完整 CI；本项完整 CI 全绿后进入 M6-01。
+状态：`68373b7` 已通过[完整 CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40684836385)，七个平台及 CI gate 全绿。后续进入 M6-01。
 
 ## 接入范围
 

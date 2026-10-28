@@ -91,7 +91,7 @@ static int work(QJSCosmoTask *task) {
     case UNLINK:r->syscall="unlink";rc=unlink(r->a);break;
     case RMDIR:r->syscall="rmdir";rc=rmdir(r->a);break;
     case REALPATH: {
-        r->syscall="realpath";char *path=realpath(r->a,NULL);if(!path)return errno;
+        r->syscall="realpath";char *path=js_cosmo_host_realpath(r->a,NULL);if(!path)return errno;
         size_t length=strlen(path);r->resolved=js_cosmo_task_alloc(task,length+3);
         if(!r->resolved){free(path);return ENOMEM;}
         memcpy(r->resolved,path,length+1);free(path);

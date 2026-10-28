@@ -1,5 +1,5 @@
 function createAsyncChildProcess({binding,normalize,candidates,signalName,killSignal,text,object,process,streams,windows}) {
-    const {Readable,Writable}=streams,states=new WeakMap();
+    const {Readable,Writable}=streams,states=instanceState('child-process.state');
     const tick=(fn,...args)=>process.nextTick(fn,...args);
     function systemError(code,syscall){const info=binding.error(code);return Object.assign(codedError(Error,info.code,syscall+' '+info.code),info,{syscall});}
     function abortError(signal){const e=codedError(Error,'ABORT_ERR','The operation was aborted');e.name='AbortError';e.cause=signal.reason;return e;}
@@ -17,7 +17,7 @@ function createAsyncChildProcess({binding,normalize,candidates,signalName,killSi
     if(Symbol.dispose)ChildProcess.prototype[Symbol.dispose]=function(){if(!this.killed)this.kill();};
     function maybeClose(child) {
         const s=states.get(child);if(s.closed || !s.nativeDone || s.ioClosed?.some(closed=>!closed))return;
-        s.closed=true;if(s.timeout)clearTimeout(s.timeout);s.signal?.removeEventListener('abort',s.abort);child.emit('close',child.exitCode,child.signalCode);
+        s.closed=true;if(s.timeout)clearTimeout(s.timeout);s.timeout=null;s.signal?.removeEventListener('abort',s.abort);s.signal=null;s.abort=null;child.emit('close',child.exitCode,child.signalCode);
     }
     function writeNext(child) {
         const s=states.get(child),write=s.write;if(!write || s.inputDestroyed)return;

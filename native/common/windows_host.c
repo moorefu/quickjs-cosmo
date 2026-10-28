@@ -1,4 +1,6 @@
 #include <stdint.h>
+#include <errno.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,9 +15,63 @@
 #include "libc/nt/errors.h"
 #include "libc/nt/process.h"
 #include "libc/nt/runtime.h"
+#include "libc/nt/createfile.h"
+#include "libc/nt/files.h"
+#include "libc/nt/enum/accessmask.h"
+#include "libc/nt/enum/creationdisposition.h"
+#include "libc/nt/enum/fileflagandattributes.h"
+#include "libc/nt/enum/filesharemode.h"
+#include "libc/str/str.h"
 
 /* Same fixed Nightly conversion used when its PE entry prepares environ. */
 extern int GetDosEnviron(const char16_t *, char *, size_t, char **, size_t);
+extern int GetDosArgv(const char16_t *, char *, size_t, char **, size_t);
+
+JSValue js_cosmo_windows_arguments(JSContext *ctx) {
+    const char16_t *command = GetCommandLine();
+    size_t length = 0;
+    while (command[length]) length++;
+    size_t capacity = length + 2;
+    char *bytes = js_malloc(ctx, length * 3 + 2);
+    char **arguments = js_malloc(ctx, capacity * sizeof(*arguments));
+    JSValue result = JS_NewArray(ctx);
+    if (!bytes || !arguments || JS_IsException(result)) goto fail;
+    /* The pinned parser has static scratch state; serialize all callers. */
+    js_cosmo_env_lock();
+    int count = GetDosArgv(command, bytes, length * 3 + 2, arguments, capacity);
+    js_cosmo_env_unlock();
+    for (int i = 0; i < count; i++) {
+        JSValue value = JS_NewString(ctx, arguments[i]);
+        if (JS_IsException(value) || JS_SetPropertyUint32(ctx, result, i, value) < 0) goto fail;
+    }
+    js_free(ctx, bytes); js_free(ctx, arguments); return result;
+fail:
+    js_free(ctx, bytes); js_free(ctx, arguments); JS_FreeValue(ctx, result); return JS_EXCEPTION;
+}
+
+char *js_cosmo_host_realpath(const char *path, char *resolved) {
+    if (!IsWindows() || !strncmp(path, "/zip/", 5)) return realpath(path, resolved);
+    char16_t input[PATH_MAX], output[PATH_MAX];
+    if (__mkntpath(path, input) < 0) return NULL;
+    int64_t handle = CreateFile(input, kNtFileReadAttributes,
+        kNtFileShareRead | kNtFileShareWrite | kNtFileShareDelete, 0,
+        kNtOpenExisting, kNtFileFlagBackupSemantics, 0);
+    if (handle == -1) { __fix_enotdir(__winerr(), input); return NULL; }
+    uint32_t count = GetFinalPathNameByHandle(handle, output, PATH_MAX,
+        kNtFileNameNormalized | kNtVolumeNameDos);
+    int saved = count ? 0 : (__winerr(), errno);
+    CloseHandle(handle);
+    if (!count || count >= PATH_MAX) { errno = saved ? saved : ENAMETOOLONG; return NULL; }
+    char16_t *name = output;
+    if (!memcmp(name, u"\\\\?\\UNC\\", 8 * sizeof(char16_t))) { name += 6; name[0] = '\\'; }
+    else if (!memcmp(name, u"\\\\?\\", 4 * sizeof(char16_t))) name += 4;
+    char bytes[PATH_MAX * 3 + 1];
+    tprecode16to8(bytes, sizeof(bytes), name);
+    size_t length = strlen(bytes);
+    if (length >= PATH_MAX) { errno = ENAMETOOLONG; return NULL; }
+    if (!resolved && !(resolved = malloc(length + 1))) return NULL;
+    memcpy(resolved, bytes, length + 1); return resolved;
+}
 
 static JSValue windows_failure(JSContext *ctx, const char *syscall) {
     JSValue error = JS_NewError(ctx);
@@ -175,6 +231,8 @@ uint32_t js_cosmo_windows_pid(void) { return GetCurrentProcessId(); }
 uint32_t js_cosmo_windows_ppid(void) { return sys_getppid_nt_win32(); }
 char js_cosmo_windows_root_drive(void) { return __getcosmosdrive(); }
 #else
+JSValue js_cosmo_windows_arguments(JSContext *ctx) { (void)ctx; return JS_UNDEFINED; }
+char *js_cosmo_host_realpath(const char *path, char *resolved) { return realpath(path, resolved); }
 JSValue js_cosmo_windows_environment(JSContext *ctx) { (void)ctx; return JS_UNDEFINED; }
 JSValue js_cosmo_windows_getenv(JSContext *ctx, JSValueConst key) { (void)ctx; (void)key; return JS_UNDEFINED; }
 JSValue js_cosmo_windows_setenv(JSContext *ctx, JSValueConst key, JSValueConst value, int remove) {

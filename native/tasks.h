@@ -35,6 +35,7 @@ void js_cosmo_tasks_shutdown(JSRuntime *);
 void js_cosmo_tasks_stats(JSRuntime *,QJSCosmoTaskStats *);
 int js_cosmo_tasks_pending(JSRuntime *);
 int js_cosmo_tasks_poll(JSContext *);
+int js_cosmo_tasks_wait_ms(JSRuntime *,int maximum);
 /* The libc bridge shares its existing atomics waker, whose lifetime extends
    through worker joins. wake never invokes a QuickJS API on the worker. */
 int js_cosmo_tasks_waker(JSRuntime *,void (**)(void *),void **);

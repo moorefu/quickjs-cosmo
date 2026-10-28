@@ -92,6 +92,17 @@ static void unknown_builtin(JSContext *ctx, const char *name) {
     JS_Throw(ctx, error);
 }
 
+int js_cosmo_validate_module_specifier(JSContext *ctx,const char *name,size_t length){
+    if(!memchr(name,0,length))return 0;
+    int file=name[0]=='.'||name[0]=='/'||name[0]=='\\'||(length>1&&name[1]==':')||!strncmp(name,"file:",5);
+    JSValue error;
+    if(file){JS_ThrowTypeError(ctx,"Module specifier must not contain NUL");error=JS_GetException(ctx);}
+    else error=JS_NewError(ctx);
+    if(JS_IsException(error))return -1;
+    if(set_string(ctx,error,"code",file?"ERR_INVALID_ARG_VALUE":!strncmp(name,"node:",5)?"ERR_UNKNOWN_BUILTIN_MODULE":"ERR_MODULE_NOT_FOUND")<0||set_string(ctx,error,"message","Module specifier must not contain NUL")<0){JS_FreeValue(ctx,error);return -1;}
+    JS_Throw(ctx,error);return -1;
+}
+
 /* Collapse segments without realpath(), which would break qjsc resources.
    Preserve relative leading '..', absolute roots, Windows drives and UNC roots. */
 char *js_cosmo_normalize_path(JSContext *ctx, const char *filename) {

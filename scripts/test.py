@@ -154,7 +154,19 @@ def main():
         results[-1]["passed"] = valid
         if not valid:
             print("FAIL generated C has no bytecode array", flush=True)
+    check("custom/delivery-source", [qjs, "-m", ROOT/"tests/runtime_delivery.mjs"], contains="PASS runtime-delivery", timeout=60)
+    check("qjsc/module-nul", [qjsc,"-c","-m","-o",scratch/"module-nul.c",ROOT/"tests/fixtures/module-nul.mjs"], expected=1, contains="ERR_UNKNOWN_BUILTIN_MODULE")
+
     if args.compile:
+        check("qjsc/compile-delivery",[qjsc,"-m","-D",ROOT/"tests/fixtures/delivery-worker.mjs","-o",scratch/"delivery-standalone.exe",ROOT/"tests/runtime_delivery.mjs"],timeout=180)
+        check("qjsc/run-delivery",[scratch/"delivery-standalone.exe"],contains="PASS runtime-delivery",timeout=60)
+        check("qjsc/compile-stdio",[qjsc,"-m","-o",scratch/"stdio-standalone.exe",ROOT/"tests/node/fixtures/process-stdio-child.mjs"],timeout=180)
+        check("sdk/compile-stdio",[settings.toolchain/"bin/cosmocc","-O2","-I"+str(settings.dist),ROOT/"tests/native/stdio.c",settings.dist/"libquickjs.a","-lm","-lpthread","-ldl","-Wl,--wrap=_Exit,-u,__wrap__Exit","-o",scratch/"stdio-sdk.exe"],timeout=180)
+        check("sdk/compile-lifecycle",[settings.toolchain/"bin/cosmocc","-O2","-I"+str(settings.dist),ROOT/"tests/native/lifecycle.c",settings.dist/"libquickjs.a","-lm","-lpthread","-ldl","-Wl,--wrap=_Exit,-u,__wrap__Exit","-o",scratch/"lifecycle-sdk.exe"],timeout=180)
+        check("sdk/run-lifecycle",[scratch/"lifecycle-sdk.exe"],contains="PASS lifecycle-sdk",timeout=180)
+        stdio_command=[sys.executable,ROOT/"scripts/test_stdio.py","--qjs",qjs,"--compiled",scratch/"stdio-standalone.exe","--sdk",scratch/"stdio-sdk.exe"]
+        if args.node:stdio_command += ["--node",str(Path(args.node).resolve())]
+        check("custom/stdio-all-entries",stdio_command,contains="PASS stdio all entries",timeout=240)
         check("qjsc/compile-https",[qjsc,"-m","-D",ROOT/"tests/fixtures/https-worker.mjs","-o",scratch/"https-standalone.exe",ROOT/"tests/runtime_https.mjs"],timeout=180)
         check("sdk/compile-https-client",[settings.toolchain/"bin/cosmocc","-O2","-I"+str(settings.dist),ROOT/"tests/native/https_client.c",settings.dist/"libquickjs.a","-lm","-lpthread","-ldl","-Wl,--wrap=_Exit,-u,__wrap__Exit,--wrap=socket,--wrap=close,--wrap=send,--wrap=recv,--wrap=js_malloc_rt,--wrap=js_malloc,--wrap=js_mallocz,--wrap=js_realloc","-o",scratch/"https-client-sdk.exe"],timeout=180)
         if args.node_compat:
@@ -302,6 +314,11 @@ def main():
                  timeout=180):
             check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
+        check("qjsc/cross-host-delivery",[args.standalone.resolve().parent/"delivery-standalone.exe"],contains="PASS runtime-delivery",timeout=60)
+        check("sdk/cross-host-lifecycle",[args.standalone.resolve().parent/"lifecycle-sdk.exe"],contains="PASS lifecycle-sdk",timeout=180)
+        stdio_command=[sys.executable,ROOT/"scripts/test_stdio.py","--qjs",qjs,"--compiled",args.standalone.resolve().parent/"stdio-standalone.exe","--sdk",args.standalone.resolve().parent/"stdio-sdk.exe"]
+        if args.node:stdio_command += ["--node",str(Path(args.node).resolve())]
+        check("custom/cross-host-stdio",stdio_command,contains="PASS stdio all entries",timeout=240)
         if args.node_compat:
             https_command=[sys.executable,ROOT/"scripts/test_https.py","--qjs",qjs,"--compiled",args.standalone.resolve().parent/"https-standalone.exe","--sdk",args.standalone.resolve().parent/"https-client-sdk.exe"]
             if args.node:https_command += ["--node",str(Path(args.node).resolve())]

@@ -10,6 +10,8 @@ extern "C" {
 /* Call once per new context. Install the normalizer on its runtime as well. */
 int js_cosmo_init_modules(JSContext *ctx);
 int js_cosmo_is_builtin(const char *name);
+/* Validate the full UTF-8 span before it crosses a C-string loader API. */
+int js_cosmo_validate_module_specifier(JSContext *,const char *,size_t);
 JSModuleDef *js_cosmo_load_builtin(JSContext *ctx, const char *name);
 char *js_cosmo_module_normalize(JSContext *ctx, const char *base,
                                const char *name, void *opaque);

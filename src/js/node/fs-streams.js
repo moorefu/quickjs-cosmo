@@ -1,6 +1,6 @@
 function createFileStreams(fs, streams, helpers) {
     const {Readable, Writable} = streams, {options, bytes, fd, mode, flags} = helpers;
-    const states = new WeakMap();
+    const states = instanceState('fs.stream');
     function setup(stream, name, supplied, writing) {
         const opts = options(supplied, {}), suppliedFd = opts.fd;
         if (opts.autoClose !== undefined && typeof opts.autoClose !== 'boolean') throw invalidType('autoClose', 'a boolean');

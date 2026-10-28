@@ -62,7 +62,7 @@ def main():
     if not files:
         raise ValueError("Missing declaration checks")
     for libraries in ("es2022", "es2022,dom"):
-        subprocess.run([str(compiler), "--noEmit", "--strict", "--target", "es2022", "--lib", libraries,
+        subprocess.run([str(compiler), "--noEmit", "--strict", "--target", "es2022", "--module", "es2022", "--lib", libraries,
                         *map(str, files)], cwd=ROOT, check=True, timeout=120)
     print("PASS TypeScript " + lock["version"] + ": declarations and positive/negative compile fixtures")
 

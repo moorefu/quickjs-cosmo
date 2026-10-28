@@ -10,6 +10,7 @@
 | `process.argv` | `[execPath, absoluteEntryPath, ...userArguments]`；参数内容原样保留 |
 | `process.execArgv` | 实际消费的解释器选项，不包含入口、用户参数或 loader 参数 |
 | 主模块 `import.meta.url` | 入口文件的标准 file URL；以 URL 规则编码空格、Unicode 和 Windows 路径 |
+| `import.meta.filename` / `dirname` | file URL 模块的绝对本机文件名及所在目录；非 file URL 不提供 |
 | `import.meta.main` | 入口为 true；被导入模块为 false |
 | `process.cwd()` | 宿主当前工作目录，与入口所在目录分开 |
 | 模块中的相对 import | 相对于导入模块；归一化内部 `.`/`..` 路径，等价路径共享实例 |
@@ -60,3 +61,5 @@ Worker 保持 QuickJS 的启动和消息协议；这不等于实现 Node Worker 
 - qjsc 与 Worker 的初始身份规则由 runtime_foundation、独立 entry APE 和 test_foundation.py 验证；全资源、异步销毁与取消继续在 M3/M6 扩展。
 
 差分报告保存到 `build/node-compat/`。`reference_only` 报告只证明 Node 基线 fixture 可执行，不是 QuickJS 验收报告。
+
+M6-01 补充：Windows 用户参数从固定 Nightly 的原始命令行解析器取得，保留盘符、反斜杠、空参数和引号。静态与动态模块说明符均在完整字符串边界拒绝 NUL；不得截断后加载前缀模块。具体标准流和 SDK 回收合同见 [全入口交付](M6_DELIVERY.md)。

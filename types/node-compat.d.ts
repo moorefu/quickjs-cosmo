@@ -1,4 +1,11 @@
 // The implemented ESM subset. This file does not declare unimplemented Node APIs.
+interface ImportMeta {
+    url: string;
+    main: boolean;
+    /** Present for file: modules, including a compiled program's main module. */
+    filename?: string;
+    dirname?: string;
+}
 declare module 'node:buffer' {
     export type BufferEncoding = 'ascii' | 'utf8' | 'utf-8' | 'utf16le' | 'utf-16le' |
         'ucs2' | 'ucs-2' | 'base64' | 'base64url' | 'latin1' | 'binary' | 'hex';
@@ -169,8 +176,12 @@ declare module 'events' { export * from 'node:events'; export { default } from '
 
 declare module 'node:process' {
     import { EventEmitter } from 'node:events';
+    import {Readable,Writable} from 'node:stream';
+    export interface InputStream extends Readable {readonly fd:0;readonly isTTY?:true;ref():this;unref():this;}
+    export interface OutputStream extends Writable {readonly fd:1|2;readonly isTTY?:true;}
     export interface ProcessEnv { [name: string]: string | undefined; }
     export interface Process extends EventEmitter {
+        readonly stdin:InputStream;readonly stdout:OutputStream;readonly stderr:OutputStream;
         argv: string[];
         execArgv: string[];
         execPath: string;
@@ -189,6 +200,7 @@ declare module 'node:process' {
     }
     export const argv: Process['argv'], execArgv: Process['execArgv'], execPath: string, env: ProcessEnv;
     export const pid: number, ppid: number, platform: string, arch: string, versions: Process['versions'];
+    export const stdin:InputStream,stdout:OutputStream,stderr:OutputStream;
     export let exitCode: Process['exitCode'];
     export const cwd: Process['cwd'], chdir: Process['chdir'], exit: Process['exit'];
     export const uptime: Process['uptime'], hrtime: Process['hrtime'];
