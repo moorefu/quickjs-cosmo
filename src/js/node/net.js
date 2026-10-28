@@ -22,25 +22,27 @@ function createNet(native,dns,process,streams) {
         const code=binding.write(s.handle,write.data.buffer,write.data.byteOffset+write.offset,write.last);
         if(code){s.write=null;write.callback(systemError(code,'write'));}
     }
-    function closeAttempt(s){if(s.attemptTimer)clearTimeout(s.attemptTimer);s.attemptTimer=null;if(s.handle)binding.close(s.handle);s.handle=null;s.connected=false;}
+    function closeAttempt(s){if(s.attemptTimer)clearTimeout(s.attemptTimer);s.attemptTimer=null;const pending=s.handle?binding.close(s.handle):0;s.handle=null;s.connected=false;return pending;}
     function failedAttempt(socket,failure){
         const s=state(socket);closeAttempt(s);s.errors.push(failure);
         if(s.auto && s.addresses.length){socket.emit('connectionAttemptFailed',failure.address,s.port,s.currentFamily,failure);attempt(socket);return;}
         if(s.errors.length>1){const e=new AggregateError(s.errors,'');e.code=s.errors[0].code;socket.destroy(e);}else socket.destroy(failure);
     }
     function onEvent(socket,generation,type,data,code,operation){
-        const s=state(socket);if(socket.destroyed||generation!==s.generation)return;
+        const s=state(socket);if(type===7){if(s.close&&generation===s.closingGeneration){const done=s.close;s.close=null;done();}return;}if(socket.destroyed||generation!==s.generation)return;
         if(type===0){
             if(s.attemptTimer)clearTimeout(s.attemptTimer);s.attemptTimer=null;s.connecting=false;s.connected=true;Object.assign(s,data);armTimeout(socket);
             if(s.noDelay!==undefined)socket.setNoDelay(s.noDelay);if(s.keepAlive!==undefined)socket.setKeepAlive(s.keepAlive,s.keepAliveDelay*1000);
             if(socket.destroyed)return;
             socket.emit('connect');socket.emit('ready');
+            if(s.tls){s.connected=false;return;}
             if(s.construct){const done=s.construct;s.construct=null;done();}writeNext(socket);if(s.wantRead&&s.handle)binding.read(s.handle);
         }else if(type===1){s.read+=data.byteLength;armTimeout(socket);socket.push(Buffer.from(data));}
         else if(type===2)socket.push(null);
         else if(type===3){if(s.write){s.write.offset+=s.write.last;s.write.sent=false;armTimeout(socket);writeNext(socket);}}
         else if(type===4){if(s.final){const done=s.final;s.final=null;done();}}
-        else if(type===5){const failure=systemError(code,['connect','read','write'][operation]??'read',operation===0?s.currentAddress:undefined,s.port);if(s.connecting)failedAttempt(socket,failure);else socket.destroy(failure);}
+        else if(type===5){const failure=typeof data==='string'?error(data,'TLS handshake or record validation failed'):systemError(code,['connect','read','write'][operation]??'read',operation===0?s.currentAddress:undefined,s.port);if(s.connecting)failedAttempt(socket,failure);else socket.destroy(failure);}
+        else if(type===6){s.connected=true;s.tls.ready=true;s.tls.secure(data);if(socket.destroyed)return;if(s.construct){const done=s.construct;s.construct=null;done();}writeNext(socket);if(s.wantRead&&s.handle)binding.read(s.handle);}
     }
     function attempt(socket){
         const s=state(socket);if(socket.destroyed)return;
@@ -48,7 +50,7 @@ function createNet(native,dns,process,streams) {
         socket.autoSelectFamilyAttemptedAddresses.push(next.address+':'+s.port);
         socket.emit('connectionAttempt',next.address,s.port,next.family);
         const generation=s.generation;
-        let result;try{result=binding.start(next.address,s.port,next.family,s.bindAddress??null,s.bindPort??0,(...args)=>onEvent(socket,generation,...args));}
+        let result;try{result=binding.start(next.address,s.port,next.family,s.bindAddress??null,s.bindPort??0,(...args)=>onEvent(socket,generation,...args),s.tls?.settings);}
         catch(e){socket.destroy(e);return;}
         if(result.error){process.nextTick(()=>failedAttempt(socket,systemError(result.error,'connect',next.address,s.port)));return;}
         s.handle=result.handle;if(!s.referenced)binding.ref(s.handle,0);
@@ -66,11 +68,11 @@ function createNet(native,dns,process,streams) {
         if(options.keepAlive!==undefined)this.setKeepAlive(options.keepAlive,options.keepAliveInitialDelay);
     }
     Object.setPrototypeOf(Socket.prototype,Duplex.prototype);Object.setPrototypeOf(Socket,Duplex);
-    Socket.prototype._construct=function(callback){const s=state(this);if(this.destroyed||!s.connecting)callback();else s.construct=callback;};
+    Socket.prototype._construct=function(callback){const s=state(this);if(this.destroyed||!s.connecting&&!(s.tls&&!s.tls.ready&&s.handle))callback();else s.construct=callback;};
     Socket.prototype._read=function(){const s=state(this);s.wantRead=true;if(s.handle)binding.read(s.handle);};
-    Socket.prototype._write=function(data,encoding,callback){const s=state(this);if(!s.connected&&!s.connecting){callback(error('ERR_SOCKET_CLOSED','Socket is closed'));return;}s.write={data:Buffer.from(data.buffer,data.byteOffset,data.byteLength),offset:0,last:0,sent:false,callback};armTimeout(this);writeNext(this);};
+    Socket.prototype._write=function(data,encoding,callback){const s=state(this);if(!s.connected&&!s.connecting&&!(s.tls&&!s.tls.ready&&s.handle)){callback(error('ERR_SOCKET_CLOSED','Socket is closed'));return;}s.write={data:Buffer.from(data.buffer,data.byteOffset,data.byteLength),offset:0,last:0,sent:false,callback};armTimeout(this);writeNext(this);};
     Socket.prototype._final=function(callback){const s=state(this);if(!s.handle){callback();return;}s.final=callback;const code=binding.end(s.handle);if(code){s.final=null;callback(systemError(code,'shutdown'));}};
-    Socket.prototype._destroy=function(failure,callback){const s=state(this);s.connecting=false;s.generation++;closeAttempt(s);if(s.timer)clearTimeout(s.timer);s.timer=null;s.write=null;s.final=null;s.addresses=[];for(const name of ['localAddress','localPort','localFamily','remoteAddress','remotePort','remoteFamily'])delete s[name];callback(failure);};
+    Socket.prototype._destroy=function(failure,callback){const s=state(this);s.connecting=false;s.closingGeneration=s.generation;s.generation++;const pending=closeAttempt(s);if(s.timer)clearTimeout(s.timer);s.timer=null;s.write=null;s.final=null;s.addresses=[];for(const name of ['localAddress','localPort','localFamily','remoteAddress','remotePort','remoteFamily'])delete s[name];if(pending)s.close=()=>callback(failure);else callback(failure);};
     Socket.prototype.destroy=function(failure){const s=state(this),value=Duplex.prototype.destroy.call(this,failure);if(s.construct){const done=s.construct;s.construct=null;done();}return value;};
     Socket.prototype.connect=function(...args){
         const s=state(this);if(s.connecting)throw error('ERR_SOCKET_CONNECTING');if(this.destroyed)throw error('ERR_SOCKET_CLOSED','Create a new Socket after close');
@@ -120,7 +122,8 @@ function createNet(native,dns,process,streams) {
         remoteAddress:{get(){return state(this).remoteAddress;}},remotePort:{get(){return state(this).remotePort;}},remoteFamily:{get(){return state(this).remoteFamily;}}
     });
     function createConnection(...args){return new Socket(args[0]&&typeof args[0]==='object'?args[0]:{}).connect(...args);}
-    return {Socket,createConnection,connect:createConnection,isIP:dns.isIP,isIPv4:value=>dns.isIP(value)===4,isIPv6:value=>dns.isIP(value)===6,
+    const api={Socket,createConnection,connect:createConnection,isIP:dns.isIP,isIPv4:value=>dns.isIP(value)===4,isIPv6:value=>dns.isIP(value)===6,
         getDefaultAutoSelectFamily:()=>defaultAuto,setDefaultAutoSelectFamily(value){if(typeof value!=='boolean')throw invalidType('value','a boolean');defaultAuto=value;},
         getDefaultAutoSelectFamilyAttemptTimeout:()=>defaultAttemptTimeout,setDefaultAutoSelectFamilyAttemptTimeout(value){integer(value,'value',1,0x7fffffff);defaultAttemptTimeout=Math.max(10,value);}};
+    return {api,attachTLS(socket,settings,secure){streams.socketClose(socket);state(socket).tls={settings,secure,ready:false};}};
 }

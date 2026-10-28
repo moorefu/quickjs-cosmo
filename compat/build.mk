@@ -13,6 +13,7 @@ QJS_COMPAT_OBJS += $(OBJDIR)/qjs-child-process.o $(OBJDIR)/qjs-process-core.o $(
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-process-async.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-dns.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-net.o
+QJS_COMPAT_OBJS += $(OBJDIR)/qjs-tls.o
 QJS_COSMO_NATIVE ?= $(shell python3 "$(QJS_COSMO_ROOT)/scripts/build_config.py" native_source)
 ifneq ($(wildcard $(QJS_COSMO_COMPAT)/libc/intrin/sigproc.c),)
 QJS_COMPAT_CFLAGS = -DQJS_COSMO_SIGPROC
@@ -40,7 +41,12 @@ $(OBJDIR)/qjs-tasks.o: $(QJS_COSMO_ROOT)/native/tasks.c $(QJS_COSMO_ROOT)/native
 $(OBJDIR)/qjs-dns.o: $(QJS_COSMO_ROOT)/native/net/dns.c $(QJS_COSMO_ROOT)/native/net/net.h $(QJS_COSMO_ROOT)/native/tasks.h $(QJS_COSMO_ROOT)/native/process/binding.h quickjs.h | $(OBJDIR)
 	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -c -o $@ $<
 
-$(OBJDIR)/qjs-net.o: $(QJS_COSMO_ROOT)/native/net/socket.c $(QJS_COSMO_ROOT)/native/net/net.h $(QJS_COSMO_ROOT)/native/tasks.h $(QJS_COSMO_ROOT)/native/module_registry.h $(QJS_COSMO_ROOT)/native/process/binding.h quickjs.h | $(OBJDIR)
+$(OBJDIR)/qjs-tls.o: $(QJS_COSMO_ROOT)/build/native/tls/qjs-tls.o | $(OBJDIR)
+	cp $< $@
+	mkdir -p $(OBJDIR)/.aarch64
+	cp $(QJS_COSMO_ROOT)/build/native/tls/.aarch64/qjs-tls.o $(OBJDIR)/.aarch64/
+
+$(OBJDIR)/qjs-net.o: $(QJS_COSMO_ROOT)/native/net/socket.c $(QJS_COSMO_ROOT)/native/tls/backend.h $(QJS_COSMO_ROOT)/native/net/net.h $(QJS_COSMO_ROOT)/native/tasks.h $(QJS_COSMO_ROOT)/native/module_registry.h $(QJS_COSMO_ROOT)/native/process/binding.h quickjs.h | $(OBJDIR)
 	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -I$(QJS_COSMO_NATIVE) -c -o $@ $<
 
 $(OBJDIR)/qjs-child-process.o: $(QJS_COSMO_ROOT)/native/process/binding.c $(QJS_COSMO_ROOT)/native/process/binding.h $(QJS_COSMO_ROOT)/native/process/core.h $(QJS_COSMO_ROOT)/native/process/async.h quickjs.h | $(OBJDIR)

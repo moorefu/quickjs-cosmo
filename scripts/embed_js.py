@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CORE_SOURCES = ("src/js/internal/errors.js", "src/js/internal/encoding.js", "src/js/node/buffer.js",
                 "src/js/node/events.js", "src/js/node/process.js", "src/js/node/path-adapter.js",
                 "src/js/node/os.js", "src/js/node/util.js", "src/js/node/assert.js", "src/js/node/console.js",
-                "src/js/internal/abort.js", "src/js/node/timers.js", "src/js/node/stream.js", "src/js/node/dns.js", "src/js/node/net.js", "src/js/node/url.js", "src/js/node/fs-async.js", "src/js/node/fs-streams.js", "src/js/node/fs.js", "src/js/node/crypto-keys.js", "src/js/node/crypto-cipher.js", "src/js/node/crypto.js",
+                "src/js/internal/abort.js", "src/js/node/timers.js", "src/js/node/stream.js", "src/js/node/dns.js", "src/js/node/net.js", "src/js/node/tls.js", "src/js/node/url.js", "src/js/node/fs-async.js", "src/js/node/fs-streams.js", "src/js/node/fs.js", "src/js/node/crypto-keys.js", "src/js/node/crypto-cipher.js", "src/js/node/crypto.js",
                 "src/js/internal/compression-constants.js", "src/js/node/zlib.js", "src/js/node/child-process-async.js", "src/js/node/child_process.js")
 
 
@@ -39,6 +39,7 @@ path = createPathModule(process);
 const os = createOs(native, process, path);
 const url = createURLModule(native, process, path, dns.isIP);
 dns.setDomainNormalizer(url.domainToASCII);
+const tls = createTLS(net,dns,url);
 const fs = createFs(native, path, streams.api);
 const crypto = createCrypto(native, streams.api, streams.decoder);
 const compression = createCompression(native, streams.api);
@@ -68,7 +69,7 @@ return {
     'node:zlib': exportObject(compression.api), 'cosmo:compression': exportObject(compression.extensions),
     'node:child_process': exportObject(childProcess),
     'node:dns': exportObject(dns.api), 'node:dns/promises': exportObject(dns.promises),
-    'node:net': exportObject(net),
+    'node:net': exportObject(net.api), 'node:tls': exportObject(tls),
     'node:url': exportObject(url),
     _drainTicks: scheduler.drainTicks,
     _beforeExit: processStates.get(process).beforeExit,

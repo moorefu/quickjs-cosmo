@@ -7,6 +7,8 @@
 #include "policy.h"
 #include "third_party/mbedtls/entropy.h"
 #include "third_party/mbedtls/ssl_ciphersuites.h"
+/* Reuse the pinned, patched name verifier without exporting a second matcher. */
+#include "third_party/mbedtls/x509_crt.c"
 static int random_bytes(void *unused,unsigned char *data,size_t size){
     while(size){
         ssize_t count=getrandom(data,size,IsLinux()?GRND_RANDOM:0);
@@ -18,6 +20,7 @@ static int random_bytes(void *unused,unsigned char *data,size_t size){
 }
 static int verify_identity(void *opaque,mbedtls_x509_crt *cert,int depth,uint32_t *flags){
     QjsTlsPolicy *policy=opaque;
+    if(!depth && !policy->ip_length)x509_crt_verify_name(cert,policy->identity,flags);
     if(!depth && policy->ip_length){
         *flags|=MBEDTLS_X509_BADCERT_CN_MISMATCH;
         for(const mbedtls_x509_sequence *san=&cert->subject_alt_names;san;san=san->next)
@@ -60,4 +63,10 @@ int qjs_tls_policy_setup(QjsTlsPolicy *policy,mbedtls_ssl_context *ssl){
     /* IP identities are checked unconditionally by verify_identity, and must
        not be sent as a DNS SNI extension. DNS uses the library's name checks. */
     return policy->ip_length?0:mbedtls_ssl_set_hostname(ssl,policy->identity);
+}
+int qjs_tls_policy_setup_sni(QjsTlsPolicy *policy,mbedtls_ssl_context *ssl,const char *servername){
+    if(!policy->identity||!*policy->identity)return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
+    int rc=mbedtls_ssl_setup(ssl,&policy->config);if(rc)return rc;
+    /* Identity is always verified by the leaf callback, independently of SNI. */
+    return servername&&*servername?mbedtls_ssl_set_hostname(ssl,servername):0;
 }

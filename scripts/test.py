@@ -155,6 +155,14 @@ def main():
         if not valid:
             print("FAIL generated C has no bytecode array", flush=True)
     if args.compile:
+        check("qjsc/compile-tls-client", [qjsc,"-m","-o",scratch/"tls-client-standalone.exe",ROOT/"tests/node-compat/tls.mjs"],timeout=180)
+        check("qjsc/compile-tls-worker", [qjsc,"-m","-D",ROOT/"tests/fixtures/tls-worker.mjs","-o",scratch/"tls-worker-standalone.exe",ROOT/"tests/runtime_tls.mjs"],timeout=180)
+        check("sdk/compile-tls-client", [settings.toolchain/"bin/cosmocc","-O2","-I"+str(settings.dist),ROOT/"tests/native/tls_client.c",settings.dist/"libquickjs.a","-lm","-lpthread","-ldl",
+            "-Wl,--wrap=_Exit,-u,__wrap__Exit","-Wl,--wrap=socket,--wrap=close,--wrap=send,--wrap=recv,--wrap=getrandom,--wrap=js_malloc_rt,--wrap=js_malloc,--wrap=js_mallocz","-o",scratch/"tls-client-sdk.exe"],timeout=180)
+        if args.node_compat:
+            tls_client=[sys.executable,ROOT/"scripts/test_tls_client.py","--qjs",qjs,"--compiled",scratch/"tls-client-standalone.exe","--worker",scratch/"tls-worker-standalone.exe","--sdk",scratch/"tls-client-sdk.exe"]
+            if args.node:tls_client += ["--node",str(Path(args.node).resolve())]
+            check("custom/tls-client-all-entries",tls_client,contains="PASS TLS client timeout",timeout=300)
         if check("sdk/compile-tls-audit", [sys.executable, ROOT / "scripts/probe_tls.py", "--offline", "--output", scratch], timeout=600):
             check("sdk/tls-security-unit", [scratch / "tls-security-sdk.exe"], contains="PASS tls-security-unit", timeout=120)
             if args.node_compat:
@@ -278,6 +286,10 @@ def main():
                  timeout=180):
             check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
+        if args.node_compat:
+            tls_client=[sys.executable,ROOT/"scripts/test_tls_client.py","--qjs",qjs,"--compiled",args.standalone.resolve().parent/"tls-client-standalone.exe","--worker",args.standalone.resolve().parent/"tls-worker-standalone.exe","--sdk",args.standalone.resolve().parent/"tls-client-sdk.exe"]
+            if args.node:tls_client += ["--node",str(Path(args.node).resolve())]
+            check("custom/cross-host-tls-client",tls_client,contains="PASS TLS client timeout",timeout=300)
         check("sdk/cross-host-tls-security", [args.standalone.resolve().parent / "tls-security-sdk.exe"], contains="PASS tls-security-unit", timeout=120)
         if args.node_compat:
             tls_command=[sys.executable, ROOT / "scripts/test_tls_security.py", "--probe", args.standalone.resolve().parent / "tls-policy-sdk.exe"]

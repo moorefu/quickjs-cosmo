@@ -16,9 +16,11 @@
 #include "../tasks.h"
 #include "../module_registry.h"
 #include "../process/binding.h"
+#include "../tls/backend.h"
+#include "libc/str/str.h"
 
 enum {BLOCK=65536,SOCKET_LIMIT=32};
-enum {CONNECTED,DATA,READ_EOF,WRITE_DONE,END_DONE,ERROR_EVENT};
+enum {CONNECTED,DATA,READ_EOF,WRITE_DONE,END_DONE,ERROR_EVENT,SECURE_EVENT,CLOSED_EVENT};
 typedef struct Connection Connection;
 typedef struct {Connection *connection;} Guard;
 struct Connection {
@@ -28,6 +30,8 @@ struct Connection {
     int input_end,input_ended,end_sent,fatal,fatal_sent,operation;
     size_t input_length,input_offset,output_length;uint8_t input[BLOCK],output[BLOCK];
     void (*wake)(void *);void *waker;
+    void *tls_memory;const char *identity,*sni,*ca;size_t ca_length;
+    int secure,secure_sent,done;char tls_error[64],cipher[96];
 };
 static pthread_mutex_t registry_lock=PTHREAD_MUTEX_INITIALIZER;
 static Connection *registry;static JSClassID guard_class;static pthread_once_t once=PTHREAD_ONCE_INIT;
@@ -46,9 +50,54 @@ static int ready_error(int fd){
     if(IsXnu())code=__errno_xnu2linux(code);
     return code;
 }
+static void tls_failure(Connection *c,const QjsTlsBackend *api,QjsTls *tls){
+    pthread_mutex_lock(&c->mutex);strlcpy(c->tls_error,api->error(tls),sizeof(c->tls_error));fatal(c,EPROTO,1);pthread_mutex_unlock(&c->mutex);
+}
+static void pump_tls(Connection *c){
+    const QjsTlsBackend *api=qjs_tls_backend_api();QjsTls *tls=NULL;int handshake_done=0;
+    for(;;){
+        pthread_mutex_lock(&c->mutex);
+        int stop=c->stopping,connecting=c->connecting,connected=c->connected,failed=c->fatal;
+        int writing=c->write_pending,reading=c->want_read&&!c->read_eof&&!c->output_length;
+        int ending=c->input_end&&!writing&&!c->input_ended;
+        size_t offset=c->input_offset,length=c->input_length;
+        pthread_mutex_unlock(&c->mutex);if(stop)break;
+        int events=0;
+        if(!failed&&connecting)events=POLLOUT;
+        else if(!failed&&connected){
+            if(!tls)tls=api->create(c->tls_memory,QJS_TLS_ARENA,c->fd,c->identity,c->sni,(const unsigned char *)c->ca,c->ca_length);
+            if(!handshake_done){int rc=api->handshake(tls);if(rc==QJS_TLS_FAILURE)tls_failure(c,api,tls);else if(!rc){handshake_done=1;pthread_mutex_lock(&c->mutex);c->secure=1;strlcpy(c->cipher,api->cipher(tls),sizeof(c->cipher));notify(c);pthread_mutex_unlock(&c->mutex);}events=api->want_write(tls)?POLLOUT:POLLIN;}
+            else {
+                if(writing){int rc=api->write(tls,c->input+offset,length-offset);
+                    if(rc==QJS_TLS_FAILURE){tls_failure(c,api,tls);failed=1;}
+                    else if(rc>=0){pthread_mutex_lock(&c->mutex);c->input_offset+=rc;if(c->input_offset==c->input_length){c->write_pending=0;c->write_done=1;notify(c);}pthread_mutex_unlock(&c->mutex);}
+                    events|=api->want_write(tls)?POLLOUT:POLLIN;
+                }
+                if(reading&&!failed){int rc=api->read(tls,c->output,BLOCK);
+                    if(rc==QJS_TLS_FAILURE){tls_failure(c,api,tls);failed=1;}
+                    else if(rc>=0){pthread_mutex_lock(&c->mutex);if(rc)c->output_length=rc;else c->read_eof=1;notify(c);pthread_mutex_unlock(&c->mutex);}
+                    if(rc==QJS_TLS_AGAIN)events|=api->want_write(tls)?POLLOUT:POLLIN;
+                }
+                if(ending&&!failed){int rc=api->end(tls);
+                    if(rc==QJS_TLS_FAILURE)tls_failure(c,api,tls);
+                    else if(!rc){pthread_mutex_lock(&c->mutex);if(shutdown(c->fd,SHUT_WR)<0&&errno!=ENOTCONN)fatal(c,errno,2);else {c->input_ended=1;notify(c);}pthread_mutex_unlock(&c->mutex);}
+                    else events|=api->want_write(tls)?POLLOUT:POLLIN;
+                }
+            }
+        }
+        struct pollfd fd={events?c->fd:-1,events,0};int rc=poll(&fd,1,10),saved=errno;
+        pthread_mutex_lock(&c->mutex);
+        if(rc<0&&saved!=EINTR)fatal(c,saved,connecting?0:1);
+        if(connecting&&fd.revents){int code=ready_error(c->fd);if(code)fatal(c,code,0);else {c->connecting=0;c->connected=1;notify(c);}}
+        pthread_mutex_unlock(&c->mutex);
+    }
+    if(tls)api->free(tls);
+    pthread_mutex_lock(&c->mutex);close(c->fd);c->fd=-1;c->done=1;notify(c);pthread_mutex_unlock(&c->mutex);
+}
 static void *pump(void *opaque){
     Connection *c=opaque;sigset_t mask;sigemptyset(&mask);sigaddset(&mask,SIGPIPE);pthread_sigmask(SIG_BLOCK,&mask,NULL);
     pthread_setcancelstate(PTHREAD_CANCEL_DISABLE,NULL);
+    if(c->tls_memory){pump_tls(c);return NULL;}
     for(;;){
         pthread_mutex_lock(&c->mutex);
         if(c->stopping){pthread_mutex_unlock(&c->mutex);break;}
@@ -91,6 +140,8 @@ static void dispose(Connection *c){
     pthread_mutex_lock(&c->mutex);c->stopping=1;pthread_mutex_unlock(&c->mutex);
     if(c->thread_started)pthread_join(c->thread,NULL);else if(c->fd>=0)close(c->fd);
     JSRuntime *rt=c->rt;JSContext *ctx=c->ctx;JSValue callback=c->callback,handle=c->handle;
+    if(c->tls_memory){explicit_bzero(c->tls_memory,QJS_TLS_ARENA);js_free_rt(rt,c->tls_memory);explicit_bzero(c->input,sizeof(c->input));explicit_bzero(c->output,sizeof(c->output));}
+    JS_FreeCString(ctx,c->identity);JS_FreeCString(ctx,c->sni);JS_FreeCString(ctx,c->ca);
     pthread_mutex_destroy(&c->mutex);js_free_rt(rt,c);JS_FreeValue(ctx,handle);JS_FreeValue(ctx,callback);JS_FreeContext(ctx);
 }
 static void finalize(JSRuntime *rt,JSValue value){Guard *g=JS_GetOpaque(value,guard_class);if(g){if(g->connection)dispose(g->connection);js_free_rt(rt,g);}}
@@ -117,6 +168,18 @@ static JSValue start(JSContext *ctx,JSValueConst self,int argc,JSValueConst *arg
     Connection *c=js_mallocz(ctx,sizeof(*c));if(!c){JS_FreeValue(ctx,result);return JS_EXCEPTION;}
     c->rt=rt;c->ctx=JS_DupContext(ctx);c->callback=JS_DupValue(ctx,args[5]);c->handle=JS_UNDEFINED;c->fd=-1;c->referenced=1;
     pthread_mutex_init(&c->mutex,NULL);
+    if(argc>6&&!JS_IsUndefined(args[6])){
+        JSValue identity=JS_GetPropertyUint32(ctx,args[6],0),sni=JS_GetPropertyUint32(ctx,args[6],1),ca=JS_GetPropertyUint32(ctx,args[6],2);
+        if(!JS_IsException(identity)&&!JS_IsException(sni)&&!JS_IsException(ca)){
+            size_t n;c->identity=JS_ToCStringLen(ctx,&n,identity);
+            if(c->identity&&(!n||n>253||memchr(c->identity,0,n)))JS_ThrowTypeError(ctx,"Invalid TLS identity");
+            if(!JS_HasException(ctx)&&!JS_IsNull(sni)){c->sni=JS_ToCStringLen(ctx,&n,sni);if(c->sni&&(!n||n>253||memchr(c->sni,0,n)))JS_ThrowTypeError(ctx,"Invalid TLS SNI");}
+            if(!JS_HasException(ctx)&&!JS_IsNull(ca)){c->ca=JS_ToCStringLen(ctx,&c->ca_length,ca);if(c->ca&&(!c->ca_length||c->ca_length>4*1024*1024||memchr(c->ca,0,c->ca_length)))JS_ThrowTypeError(ctx,"Invalid TLS CA");}
+        }
+        JS_FreeValue(ctx,identity);JS_FreeValue(ctx,sni);JS_FreeValue(ctx,ca);
+        if(JS_HasException(ctx)){dispose(c);JS_FreeValue(ctx,result);return JS_EXCEPTION;}
+        c->tls_memory=js_mallocz(ctx,QJS_TLS_ARENA);if(!c->tls_memory){error=ENOMEM;goto failed;}
+    }
     if(js_cosmo_tasks_waker(rt,&c->wake,&c->waker)<0){error=EINVAL;goto failed;}
     c->fd=socket(family==4?AF_INET:AF_INET6,SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK,IPPROTO_TCP);
     if(c->fd<0){error=errno;goto failed;}
@@ -140,7 +203,7 @@ enum {READ_CONTROL,WRITE_CONTROL,END_CONTROL,CLOSE_CONTROL,REF_CONTROL,NODELAY_C
 static JSValue control(JSContext *ctx,JSValueConst self,int argc,JSValueConst *args,int magic){
     if(!argc)return JS_ThrowTypeError(ctx,"Missing socket handle");Guard *g=JS_GetOpaque2(ctx,args[0],guard_class);if(!g)return JS_EXCEPTION;
     Connection *c=g->connection;if(!c)return JS_NewInt32(ctx,magic==WRITE_CONTROL?EPIPE:0);
-    if(magic==CLOSE_CONTROL){dispose(c);return JS_NewInt32(ctx,0);}
+    if(magic==CLOSE_CONTROL){if(c->tls_memory){pthread_mutex_lock(&c->mutex);c->stopping=1;pthread_mutex_unlock(&c->mutex);return JS_NewInt32(ctx,1);}dispose(c);return JS_NewInt32(ctx,0);}
     uint8_t *bytes=NULL;size_t length=0;int value=0,delay=0;
     if(magic==WRITE_CONTROL){
         if(argc<4)return JS_ThrowTypeError(ctx,"Missing TCP data span");size_t size;int64_t offset,count;
@@ -206,7 +269,7 @@ JSValue js_cosmo_net_api(JSContext *ctx){
     for(int i=0;i<7;i++)if(JS_SetPropertyStr(ctx,api,names[i],JS_NewCFunctionMagic(ctx,control,names[i],1,JS_CFUNC_generic_magic,i))<0){JS_FreeValue(ctx,api);return JS_EXCEPTION;}return api;
 }
 int js_cosmo_net_pending(JSRuntime *rt){
-    int pending=0;pthread_mutex_lock(&registry_lock);for(Connection *c=registry;c;c=c->next)if(c->rt==rt){pthread_mutex_lock(&c->mutex);pending|=c->referenced;pthread_mutex_unlock(&c->mutex);}pthread_mutex_unlock(&registry_lock);return pending;
+    int pending=0;pthread_mutex_lock(&registry_lock);for(Connection *c=registry;c;c=c->next)if(c->rt==rt){pthread_mutex_lock(&c->mutex);pending|=c->referenced||(c->tls_memory&&c->stopping);pthread_mutex_unlock(&c->mutex);}pthread_mutex_unlock(&registry_lock);return pending;
 }
 int js_cosmo_net_poll(JSContext *owner){
     JSRuntime *rt=JS_GetRuntime(owner);Connection *chosen=NULL;int type=-1,code=0,operation=0;size_t length=0;
@@ -214,7 +277,9 @@ int js_cosmo_net_poll(JSContext *owner){
     for(Connection *c=registry;c;c=c->next)if(c->rt==rt){
         if(js_cosmo_scheduler_stopped(c->ctx)){chosen=c;type=-2;break;}
         pthread_mutex_lock(&c->mutex);
-        if(c->connected&&!c->connect_sent){type=CONNECTED;c->connect_sent=1;}
+        if(c->tls_memory&&c->stopping){if(c->done)type=CLOSED_EVENT;}
+        else if(c->connected&&!c->connect_sent){type=CONNECTED;c->connect_sent=1;}
+        else if(c->secure&&!c->secure_sent){type=SECURE_EVENT;c->secure_sent=1;}
         else if(c->fatal&&!c->fatal_sent){type=ERROR_EVENT;code=c->fatal;operation=c->operation;c->fatal_sent=1;}
         else if(c->write_done){type=WRITE_DONE;c->write_done=0;}
         else if(c->output_length){type=DATA;length=c->output_length;}
@@ -226,8 +291,11 @@ int js_cosmo_net_poll(JSContext *owner){
     pthread_mutex_unlock(&registry_lock);if(!chosen)return 0;if(type==-2){dispose(chosen);return 1;}
     JSContext *ctx=JS_DupContext(chosen->ctx);JSValue callback=JS_DupValue(ctx,chosen->callback),data=JS_UNDEFINED;
     if(type==CONNECTED)data=info(ctx,chosen);
+    else if(type==SECURE_EVENT)data=JS_NewString(ctx,chosen->cipher);
+    else if(type==ERROR_EVENT&&*chosen->tls_error)data=JS_NewString(ctx,chosen->tls_error);
     else if(type==DATA){data=JS_NewArrayBufferCopy(ctx,chosen->output,length);if(!JS_IsException(data)){pthread_mutex_lock(&chosen->mutex);chosen->output_length=0;chosen->want_read=0;pthread_mutex_unlock(&chosen->mutex);}}
     if(JS_IsException(data)){dispose(chosen);js_cosmo_scheduler_error(ctx);JS_FreeValue(ctx,callback);JS_FreeContext(ctx);return 1;}
+    if(type==CLOSED_EVENT)dispose(chosen);
     JSValue args[]={JS_NewInt32(ctx,type),data,JS_NewInt32(ctx,code),JS_NewInt32(ctx,operation)};
     JSValue returned=JS_Call(ctx,callback,JS_UNDEFINED,4,args);if(JS_IsException(returned))js_cosmo_scheduler_error(ctx);JS_FreeValue(ctx,returned);
     for(int i=0;i<4;i++)JS_FreeValue(ctx,args[i]);JS_FreeValue(ctx,callback);js_cosmo_checkpoint(ctx,1);JS_FreeContext(ctx);return 1;

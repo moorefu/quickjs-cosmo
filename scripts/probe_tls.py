@@ -40,11 +40,13 @@ def main():
         command=[*common,*files,ROOT/'compat/host_exit.c',backend/'audit-mbedtls.a',wrap,'-Wl,--wrap=_Exit,-u,__wrap__Exit','-lpthread','-o',output/name]
         run(command,ROOT);commands.append(list(map(str,command)))
     sources=['tests/native/tls_security.c','tests/native/tls_policy.c','native/tls/policy.c','native/tls/policy.h',
+             'native/tls/backend.c','native/tls/backend.h','scripts/build_tls_client.py','scripts/test_tls_client.py','tests/native/tls_client.c',
+             'tests/node-compat/tls.mjs','tests/node/tls-api.mjs','tests/runtime_tls.mjs','tests/fixtures/tls-worker.mjs',
              'native/crypto/aead.c','native/tls/mbedtls-security.patch','tests/fixtures/tls-certificates.mjs','scripts/test_tls_security.py','scripts/probe_tls.py']
     report=dict(format=1,lock_sha256=sha256(ROOT/'native/tls/security.json'),backend_fingerprint=manifest['fingerprint'],
                 sources={name:sha256(ROOT/name) for name in sources},
                 binaries={(output/name).relative_to(ROOT).as_posix():sha256(output/name) for name in ['tls-security-sdk.exe','tls-policy-sdk.exe']},
-                sdk=sdk_boundary(settings),commands=commands,scope='Private audit probes; no general TLS SDK API; public TLS awaits M5-03')
+                sdk=sdk_boundary(settings),commands=commands,scope='Audited TLS1.2 JS client; private localized backend; no general TLS SDK API')
     (ROOT/'build/native/tls/probes.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf8')
     print('PASS TLS security probe build and SDK symbol boundary for both architectures')
 

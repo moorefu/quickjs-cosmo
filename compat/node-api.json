@@ -125,10 +125,10 @@
     },
     {
       "id": "TLS-001",
-      "status": "planned",
-      "file": null,
+      "status": "differential",
+      "file": "tests/node/tls-api.mjs",
       "task": "M5-03",
-      "description": "TLS verification, protocols, trust roots and failure cleanup",
+      "description": "scripts/test_tls_client.py: same-source Node TLS comparison, SNI/IP SAN, certificates, cancellation, Worker/qjsc/SDK and fault cleanup",
       "timeout_seconds": 30
     },
     {
@@ -21645,27 +21645,393 @@
       "entries": [
         {
           "name": "connect",
-          "status": "planned",
+          "status": "partial",
           "task": "M5-03",
           "parameters": "TLS1.2 client scope, verified CA/identity rules and audited suites",
+          "evidence": [
+            {
+              "test": "TLS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source API differential; scripts/test_tls_client.py for 12 local Node/qjs cases and Worker/qjsc/SDK; tests/native/tls_client.c for faults/GC/teardown; docs/M5_TLS_CLIENT.md"
+            }
+          ],
           "tests": [
             "TLS-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "TLS1.2 client only, four audited ECDHE AES-GCM suites, mandatory verification, pinned Mozilla roots or replacement PEM ca; no ALPN, custom identity callback, client keys, sessions or existing Socket upgrades. See docs/M5_TLS_CLIENT.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         },
         {
           "name": "TLSSocket",
-          "status": "planned",
+          "status": "partial",
           "task": "M5-03",
           "parameters": "TLS1.2 client scope, verified CA/identity rules and audited suites",
+          "evidence": [
+            {
+              "test": "TLS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source API differential; scripts/test_tls_client.py for 12 local Node/qjs cases and Worker/qjsc/SDK; tests/native/tls_client.c for faults/GC/teardown; docs/M5_TLS_CLIENT.md"
+            }
+          ],
           "tests": [
             "TLS-001"
           ],
           "differences": [
-            "Not implemented; no compatibility claim."
-          ]
+            "Socket/Duplex client with secureConnect, authorized/encrypted, getProtocol/getCipher/isSessionReused and inherited transport methods. No server or existing Socket upgrade; truncated TLS EOF fails. See docs/M5_TLS_CLIENT.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "TLSSocket.getProtocol",
+          "status": "partial",
+          "task": "M5-03",
+          "parameters": "Negotiated TLSv1.2 or null before handshake/after destroy",
+          "evidence": [
+            {
+              "test": "TLS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source API differential; scripts/test_tls_client.py for 12 local Node/qjs cases and Worker/qjsc/SDK; tests/native/tls_client.c for faults/GC/teardown; docs/M5_TLS_CLIENT.md"
+            }
+          ],
+          "tests": [
+            "TLS-001"
+          ],
+          "differences": [
+            "Socket/Duplex client with secureConnect, authorized/encrypted, getProtocol/getCipher/isSessionReused and inherited transport methods. No server or existing Socket upgrade; truncated TLS EOF fails. See docs/M5_TLS_CLIENT.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "TLSSocket.getCipher",
+          "status": "partial",
+          "task": "M5-03",
+          "parameters": "Negotiated OpenSSL/IANA suite names and version; undefined before handshake, null after destroy",
+          "evidence": [
+            {
+              "test": "TLS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source API differential; scripts/test_tls_client.py for 12 local Node/qjs cases and Worker/qjsc/SDK; tests/native/tls_client.c for faults/GC/teardown; docs/M5_TLS_CLIENT.md"
+            }
+          ],
+          "tests": [
+            "TLS-001"
+          ],
+          "differences": [
+            "Socket/Duplex client with secureConnect, authorized/encrypted, getProtocol/getCipher/isSessionReused and inherited transport methods. No server or existing Socket upgrade; truncated TLS EOF fails. See docs/M5_TLS_CLIENT.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "TLSSocket.isSessionReused",
+          "status": "partial",
+          "task": "M5-03",
+          "parameters": "false: session import/tickets/reuse disabled",
+          "evidence": [
+            {
+              "test": "TLS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source API differential; scripts/test_tls_client.py for 12 local Node/qjs cases and Worker/qjsc/SDK; tests/native/tls_client.c for faults/GC/teardown; docs/M5_TLS_CLIENT.md"
+            }
+          ],
+          "tests": [
+            "TLS-001"
+          ],
+          "differences": [
+            "Socket/Duplex client with secureConnect, authorized/encrypted, getProtocol/getCipher/isSessionReused and inherited transport methods. No server or existing Socket upgrade; truncated TLS EOF fails. See docs/M5_TLS_CLIENT.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "TLSSocket.encrypted",
+          "status": "partial",
+          "task": "M5-03",
+          "parameters": "true: this is a TLS transport",
+          "evidence": [
+            {
+              "test": "TLS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source API differential; scripts/test_tls_client.py for 12 local Node/qjs cases and Worker/qjsc/SDK; tests/native/tls_client.c for faults/GC/teardown; docs/M5_TLS_CLIENT.md"
+            }
+          ],
+          "tests": [
+            "TLS-001"
+          ],
+          "differences": [
+            "Socket/Duplex client with secureConnect, authorized/encrypted, getProtocol/getCipher/isSessionReused and inherited transport methods. No server or existing Socket upgrade; truncated TLS EOF fails. See docs/M5_TLS_CLIENT.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "TLSSocket.authorized",
+          "status": "partial",
+          "task": "M5-03",
+          "parameters": "true only after mandatory certificate verification and handshake",
+          "evidence": [
+            {
+              "test": "TLS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source API differential; scripts/test_tls_client.py for 12 local Node/qjs cases and Worker/qjsc/SDK; tests/native/tls_client.c for faults/GC/teardown; docs/M5_TLS_CLIENT.md"
+            }
+          ],
+          "tests": [
+            "TLS-001"
+          ],
+          "differences": [
+            "Socket/Duplex client with secureConnect, authorized/encrypted, getProtocol/getCipher/isSessionReused and inherited transport methods. No server or existing Socket upgrade; truncated TLS EOF fails. See docs/M5_TLS_CLIENT.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "TLSSocket.authorizationError",
+          "status": "partial",
+          "task": "M5-03",
+          "parameters": "null or certificate validation error code",
+          "evidence": [
+            {
+              "test": "TLS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source API differential; scripts/test_tls_client.py for 12 local Node/qjs cases and Worker/qjsc/SDK; tests/native/tls_client.c for faults/GC/teardown; docs/M5_TLS_CLIENT.md"
+            }
+          ],
+          "tests": [
+            "TLS-001"
+          ],
+          "differences": [
+            "Socket/Duplex client with secureConnect, authorized/encrypted, getProtocol/getCipher/isSessionReused and inherited transport methods. No server or existing Socket upgrade; truncated TLS EOF fails. See docs/M5_TLS_CLIENT.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "TLSSocket.alpnProtocol",
+          "status": "partial",
+          "task": "M5-03",
+          "parameters": "false: ALPN is not enabled",
+          "evidence": [
+            {
+              "test": "TLS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source API differential; scripts/test_tls_client.py for 12 local Node/qjs cases and Worker/qjsc/SDK; tests/native/tls_client.c for faults/GC/teardown; docs/M5_TLS_CLIENT.md"
+            }
+          ],
+          "tests": [
+            "TLS-001"
+          ],
+          "differences": [
+            "Socket/Duplex client with secureConnect, authorized/encrypted, getProtocol/getCipher/isSessionReused and inherited transport methods. No server or existing Socket upgrade; truncated TLS EOF fails. See docs/M5_TLS_CLIENT.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
+        },
+        {
+          "name": "TLSSocket.servername",
+          "status": "partial",
+          "task": "M5-03",
+          "parameters": "Requested DNS SNI name, or undefined",
+          "evidence": [
+            {
+              "test": "TLS-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source API differential; scripts/test_tls_client.py for 12 local Node/qjs cases and Worker/qjsc/SDK; tests/native/tls_client.c for faults/GC/teardown; docs/M5_TLS_CLIENT.md"
+            }
+          ],
+          "tests": [
+            "TLS-001"
+          ],
+          "differences": [
+            "Socket/Duplex client with secureConnect, authorized/encrypted, getProtocol/getCipher/isSessionReused and inherited transport methods. No server or existing Socket upgrade; truncated TLS EOF fails. See docs/M5_TLS_CLIENT.md."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          }
         }
       ]
     },

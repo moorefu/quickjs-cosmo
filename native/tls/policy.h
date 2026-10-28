@@ -12,5 +12,6 @@ typedef struct {
 } QjsTlsPolicy;
 int qjs_tls_policy_init(QjsTlsPolicy *,const char *,const unsigned char *,size_t);
 int qjs_tls_policy_setup(QjsTlsPolicy *,mbedtls_ssl_context *);
+int qjs_tls_policy_setup_sni(QjsTlsPolicy *,mbedtls_ssl_context *,const char *);
 void qjs_tls_policy_free(QjsTlsPolicy *);
 #endif

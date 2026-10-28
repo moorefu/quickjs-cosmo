@@ -30,7 +30,8 @@ STANDALONES = ("build/test-linux/hello-standalone.exe", "build/test-linux/runtim
                "build/test-linux/file-algorithm-streams-standalone.exe", "build/test-linux/file-algorithm-streams-sdk.exe",
                "build/test-linux/crypto-advanced-standalone.exe", "build/test-linux/crypto-advanced-sdk.exe",
                "build/test-linux/hash-extra-standalone.exe", "build/test-linux/network-standalone.exe", "build/test-linux/network-sdk.exe",
-               "build/test-linux/tls-security-sdk.exe", "build/test-linux/tls-policy-sdk.exe")
+               "build/test-linux/tls-security-sdk.exe", "build/test-linux/tls-policy-sdk.exe",
+               "build/test-linux/tls-client-standalone.exe", "build/test-linux/tls-worker-standalone.exe", "build/test-linux/tls-client-sdk.exe")
 SOURCE = ".cache/quickjs-source.tar.gz"
 NATIVE_PROBES = tuple("build/native/" + name + suffix
                      for name in ("toolchain-probe.exe", "backends-probe.exe")
