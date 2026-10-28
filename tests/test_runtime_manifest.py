@@ -23,6 +23,7 @@ class RuntimeManifestTests(unittest.TestCase):
         names = ("native/module_registry.c", "native/module_registry.h", "native/versions.json",
                  "native/build-inputs.json", *ci_artifact.runtime_source_names(self.root))
         for name in names:
+            (self.root / name).parent.mkdir(parents=True,exist_ok=True)
             (self.root / name).write_text("original")
         self.manifest = dict(self.data, compatibility=self.compat, patches={}, files={},
                              compatibility_sources={"compat/versions.json": ci_artifact.sha256(self.root / "compat/versions.json")},

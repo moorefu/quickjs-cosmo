@@ -27,9 +27,11 @@
 | M5-04 HTTP/Fetch | 完成，CI 全绿 | `9cdc98b`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40670191020)，[记录](M5_HTTP_FETCH.md) |
 | M5-05 HTTPS | 完成，CI 全绿 | `68373b7`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40684836385)，[记录](M5_HTTPS.md) |
 | M6-01 全入口交付 | 完成，CI 全绿 | `256ee8b`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40714828461)，[记录](M6_DELIVERY.md) |
-| M6-02 CI 与发布 | 本地验收通过，待 CI | 能力清单、报告绑定、七行报告门禁及发布产物；[记录](M6_CI_RELEASE.md) |
-| M6-03 文档与类型 | 持续更新，最终验收待完成 | 已增加 Buffer、公共基础、调度/取消与 cosmo:runtime 类型 |
+| M6-02 CI 与发布 | 完成，CI 全绿 | `a99bc79`，[CI](https://github.com/moorefu/quickjs-cosmo/actions/runs/40724645527)，[记录](M6_CI_RELEASE.md) |
+| M6-03 文档与类型 | 实现与本地验收完成；提交级 CI 验收 | [最新 main CI](https://github.com/moorefu/quickjs-cosmo/actions/workflows/build-ape.yml)，[记录](M6_DOCS_TYPES.md)、[使用指南](NODE_RUNTIME_GUIDE.md) |
 
 局部实现与平台差异由 `compat/node-api.json` 描述；本表不以“已有同名导出”替代任务退出条件。未完成任务继续保持待实现，TLS 如遇真实准入阻碍需按规划记录并解决，不能伪造通过。
 
 M5-01 的 SDK 循环 GC 用例已确认并修复 Timer 状态回指，以及销毁流保留活动写回调的问题。M6 继续复核其余私有状态表、各入口与平台差异。
+
+M0—M6 的规划目标子集均已实现。最终交付以当前提交的完整 CI 和七平台 compatibility-report.json 为准；第 12 节列出的后续范围保持独立立项。

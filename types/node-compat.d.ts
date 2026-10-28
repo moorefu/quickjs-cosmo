@@ -1,3 +1,20 @@
+/// <reference path="./algorithms-async.d.ts" />
+/// <reference path="./child-process-async.d.ts" />
+/// <reference path="./child_process.d.ts" />
+/// <reference path="./cosmo.d.ts" />
+/// <reference path="./crypto-advanced.d.ts" />
+/// <reference path="./crypto.d.ts" />
+/// <reference path="./fetch.d.ts" />
+/// <reference path="./file-streams.d.ts" />
+/// <reference path="./fs-async.d.ts" />
+/// <reference path="./fs.d.ts" />
+/// <reference path="./http.d.ts" />
+/// <reference path="./https.d.ts" />
+/// <reference path="./network.d.ts" />
+/// <reference path="./stream.d.ts" />
+/// <reference path="./tls.d.ts" />
+/// <reference path="./zlib-streams.d.ts" />
+/// <reference path="./zlib.d.ts" />
 // The implemented ESM subset. This file does not declare unimplemented Node APIs.
 interface ImportMeta {
     url: string;

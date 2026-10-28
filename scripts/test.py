@@ -141,6 +141,9 @@ def main():
         if args.node:
             scheduling += ["--node", str(Path(args.node).resolve())]
         check("custom/scheduler-lifecycle", scheduling, contains="Scheduler lifecycle:", timeout=180)
+        examples=[sys.executable,ROOT/'scripts/test_examples.py','--qjs',qjs]
+        if args.node:examples += ['--node',str(Path(args.node).resolve())]
+        check('example/portable-esm',examples,contains='PASS portable examples:',timeout=120)
     check("example/hello", [qjs, ROOT / "examples/hello.js"], contains="Hello from QuickJS")
     check("example/system-info", [qjs, "-m", ROOT / "examples/system-info.js", "hello"], contains='"workerAvailable": true')
     check("cli/explicit-exit", [qjs, "--std", "-e", "std.exit(7)"], expected=7)
@@ -159,6 +162,8 @@ def main():
     check("qjsc/module-nul", [qjsc,"-c","-m","-o",scratch/"module-nul.c",ROOT/"tests/fixtures/module-nul.mjs"], expected=1, contains="ERR_UNKNOWN_BUILTIN_MODULE")
 
     if args.compile:
+        check('qjsc/compile-portable-example',[qjsc,'-m','-o',scratch/'portable-example.exe',ROOT/'examples/portable-core.mjs'],timeout=180)
+        check('qjsc/run-portable-example',[scratch/'portable-example.exe'],contains='"example":"core"',timeout=60)
         check("qjsc/compile-delivery",[qjsc,"-m","-D",ROOT/"tests/fixtures/delivery-worker.mjs","-o",scratch/"delivery-standalone.exe",ROOT/"tests/runtime_delivery.mjs"],timeout=180)
         check("qjsc/run-delivery",[scratch/"delivery-standalone.exe"],contains="PASS runtime-delivery",timeout=60)
         check("qjsc/compile-stdio",[qjsc,"-m","-o",scratch/"stdio-standalone.exe",ROOT/"tests/node/fixtures/process-stdio-child.mjs"],timeout=180)
@@ -315,6 +320,7 @@ def main():
                  timeout=180):
             check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
+        check('qjsc/cross-host-portable-example',[args.standalone.resolve().parent/'portable-example.exe'],contains='"example":"core"',timeout=60)
         check("qjsc/cross-host-delivery",[args.standalone.resolve().parent/"delivery-standalone.exe"],contains="PASS runtime-delivery",timeout=60)
         check("sdk/cross-host-lifecycle",[args.standalone.resolve().parent/"lifecycle-sdk.exe"],contains="PASS lifecycle-sdk",timeout=180)
         stdio_command=[sys.executable,ROOT/"scripts/test_stdio.py","--qjs",qjs,"--compiled",args.standalone.resolve().parent/"stdio-standalone.exe","--sdk",args.standalone.resolve().parent/"stdio-sdk.exe"]

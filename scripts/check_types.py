@@ -58,13 +58,16 @@ def main():
                              text=True, encoding="utf-8", timeout=30).stdout.strip()
     if version != "Version " + lock["version"]:
         raise ValueError("TypeScript compiler version mismatch")
-    files = sorted((ROOT / "types").rglob("*.d.ts")) + sorted((ROOT / "tests/types").rglob("*.ts"))
-    if not files:
+    fixtures = sorted((ROOT / "tests/types").rglob("*.ts")) + sorted((ROOT/'examples').glob('portable-*.mjs'))
+    if not fixtures:
         raise ValueError("Missing declaration checks")
     for libraries in ("es2022", "es2022,dom"):
-        subprocess.run([str(compiler), "--noEmit", "--strict", "--target", "es2022", "--module", "es2022", "--lib", libraries,
-                        *map(str, files)], cwd=ROOT, check=True, timeout=120)
-    print("PASS TypeScript " + lock["version"] + ": declarations and positive/negative compile fixtures")
+        for directory in ('types','dist'):
+            entry=ROOT/directory/'node-compat.d.ts'
+            if not entry.is_file():raise ValueError('Missing public declaration entry: '+str(entry))
+            subprocess.run([str(compiler), "--noEmit", "--strict", "--allowJs", "--checkJs", "--target", "es2022", "--module", "es2022", "--lib", libraries,
+                            str(entry),*map(str, fixtures)], cwd=ROOT, check=True, timeout=120)
+    print("PASS TypeScript " + lock["version"] + ": source/SDK root entries and positive/negative compile fixtures")
 
 
 if __name__ == "__main__":
