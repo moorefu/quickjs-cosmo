@@ -62,6 +62,11 @@ static void unlock(const sigset_t *old) {
 }
 static int restore(Device *device) {
     int rc=tcsetattr(device->fd,TCSANOW,&device->original),saved=errno;
+    if(!rc&&IsXnu()&&(device->original.c_lflag&ICANON)&&!(device->original.c_lflag&PENDIN)) {
+        /* XNU reprocesses queued raw input after restoring canonical mode.
+           FIONREAD settles PENDIN without reading or flushing those bytes. */
+        int available;rc=ioctl(device->fd,FIONREAD,&available);saved=errno;
+    }
 #ifdef __x86_64__
     if(IsWindows()) {
         __ttyconf=device->original_conf;

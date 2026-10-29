@@ -73,8 +73,13 @@ if os.name!='nt':
             if self.closed:return
             if self.process.poll() is None:self.process.kill();self.process.wait(timeout=5)
             time.sleep(.03);self.closed=True;self.thread.join(timeout=2)
-            termios.tcsetattr(self.slave,termios.TCSANOW,self.before)
-            os.close(self.master);os.close(self.slave)
+            try:
+                try:termios.tcsetattr(self.slave,termios.TCSANOW,self.before)
+                except termios.error as error:
+                    # The restoration assertion runs before ACK. A dead
+                    # Darwin session may already have revoked the slave.
+                    if error.args[0] not in (errno.ENOTTY,errno.EIO) or self.process.poll() is None:raise
+            finally:os.close(self.master);os.close(self.slave)
             if self.thread.is_alive():raise RuntimeError('PTY reader did not terminate')
 
     TerminalSession=UnixSession

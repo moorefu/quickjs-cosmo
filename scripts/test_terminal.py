@@ -13,7 +13,7 @@ from terminal_harness import TerminalSession
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / 'tests/runtime_terminal.mjs'
-CASES = ('legacy', 'owners', 'natural', 'explicit', 'throw', 'signal', 'reset-signal', 'keys', 'readline', 'legacy-read', 'sample', 'sample-signal', 'sample-throw', 'sample-explicit', 'idle-resize', 'worker')
+CASES = ('legacy', 'owners', 'natural', 'explicit', 'throw', 'signal', 'reset-signal', 'keys', 'readline', 'legacy-read', 'sample', 'sample-signal', 'sample-throw', 'sample-explicit', 'idle-resize', 'worker', 'pending-input')
 
 
 def expected_cases():
@@ -52,13 +52,16 @@ def main():
             case.mkdir(exist_ok=True)
             control = case / 'control.txt'
             control.unlink(missing_ok=True)
-            env = dict(os.environ, QJS_TERMINAL_CASE=mode, TZ='UTC', LC_ALL='C')
+            child_control = case / 'child.txt'
+            child_control.unlink(missing_ok=True)
+            env = dict(os.environ, QJS_TERMINAL_CASE=mode, QJS_TERMINAL_CHILD_CONTROL=str(child_control), TZ='UTC', LC_ALL='C')
             if os.name == 'nt' and entry == 'sdk' and mode == 'sample':
                 env['QJS_TERMINAL_TEST_NO_VT'] = '1'
             supervised = ape_command(args.sdk.resolve(), ['--supervise', str(control), *command(entry, mode)], dist)
             session = TerminalSession(supervised, ROOT, env)
+            acknowledged = False
             try:
-                if mode in ('signal', 'reset-signal', 'keys', 'readline', 'legacy-read'):
+                if mode in ('signal', 'reset-signal', 'keys', 'readline', 'legacy-read', 'pending-input'):
                     session.wait_for(lambda data: any(value['kind'] == 'ready' for value in events(data)))
                 # Immediate exception/exit can restore the alternate buffer
                 # before ConPTY renders READY. Those cases need no input.
@@ -83,11 +86,13 @@ def main():
                     session.write(b'ab\x1b[DX\r')
                 elif mode in ('sample', 'legacy-read'):
                     session.write(b'q')
-                code = session.wait(12)
-                session.wait_for(lambda data: b'TTY_CONTROL RESULT ' in data)
+                elif mode == 'pending-input':
+                    session.write(b'queued\r')
+                    send_control(child_control, 'RESTORE')
+                session.wait_for(lambda data: b'TTY_CONTROL RESULT ' in data, timeout=12)
                 data = bytes(session.output)
                 result = json.loads(re.findall(rb'TTY_CONTROL RESULT (\[[^\r\n]*\])', data)[-1])
-                assert code == 0 and result[0] == 1 and result[3] == 0, (code, result, data)
+                assert result[0] == 1 and result[3] == 0, (result, data)
                 expected_code = 7 if mode in ('explicit', 'sample-explicit') else 1 if mode in ('throw', 'sample-throw') else 15 if mode in ('signal', 'reset-signal') and os.name == 'nt' else -1 if mode in ('signal', 'reset-signal') else 0
                 assert result[1] == expected_code, (mode, result, data)
                 if mode in ('throw', 'sample-throw'):
@@ -110,9 +115,15 @@ def main():
                         assert b'\x1b[?1049h' in data and b'\x1b[?1049l' in data, data
                         assert data.rfind(b'\x1b[?25h') > data.find(b'\x1b[?25l'), data
                         assert b'\x1b[0m\x1b[?25h\x1b[?1049l' in data, data
+                if mode == 'pending-input':
+                    assert dict(kind='done', value='queued') in events(data), data
+                send_control(control, 'ACK');acknowledged = True
+                code = session.wait(8)
+                assert code == 0, (code, data)
                 records.append(dict(entry=entry, case=mode, restored=True, result=result))
                 print('PASS terminal ' + entry + '/' + mode, flush=True)
             finally:
+                if not acknowledged:send_control(control, 'ACK')
                 session.save(case)
                 session.close()
             records[-1]['logs'] = {name: hashlib.sha256((case / name).read_bytes()).hexdigest() for name in ('input.bin', 'output.bin')}

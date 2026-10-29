@@ -105,6 +105,16 @@ static int supervise(int argc,char **argv) {
     int code=IsWindows()?status:WIFEXITED(status)?WEXITSTATUS(status):-1;
     int number=IsWindows()?0:WIFSIGNALED(status)?WTERMSIG(status):0,restored=equal(before,after);
     printf("TTY_CONTROL RESULT [%d,%d,%d,%d,%u]\n",restored,code,number,timed_out,(uint32_t)status);fflush(stdout);
+    /* Keep the controlling session alive until the external driver has also
+       inspected its slave descriptor. Darwin revokes it on session exit. */
+    int acknowledged=0;deadline=milliseconds()+5000;
+    while(milliseconds()<deadline) {
+        char command[8]={0};FILE *control=fopen(argv[2],"rb");
+        if(control) {fread(command,1,sizeof(command)-1,control);fclose(control);unlink(argv[2]);}
+        if(!strncmp(command,"ACK",3)) {acknowledged=1;break;}
+        struct timespec pause={0,10000000};nanosleep(&pause,NULL);
+    }
+    if(!acknowledged) {puts("TTY_CONTROL ACK_TIMEOUT");return 1;}
     return restored&&!timed_out?0:1;
 }
 static JSContext *new_context(JSRuntime *rt) {

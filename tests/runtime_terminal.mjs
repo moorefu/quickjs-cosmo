@@ -3,6 +3,7 @@ import tty from 'node:tty';
 import readline from 'node:readline';
 import promises from 'node:readline/promises';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import * as os from 'qjs:os';
 import {runTerminalSample} from '../examples/terminal.mjs';
 
@@ -29,7 +30,15 @@ if (mode === 'pipe') {
     assert(process.stdout instanceof tty.WriteStream);
     assert.equal(os.read.length, 4);
     assert.equal(os.ttySetRaw.length, 2);
-    if (mode === 'worker') {
+    if (mode === 'pending-input') {
+        process.stdin.setRawMode(true);
+        event('ready', mode);
+        while (!fs.existsSync(process.env.QJS_TERMINAL_CHILD_CONTROL)) await new Promise(resolve => setTimeout(resolve, 10));
+        process.stdin.setRawMode(false);
+        const rl = readline.createInterface({input: process.stdin, terminal: false});
+        const line = await new Promise(resolve => rl.once('line', resolve));
+        rl.close(); assert.equal(line, 'queued'); event('done', line);
+    } else if (mode === 'worker') {
         const worker = new os.Worker('./fixtures/terminal-worker.mjs');
         const watchdog = setTimeout(() => { throw Error('Terminal Worker timeout'); }, 5000);
         try {
