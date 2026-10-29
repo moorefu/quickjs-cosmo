@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Embed reviewed JavaScript sources without invoking a not-yet-built qjsc."""
+"""Assemble reviewed JavaScript into the shared runtime-core.js resource."""
 import argparse
 import hashlib
 import json
@@ -114,10 +114,7 @@ return {
         "\nreturn module.exports;\n}\n")
     source = "(function(native, data) {\n'use strict';\n" + punycode_factory + "\n".join(
         (root / name).read_text(encoding="utf-8") for name in CORE_SOURCES) + "\n" + path_factory + finish + "\n})\n"
-    lines = ["/* Generated from src/js; no runtime filesystem dependency. */",
-             "static const char qjs_core_source[] ="]
-    lines.extend(json.dumps(line, ensure_ascii=True).replace('?', r'\?') for line in source.splitlines(keepends=True))
-    return "\n".join(lines) + ";\n"
+    return source
 
 
 def main():

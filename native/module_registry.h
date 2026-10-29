@@ -2,20 +2,11 @@
 #define QUICKJS_COSMO_MODULE_REGISTRY_H
 #include "quickjs.h"
 #include "qjs-tasks.h"
+#include "qjs-resources.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* Process-wide CA provider. Configure before the first default-CA use; later
-   changes fail with EBUSY. NULL selects the linked ZIP resource. The callback
-   returns 0 and nonempty, NUL-free PEM bytes; these are copied before loading
-   completes. Its buffer must remain valid until the first CA use completes. No fallback
-   follows provider failure. Caller owns opaque; callback runs once, outside JS. */
-typedef int (*QJSCosmoCAProvider)(void *opaque, const unsigned char **bytes, size_t *length);
-int js_cosmo_set_ca_provider(QJSCosmoCAProvider callback, void *opaque);
-const char *js_cosmo_default_ca(void);
-const char *js_cosmo_release_architecture(void);
 
 /* QJB source packages: native ownership is independent of JS Runtime opaque. */
 void *js_cosmo_bundle_acquire(JSContext *ctx);
@@ -33,6 +24,7 @@ void js_cosmo_tty_signal(int number, void (*handler)(int));
 
 /* Call once per new context. Install the normalizer on its runtime as well. */
 int js_cosmo_init_modules(JSContext *ctx);
+JSValue js_cosmo_resource_exception(JSContext *, int, const char *);
 int js_cosmo_is_builtin(const char *name);
 /* Validate the full UTF-8 span before it crosses a C-string loader API. */
 int js_cosmo_validate_module_specifier(JSContext *,const char *,size_t);

@@ -16,7 +16,8 @@ QJS_COMPAT_OBJS += $(OBJDIR)/qjs-process-async.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-dns.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-net.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-tls.o
-QJS_COMPAT_OBJS += $(OBJDIR)/qjs-resources.o $(OBJDIR)/qjs-ca.zip.o
+QJS_COMPAT_OBJS += $(OBJDIR)/qjs-resources.o
+QJS_COMPAT_OBJS += $(addprefix $(OBJDIR)/qjs-,$(addsuffix .zip.o,runtime-core.js ca-bundle.pem capabilities.json resource-manifest.json))
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-http.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-stdio.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-tty.o
@@ -47,7 +48,7 @@ $(OBJDIR)/qjs-bundle.o: $(QJS_COSMO_ROOT)/native/bundle.c $(QJS_COSMO_ROOT)/nati
 	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -I$(QJS_COSMO_NATIVE) -c -o $@ $<
 
 $(OBJDIR)/qjs-module-registry.o: $(QJS_COSMO_ROOT)/native/module_registry.c \
-    $(QJS_COSMO_ROOT)/native/module_registry.h $(QJS_COSMO_ROOT)/native/runtime_state.h qjs-cosmo-config.h qjs-builtins.h quickjs.h quickjs-libc.h | $(OBJDIR)
+    $(QJS_COSMO_ROOT)/native/module_registry.h $(QJS_COSMO_ROOT)/native/resources.h $(QJS_COSMO_ROOT)/native/runtime_state.h qjs-cosmo-config.h quickjs.h quickjs-libc.h | $(OBJDIR)
 	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -c -o $@ $<
 
 $(OBJDIR)/qjs-tasks.o: $(QJS_COSMO_ROOT)/native/tasks.c $(QJS_COSMO_ROOT)/native/tasks.h $(QJS_COSMO_ROOT)/native/tty.h $(QJS_COSMO_ROOT)/native/stdio/binding.h $(QJS_COSMO_ROOT)/native/net/net.h $(QJS_COSMO_ROOT)/native/process/async.h $(QJS_COSMO_ROOT)/native/module_registry.h quickjs.h quickjs-libc.h | $(OBJDIR)
@@ -67,12 +68,7 @@ $(OBJDIR)/qjs-tls.o: $(QJS_COSMO_ROOT)/build/native/tls/qjs-tls.o | $(OBJDIR)
 	mkdir -p $(OBJDIR)/.aarch64
 	cp $(QJS_COSMO_ROOT)/build/native/tls/.aarch64/qjs-tls.o $(OBJDIR)/.aarch64/
 
-$(OBJDIR)/qjs-ca.zip.o: $(QJS_COSMO_ROOT)/build/native/tls/qjs-ca.zip.o | $(OBJDIR)
-	cp $< $@
-	mkdir -p $(OBJDIR)/.aarch64
-	cp $(QJS_COSMO_ROOT)/build/native/tls/.aarch64/qjs-ca.zip.o $(OBJDIR)/.aarch64/
-
-$(OBJDIR)/qjs-resources.o: $(QJS_COSMO_ROOT)/native/tls/resources.c $(QJS_COSMO_ROOT)/native/module_registry.h | $(OBJDIR)
+$(OBJDIR)/qjs-resources.o: $(QJS_COSMO_ROOT)/native/resources.c $(QJS_COSMO_ROOT)/native/resources.h qjs-resource-config.h | $(OBJDIR)
 	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -I$(QJS_COSMO_NATIVE) -c -o $@ $<
 
 $(OBJDIR)/qjs-http.o: $(QJS_COSMO_ROOT)/build/native/http/qjs-http.o | $(OBJDIR)

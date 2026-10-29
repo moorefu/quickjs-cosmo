@@ -11,6 +11,7 @@ from prepare_native import sha256
 from build_crypto_extra import build as build_extra
 
 ROOT_SYMBOL = 'js_cosmo_crypto_api'
+RESOURCE_SYMBOL = 'js_cosmo_resource_sha256'
 
 
 def build(root=ROOT):
@@ -48,19 +49,19 @@ def build(root=ROOT):
         tools = settings.toolchain / 'bin' / (arch + '-linux-cosmo-')
         target = peer(output / 'qjs-crypto.o')
         target.parent.mkdir(parents=True, exist_ok=True)
-        command = [str(tools) + 'ld', '-r', '--gc-sections', '-u', ROOT_SYMBOL,
+        command = [str(tools) + 'ld', '-r', '--gc-sections', '-u', ROOT_SYMBOL, '-u', RESOURCE_SYMBOL,
                    '-u', 'mbedtls_notice', '-u', 'hacl_star_notice',
                    '--wrap=malloc', '--wrap=calloc', '--wrap=free', '-o', target,
                    *map(peer, objects), '--start-group', peer(backend / 'mbedtls-core.a'),
                    peer(backend / 'haclstar-blake2b.a'), peer(backend / 'mbedtls-aead.a'), peer(backend / 'haclstar-25519.a'),peer(extra_archive), '--end-group']
         run(command, root)
         commands.append(dict(command=list(map(str, command))))
-        command = [str(tools) + 'objcopy', '-G', ROOT_SYMBOL, '--strip-unneeded', target]
+        command = [str(tools) + 'objcopy', '-G', ROOT_SYMBOL, '-G', RESOURCE_SYMBOL, '--strip-unneeded', target]
         run(command, root)
         commands.append(dict(command=list(map(str, command))))
         elf_machine(target, machine)
         definitions = run([str(tools) + 'nm', '-g', '--defined-only', '-P', target], root).splitlines()
-        if [line.split()[0] for line in definitions] != [ROOT_SYMBOL]:
+        if {line.split()[0] for line in definitions} != {ROOT_SYMBOL, RESOURCE_SYMBOL}:
             raise ValueError('Crypto closure leaks public backend symbols: ' + str(definitions))
         symbols = run([str(tools) + 'nm', '-P', target], root)
         if any(token in symbols for token in ('mbedtls_ssl_', 'mbedtls_x509_', 'mbedtls_rsa_',
@@ -77,7 +78,7 @@ def build(root=ROOT):
         if any(line.split()[0].startswith(('mbedtls_', 'Hacl_', 'FStar_')) for line in undefined):
             raise ValueError('Unresolved private crypto backend dependency: ' + str(undefined))
         reports[arch] = dict(elf_machine=machine, sha256=sha256(target),
-                             exported=[ROOT_SYMBOL], undefined=undefined)
+                             exported=[ROOT_SYMBOL, RESOURCE_SYMBOL], undefined=undefined)
     inputs = {name: sha256(root / name) for name in (
         'native/crypto/core.c', 'native/crypto/core.h', 'native/crypto/extra.c', 'native/crypto/extra.h', 'native/haclstar-extra.json', 'scripts/build_crypto_extra.py', 'native/crypto/binding.c',
         'native/crypto/binding.h', 'native/crypto/extended-binding.h', 'native/crypto/extended-async.h', 'native/crypto/keys.c', 'native/crypto/keys.h', 'native/crypto/aead.c', 'native/crypto/aead.h', 'native/crypto/gcm-ecb.c', 'native/crypto/pbkdf2.c', 'native/tasks.h', 'scripts/build_crypto.py', 'native/build-inputs.json')}

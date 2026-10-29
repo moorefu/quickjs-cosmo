@@ -6,9 +6,21 @@
 #include "runtime_state.h"
 #include "bundle.h"
 #include "qjs-cosmo-config.h"
-#include "qjs-builtins.h"
 
 typedef JSModuleDef *(*BuiltinInit)(JSContext *, const char *);
+
+JSValue js_cosmo_resource_exception(JSContext *ctx, int rc, const char *name) {
+    const char *code = js_cosmo_resource_error(rc);
+    JSValue error = JS_NewError(ctx);
+    if (JS_IsException(error)) return error;
+    char message[192];
+    snprintf(message, sizeof(message), "%s: %s", code, name);
+    if (JS_SetPropertyStr(ctx, error, "code", JS_NewString(ctx, code)) < 0 ||
+        JS_SetPropertyStr(ctx, error, "message", JS_NewString(ctx, message)) < 0) {
+        JS_FreeValue(ctx, error); return JS_EXCEPTION;
+    }
+    return JS_Throw(ctx, error);
+}
 typedef struct {
     const char *name;
     BuiltinInit init;
@@ -251,8 +263,26 @@ static JSValue runtime_info(JSContext *ctx, JSValueConst self, int argc, JSValue
         }
     }
     if (JS_SetPropertyStr(ctx, info, "builtinModules", modules) < 0) goto fail;
-    const char *description = QJS_COSMO_CAPABILITIES_JSON;
-    JSValue capabilities = JS_ParseJSON(ctx, description, strlen(description), "<runtime-capabilities>");
+    CosmoResourceView resource;
+    int resource_result = js_cosmo_resource_open(COSMO_RESOURCE_CAPABILITIES, &resource);
+    if (resource_result) {
+        js_cosmo_resource_exception(ctx, resource_result, COSMO_RESOURCE_CAPABILITIES);
+        goto fail;
+    }
+    JSValue capabilities = JS_ParseJSON(ctx, (const char *)resource.data, resource.size, "<runtime-capabilities>");
+    js_cosmo_resource_close(&resource);
+    if (JS_IsException(capabilities)) goto fail;
+    /* Keep the public compact snapshot while parsing the exact SDK/release
+       capability bytes. The immutable resource is never changed by JS. */
+    JSValue summarize = JS_Eval(ctx,
+        "(c=>{c.modules=c.modules.map(m=>({specifier:m.specifier,aliases:m.aliases,apis:Object.fromEntries(m.entries.map(e=>[e.name,e.status]))}));"
+        "c.globals=Object.fromEntries(c.globals.map(e=>[e.name,e.status]));return c})",
+        sizeof("(c=>{c.modules=c.modules.map(m=>({specifier:m.specifier,aliases:m.aliases,apis:Object.fromEntries(m.entries.map(e=>[e.name,e.status]))}));"
+               "c.globals=Object.fromEntries(c.globals.map(e=>[e.name,e.status]));return c})") - 1,
+        "<runtime-capability-summary>", JS_EVAL_TYPE_GLOBAL);
+    if (JS_IsException(summarize)) { JS_FreeValue(ctx, capabilities); goto fail; }
+    JSValue summary = JS_Call(ctx, summarize, JS_UNDEFINED, 1, &capabilities);
+    JS_FreeValue(ctx, summarize); JS_FreeValue(ctx, capabilities); capabilities = summary;
     if (JS_IsException(capabilities)) goto fail;
     if (set_string(ctx, capabilities, "architecture", js_cosmo_release_architecture()) < 0) { JS_FreeValue(ctx, capabilities); goto fail; }
     if (JS_SetPropertyStr(ctx, info, "capabilities", capabilities) < 0) goto fail;
@@ -324,8 +354,15 @@ static JSModuleDef *core_module(JSContext *ctx, const char *name) {
     CosmoRuntimeState *state = js_cosmo_state(ctx);
     if (!state) return NULL;
     if (JS_IsUndefined(state->apis)) {
-        JSValue factory = JS_Eval(ctx, qjs_core_source, sizeof(qjs_core_source) - 1,
+        CosmoResourceView resource;
+        int rc = js_cosmo_resource_open(COSMO_RESOURCE_CORE, &resource);
+        if (rc) {
+            js_cosmo_resource_exception(ctx, rc, COSMO_RESOURCE_CORE);
+            return NULL;
+        }
+        JSValue factory = JS_Eval(ctx, (const char *)resource.data, resource.size,
                                   "<builtin:node-core>", JS_EVAL_TYPE_GLOBAL);
+        js_cosmo_resource_close(&resource);
         if (JS_IsException(factory)) return NULL;
         JSValue arguments[] = {js_cosmo_native_api(ctx, state), state->data};
         if (JS_IsException(arguments[0])) { JS_FreeValue(ctx, factory); return NULL; }

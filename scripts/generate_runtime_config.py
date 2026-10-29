@@ -5,7 +5,6 @@ import json
 from pathlib import Path
 
 from node_contract import ROOT, read_json
-from runtime_capabilities import runtime_summary
 
 
 def generate(root=ROOT):
@@ -15,8 +14,7 @@ def generate(root=ROOT):
               "QJS_COSMO_QUICKJS_COMMIT": versions["quickjs"]["commit"],
               "QJS_COSMO_VERSION": versions["cosmopolitan"]["version"],
               "QJS_COSMO_COMMIT": versions["cosmopolitan"]["commit"],
-              "QJS_COSMO_NODE_TARGET": node["version"],
-              "QJS_COSMO_CAPABILITIES_JSON": json.dumps(runtime_summary(root),separators=(',',':'),ensure_ascii=True)}
+              "QJS_COSMO_NODE_TARGET": node["version"]}
     return "/* Generated from locked inputs. */\n" + "\n".join(
         "#define " + key + " " + json.dumps(value, ensure_ascii=True) for key, value in values.items()) + "\n"
 

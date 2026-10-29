@@ -6,7 +6,7 @@ def runtime_source_names(root):
              "scripts/build_config.py", "scripts/build.sh", "scripts/build_crypto_extra.py",
              "scripts/build_native.py", "scripts/build_crypto.py", "scripts/build_compression.py", "scripts/prepare_native.py", "scripts/probe_native.py",
              "scripts/probe_backends.py", "scripts/native_provenance.py", "scripts/build_tls.py", "scripts/build_tls_client.py", "scripts/probe_tls.py", "scripts/build_http.py", "scripts/probe_http.py", "scripts/probe_https.py"}
-    names.update(('scripts/runtime_profiles.py','scripts/build_variants.py','scripts/release_assets.py','scripts/release_tests.py','scripts/test_profiles.py','tests/runtime_profiles.mjs','tests/native/profiles.c','tests/native/ca_provider.c','tests/fixtures/test262-smoke.js','scripts/assemble_release.py','scripts/test_release_packages.py'))
+    names.update(('scripts/build_resources.py','scripts/runtime_resources.py','scripts/test_resources.py','scripts/runtime_profiles.py','scripts/build_variants.py','scripts/release_assets.py','scripts/release_tests.py','scripts/test_profiles.py','tests/runtime_profiles.mjs','tests/native/profiles.c','tests/native/ca_provider.c','tests/fixtures/test262-smoke.js','scripts/assemble_release.py','scripts/test_release_packages.py'))
     for folder, suffixes in (("native", {".c", ".h", ".json", ".pem", ".patch"}), ("src/js", {".js", ".mjs"}), ("types", {".ts"})):
         names.update(path.relative_to(root).as_posix() for path in (root / folder).rglob("*")
                      if path.is_file() and (path.suffix in suffixes or path.name == "LICENSE"))

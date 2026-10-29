@@ -13,6 +13,7 @@ from build_config import load_config
 from build_native import run
 from prepare_native import sha256
 from runtime_capabilities import report
+from runtime_resources import validate_resources
 
 CA_MEMBER = '.quickjs-cosmo/ca-bundle.pem'
 
@@ -88,6 +89,7 @@ def build():
         if segments!=slice_segments(settings.dist/'qjs.exe',fat_payload):
             raise ValueError('Single-CPU LOAD segments differ from the fat slice')
         ca = validate_ca(target, settings.root)
+        resources = validate_resources(target, settings.root, profile)
         validate_architecture(target,architecture)
         capabilities = report(settings.root, profile)
         capabilities['architecture'] = architecture
@@ -95,13 +97,13 @@ def build():
         cap_path.write_text(json.dumps(capabilities, indent=2) + '\n', encoding='utf8')
         record = dict(format=1, profile=profile, architecture=architecture,
                       qjs=dict(bytes=target.stat().st_size, sha256=sha256(target)),
-                      capabilitiesSha256=sha256(cap_path), ca=ca, layout=layout, segments=segments,shellBootstrap=True,
+                      capabilitiesSha256=sha256(cap_path), ca=ca, resources=resources, layout=layout, segments=segments,shellBootstrap=True,
                       fatLinkInput=dict(path=source.relative_to(settings.root).as_posix(), sha256=sha256(source)),
                       command=list(map(str, command)))
         (directory / 'manifest.json').write_text(json.dumps(record, indent=2) + '\n', encoding='utf8')
         records[architecture] = record
-    validate_ca(settings.dist / 'qjs.exe', settings.root)
-    print('PASS runtime variants: ' + profile + ' x64/arm64, shared fat link inputs, one CA member')
+    validate_resources(settings.dist / 'qjs.exe', settings.root, profile)
+    print('PASS runtime variants: ' + profile + ' x64/arm64, shared fat link inputs, one copy of each runtime resource')
     return records
 
 

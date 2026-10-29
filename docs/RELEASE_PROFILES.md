@@ -55,25 +55,18 @@ cosmocc 放到 PATH。tests 包解压后，直接运行
 `releases/public/`，生成最终八个 ZIP、校验和、六份 capabilities、合并 manifest
 和兼容性报告。中间包不是公共 Release 附件。
 
-## CA 资源与 SDK provider
+## 统一运行时资源
 
-默认 CA 仅保存在 APE ZIP 的 `.quickjs-cosmo/ca-bundle.pem`，运行路径为
-`/zip/.quickjs-cosmo/ca-bundle.pem`。fat 两个 CPU 镜像共用一份；qjsc 和 SDK
-通过静态库资源对象自动携带它，因此 SDK 不依赖宿主事先具有 ZIP 资源。
-`NODE_EXTRA_CA_CERTS` 继续在默认信任库上合并，证书与主机名验证保持启用。
+JS 内核、CA、能力声明与资源清单统一放在 APE ZIP 的 `.quickjs-cosmo/` 中。
+fat 的两个 CPU 镜像共用一套；qjsc、SDK 和 Worker 使用同一只读 Provider。
+SDK 链接自动携带资源，`js_cosmo_set_ca_provider()` 已移除。
 
-嵌入方可在首次默认 CA 使用前调用：
+大小和 SHA-256 清单以编译摘要为信任锚；加载只接受固定成员，不回退到宿主文件。
+并发读者借用进程缓存，关闭视图不释放共享字节。`NODE_EXTRA_CA_CERTS` 继续在验证
+默认 CA 后合并，证书与主机名验证保持启用。
 
-```c
-int js_cosmo_set_ca_provider(QJSCosmoCAProvider callback, void *opaque);
-/* callback: int (void *, const unsigned char **pem, size_t *length) */
-```
-
-callback 返回 0 和非空、无 NUL 的 PEM，最多 4 MiB；返回的存储须持续有效至首次
-CA 加载完成，运行时会复制内容。配置作用于整个进程，加载后只读，后续配置返回
-`-1`/`EBUSY`。传入 NULL callback 选择内置资源。callback 只执行一次，不应递归
-调用 CA 加载器，可能在 TLS pump 线程执行，不可调用 JS API；失败不会回退到其他信任源。缺失资源和无效 PEM 均不能绕过 TLS
-验证。`js_cosmo_default_ca()` 返回进程持有的只读内容，可用于 SDK 诊断。
+接口、错误码、非 ZIP 开发构建的失败行为及验收说明见
+[Runtime Resource Provider](RUNTIME_RESOURCES.md)。
 
 ## 体积与发布门禁
 
@@ -84,7 +77,7 @@ CA 加载完成，运行时会复制内容。配置作用于整个进程，加�
 | base | 8.7 / 3.8 MB | 4.6 / 2.0 MB | 4.3 / 1.9 MB |
 | full | 10.8 / 4.6 MB | 5.8 / 2.5 MB | 5.3 / 2.3 MB |
 
-本地无 tag 的固定输入构建实测（字节；最终发布以 CI manifest 为准）：
+Issue #5 的发布基线实测（字节；统一资源迁移后的最终数据以 CI manifest 为准）：
 
 | profile / 架构 | 裸 qjs | runtime ZIP |
 | --- | ---: | ---: |
@@ -96,8 +89,8 @@ CA 加载完成，运行时会复制内容。配置作用于整个进程，加�
 | full-arm64 | 5,379,728 | 2,270,789 |
 
 记录裸文件、LOAD segments、ZIP 条目和下载大小；单架构代码与数据必须逐段匹配
-对应 fat slice。超过预算、缺少/重复 CA、profile/架构或能力哈希不一致，均阻断
+对应 fat slice。超过预算、缺少/重复/损坏运行时资源、profile/架构或能力哈希不一致，均阻断
 发布。base/full 各执行七个平台、真实 ARM64 64K 内核、独立 SDK/tests 解压验收；
-64K 内核增加共享 CA 的并发加载、PEM 逐字节比较和 X.509 解析用例。
+64K 内核检查三类共享资源的并发加载、PEM 逐字节比较和 X.509 解析用例。
 每种单架构在匹配宿主实际运行。最终门禁重新核对两套证据；普通 main/PR 不创建
 tag 或 Release。

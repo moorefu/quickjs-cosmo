@@ -10,6 +10,7 @@ import zipfile
 from ape_layout import inspect
 from build_variants import validate_ca, slice_segments, validate_architecture
 from runtime_capabilities import readme, report
+from runtime_resources import validate_resources
 
 MARGIN = 200_000
 TARGETS = {
@@ -91,6 +92,7 @@ def verify_runtime(settings, version, architecture):
         if slice_segments(binary,layout['payloads'][0])!=slice_segments(fat,payload):
             raise ValueError('Single-CPU code/data differs from its certified fat slice')
     ca = validate_ca(binary, settings.root)
+    resources = validate_resources(binary, settings.root, profile)
     validate_architecture(binary,architecture)
     target_raw, target_zip = TARGETS[profile, architecture]
     if binary.stat().st_size > target_raw + MARGIN or len(data) > target_zip + MARGIN:
@@ -104,7 +106,7 @@ def verify_runtime(settings, version, architecture):
                 capabilitiesSha256=digest((directory / 'capabilities.json').read_bytes()),
                 targetBytes=dict(qjs=target_raw, download=target_zip, margin=MARGIN),
                 slices=[dict(machine=x['machine'], fileBytes=sum(s['fileBytes'] for s in x['loads']),segments=slice_segments(binary,x)) for x in layout['payloads']],
-                members=members, ca=ca)
+                members=members, ca=ca, resources=resources)
 
 
 def package_profile(settings, release):

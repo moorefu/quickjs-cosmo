@@ -36,8 +36,8 @@ class ReleaseEvidenceTests(unittest.TestCase):
         deployment=dict(host=host,qjsSha256=self.inputs['qjsSha256'],records=records,immutable={'dist/qjs.exe':self.inputs['qjsSha256']},capabilities={'zero':{}})
         security=dict(qjsSha256=self.inputs['qjsSha256'],deniedTargetKnownLive=True,unc=dict(status='implemented'),integrity=[dict(requested=rid,value=dict(status='executed',integrity=rid,proof=dict(passed=True,integrity=rid,deniedTarget=dict(status='permission-denied'),checks=[{}]*3))) for rid in (4096,8192,12288)])
         architecture='x64' if execution=='x86_64' else 'arm64'
-        entries=['qjs','qjsc','sdk',architecture,'ca-default','ca-provider','ca-missing','ca-nul']
-        profiles=dict(host=host,profile='base',architecture='fat',qjsSha256=self.inputs['qjsSha256'],capabilitiesSha256=self.inputs['capabilitiesSha256'],variants={'x64':'a'*64,'arm64':'a'*64},caProvider=['default','provider','missing','nul'],records=[dict(entry=entry,sha256='a'*64,output='PASS') for entry in entries])
+        entries=['qjs','qjsc','sdk',architecture,'resource-default',*evidence.resource_cases()]
+        profiles=dict(host=host,profile='base',architecture='fat',qjsSha256=self.inputs['qjsSha256'],capabilitiesSha256=self.inputs['capabilitiesSha256'],variants={'x64':'a'*64,'arm64':'a'*64},resourceCases=evidence.resource_cases(),records=[dict(entry=entry,sha256='a'*64,output='PASS') for entry in entries])
         return dict(packages=dict(inputs=copy.deepcopy(self.inputs),records=[dict(entry=entry,passed=True,sha256={'tests':'current-test-runner','qjsc-sdk':'current-qjsc','ca-sdk':'current-sdk'}[entry]) for entry in ('tests','qjsc-sdk','ca-sdk')]),profiles=profiles,format=1,runner=runner,host=host,inputs=copy.deepcopy(self.inputs),node=node,terminal=terminal,deployment=deployment,windowsSecurity=security,passed=len(checks),failed=0,
             skipped=[contract['windows_skip']] if platform=='win32' else [],checks=checks,
             nodeTests=[t['id'] for t in evidence.read(ROOT/'compat/node-api.json')['tests'] if t['status']=='differential' and 'base' in t.get('profiles',('base','full'))])

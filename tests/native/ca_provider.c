@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <errno.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,51 +6,62 @@
 #include "qjs-cosmo.h"
 #include "../../native/tls/backend.h"
 
-static int calls, missing;
-static unsigned char *pem;
-static size_t length;
-static void *load_ca(void *opaque) { return (void *)js_cosmo_default_ca(); }
-static int provider(void *opaque, const unsigned char **bytes, size_t *size) {
-    assert(opaque == &calls);
-    calls++;
-    *bytes = pem;
-    *size = length;
-    return missing;
+static const char *names[] = {COSMO_RESOURCE_CORE, COSMO_RESOURCE_CA,
+                            COSMO_RESOURCE_CAPABILITIES, COSMO_RESOURCE_MANIFEST};
+static const unsigned char *pointers[4][4];
+static void *load_resources(void *opaque) {
+    size_t thread = (size_t)opaque;
+    for (size_t i = 0; i < 4; i++) {
+        CosmoResourceView view;
+        assert(!js_cosmo_resource_open(names[i], &view));
+        assert(view.data && view.size && !view.data[view.size]);
+        assert(!strcmp(view.name, names[i]));
+        pointers[thread][i] = view.data;
+        js_cosmo_resource_close(&view);
+        assert(!view.data && !view.size && !view.name);
+        js_cosmo_resource_close(&view);
+    }
+    return NULL;
 }
 
 int main(int argc, char **argv) {
     assert(argc == 4);
-    int supplied = strcmp(argv[1], "default");
+    if (strcmp(argv[1], "default")) {
+        int expected = !strcmp(argv[1], "missing") ? COSMO_RESOURCE_MISSING :
+            !strcmp(argv[1], "format") ? COSMO_RESOURCE_FORMAT :
+            !strcmp(argv[1], "integrity") ? COSMO_RESOURCE_INTEGRITY :
+            !strcmp(argv[1], "too-large") ? COSMO_RESOURCE_TOO_LARGE :
+            !strcmp(argv[1], "io") ? COSMO_RESOURCE_IO :
+            !strcmp(argv[1], "unavailable") ? COSMO_RESOURCE_UNAVAILABLE : COSMO_RESOURCE_NAME;
+        for (int i = 0; i < 2; i++) {
+            CosmoResourceView view = {(void *)1, 99, "invalid"};
+            int rc = js_cosmo_resource_open(argv[2], &view);
+            if (rc != expected) { fprintf(stderr, "expected %s, got %s for %s\n", js_cosmo_resource_error(expected), js_cosmo_resource_error(rc), argv[2]); return 1; }
+            assert(!view.data && !view.size && !view.name);
+        }
+        printf("PASS resource %s\n", js_cosmo_resource_error(expected));
+        return 0;
+    }
+    pthread_t threads[4];
+    for (size_t i = 0; i < 4; i++) assert(!pthread_create(&threads[i], NULL, load_resources, (void *)i));
+    for (int i = 0; i < 4; i++) assert(!pthread_join(threads[i], NULL));
+    for (int i = 0; i < 4; i++) for (int j = 1; j < 4; j++) assert(pointers[0][i] == pointers[j][i]);
+    CosmoResourceView view;
+    const char *invalid[] = {"runtime-core.js", "/zip/" COSMO_RESOURCE_CORE,
+        ".quickjs-cosmo/../runtime-core.js", "C:/ca-bundle.pem", NULL};
+    for (size_t i = 0; i < 5; i++) assert(js_cosmo_resource_open(invalid[i], &view) == COSMO_RESOURCE_NAME);
+    const char *ca = js_cosmo_default_ca();
+    assert(ca && ca == (const char *)pointers[0][1]);
     FILE *file = fopen(argv[2], "rb"); assert(file);
     assert(!fseek(file, 0, SEEK_END)); long size = ftell(file); assert(size > 0);
-    assert(!fseek(file, 0, SEEK_SET)); length = size;
-    pem = malloc(length); assert(pem);
-    assert(fread(pem, 1, length, file) == length); fclose(file);
-    if (supplied) {
-        missing = !strcmp(argv[1], "missing");
-        if (!strcmp(argv[1], "nul")) pem[0] = 0;
-        assert(!js_cosmo_set_ca_provider(provider, &calls));
-    }
-    pthread_t threads[4];void *results[4];
-    for(int i=0;i<4;i++)assert(!pthread_create(&threads[i],NULL,load_ca,NULL));
-    for(int i=0;i<4;i++)assert(!pthread_join(threads[i],&results[i]));
-    const char *ca = js_cosmo_default_ca();
-    for(int i=0;i<4;i++)assert(results[i]==ca);
-    assert(js_cosmo_default_ca() == ca);
-    assert(calls == (supplied ? 1 : 0));
-    errno = 0;
-    assert(js_cosmo_set_ca_provider(NULL, NULL) == -1 && errno == EBUSY);
-    if (missing || !strcmp(argv[1], "nul")) assert(!ca);
-    else {
-        assert(ca && strlen(ca) > 100);
-        assert(strlen(ca)==length && !memcmp(ca,pem,length));
-        if (supplied) { assert(ca != (char *)pem); memset(pem, 0, length); }
-        void *arena = malloc(8 * 1024 * 1024); assert(arena);
-        assert(qjs_tls_backend_api()->validate_ca(arena, 8 * 1024 * 1024, (const unsigned char *)ca, strlen(ca)));
-        free(arena);
-        FILE *file = fopen(argv[3], "wb"); assert(file);
-        assert(fwrite(ca, 1, strlen(ca), file) == strlen(ca)); fclose(file);
-    }
-    free(pem);
-    puts("PASS CA provider: default resource, ownership, validation and immutable configuration");
+    assert(!fseek(file, 0, SEEK_SET));
+    unsigned char *pem = malloc(size); assert(pem);
+    assert(fread(pem, 1, size, file) == size); fclose(file);
+    assert(strlen(ca) == size && !memcmp(ca, pem, size)); free(pem);
+    void *arena = malloc(8 * 1024 * 1024); assert(arena);
+    assert(qjs_tls_backend_api()->validate_ca(arena, 8 * 1024 * 1024, (const unsigned char *)ca, size));
+    free(arena);
+    file = fopen(argv[3], "wb"); assert(file);
+    assert(fwrite(ca, 1, size, file) == size); fclose(file);
+    puts("PASS runtime resources: concurrent shared views, fixed names, lifetime and X.509 validation");
 }

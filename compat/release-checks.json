@@ -271,5 +271,17 @@
     "custom/windows-deployment",
     "qjsc/windows-module-path"
   ],
-  "windows_skip": "upstream/test_std: requires Unix /bin/sh, true and cat; run in WSL"
+  "windows_skip": "upstream/test_std: requires Unix /bin/sh, true and cat; run in WSL",
+  "runtimeResources": {
+    "provider": "fixed APE ZIP members; no host or callback fallback",
+    "faultCases": 29,
+    "requiredEntries": [
+      "qjs",
+      "qjsc",
+      "sdk",
+      "Worker",
+      "ARM64 64K"
+    ],
+    "manifest": "canonical sizes and SHA-256 with compiled trust anchor"
+  }
 }

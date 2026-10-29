@@ -51,8 +51,12 @@ python3 scripts/build_tls_client.py $OFFLINE
 python3 scripts/build_http.py
 cp native/module_registry.h "$BUILD/qjs-cosmo.h"
 cp native/tasks.h "$BUILD/qjs-tasks.h"
+cp native/resources.h "$BUILD/qjs-resources.h"
 python3 scripts/generate_runtime_config.py --output "$BUILD/qjs-cosmo-config.h"
-python3 scripts/embed_js.py --output "$BUILD/qjs-builtins.h"
+python3 scripts/build_resources.py
+# Recreate archives so incremental builds cannot retain removed resource/API
+# objects from an earlier SDK layout.
+rm -f "$BUILD/libquickjs.a" "$BUILD/.aarch64/libquickjs.a"
 QJSC=./qjsc.exe
 if [ "$(uname -s)" = Linux ]; then
     case "$(uname -m)" in
@@ -74,6 +78,7 @@ for program in qjs qjsc run-test262; do
     chmod +x "$DIST/$program"
 done
 cp "$BUILD/quickjs.h" "$BUILD/quickjs-libc.h" "$BUILD/qjs-cosmo.h" "$BUILD/qjs-tasks.h" "$DIST/"
+cp "$BUILD/qjs-resources.h" "$DIST/"
 python3 scripts/runtime_profiles.py
 cp src/js/vendor/node/LICENSE "$DIST/NODE-MODULES-LICENSE"
 cat src/js/vendor/punycode/LICENSE >> "$DIST/NODE-MODULES-LICENSE"

@@ -123,7 +123,7 @@ class ReleaseProfileTests(unittest.TestCase):
             files=[('readme.txt',assets.runtime_readme(settings,'version','fat'),0o664),('qjs',b'MZfake',0o755)]
             assets.write_zip(archive,files,(2026,6,4,0,0,0))
             layout=dict(payloads=[dict(machine=62,loads=[dict(offset=0,address=65536,fileBytes=6,memoryBytes=6,flags=5)])])
-            with patch.object(assets,'inspect',return_value=layout),patch.object(assets,'validate_ca',return_value={}),patch.object(assets,'validate_architecture'):
+            with patch.object(assets,'inspect',return_value=layout),patch.object(assets,'validate_ca',return_value={}),patch.object(assets,'validate_resources',return_value={}),patch.object(assets,'validate_architecture'):
                 self.assertEqual(assets.verify_runtime(settings,'version','fat')['qjsBytes'],6)
                 changed=copy.deepcopy(capabilities);changed['modules']=[]
                 (dist/'capabilities.json').write_text(json.dumps(changed))

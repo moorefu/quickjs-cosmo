@@ -261,7 +261,7 @@ static JSValue error_info(JSContext *ctx,JSValueConst self,int argc,JSValueConst
     }
     return js_cosmo_process_error_info(ctx,code);
 }
-static JSValue default_ca(JSContext *ctx,JSValueConst self,int argc,JSValueConst *argv){const char *ca=qjs_tls_backend_api()->default_ca();if(!ca)return JS_ThrowInternalError(ctx,"ERR_TLS_CA_RESOURCE_MISSING");return JS_NewString(ctx,ca);}
+static JSValue default_ca(JSContext *ctx,JSValueConst self,int argc,JSValueConst *argv){const char *ca=qjs_tls_backend_api()->default_ca();if(!ca){CosmoResourceView view;int rc=js_cosmo_resource_open(COSMO_RESOURCE_CA,&view);return js_cosmo_resource_exception(ctx,rc,COSMO_RESOURCE_CA);}return JS_NewString(ctx,ca);}
 static JSValue validate_ca(JSContext *ctx,JSValueConst self,int argc,JSValueConst *argv){
     if(argc<1)return JS_ThrowTypeError(ctx,"Missing extra CA PEM");
     size_t length;const char *ca=JS_ToCStringLen(ctx,&length,argv[0]);if(!ca)return JS_EXCEPTION;

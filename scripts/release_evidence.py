@@ -7,6 +7,7 @@ from pathlib import Path
 from build_config import load_config
 from host_runtime import node_oracle_key, normalize_arch
 from runtime_capabilities import digest
+from test_resources import expected_cases as resource_cases
 
 MATRIX={
     'ubuntu-24.04':('linux','x86_64','x86_64'),
@@ -63,10 +64,10 @@ def validate_evidence(settings,value,build=False):
     profiles=value.get('profiles',{})
     entries=profiles.get('records',[])
     architecture='x64' if host['execution_arch']=='x86_64' else 'arm64'
-    expected_entries={'qjs','qjsc','sdk',architecture,'ca-default','ca-provider','ca-missing','ca-nul'}
+    expected_entries={'qjs','qjsc','sdk',architecture,'resource-default',*resource_cases()}
     if (profiles.get('host')!=host or profiles.get('profile')!=settings.runtime_profile or profiles.get('architecture')!='fat' or
         profiles.get('qjsSha256')!=value['inputs']['qjsSha256'] or profiles.get('capabilitiesSha256')!=value['inputs']['capabilitiesSha256'] or
-        profiles.get('caProvider')!=['default','provider','missing','nul'] or len(entries)!=len(expected_entries) or {v['entry'] for v in entries}!=expected_entries):
+        profiles.get('resourceCases')!=resource_cases() or len(entries)!=len(expected_entries) or {v['entry'] for v in entries}!=expected_entries):
         raise ValueError('Missing or mismatched profile/CA/architecture evidence: '+runner)
     for record in entries:
         if not re.fullmatch('[0-9a-f]{64}',record.get('sha256','')) or 'PASS' not in record.get('output',''):

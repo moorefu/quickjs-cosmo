@@ -7,11 +7,17 @@
 #include <sys/random.h>
 #include "libc/str/str.h"
 #include "third_party/mbedtls/md.h"
+#include "third_party/mbedtls/sha256.h"
 #include "third_party/mbedtls/hkdf.h"
 #include "third_party/mbedtls/pkcs5.h"
 #include "third_party/haclstar/haclstar.h"
 #include "core.h"
 #include "extra.h"
+
+/* Allocation-free integrity hashing through the existing audited closure. */
+int js_cosmo_resource_sha256(const unsigned char *data, size_t size, unsigned char digest[32]) {
+    return mbedtls_sha256_ret(data, size, digest, 0);
+}
 
 static _Thread_local QCryptoAllocator allocator;
 static _Thread_local void *ed_workspace;

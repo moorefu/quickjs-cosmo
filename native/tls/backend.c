@@ -7,11 +7,11 @@
 #include "libc/str/str.h"
 #include "backend.h"
 #include "policy.h"
+#include "../resources.h"
 #include "third_party/mbedtls/net_sockets.h"
-extern const char *js_cosmo_default_ca(void);
 typedef union Block Block;
 union Block {max_align_t alignment;struct {size_t size;Block *next;int used;} v;};
-struct QjsTls {QjsTlsPolicy policy;mbedtls_ssl_context ssl;Block *blocks;int fd,rc,missing_ca;uint32_t flags;};
+struct QjsTls {QjsTlsPolicy policy;mbedtls_ssl_context ssl;Block *blocks;int fd,rc;const char *resource_error;uint32_t flags;};
 static _Thread_local QjsTls *current;
 /* All backend allocations come from owner-prepaid storage. No JS allocator is
    entered by the pump thread. First-fit blocks coalesce and wipe on release. */
@@ -46,8 +46,8 @@ static QjsTls *create(void *memory,size_t size,int fd,const char *identity,const
     uintptr_t first=(start+sizeof(*tls)+sizeof(Block)-1)/sizeof(Block)*sizeof(Block);
     tls->blocks=(void *)first;tls->blocks->v=(typeof(tls->blocks->v)){(uintptr_t)memory+size-first-sizeof(Block),NULL,0};current=tls;
     mbedtls_ssl_init(&tls->ssl);
-    if(!ca){ca=(const unsigned char *)js_cosmo_default_ca();length=ca?strlen((const char *)ca):0;}
-    if(!ca){tls->missing_ca=1;tls->rc=MBEDTLS_ERR_X509_FILE_IO_ERROR;current=NULL;return tls;}
+    if(!ca){CosmoResourceView view;int rc=js_cosmo_resource_open(COSMO_RESOURCE_CA,&view);if(rc)tls->resource_error=js_cosmo_resource_error(rc);else{ca=view.data;length=view.size;js_cosmo_resource_close(&view);}}
+    if(!ca){tls->rc=MBEDTLS_ERR_X509_FILE_IO_ERROR;current=NULL;return tls;}
     tls->rc=qjs_tls_policy_init(&tls->policy,identity,ca,length);
     if(!tls->rc)tls->rc=qjs_tls_policy_setup_sni(&tls->policy,&tls->ssl,sni);
     if(!tls->rc)mbedtls_ssl_set_bio(&tls->ssl,tls,send_bytes,recv_bytes,NULL);
@@ -61,7 +61,7 @@ static int end(QjsTls *tls){current=tls;int rc=mbedtls_ssl_close_notify(&tls->ss
 static int pending(QjsTls *tls){return mbedtls_ssl_check_pending(&tls->ssl);}
 static int want_write(QjsTls *tls){return tls->rc==MBEDTLS_ERR_SSL_WANT_WRITE;}
 static const char *error(QjsTls *tls){uint32_t f=tls->flags;
-    if(tls->missing_ca)return "ERR_TLS_CA_RESOURCE_MISSING";
+    if(tls->resource_error)return tls->resource_error;
     if(f&MBEDTLS_X509_BADCERT_CN_MISMATCH)return "ERR_TLS_CERT_ALTNAME_INVALID";
     if(f&MBEDTLS_X509_BADCERT_EXPIRED)return "CERT_HAS_EXPIRED";
     if(f&MBEDTLS_X509_BADCERT_FUTURE)return "CERT_NOT_YET_VALID";

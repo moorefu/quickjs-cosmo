@@ -95,7 +95,7 @@ def verify_dist(settings):
     if manifest.get("runtime_sources") != expected:
         raise ValueError("Artifact runtime sources do not match this checkout")
     required = {"qjs.exe", "qjsc.exe", "run-test262.exe", "libquickjs.a", ".aarch64/libquickjs.a",
-                "quickjs.h", "quickjs-libc.h", "qjs-cosmo.h", "qjs-tasks.h", "node-compat.d.ts", "stream.d.ts", "file-streams.d.ts", "zlib-streams.d.ts", "fs.d.ts", "fs-async.d.ts", "crypto.d.ts", "crypto-advanced.d.ts", "zlib.d.ts", "algorithms-async.d.ts", "child_process.d.ts", "child-process-async.d.ts", "cosmo.d.ts", "ape-x86_64.elf", "ape-aarch64.elf",
+                "quickjs.h", "quickjs-libc.h", "qjs-cosmo.h", "qjs-tasks.h", "qjs-resources.h", "node-compat.d.ts", "stream.d.ts", "file-streams.d.ts", "zlib-streams.d.ts", "fs.d.ts", "fs-async.d.ts", "crypto.d.ts", "crypto-advanced.d.ts", "zlib.d.ts", "algorithms-async.d.ts", "child_process.d.ts", "child-process-async.d.ts", "cosmo.d.ts", "ape-x86_64.elf", "ape-aarch64.elf",
                 "http.d.ts", "fetch.d.ts", "https.d.ts", "qjs", "qjsc", "run-test262", "versions.json", "QUICKJS-LICENSE", "NODE-MODULES-LICENSE", "NATIVE-MODULES-LICENSES"}
     if not required.issubset(manifest["files"]):
         raise ValueError("Incomplete SDK in CI artifact")
@@ -103,7 +103,7 @@ def verify_dist(settings):
     actual_types={p.name:p.read_bytes() for p in dist.glob('*.d.ts')}
     if actual_types!=expected_types:raise ValueError('SDK declarations do not match runtime profile')
 
-    for source,target in (('native/module_registry.h','qjs-cosmo.h'),('native/tasks.h','qjs-tasks.h')):
+    for source,target in (('native/module_registry.h','qjs-cosmo.h'),('native/tasks.h','qjs-tasks.h'),('native/resources.h','qjs-resources.h')):
         if sha256(root/source)!=sha256(dist/target):raise ValueError('Stale SDK public header: '+target)
     capabilities=capability_report(root,settings.runtime_profile)
     if json.loads((dist/'capabilities.json').read_text(encoding='utf8'))!=capabilities or manifest['features']!=features(capabilities):raise ValueError('Capability contract differs from source inventory')
@@ -144,6 +144,9 @@ def verify_dist(settings):
     from build_variants import validate_ca
     if manifest.get('shared_ca')!={name:validate_ca(dist/name,root) for name in ('qjs.exe','qjsc.exe')}:
         raise ValueError('SDK/interpreter shared CA resource metadata mismatch')
+    from runtime_resources import validate_resources
+    if manifest.get('runtime_resources')!={name:validate_resources(dist/name,root,settings.runtime_profile) for name in ('qjs.exe','qjsc.exe','run-test262.exe')}:
+        raise ValueError('Runtime resource manifest differs from source')
     return manifest
 
 

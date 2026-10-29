@@ -123,6 +123,9 @@ def prepare(settings, tag, commit, run_url):
         "`readme.txt` 和 `qjs`；Windows 将 `qjs` 重命名为 `qjs.exe` 后运行。\n\n"
         "full 增加 Zstd、LZ4 Frame 和 bzip2；另提供 x64/arm64 单架构包。SDK 和 tests 分开下载，"
         "其中 base/full 各自带匹配的类型、能力和入口。两种 profile 均通过七平台和真实 64K 内核验证。\n\n"
+        "JS 内核、CA 与能力声明统一保存在 APE ZIP，按带编译摘要锚的资源清单验证大小和 SHA-256。"
+        "qjs、qjsc、SDK 与 Worker 共用只读 Provider。SDK 的旧 `js_cosmo_set_ca_provider()` 已移除，"
+        "资源接口见 `qjs-resources.h`；不接受外部路径覆盖或宿主文件回退。\n\n"
         "发布版本号来自 tag，ZIP 文件名使用去掉前导 v 的版本号。QuickJS 引擎的固定 VERSION 不变。"
         "`manifest.json` 记录完整构建输入、补丁和文件哈希。\n", encoding="utf-8")
     return files, notes

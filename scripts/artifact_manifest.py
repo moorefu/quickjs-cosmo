@@ -6,6 +6,7 @@ from build_config import load_config
 from runtime_inputs import runtime_source_names
 from runtime_capabilities import report, features
 from build_variants import validate_ca
+from runtime_resources import validate_resources
 
 ROOT = Path(__file__).resolve().parents[1]
 settings = load_config()
@@ -18,6 +19,7 @@ manifest = {
     "architecture": "fat",
     "compression": json.loads((ROOT/'build/native/compression/build.json').read_text()),
     "shared_ca": {name:validate_ca(settings.dist/name,ROOT) for name in ('qjs.exe','qjsc.exe')},
+    "runtime_resources": {name:validate_resources(settings.dist/name,ROOT,settings.runtime_profile) for name in ('qjs.exe','qjsc.exe','run-test262.exe')},
     "quickjs": config["quickjs"],
     "cosmopolitan": config["cosmopolitan"],
     "format": "Actually Portable Executable (APE), x86_64 + aarch64",
