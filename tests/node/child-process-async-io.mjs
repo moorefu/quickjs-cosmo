@@ -43,8 +43,11 @@ const close=child=>new Promise((resolve,reject)=>{child.on('error',reject);child
     try {
         const platform=cp.spawnSync(process.execPath,['-e','console.log(process.platform)'],{encoding:'utf8',windowsHide:true,timeout:5000});output.selfPlatform=[platform.status,platform.stdout.trim()===process.platform];
         const parent=path.join(path.dirname(fixture),'child-unref-parent.mjs'),args=[...(process.versions.node?[]:['-m']),parent];
-        const value=cp.spawnSync(process.execPath,args,{stdio:['ignore','pipe','pipe'],windowsHide:true,timeout:5000,env:{...process.env,QJS_UNREF_SCRIPT:fixture,QJS_UNREF_MARKER:marker}});const deadline=Date.now()+1500;
+        const value=cp.spawnSync(process.execPath,args,{stdio:['ignore','pipe','pipe'],windowsHide:true,timeout:15000,env:{...process.env,QJS_UNREF_SCRIPT:fixture,QJS_UNREF_MARKER:marker}});
         if(value.status!==0)console.error('unref parent: '+value.stderr?.toString());
+        check(value.status===0&&fs.readFileSync(marker+'.ready','utf8')==='ready','unref parent exits while its ready child awaits release');
+        fs.writeFileSync(marker+'.release','release');
+        const deadline=Date.now()+10000;
         let markerValue=null;
         while(Date.now()<deadline){
             try{markerValue=fs.readFileSync(marker,'utf8');}catch(error){if(error.code!=='ENOENT')throw error;}

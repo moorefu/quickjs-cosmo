@@ -1,0 +1,10 @@
+--- a/qjs.c
++++ b/qjs.c
+@@ -130,6 +130,7 @@
+         return NULL;
+     /* system modules */
+     if (js_cosmo_init_modules(ctx) < 0) {
++        js_std_dump_error(ctx);
+         JS_FreeContext(ctx);
+         return NULL;
+     }

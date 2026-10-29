@@ -5,25 +5,6 @@
 #include <spawn.h>
 #include <unistd.h>
 #include "core.h"
-#include "libc/proc/execve.internal.h"
-
-/* WSL may accept an APE's PE header as a Windows program before libc gets
-   ENOEXEC. Prefer the pinned native APE fallback on Linux for APE targets. */
-#define sys_execve qp_private_sys_execve
-#define sys_execve_fallback qp_private_execve_fallback
-#define IsApeLoadable IsApeMagic
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wprio-ctor-dtor"
-#include "libc/proc/execve-sysv.c"
-#pragma GCC diagnostic pop
-#undef sys_execve
-#undef sys_execve_fallback
-#undef IsApeLoadable
-static int node_execve(const char *program,char *const arguments[],char *const environment[]) {
-    if(IsLinux() && IsApeFile(program)){errno=ENOEXEC;return qp_private_execve_fallback(program,arguments,environment);}
-    return execve(program,arguments,environment);
-}
-
 /* Keep Nightly's signal/error/vfork handling. RESETIDS supplies the explicit
    Node uid/gid through private, thread-local getters in this translation unit. */
 static _Thread_local const QPRequest *request;
@@ -40,9 +21,7 @@ static int node_setuid(unsigned uid) {return request && request->uid<0?0:setuid(
 #define getgid requested_gid
 #define setgid node_setgid
 #define setuid node_setuid
-#define execve node_execve
 #include "libc/proc/posix_spawn.c"
-#undef execve
 #undef getuid
 #undef getgid
 #undef setgid

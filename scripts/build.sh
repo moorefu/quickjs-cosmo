@@ -14,7 +14,7 @@ done
 export QUICKJS_COSMO_PROFILE
 python3 scripts/bootstrap.py $OFFLINE
 MAKE=${MAKE:-$(command -v make)}
-python3 scripts/prepare-host.py
+python3 scripts/prepare_toolchain.py $OFFLINE
 TOOLCHAIN=$(python3 scripts/build_config.py toolchain)
 BUILD=$(python3 scripts/build_config.py build)
 DIST=$(python3 scripts/build_config.py dist)
@@ -83,5 +83,6 @@ mkdir -p "$DIST/.aarch64"
 cp "$BUILD/.aarch64/libquickjs.a" "$DIST/.aarch64/"
 cp upstream/quickjs/LICENSE "$DIST/QUICKJS-LICENSE"
 cp "$LOCK" "$DIST/versions.json"
+cp "$TOOLCHAIN/.runtime-toolchain.json" "$DIST/toolchain.json"
 python3 scripts/artifact_manifest.py
 printf '\nBuilt portable binaries in %s\n' "$DIST"

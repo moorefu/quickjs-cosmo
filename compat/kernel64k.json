@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "purpose": "Test-only full-system ARM64 64K kernel; never runtime dependency",
+  "release": "6.8.0-31-generic-64k",
+  "pageSize": 65536,
+  "origin": "https://ports.ubuntu.com/ubuntu-ports/",
+  "index": {
+    "url": "https://ports.ubuntu.com/ubuntu-ports/dists/noble/Release",
+    "sha256": "26758a13cecfaff9ff274d31ea9a4633674a999bd130c09f6ecd66a4b8071184",
+    "signatureUrl": "https://ports.ubuntu.com/ubuntu-ports/dists/noble/Release.gpg",
+    "signingKey": "F6ECB3762474EDA9D21B7022871920D1991BC93C",
+    "packagesSha256": "4a1901e6124fb0a111f5dffc8f5c14474f449e2ecfa71f2eaf0b29917edb53f9"
+  },
+  "packages": {
+    "linux-image-6.8.0-31-generic-64k": {
+      "Version": "6.8.0-31.31",
+      "Filename": "pool/main/l/linux-signed/linux-image-6.8.0-31-generic-64k_6.8.0-31.31_arm64.deb",
+      "Size": "17796902",
+      "SHA256": "a865db51fafb19d5e0e58abae96a0747fb3dd888ed6ecf212fa9d87838ebdb38"
+    },
+    "linux-modules-6.8.0-31-generic-64k": {
+      "Version": "6.8.0-31.31",
+      "Filename": "pool/main/l/linux/linux-modules-6.8.0-31-generic-64k_6.8.0-31.31_arm64.deb",
+      "Size": "207022272",
+      "SHA256": "40d9cc505a05475ace0f5324d852890cde5dcc711d8706d426733b65244171c5"
+    }
+  }
+}

@@ -26,6 +26,7 @@
 #include "qjs-cosmo-config.h"
 
 extern char **environ;
+extern char **__argv;
 static JSClassID state_class;
 static pthread_once_t state_once = PTHREAD_ONCE_INIT;
 static pthread_mutex_t environment_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -231,7 +232,10 @@ int js_cosmo_lookup_state(JSContext *ctx, CosmoRuntimeState **result) {
 CosmoRuntimeState *js_cosmo_state(JSContext *ctx) {
     pthread_once(&state_once, state_once_init);
     JSRuntime *rt = JS_GetRuntime(ctx);
-    if (!JS_IsRegisteredClass(rt, state_class) && JS_NewClass(rt, state_class, &state_definition) < 0) return NULL;
+    if (!JS_IsRegisteredClass(rt, state_class) && JS_NewClass(rt, state_class, &state_definition) < 0) {
+        if (!JS_HasException(ctx)) JS_ThrowOutOfMemory(ctx);
+        return NULL;
+    }
     JSValue global = JS_GetGlobalObject(ctx);
     JSValue symbol = JS_NewSymbol(ctx, "cosmo.internal.runtimeState", 1);
     if (JS_IsException(symbol)) { JS_FreeValue(ctx, global); return NULL; }
@@ -264,6 +268,13 @@ CosmoRuntimeState *js_cosmo_state(JSContext *ctx) {
         JSValue env = environment(ctx), exe;
         if (JS_IsException(env)) { JS_FreeValue(ctx, holder); goto fail; }
         if (JS_SetPropertyStr(ctx, state->data, "env", env) < 0) { JS_FreeValue(ctx, holder); goto fail; }
+        JSValue raw_args = IsWindows() ? js_cosmo_windows_arguments(ctx) : JS_UNDEFINED;
+        JSValue argv0 = IsWindows() && !JS_IsException(raw_args) ? JS_GetPropertyUint32(ctx, raw_args, 0) :
+            JS_IsException(raw_args) ? JS_EXCEPTION : JS_NewString(ctx, __argv && __argv[0] ? __argv[0] : "");
+        JS_FreeValue(ctx, raw_args);
+        if (JS_IsException(argv0) || JS_SetPropertyStr(ctx, state->data, "argv0", argv0) < 0) {
+            JS_FreeValue(ctx, holder); goto fail;
+        }
         exe = executable_path(ctx);
         if (JS_IsException(exe) || JS_SetPropertyStr(ctx, state->data, "execPath", exe) < 0) {
             JS_FreeValue(ctx, holder); goto fail;

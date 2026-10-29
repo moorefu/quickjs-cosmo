@@ -20,7 +20,8 @@ def load_config(profile=None):
     timestamp = datetime.fromisoformat(data["quickjs"]["commit_date"].replace("Z", "+00:00"))
     return SimpleNamespace(
         root=ROOT, profile=profile, lock_file=lock_file, data=data,
-        toolchain=ROOT / "toolchains" / ("cosmocc-" + cosmo["version"]),
+        base_toolchain=ROOT / "toolchains" / ("cosmocc-" + cosmo["version"]),
+        toolchain=ROOT / "toolchains" / ("cosmocc-" + cosmo["version"] + "-runtime64k"),
         archive=ROOT / ".cache" / cosmo.get("archive_name", "cosmocc-" + cosmo["version"] + ".zip"),
         build=ROOT / "build/quickjs-nightly",
         native_source=ROOT / "upstream" / ("cosmopolitan-native-" + cosmo["commit"][:12]),

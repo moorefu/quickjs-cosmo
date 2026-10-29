@@ -203,6 +203,7 @@ declare module 'node:process' {
     export interface Process extends EventEmitter {
         readonly stdin:InputStream;readonly stdout:OutputStream;readonly stderr:OutputStream;
         argv: string[];
+        readonly argv0: string;
         execArgv: string[];
         execPath: string;
         env: ProcessEnv;
@@ -218,7 +219,7 @@ declare module 'node:process' {
         uptime(): number;
         hrtime: { (previous?: [number, number]): [number, number]; bigint(): bigint; };
     }
-    export const argv: Process['argv'], execArgv: Process['execArgv'], execPath: string, env: ProcessEnv;
+    export const argv: Process['argv'], argv0: string, execArgv: Process['execArgv'], execPath: string, env: ProcessEnv;
     export const pid: number, ppid: number, platform: string, arch: string, versions: Process['versions'];
     export const stdin:InputStream,stdout:OutputStream,stderr:OutputStream;
     export let exitCode: Process['exitCode'];

@@ -23,6 +23,7 @@
 #include "libc/nt/struct/securityattributes.h"
 #include "libc/nt/synchronization.h"
 #include "libc/proc/ntspawn.h"
+#include "libc/proc/describefds.internal.h"
 #include "libc/sysv/pib.h"
 
 typedef struct { int verbatim;int64_t prepared[3]; } Launch;
@@ -99,20 +100,27 @@ int qp_windows_launch(const QPRequest *options,const char *filename,const int ch
     uint32_t attributes=GetFileAttributes(program);
     if(attributes!=UINT32_MAX && (attributes&kNtFileAttributeDirectory))return ENOENT;
     Launch scope={.verbatim=options->windows_verbatim,.prepared={-1,-1,-1}};
+    int ape=qjs_interpreter_is_ape(program);
     struct NtStartupInfo startup={.cb=sizeof(startup),.dwFlags=kNtStartfUsestdhandles|kNtStartfUseshowwindow,
         .wShowWindow=options->windows_hide?kNtSwHide:kNtSwShownormal};
     int64_t handles[3]={-1,-1,-1};void *cursors[3]={0};int error=0;
+    struct Fd selected[3]={0};int retained[3]={0};
+    char *fdspec=NULL;int64_t *inherited=NULL;uint32_t inherited_count=0;
     for(int i=0;i<3;i++) {
         __fds_lock();
         if(!__isfdopen(child[i])){__fds_unlock();error=EBADF;goto done;}
         struct Fd fd=__get_pib()->fds.p[child[i]];
+        if(ape&&fd.cursor){
+            if(!__cursor_ref(fd.cursor)){__fds_unlock();error=EBADF;goto done;}
+            selected[i]=fd;retained[i]=1;
+        }
         __fds_unlock();
         if(fd.kind==kFdDevNull) {
             struct NtSecurityAttributes attributes={sizeof(attributes),NULL,1};
             handles[i]=CreateFile(u"NUL",kNtGenericRead|kNtGenericWrite,7,&attributes,3,0,0);
             if(handles[i]==-1){__winerr();error=errno;goto done;}
         } else if(fd.kind!=kFdFile && fd.kind!=kFdConsole){error=ENOTSUP;goto done;}
-        else if(GetFileType(fd.handle)==kNtFileTypeDisk) {
+        else if(!ape&&GetFileType(fd.handle)==kNtFileTypeDisk) {
             int shared=-1;
             for(int j=0;j<i;j++)if(cursors[j] && cursors[j]==fd.cursor){shared=j;break;}
             if(shared>=0) {
@@ -136,6 +144,15 @@ int qp_windows_launch(const QPRequest *options,const char *filename,const int ch
             __winerr();error=errno;goto done;
         }
         startup.stdiofds[i]=handles[i];
+        if(ape){selected[i]=fd;selected[i].handle=handles[i];selected[i].flags&=~O_CLOEXEC;}
+    }
+    if(ape){
+        /* Each selected handle is distinct, while duplicated descriptors retain
+           the same cursor mapping. Only these three stdio fds cross the boundary. */
+        __fds_lock();
+        fdspec=__describe_fds(selected,3,NULL,&startup,GetCurrentProcess(),&inherited,&inherited_count);
+        __fds_unlock();
+        if(!fdspec){error=errno;goto done;}
     }
     char16_t cwd[PATH_MAX];
     if(options->cwd && __mkntpath(options->cwd,cwd)<0){error=errno;goto done;}
@@ -145,9 +162,11 @@ int qp_windows_launch(const QPRequest *options,const char *filename,const int ch
         if(!(attributes&kNtFileAttributeDirectory)){error=ENOENT;goto done;}
     }
     struct NtProcessInformation process={0};
+    char *extras[]={fdspec,NULL};
     struct NtSpawnArgs arguments={.dirhand=-100,.prog=filename,.argv=options->arguments,.envp=options->environment,
+        .extravars=ape?extras:NULL,
         .dwCreationFlags=options->windows_hide?kNtCreateNoWindow:0,.opt_lpCurrentDirectory=options->cwd?cwd:NULL,
-        .opt_lpExplicitHandleList=handles,.dwExplicitHandleCount=3,.lpStartupInfo=&startup,.opt_out_lpProcessInformation=&process};
+        .opt_lpExplicitHandleList=ape?inherited:handles,.dwExplicitHandleCount=ape?inherited_count:3,.lpStartupInfo=&startup,.opt_out_lpProcessInformation=&process};
     Launch *previous=launch;launch=&scope;
     int code=qp_private_ntspawn(&arguments);launch=previous;
     if(code<0){error=errno;goto done;}
@@ -157,7 +176,9 @@ int qp_windows_launch(const QPRequest *options,const char *filename,const int ch
         SetHandleInformation(result->sync_handles[i],1,0);
     }
 done:
+    if(fdspec)__undescribe_fds(fdspec,GetCurrentProcess(),inherited,inherited_count);
     for(int i=0;i<3;i++)if(handles[i]!=-1)CloseHandle(handles[i]);
+    for(int i=0;i<3;i++)if(retained[i])__cursor_unref(selected[i].cursor);
     if(error)cleanup_redirects(result,0);
     return error;
 }

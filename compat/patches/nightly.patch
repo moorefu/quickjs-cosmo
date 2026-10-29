@@ -1,6 +1,16 @@
 --- a/libc/calls/ntspawn.c
 +++ b/libc/calls/ntspawn.c
-@@ -28,6 +28,7 @@
+@@ -18,6 +18,9 @@
+ ╚─────────────────────────────────────────────────────────────────────────────*/
+ #include "libc/proc/ntspawn.h"
+ #include "libc/assert.h"
++#include "libc/intrin/fds.h"
++#include "libc/sysv/pib.h"
++#include "libc/sysv/consts/o.h"
+ #include "libc/calls/state.internal.h"
+ #include "libc/calls/struct/sigset.internal.h"
+ #include "libc/calls/syscall_support-nt.internal.h"
+@@ -28,6 +31,7 @@
  #include "libc/nt/enum/creationdisposition.h"
  #include "libc/nt/enum/fileflagandattributes.h"
  #include "libc/nt/enum/filesharemode.h"
@@ -8,10 +18,27 @@
  #include "libc/nt/enum/processaccess.h"
  #include "libc/nt/enum/processcreationflags.h"
  #include "libc/nt/errors.h"
-@@ -66,6 +67,56 @@
-   HeapFree(GetProcessHeap(), 0, ptr);
- }
+@@ -47,6 +51,14 @@
+ #include "libc/sysv/errfuns.h"
+ #if SupportsWindows()
  
++struct QjsNativeCursors {
++  struct QjsNativeCursors *next;
++  int pid;
++  int64_t handles[3];
++  struct Cursor *cursors[3];
++};
++void qjs_host_cursor_submit(struct QjsNativeCursors *);
++
+ struct SpawnBlock {
+   char16_t path[PATH_MAX];
+   char16_t cmdline[32767];
+@@ -64,6 +76,56 @@
+ 
+ textwindows static void ntspawn_free(void *ptr) {
+   HeapFree(GetProcessHeap(), 0, ptr);
++}
++
 +static textwindows bool qjs_is_ape(const char *p, size_t n) {
 +  return n >= 8 && !memcmp(p, "MZqFpD='", 8);
 +}
@@ -60,12 +87,10 @@
 +  *target = 0;
 +  if (target == block)
 +    target[1] = 0;
-+}
-+
- textwindows static int ntspawn2(struct NtSpawnArgs *a, struct SpawnBlock *sb) {
+ }
  
-   // make executable path
-@@ -88,6 +139,7 @@
+ textwindows static int ntspawn2(struct NtSpawnArgs *a, struct SpawnBlock *sb) {
+@@ -88,6 +150,7 @@
      return enoexec();
    if (got < 3)
      return enoexec();
@@ -73,7 +98,7 @@
    pe = p + got;
  
    // handle shebang
-@@ -134,6 +186,7 @@
+@@ -134,6 +197,7 @@
      // setup the true executable path
      if (__mkntpathath(a->dirhand, argv[0], sb->path, false) == -1)
        return -1;
@@ -81,7 +106,7 @@
    } else {
      // it's something else
      return enoexec();
-@@ -144,6 +197,45 @@
+@@ -144,6 +208,94 @@
      return e2big();
    if (mkntenvblock(sb->envblock, a->envp, a->extravars, sb->envbuf) == -1)
      return -1;
@@ -89,7 +114,10 @@
 +    qjs_strip_protocol(sb->envblock);
 +
 +  /* Native programs need synchronous disk handles; APE keeps its fd protocol. */
++  int rc = -1;
 +  int64_t reopened[3] = {-1, -1, -1};
++  struct Cursor *cursors[3] = {0};
++  struct QjsNativeCursors *record = 0;
 +  int64_t *native_handles = 0;
 +  struct NtStartupInfo native_si = *a->lpStartupInfo;
 +  struct NtSpawnArgs native_args = *a;
@@ -103,18 +131,64 @@
 +    for (int fd = 0; fd < 3; ++fd) {
 +      if (GetFileType(native_si.stdiofds[fd]) != kNtFileTypeDisk)
 +        continue;
-+      int64_t h = ReOpenFile(native_si.stdiofds[fd],
-+          fd ? kNtGenericWrite : kNtGenericRead,
-+          kNtFileShareRead | kNtFileShareWrite | kNtFileShareDelete, 0);
-+      if (h == -1)
-+        continue;
-+      if (!SetHandleInformation(h, 1, 1)) {
-+        CloseHandle(h);
-+        continue;
++      struct Fd *f = __get_pib()->fds.p + fd;
++      int shared = -1;
++      for (int j = 0; j < fd; j++)
++        if (f->cursor && cursors[j] == f->cursor)
++          shared = j;
++      int64_t h;
++      if (shared >= 0) {
++        if (!DuplicateHandle(GetCurrentProcess(), reopened[shared],
++                             GetCurrentProcess(), &h, 0, true,
++                             kNtDuplicateSameAccess)) {
++          __winerr();
++          goto RedirectFailed;
++        }
++      } else {
++        uint32_t access = 0;
++        if ((f->flags & O_ACCMODE) != O_WRONLY)
++          access |= kNtGenericRead;
++        if ((f->flags & O_ACCMODE) != O_RDONLY)
++          access |= (f->flags & O_APPEND)
++                        ? kNtFileAppendData | kNtFileReadAttributes | kNtSynchronize
++                        : kNtGenericWrite;
++        h = ReOpenFile(native_si.stdiofds[fd], access,
++                       kNtFileShareRead | kNtFileShareWrite | kNtFileShareDelete, 0);
++        if (h == -1) {
++          __winerr();
++          goto RedirectFailed;
++        }
++        if (!SetHandleInformation(h, 1, 1)) {
++          __winerr();
++          CloseHandle(h);
++          goto RedirectFailed;
++        }
++        int64_t position = lseek(fd, 0, SEEK_CUR);
++        if (position >= 0 && !SetFilePointerEx(h, position, 0, 0)) {
++          __winerr();
++          CloseHandle(h);
++          goto RedirectFailed;
++        }
 +      }
-+      int64_t position = lseek(fd, 0, SEEK_CUR);
-+      if (position >= 0) {
-+        SetFilePointerEx(h, position, 0, 0);
++      cursors[fd] = f->cursor;
++      if (__vforked && f->cursor) {
++        if (!record) {
++          record = ntspawn_malloc(sizeof(*record));
++          if (!record) {
++            enomem();
++            CloseHandle(h);
++            goto RedirectFailed;
++          }
++          memset(record, 0, sizeof(*record));
++          record->pid = __get_pib()->pid;
++        }
++        if (!__cursor_ref(f->cursor)) {
++          ebadf();
++          CloseHandle(h);
++          goto RedirectFailed;
++        }
++        record->cursors[fd] = f->cursor;
++        record->handles[fd] = h;
 +      }
 +      reopened[fd] = h;
 +      native_si.stdiofds[fd] = h;
@@ -127,10 +201,32 @@
  
    // create attribute list
    // this code won't call malloc in practice
-@@ -215,6 +307,11 @@
+@@ -179,7 +331,6 @@
+   }
+ 
+   // create the process
+-  int rc;
+   if (ok) {
+     struct NtStartupInfoEx info = {
+         .StartupInfo = *a->lpStartupInfo,
+@@ -215,6 +366,25 @@
      DeleteProcThreadAttributeList(alist);
    if (freeme)
      ntspawn_free(freeme);
++  if (!rc && record) {
++    for (int fd = 0; fd < 3; ++fd)
++      if (record->cursors[fd])
++        reopened[fd] = -1;
++    qjs_host_cursor_submit(record);
++    record = 0;
++  }
++RedirectFailed:
++  if (record) {
++    for (int fd = 0; fd < 3; ++fd)
++      if (record->cursors[fd])
++        __cursor_unref(record->cursors[fd]);
++    ntspawn_free(record);
++  }
 +  for (int fd = 0; fd < 3; ++fd)
 +    if (reopened[fd] != -1)
 +      CloseHandle(reopened[fd]);
@@ -141,12 +237,34 @@
  
 --- a/libc/intrin/fds.c
 +++ b/libc/intrin/fds.c
-@@ -144,6 +144,9 @@
+@@ -38,6 +38,7 @@
+ #include "libc/nt/enum/filesharemode.h"
+ #include "libc/nt/memory.h"
+ #include "libc/nt/runtime.h"
++#include "libc/nt/process.h"
+ #include "libc/runtime/internal.h"
+ #include "libc/runtime/runtime.h"
+ #include "libc/sock/sock.h"
+@@ -124,6 +125,10 @@
+       char *smaddr = 0;
+       unsetenv("_COSMO_FDS");
+       unsetenv("_COSMO_FDS_V2");
++      /* The UTF-16 host environment is separate from libc's UTF-8 table. */
++      if (!SetEnvironmentVariable(u"_COSMO_FDS", 0) ||
++          !SetEnvironmentVariable(u"_COSMO_FDS_V2", 0))
++        _Exit(97);
+       for (;;) {
+         long fd, kind, flags, mode, handle, shand, type, family, protocol;
+         if (!TokAtoi(&fdspec, &fd))
+@@ -144,6 +149,12 @@
            break;
          if (!TokAtoi(&fdspec, &protocol))
            break;
-+        /* Keep the standard handles supplied by this process's parent. */
-+        if (fd < 0 || (fd < 3 && handle != fds->p[fd].handle))
++        /* Early startup may replace stdio handles; validate the original
++           inherited handle instead of requiring numeric equality. */
++        uint32_t handle_flags;
++        if (fd < 0 || handle <= 0 ||
++            !GetHandleInformation(handle, &handle_flags))
 +          continue;
          __ensurefds_unlocked(fd);
          struct Fd *f = fds->p + fd;
@@ -473,3 +591,134 @@
    } else {
      sys_fork_nt_child();
      __get_pib()->pid = child_pid;
+--- a/libc/proc/execve-sysv.c
++++ b/libc/proc/execve-sysv.c
+@@ -20,6 +20,7 @@
+ #include "libc/atomic.h"
+ #include "libc/calls/blockcancel.internal.h"
+ #include "libc/calls/calls.h"
++#include "libc/calls/struct/stat.h"
+ #include "libc/calls/cp.internal.h"
+ #include "libc/calls/struct/sigset.internal.h"
+ #include "libc/calls/syscall-sysv.internal.h"
+@@ -50,6 +51,7 @@
+   atomic_uint once;
+   const char *home;
+   const char *tmpdir;
++  char interpreter[PATH_MAX];
+ } g_execve;
+ 
+ static bool IsApeFile(const char *path) {
+@@ -60,7 +62,7 @@
+   char buf[8];
+   int flags = O_RDONLY | O_NOCTTY | O_NONBLOCK | O_CLOEXEC;
+   if ((fd = sys_openat(AT_FDCWD, path, flags, 0)) != -1) {
+-    res = sys_pread(fd, buf, 8, 0, 0) == 8 && IsApeLoadable(buf);
++    res = sys_pread(fd, buf, 8, 0, 0) == 8 && IsApeMagic(buf);
+     sys_close(fd);
+   }
+   ALLOW_CANCELATION;
+@@ -92,6 +94,20 @@
+ static void SetupExecve(void) {
+   g_execve.home = getenv("HOME");
+   g_execve.tmpdir = getenv("TMPDIR");
++  // A supplied ELF loader may live outside the installed/cache locations.
++  // Resolve its identity before vfork, and never mistake a bare payload for it.
++  int saved = errno;
++  struct stat interpreter, payload;
++  if (!IsLinux() ||
++      !GetInterpreterExecutableName(g_execve.interpreter,
++                                   sizeof(g_execve.interpreter)) ||
++      stat(g_execve.interpreter, &interpreter) ||
++      stat(GetProgramExecutableName(), &payload) ||
++      (interpreter.st_dev == payload.st_dev &&
++       interpreter.st_ino == payload.st_ino)) {
++    g_execve.interpreter[0] = 0;
++  }
++  errno = saved;
+ }
+ 
+ __attribute__((__constructor__(10))) static textstartup void InitExecve(void) {
+@@ -123,6 +139,9 @@
+     shargs[1] = (char *)"-";
+     shargs[2] = (char *)prog;
+     memcpy(shargs + 3, argv, (argc + 1) * sizeof(char *));
++    InitExecve();
++    if (g_execve.interpreter[0])
++      RetryExecve(g_execve.interpreter, shargs, envp);
+     if (IsXnuSilicon()) {
+       RetryExecve("/usr/local/bin/ape", shargs, envp);
+     } else {
+@@ -151,6 +170,13 @@
+ 
+ int sys_execve(const char *prog, char *const argv[], char *const envp[]) {
+ 
++  // Do not let WSL's MZ handler turn a Unix legacy exec into a Win32 process.
++  if (IsLinux() && IsApeFile(prog)) {
++    if (access(prog, X_OK)) return -1;
++    errno = ENOEXEC;
++    return sys_execve_fallback(prog, argv, envp);
++  }
++
+   // try kernel
+   // this also checks execute bit
+   __sys_execve(prog, argv, envp);
+--- a/libc/sysv/tlsasm.S
++++ b/libc/sysv/tlsasm.S
+@@ -27,17 +27,21 @@
+ 	.macro	define_tls_getter name:req reg64:req reg32:req section:req
+ 	.section \section,"ax",@progbits
+ 	.align	16
+-\name:	mov	__hostos(%rip),%\reg32
++\name:	pushfq	// fixupobj replaces MOV; preserve its original flags
++	mov	__hostos(%rip),%\reg32
+ 	test	$_HOSTWINDOWS|_HOSTXNU,%\reg32
+ 	jnz	1f
+ 	mov	%fs:0x30,%\reg64 // Linux, FreeBSD, OpenBSD, NetBSD
++	popfq
+ 	ret
+ 1:	test	$_HOSTWINDOWS,%\reg32
+ 	jnz	1f
+ 	mov	%gs:0x30,%\reg64 // XNU
++	popfq
+ 	ret
+ 1:	mov	__tls_index(%rip),%\reg32	// Windows
+ 	mov	%gs:0x1480(,%\reg64,8),%\reg64	// Hooray!
++	popfq
+ 	ret
+ 	.endfn	\name,globl
+ 	.endm
+--- a/libc/calls/mkntcmdline.c
++++ b/libc/calls/mkntcmdline.c
+@@ -114,8 +114,10 @@
+       if (x == '\\') {
+         ++slashes;
+       } else if (x == '"') {
+-        APPEND(u'"');
+-        APPEND(u'"');
++        // MSVCRT/libuv: preserve the pending slashes before a literal quote.
++        for (s = 0; s < slashes * 2 + 1; ++s)
++          APPEND(u'\\');
++        slashes = 0;
+         APPEND(u'"');
+       } else {
+         for (s = 0; s < slashes; ++s)
+--- a/libc/proc/proc.c
++++ b/libc/proc/proc.c
+@@ -64,6 +64,8 @@
+ __msabi extern typeof(WaitForMultipleObjects)
+     *const __imp_WaitForMultipleObjects;
+ 
++void qjs_host_cursor_complete(int);
++
+ struct Procs __proc;
+ alignas(64) static pthread_mutex_t __proc_lock_obj = PTHREAD_MUTEX_INITIALIZER;
+ 
+@@ -157,6 +159,7 @@
+     // handle child _Exit()
+     if (dwExitCode == 0xc9af3d51u)
+       dwExitCode = kNtStillActive;
++    qjs_host_cursor_complete(pr->pid);
+     pr->dwExitCode = dwExitCode;
+     if (pr->status == PROC_STOPPED) {
+       dll_remove(&__proc.stopped, &pr->stopelem);

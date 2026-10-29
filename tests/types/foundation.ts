@@ -8,6 +8,9 @@ import strict from 'node:assert/strict';
 import { resolve } from 'path/posix';
 
 const entry: string = process.argv[1];
+const invoked: string = process.argv0;
+// @ts-expect-error argv0 preserves the initial argument and is read-only.
+process.argv0 = 'changed';
 const nanoseconds: bigint = process.hrtime.bigint();
 const elapsed: [number, number] = process.hrtime();
 process.env.QJS_TYPES = 'test';

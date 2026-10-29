@@ -9,6 +9,7 @@
     "custom/async",
     "custom/compression-interoperability",
     "custom/delivery-source",
+    "custom/deployment-all-entries",
     "custom/experimental",
     "custom/foundation-entry",
     "custom/host-filesystem-all-entries",
@@ -62,6 +63,7 @@
     "qjsc/compile-crypto-advanced-ape",
     "qjsc/compile-crypto-ape",
     "qjsc/compile-delivery",
+    "qjsc/compile-deployment",
     "qjsc/compile-entry-ape",
     "qjsc/compile-file-algorithm-streams-ape",
     "qjsc/compile-foundation-ape",
@@ -109,6 +111,7 @@
     "sdk/compile-compression",
     "sdk/compile-crypto",
     "sdk/compile-crypto-advanced",
+    "sdk/compile-deployment",
     "sdk/compile-file-algorithm-streams",
     "sdk/compile-fs",
     "sdk/compile-host-filesystem",
@@ -167,6 +170,7 @@
     "custom/cross-host-stdio",
     "custom/cross-host-tls-client",
     "custom/delivery-source",
+    "custom/deployment-all-entries",
     "custom/experimental",
     "custom/foundation-entry",
     "custom/host-filesystem-all-entries",
@@ -260,8 +264,9 @@
     "upstream/test_std"
   ],
   "windows": [
-    "cli/windows-module-path",
     "cli/windows-argument",
+    "cli/windows-module-path",
+    "custom/windows-deployment",
     "qjsc/windows-module-path"
   ],
   "windows_skip": "upstream/test_std: requires Unix /bin/sh, true and cat; run in WSL"

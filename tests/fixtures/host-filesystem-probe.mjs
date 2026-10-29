@@ -11,10 +11,12 @@ export async function probe(directory){
     const file=path.join(root,'real','identity.txt'),unicode=path.join(root,'中文 空格','value.txt');
     fs.writeFileSync(file,'identity');fs.writeFileSync(unicode,'unicode');
     const paths=[['.',process.cwd()],[file,file],[unicode,unicode],[path.join(root,'linked','identity.txt'),file]];
-    if(process.platform==='win32'){
+    if(process.platform==='win32'&&root.startsWith('\\\\')){
+        paths.push([root,root],['\\\\?\\UNC\\'+root.slice(2),root]);
+    }else if(process.platform==='win32'){
         paths.push([root,root],[root.replace(/\\/g,'/'),root],['/'+root[0]+root.slice(2).replace(/\\/g,'/'),root],
             [root[0]+':\\',root[0]+':\\'],['/'+root[0],root[0]+':\\'],['/'+root[0]+'/',root[0]+':\\'],
-            ['\\\\?\\'+root,root]);
+            ['\\\\?\\'+root,root],[root.toUpperCase(),root]);
     }
     const output={paths:[],errors:[],files:[]};
     for(const [input,expected]of paths){trace('realpath '+input);const value={input,expected,legacy:os.realpath(input)};try{value.sync=fs.realpathSync(input);}catch(e){value.syncError=e.code;}try{value.async=await fs.promises.realpath(input);}catch(e){value.asyncError=e.code;}output.paths.push(value);}
@@ -31,7 +33,24 @@ export async function probe(directory){
         if(mode==='std'){const f=std.open(name,'w');if(!f)throw Error('std.open failed');f.puts(text);f.close();}
         else if(mode==='os'){const fd=os.open(name,os.O_CREAT|os.O_TRUNC|os.O_WRONLY,0o600);if(fd<0)throw Error('os.open failed');const data=new TextEncoder().encode(text);let offset=0;try{while(offset<data.length){const count=os.write(fd,data.buffer,offset,data.length-offset);if(count<=0)throw Error('os.write failed');offset+=count;}}finally{os.close(fd);}}
         else if(mode==='sync')fs.writeFileSync(name,text);else await fs.promises.writeFile(name,text);
-        output.files.push({name,text});
+        const renamed=name+'-renamed';
+        if(mode==='async'){await fs.promises.rename(name,renamed);await fs.promises.rename(renamed,name);}
+        else if(mode==='sync'){fs.renameSync(name,renamed);fs.renameSync(renamed,name);}
+        else{if(os.rename(name,renamed)!==0||os.rename(renamed,name)!==0)throw Error('legacy rename failed');}
+        const lock=name+'-lock';let exclusive;
+        if(mode==='async'){
+            exclusive=await fs.promises.open(lock,'wx');
+            try{await fs.promises.open(lock,'wx');throw Error('exclusive lock was overwritten');}catch(e){if(e.code!=='EEXIST')throw e;}
+            await exclusive.close();await fs.promises.unlink(lock);
+        }else if(mode==='sync'){
+            exclusive=fs.openSync(lock,'wx');
+            try{fs.openSync(lock,'wx');throw Error('exclusive lock was overwritten');}catch(e){if(e.code!=='EEXIST')throw e;}
+            fs.closeSync(exclusive);fs.unlinkSync(lock);
+        }else{
+            exclusive=os.open(lock,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o600);if(exclusive<0)throw Error('legacy exclusive create failed');
+            try{const second=os.open(lock,os.O_CREAT|os.O_EXCL|os.O_WRONLY,0o600);if(second>=0){os.close(second);throw Error('legacy exclusive lock was overwritten');}}finally{os.close(exclusive);os.remove(lock);}
+        }
+        output.files.push({name,text,renameRoundTrip:true,exclusive:true});
     }
     return output;
 }

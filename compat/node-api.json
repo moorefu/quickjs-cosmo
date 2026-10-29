@@ -612,6 +612,15 @@
       "description": "TTY pipe identity, key parser, CRLF, question/abort/iterator, ASCII editing and cursor bytes",
       "timeout_seconds": 30,
       "compare_output": true
+    },
+    {
+      "id": "DEPLOY-001",
+      "status": "differential",
+      "file": "tests/node/process-argv0.mjs",
+      "task": "DEPLOY-02",
+      "description": "Read-only process.argv0 and native/APE custom argv0 round trips",
+      "timeout_seconds": 60,
+      "compare_output": true
     }
   ],
   "modules": [
@@ -5156,6 +5165,45 @@
               "test": "PROC-007",
               "report": "build/node-compat/<platform>.json",
               "scope": "Same-source Node differential and scripts/test_stdio.py across interpreter, qjsc and manual SDK; delivery Worker and SDK lifecycle checks"
+            }
+          ]
+        },
+        {
+          "name": "argv0",
+          "status": "supported",
+          "task": "DEPLOY-02",
+          "parameters": "Immutable original process argv[0]; independent of process.execPath; Worker snapshot",
+          "tests": [
+            "DEPLOY-001"
+          ],
+          "differences": [
+            "Matches the fixed Node property descriptor and preserves the initial host invocation; Worker receives the parent snapshot."
+          ],
+          "support": {
+            "linux": {
+              "qjs": "supported",
+              "worker": "supported",
+              "qjsc": "supported",
+              "sdk": "supported"
+            },
+            "darwin": {
+              "qjs": "supported",
+              "worker": "supported",
+              "qjsc": "supported",
+              "sdk": "supported"
+            },
+            "win32": {
+              "qjs": "supported",
+              "worker": "supported",
+              "qjsc": "supported",
+              "sdk": "supported"
+            }
+          },
+          "evidence": [
+            {
+              "test": "DEPLOY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Fixed Node oracle; deployment source/Worker/qjsc/SDK vectors"
             }
           ]
         }
@@ -28898,6 +28946,7 @@
   ],
   "extension_plans": [
     "docs/QJB_FORMAT.md",
-    "docs/TERMINAL_CONTRACT.md"
+    "docs/TERMINAL_CONTRACT.md",
+    "docs/DEPLOYMENT_CONTRACT.md"
   ]
 }

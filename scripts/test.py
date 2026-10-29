@@ -163,6 +163,11 @@ def main():
 
     check('custom/runtime-bundle-unmounted',[qjs,'-m',ROOT/'tests/runtime_bundle.mjs'],contains='PASS runtime-bundle-unmounted')
     if args.compile:
+        check('qjsc/compile-deployment',[qjsc,'-m','-D',ROOT/'tests/fixtures/deployment-worker.mjs','-o',scratch/'deployment-standalone.exe',ROOT/'tests/runtime_deployment.mjs'],timeout=180)
+        check('sdk/compile-deployment',[settings.toolchain/'bin/cosmocc','-O2','-I'+str(settings.dist),ROOT/'tests/native/deployment.c',settings.dist/'libquickjs.a','-lm','-lpthread','-ldl','-Wl,--wrap=_Exit,-u,__wrap__Exit','-o',scratch/'deployment-sdk.exe'],timeout=180)
+        deployment=[sys.executable,ROOT/'scripts/test_deployment.py','--qjs',qjs,'--compiled',scratch/'deployment-standalone.exe','--sdk',scratch/'deployment-sdk.exe']
+        if args.node:deployment += ['--node',str(Path(args.node).resolve())]
+        check('custom/deployment-all-entries',deployment,contains='PASS deployment all entries:',timeout=300)
         check('qjsc/compile-terminal',[qjsc,'-m','-D',ROOT/'tests/fixtures/terminal-worker.mjs','-o',scratch/'terminal-standalone.exe',ROOT/'tests/runtime_terminal.mjs'],timeout=180)
         check('sdk/compile-terminal',[settings.toolchain/'bin/cosmocc','-O2','-D_COSMO_SOURCE','-I'+str(ROOT/('upstream/cosmopolitan-native-'+settings.data['cosmopolitan']['commit'][:12])),'-I'+str(settings.dist),ROOT/'tests/native/terminal.c',settings.dist/'libquickjs.a','-lm','-lpthread','-ldl','-Wl,--wrap=_Exit,-u,__wrap__Exit','-o',scratch/'terminal-sdk.exe'],timeout=180)
         check('custom/terminal-all-entries',[sys.executable,ROOT/'scripts/test_terminal.py','--qjs',qjs,'--compiled',scratch/'terminal-standalone.exe','--sdk',scratch/'terminal-sdk.exe'],contains='PASS terminal all entries:',timeout=240)
@@ -331,10 +336,16 @@ def main():
                  timeout=180):
             check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
+        deployment=[sys.executable,ROOT/'scripts/test_deployment.py','--qjs',qjs,'--compiled',args.standalone.resolve().parent/'deployment-standalone.exe','--sdk',args.standalone.resolve().parent/'deployment-sdk.exe']
+        if args.node:deployment += ['--node',str(Path(args.node).resolve())]
+        check('custom/deployment-all-entries',deployment,contains='PASS deployment all entries:',timeout=300)
         check('custom/terminal-all-entries',[sys.executable,ROOT/'scripts/test_terminal.py','--qjs',qjs,'--compiled',args.standalone.resolve().parent/'terminal-standalone.exe','--sdk',args.standalone.resolve().parent/'terminal-sdk.exe'],contains='PASS terminal all entries:',timeout=240)
         check('qjsc/cross-host-bundle-unmounted',[args.standalone.resolve().parent/'bundle-unmounted.exe'],contains='PASS runtime-bundle-unmounted')
         check('custom/qjb-cross-host',[sys.executable,ROOT/'scripts/test_bundle.py','--qjs',qjs,'--sdk',args.standalone.resolve().parent/'bundle-sdk.exe'],contains='PASS qjb:',timeout=120)
         check('custom/host-filesystem-all-entries',[sys.executable,ROOT/'scripts/test_host_filesystem.py','--qjs',qjs,'--compiled',args.standalone.resolve().parent/'host-filesystem-standalone.exe','--sdk',args.standalone.resolve().parent/'host-filesystem-sdk.exe'],contains='PASS host filesystem:',timeout=180)
+        if system=='windows':
+            security=[sys.executable,ROOT/'scripts/test_windows_deployment.py','--qjs',qjs,'--compiled',args.standalone.resolve().parent/'deployment-standalone.exe','--sdk',args.standalone.resolve().parent/'deployment-sdk.exe','--fs-compiled',args.standalone.resolve().parent/'host-filesystem-standalone.exe','--fs-sdk',args.standalone.resolve().parent/'host-filesystem-sdk.exe']
+            check('custom/windows-deployment',security,contains='PASS Windows deployment acceptance:',timeout=240)
         check('qjsc/cross-host-portable-example',[args.standalone.resolve().parent/'portable-example.exe'],contains='"example":"core"',timeout=60)
         check("qjsc/cross-host-delivery",[args.standalone.resolve().parent/"delivery-standalone.exe"],contains="PASS runtime-delivery",timeout=60)
         check("sdk/cross-host-lifecycle",[args.standalone.resolve().parent/"lifecycle-sdk.exe"],contains="PASS lifecycle-sdk",timeout=180)

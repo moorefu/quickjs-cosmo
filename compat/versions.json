@@ -6,13 +6,13 @@
       "path": "libc/calls/ntspawn.c",
       "url": "https://raw.githubusercontent.com/jart/cosmopolitan/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/libc/calls/ntspawn.c",
       "sha256": "c7d29e7e36094b81d54269eda58837582b39b52a9cebcda2874edcd7244b79e7",
-      "patched_sha256": "751455c12d806e9d5e19d96a1d06ddbd5c2396d872a99a1dd8b17fd9800ea514"
+      "patched_sha256": "16bb6c139f9eb96427ecb832c38e23940e89db42f97c0fba35591baaf02c12b4"
     },
     {
       "path": "libc/intrin/fds.c",
       "url": "https://raw.githubusercontent.com/jart/cosmopolitan/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/libc/intrin/fds.c",
       "sha256": "41a9178bb70b58f659405f42eb0754570278178383751b19098263a1ed17a3a1",
-      "patched_sha256": "e2f213845788f3437d4da0b272ddc6282b3eaa4eb206f3c0e63d29106697dbca"
+      "patched_sha256": "bb52289ffa9b9d4f3fdd46a14ee0f9cfa9b274d747a056386300bae781bce021"
     },
     {
       "path": "libc/proc/wait4-nt.c",
@@ -49,7 +49,31 @@
       "url": "https://raw.githubusercontent.com/jart/cosmopolitan/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/libc/proc/fork-nt.c",
       "sha256": "98d3617b81a1cf4afdcbe8853c73438e0c1fe95ea4f0b0d3995f4473c3de780e",
       "patched_sha256": "613ae4bfff3096ab37493c45102bda975cd72de49fd5fdf9fdbdb9227e51d77b"
+    },
+    {
+      "path": "libc/proc/execve-sysv.c",
+      "url": "https://raw.githubusercontent.com/jart/cosmopolitan/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/libc/proc/execve-sysv.c",
+      "sha256": "93a2e908826a54d0aadd24a204c89dabc42b157c031f65605b2de6086987bf0a",
+      "patched_sha256": "4cf1f968dbcc642dd48e4431fcabb40bd9d91d09a8e6605ddc43141f59c1bfdd"
+    },
+    {
+      "path": "libc/sysv/tlsasm.S",
+      "url": "https://raw.githubusercontent.com/jart/cosmopolitan/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/libc/sysv/tlsasm.S",
+      "sha256": "9c2faa3042c3db5c4fcab4af05eead30ffef7abbea6408c3d4889cbcb172820c",
+      "patched_sha256": "c4df87f3fe4507f763602d6cb3ab0f55e8afcb1ee9ed2d32bc923371f24219bf"
+    },
+    {
+      "path": "libc/calls/mkntcmdline.c",
+      "url": "https://raw.githubusercontent.com/jart/cosmopolitan/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/libc/calls/mkntcmdline.c",
+      "sha256": "ac62867b2efb320890dda2b843eba0009089c13a8d7911d0304066e0db02c571",
+      "patched_sha256": "74051ab92ce4d170e79e0b5895883ac510c15e7cc6153a9c9b04df8b10436fd1"
+    },
+    {
+      "path": "libc/proc/proc.c",
+      "url": "https://raw.githubusercontent.com/jart/cosmopolitan/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/libc/proc/proc.c",
+      "sha256": "a6f2863d67e575aea21a539cc994c65f37f3db64be9b6dda5b8b36873647c89d",
+      "patched_sha256": "1bef650883a4b5aa85337602868990fd2a41aa0b95594de51eec9a7fc09074e9"
     }
   ],
-  "patch_sha256": "6d90a3107834735aaaf9b35be6ba3cb2cbbe2add166a34cf75f0432290cdaeaa"
+  "patch_sha256": "8a53a36cda2ff09ec77aeac0f9586d9d9261b85162c195c3726cdec2372170ed"
 }

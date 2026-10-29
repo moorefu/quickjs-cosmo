@@ -131,7 +131,7 @@ def main():
     config = settings.data
     if not args.source_only:
         prepare(config["cosmopolitan"], settings.archive,
-                settings.toolchain, extract_zip, args.offline, os.environ.get("COSMOCC_ARCHIVE_URL"))
+                settings.base_toolchain, extract_zip, args.offline, os.environ.get("COSMOCC_ARCHIVE_URL"))
     prepare(config["quickjs"], ROOT / ".cache/quickjs-source.tar.gz",
             ROOT / "upstream/quickjs", extract_tar, args.offline)
 

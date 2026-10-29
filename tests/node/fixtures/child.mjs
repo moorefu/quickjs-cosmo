@@ -21,3 +21,12 @@ else if(mode==='env') {write(1,JSON.stringify({token:process.env.CHILD_TOKEN??nu
 else if(mode==='argv0') {write(1,process.argv0);}
 else if(mode==='signal') {process.kill(process.pid,args[0]);}
 else if(mode==='marker') {setTimeout(()=>fs.writeFileSync(args[0],'done'),300);}
+else if(mode==='unref-marker') {
+    fs.writeFileSync(args[0]+'.ready','ready');
+    const deadline=Date.now()+20000;
+    while(!fs.existsSync(args[0]+'.release')) {
+        if(Date.now()>deadline)throw Error('unref parent did not release child');
+        await new Promise(resolve=>setTimeout(resolve,20));
+    }
+    fs.writeFileSync(args[0],'done');
+}

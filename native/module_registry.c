@@ -227,8 +227,13 @@ JSModuleDef *js_cosmo_load_builtin(JSContext *ctx, const char *name) {
 }
 
 int js_cosmo_init_modules(JSContext *ctx) {
+    extern void qjs_cosmo_host_tls_link(void);
+    qjs_cosmo_host_tls_link();
     for (size_t i = 0; i < sizeof(builtins) / sizeof(*builtins); i++)
-        if (!js_cosmo_load_builtin(ctx, builtins[i].name)) return -1;
+        if (!js_cosmo_load_builtin(ctx, builtins[i].name)) {
+            if (!JS_HasException(ctx)) JS_ThrowInternalError(ctx, "Cannot initialize builtin: %s", builtins[i].name);
+            return -1;
+        }
     return 0;
 }
 

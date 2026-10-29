@@ -20,7 +20,7 @@ from release_evidence import validate_reports, validate_evidence
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = "build/ci/bundle-manifest.json"
 BUILD_EVIDENCE = "build/ci/build-evidence.json"
-STANDALONES = ("build/test-linux/terminal-standalone.exe", "build/test-linux/terminal-sdk.exe", "build/test-linux/bundle-sdk.exe", "build/test-linux/bundle-unmounted.exe", "build/test-linux/host-filesystem-standalone.exe", "build/test-linux/host-filesystem-sdk.exe", "build/test-linux/portable-example.exe", "build/test-linux/hello-standalone.exe", "build/test-linux/runtime-standalone.exe",
+STANDALONES = ("build/test-linux/deployment-standalone.exe", "build/test-linux/deployment-sdk.exe", "build/test-linux/terminal-standalone.exe", "build/test-linux/terminal-sdk.exe", "build/test-linux/bundle-sdk.exe", "build/test-linux/bundle-unmounted.exe", "build/test-linux/host-filesystem-standalone.exe", "build/test-linux/host-filesystem-sdk.exe", "build/test-linux/portable-example.exe", "build/test-linux/hello-standalone.exe", "build/test-linux/runtime-standalone.exe",
                "build/test-linux/registry-standalone.exe", "build/test-linux/registry-sdk.exe",
                "build/test-linux/buffer-standalone.exe", "build/test-linux/foundation-standalone.exe",
                "build/test-linux/entry-standalone.exe", "build/test-linux/scheduling-standalone.exe",
@@ -124,6 +124,14 @@ def verify_dist(settings):
         header = (dist / name).read_bytes()[:64]
         if header[:4] != b"\x7fELF" or struct.unpack_from("<H", header, 18)[0] != machine:
             raise ValueError("Incorrect Linux loader CPU: " + name)
+    from prepare_toolchain import validate_record
+    from ape_layout import inspect
+    if 'toolchain.json' not in manifest['files']:raise ValueError('Missing installed toolchain provenance')
+    record=json.loads((dist/'toolchain.json').read_text())
+    validate_record(settings,record)
+    for name in ('qjs.exe','qjsc.exe','run-test262.exe','ape-aarch64.elf','ape-x86_64.elf'):inspect(dist/name)
+    for name in ('ape-aarch64.elf','ape-x86_64.elf'):
+        if sha256(dist/name)!=record['installed']['bin/'+name]['sha256']:raise ValueError('Published loader differs from reviewed toolchain')
     return manifest
 
 
@@ -176,6 +184,12 @@ def verify(settings):
         path = settings.root / name
         if path.stat().st_size != record["bytes"] or sha256(path) != record["sha256"]:
             raise ValueError("CI payload hash mismatch: " + name)
+    from ape_layout import inspect
+    for name in STANDALONES:
+        layout=inspect(settings.root/name)
+        for machine,loader in (('62','ape-x86_64.elf'),('183','ape-aarch64.elf')):
+            if layout['loaders'][machine]['sha256']!=sha256(settings.dist/loader):
+                raise ValueError('Standalone embeds a different loader: '+name)
     sdk = verify_dist(settings)
     expected = {"dist/" + name for name in sdk["files"]} | {
         "dist/manifest.json", BUILD_EVIDENCE, SOURCE, *STANDALONES, *QJB_FILES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA, *HTTPS_METADATA,

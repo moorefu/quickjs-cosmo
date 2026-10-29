@@ -1,0 +1,33 @@
+--- a/tool/build/apelink.c
++++ b/tool/build/apelink.c
+@@ -473,7 +473,7 @@
+   // size that actually matters when it comes to executable loading.
+   unsigned long pagesz;
+   if (e->e_machine == EM_AARCH64) {
+-    pagesz = 16384;  // apple m1 (xnu, linux)
++    pagesz = 65536;  // ARM64 4K/16K/64K hosts
+   } else {           //
+     pagesz = 4096;   // x86-64, raspberry pi
+   }
+@@ -1526,7 +1526,7 @@
+   // determine microprocessor page size
+   unsigned long pagesz;
+   if (in->elf->e_machine == EM_AARCH64) {
+-    pagesz = 16384;  // apple m1 (xnu, linux)
++    pagesz = 65536;  // ARM64 4K/16K/64K hosts
+   } else {           //
+     pagesz = 4096;   // x86-64, raspberry pi
+   }
+@@ -2076,9 +2076,9 @@
+       p = EncodeWordAsPrintf(p, in->elf->e_entry, 8);
+       in->printf_phoff = p;
+       p = stpcpy(p, "\\000\\000\\000\\000\\0\\0\\0\\0");
+-      p = stpcpy(p, "\\0\\0\\0\\0\\0\\0\\0\\0"  // 28: e_shoff
+-                    "\\0\\0\\0\\0"              // 30: e_flags
+-                    "\\100\\0"                  // 34: e_ehsize
++      p = stpcpy(p, "\\0\\0\\0\\0\\0\\0\\0\\0"); // 28: e_shoff
++      p = EncodeWordAsPrintf(p, in->elf->e_flags, 4); // 30: e_flags
++      p = stpcpy(p, "\\100\\0"                    // 34: e_ehsize
+                     "\\70\\0");                 // 36: e_phentsize
+       in->printf_phnum = p;
+       p = stpcpy(p, "\\000\\000"  // 38: e_phnum

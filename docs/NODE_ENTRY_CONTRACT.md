@@ -75,3 +75,9 @@ SDK 主机先安装现有模块加载器、事件处理器和 Worker Context 工
 ## Terminal extension (#4)
 
 `node:tty`, `node:readline` and `node:readline/promises` provide the bounded Node subset in [TERMINAL_CONTRACT.md](TERMINAL_CONTRACT.md). Process stdio uses TTY classes only when attached. Legacy `os.ttySetRaw(fd, enabled = true)` has paired, nested release. Real PTY/ConPTY source/qjsc/SDK evidence and post-exit native modes are required; applications own their ANSI cursor/screen changes.
+
+## 7. 原始 argv[0] 与部署入口
+
+`process.argv0` 是不可写、不可配置、可枚举的初始调用参数；它与真实载荷路径 `process.execPath` 分开。源码、qjsc 和 SDK 从宿主原始参数读取，Worker 保留父上下文快照。`process.argv[0]` 继续表示真实可执行文件。SDK 未显式设置 CLI 入口时保留原有 SDK 参数约定。
+
+部署回归覆盖自定义 argv[0]、原生 PID、已安装/缓存 loader、无 binfmt、裸 ELF、真实 ARM64 64K 页内核和 Windows 完整性/UNC；合同、复现命令及限制见 [DEPLOYMENT_CONTRACT.md](DEPLOYMENT_CONTRACT.md)。

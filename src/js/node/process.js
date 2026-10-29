@@ -64,6 +64,7 @@ function createProcess(native, data, getPath) {
     });
     const workerFailure = () => { throw codedError(Error, 'ERR_WORKER_UNSUPPORTED_OPERATION', 'Operation unavailable in a QuickJS Worker'); };
     Object.defineProperties(process, {
+        argv0: { value: data.argv0, enumerable: true },
         argv: { enumerable: true, configurable: true, get: () => data.argv, set: value => { data.argv = value; } },
         execArgv: { enumerable: true, configurable: true, get: () => data.execArgv, set: value => { data.execArgv = value; } },
         execPath: { enumerable: true, configurable: true, get: () => data.execPath, set: value => { data.execPath = value; } },

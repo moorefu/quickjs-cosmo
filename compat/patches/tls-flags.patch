@@ -1,0 +1,25 @@
+--- a/libc/sysv/tlsasm.S
++++ b/libc/sysv/tlsasm.S
+@@ -27,17 +27,21 @@
+ 	.macro	define_tls_getter name:req reg64:req reg32:req section:req
+ 	.section \section,"ax",@progbits
+ 	.align	16
+-\name:	mov	__hostos(%rip),%\reg32
++\name:	pushfq	// fixupobj replaces MOV; preserve its original flags
++	mov	__hostos(%rip),%\reg32
+ 	test	$_HOSTWINDOWS|_HOSTXNU,%\reg32
+ 	jnz	1f
+ 	mov	%fs:0x30,%\reg64 // Linux, FreeBSD, OpenBSD, NetBSD
++	popfq
+ 	ret
+ 1:	test	$_HOSTWINDOWS,%\reg32
+ 	jnz	1f
+ 	mov	%gs:0x30,%\reg64 // XNU
++	popfq
+ 	ret
+ 1:	mov	__tls_index(%rip),%\reg32	// Windows
+ 	mov	%gs:0x1480(,%\reg64,8),%\reg64	// Hooray!
++	popfq
+ 	ret
+ 	.endfn	\name,globl
+ 	.endm

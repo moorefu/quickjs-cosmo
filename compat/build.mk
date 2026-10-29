@@ -1,5 +1,6 @@
 # Read after upstream's Makefile; add objects to every interpreter/compiler/SDK.
 QJS_COMPAT_OBJS = $(OBJDIR)/qjs-host-exit.o $(OBJDIR)/qjs-host-process.o
+QJS_COMPAT_OBJS += $(OBJDIR)/qjs-host-tls.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-module-registry.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-runtime-state.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-bundle.o
@@ -23,6 +24,12 @@ ifneq ($(wildcard $(QJS_COSMO_COMPAT)/libc/intrin/sigproc.c),)
 QJS_COMPAT_CFLAGS = -DQJS_COSMO_SIGPROC
 endif
 LDFLAGS += -Wl,--wrap=_Exit,-u,__wrap__Exit
+QJS_RUNTIME_TOOLCHAIN = $(shell python3 "$(QJS_COSMO_ROOT)/scripts/build_config.py" toolchain)
+
+$(OBJDIR)/qjs-host-tls.o: $(QJS_COSMO_ROOT)/compat/host_tls.S $(QJS_COSMO_COMPAT)/libc/sysv/tlsasm.S | $(OBJDIR)
+	$(QJS_RUNTIME_TOOLCHAIN)/bin/x86_64-linux-cosmo-gcc -D_COSMO_SOURCE -c -I$(QJS_COSMO_COMPAT) -I$(QJS_COSMO_NATIVE) -o $@ $<
+	mkdir -p $(OBJDIR)/.aarch64
+	$(QJS_RUNTIME_TOOLCHAIN)/bin/aarch64-linux-cosmo-gcc -nostdinc -c -o $(OBJDIR)/.aarch64/qjs-host-tls.o $<
 qjs$(EXE) qjsc$(EXE) run-test262$(EXE) libquickjs.a: $(QJS_COMPAT_OBJS)
 
 $(OBJDIR)/qjs-crypto.o: $(QJS_COSMO_ROOT)/build/native/crypto/qjs-crypto.o | $(OBJDIR)

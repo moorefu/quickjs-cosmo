@@ -26,7 +26,7 @@ class RuntimeManifestTests(unittest.TestCase):
             (self.root / name).parent.mkdir(parents=True,exist_ok=True)
             (self.root / name).write_text("original")
         self.manifest = dict(self.data, compatibility=self.compat, patches={}, files={},
-                             compatibility_sources={"compat/versions.json": ci_artifact.sha256(self.root / "compat/versions.json")},
+                             compatibility_sources={p.relative_to(self.root).as_posix():ci_artifact.sha256(p) for p in (self.root/'compat').iterdir() if p.is_file()},
                              runtime_sources={name: ci_artifact.sha256(self.root / name) for name in names})
         self.settings = SimpleNamespace(root=self.root, dist=self.root / "dist", data=self.data)
 
