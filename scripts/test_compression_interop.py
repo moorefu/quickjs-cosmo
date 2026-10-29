@@ -138,6 +138,7 @@ def main():
                 if decoded.read_bytes()!=data: raise ValueError('Zstd stream cross-runtime mismatch')
             cases.append(dict(codec='zstd',stream=True,length=len(data),directions=['node-to-qjs','qjs-to-node'],passed=True))
     path=ROOT/'build/interop/compression.json'
+    path.parent.mkdir(parents=True,exist_ok=True)
     write_report(path,dict(format=1,passed=True,node=identity,lz4=lz4_identity,
         python=dict(version=platform.python_version(),zlib=zlib.ZLIB_RUNTIME_VERSION),cases=cases))
     print(f'PASS compression interoperability: {len(cases)} payload/codec pairs, both directions; report: {path}')
