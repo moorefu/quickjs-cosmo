@@ -3,3 +3,4 @@ native/vendor/haclstar-0.3/** -text
 native/vendor/haclstar-0.3/dist/gcc-compatible/*.c whitespace=-blank-at-eof
 native/tls/mbedtls-security.patch whitespace=-blank-at-eol
 compat/patches/nightly.patch whitespace=-blank-at-eol
+patches/0013-qjb-source-applications.patch whitespace=-blank-at-eol

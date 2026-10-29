@@ -14,3 +14,8 @@ Scope comes from the four GitHub issues read on 2026-10-29. Preserve the fixed Q
 Required regression check names belong in compat/release-checks.json; new transport programs/packages belong in scripts/ci_artifact.py. Update API inventories, types, source/patch hashes and licenses when applicable. Preserve the runtime's three-file release ZIP. Kernel/page-size and PTY/ConPTY requirements require real execution evidence; unsupported or unavailable fixtures cannot be reported as successful tests.
 
 Link each completed issue to its committed change and exact successful workflow run. Keep deferred subrequirements visible until verified; do not close an issue based solely on a build or documentation.
+
+## Verified progress
+
+- #1: commit `1e2c4a39951bdfb77bbc0bc8a4ade0ef589413a7`, [CI 40789997303](https://github.com/moorefu/quickjs-cosmo/actions/runs/40789997303): build, seven Verify jobs and CI gate all succeeded. The connector cannot update issue state (HTTP 403); the verified fix will be linked for closure from the next commit.
+- #2: QJB v1 implemented and locally verified; format and acceptance contract: [QJB_FORMAT.md](QJB_FORMAT.md). Full build 150/150, Linux 98/98, Windows 100/100 plus the declared Unix skip; awaiting committed seven-platform CI. Native TLS audit fixtures now link the shared host startup object; both are checked for bounded invalid-TMP failure on Windows. One existing PROC-005 marker-window mismatch was retained in the local failure log; ten isolated repetitions and the independent complete Linux rerun passed without changing or skipping the test. Review observation/deadline stability during #3 integration work.

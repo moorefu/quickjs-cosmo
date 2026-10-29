@@ -1,0 +1,51 @@
+import assert from 'node:assert/strict';
+import process from 'node:process';
+import fs from 'node:fs';
+import { Buffer } from 'node:buffer';
+import { runtimeInfo } from 'cosmo:runtime';
+import { Worker } from 'os';
+import { resolve, readFileSync, readTextSync } from 'cosmo:bundle';
+import { value } from './lib/value.mjs';
+import { cycle } from './cycle/a.mjs';
+
+function same(a,b){assert.equal(JSON.stringify(a),JSON.stringify(b));}
+assert.equal(value,42);assert.equal(cycle(),'AB');
+assert.equal(import.meta.main,true);assert(/^qjb:\/\/\d+\/src\/main.mjs$/.test(import.meta.url));
+assert.equal(import.meta.filename,undefined);assert.equal(import.meta.dirname,undefined);
+same(process.argv.slice(2),['--fixture','中文 space']);
+same(scriptArgs,process.argv.slice(1));
+assert.equal(process.cwd(),process.env.QJB_EXPECT_CWD);
+same(process.execArgv,globalThis.qjbSDK?[]:['--bundle']);
+assert.equal(runtimeInfo().entry,globalThis.qjbSDK?'sdk':'qjs');
+const first=await import('./lib/value.mjs'),sameModule=await import('./lib/../lib/value.mjs');
+assert.equal(first,sameModule);assert.equal(globalThis.qjbInitializations,1);
+const unicode=await import('./lib/计 数.mjs'),encoded=await import('./lib/%E8%AE%A1%20%E6%95%B0.mjs');
+assert.equal(unicode,encoded);assert.equal(unicode.text,'unicode module');
+const config=JSON.parse(readTextSync(resolve('../assets/config.json',import.meta.url)));
+if(process.env.QJB_MUTATE)fs.writeFileSync(process.argv[1],'external replacement');
+const plugin=await import(`./plugins/${config.plugin}.mjs`);
+assert.equal(await plugin.run(),'delayed result');
+const binary=resolve('/assets/bytes.bin',import.meta.url),bytes=readFileSync(binary);
+assert(Buffer.isBuffer(bytes));same([...bytes],[0,1,255,128]);
+bytes[0]=9;assert.equal(readFileSync(binary)[0],0);
+assert.throws(()=>readTextSync(binary),{code:'ERR_QJB_UTF8'});
+assert.equal(readTextSync(resolve('../assets/中文 space%25%23.txt',import.meta.url)),'资源 bytes\n');
+for(const name of ['../../escape.mjs','./bad\\name','./bad%2fname','./bad%5Cname','./%00','./%ff','./%','./x?y','./x#z','bare-name','file:///tmp/x'])
+    assert.throws(()=>resolve(name,import.meta.url),{code:'ERR_QJB_PATH'});
+assert.throws(()=>resolve('qjb://foreign/a',import.meta.url),{code:'ERR_QJB_MOUNT'});
+assert.throws(()=>readFileSync('qjb://foreign/a'),{code:'ERR_QJB_MOUNT'});
+assert.throws(()=>readFileSync(binary.replace('bytes.bin','%62ytes.bin')),{code:'ERR_QJB_PATH'});
+assert.throws(()=>readFileSync(resolve('./missing.mjs',import.meta.url)),{code:'ERR_QJB_MEMBER'});
+await assert.rejects(import('./missing.mjs'),{code:'ERR_QJB_MEMBER'});
+await assert.rejects(import('unregistered-package'),{code:'ERR_QJB_PATH'});
+const worker=new Worker(resolve('./workers/task.mjs',import.meta.url));
+const response=await new Promise((resolve,reject)=>{
+    const timeout=setTimeout(()=>reject(Error('Worker timed out')),3000);
+    worker.onmessage=({data})=>{clearTimeout(timeout);worker.onmessage=null;resolve(data);};
+    worker.postMessage('go');
+});
+assert.equal(response.value,42);assert.equal(response.text,'delayed result');
+assert.equal(response.main,true);assert(/^qjb:\/\/\d+\/src\/workers\/task.mjs$/.test(response.url));
+assert.equal(response.url.split('/')[2],import.meta.url.split('/')[2]);
+same(response.bytes,[0,1,255,128]);
+console.log('PASS qjb-application');

@@ -1,0 +1,164 @@
+--- a/qjs.c
++++ b/qjs.c
+@@ -321,6 +321,7 @@
+            "-h  --help         list options\n"
+            "-e  --eval EXPR    evaluate EXPR\n"
+            "-i  --interactive  go to interactive mode\n"
++           "    --bundle file  run a QJB v1 source application\n"
+            "-m  --module       load as ES6 module (default=autodetect)\n"
+            "    --script       load as ES6 script (default=autodetect)\n"
+            "    --strict       force strict mode\n"
+@@ -352,6 +353,7 @@
+     int trace_memory = 0;
+     int empty_run = 0;
+     int module = -1;
++    int bundle = 0;
+     int strict = 0;
+     int load_std = 0;
+     int dump_unhandled_promise_rejection = 1;
+@@ -364,7 +366,7 @@
+     /* cannot use getopt because we want to pass the command line to
+        the script */
+     optind = 1;
+-    while (optind < argc && *argv[optind] == '-') {
++    while (!bundle && optind < argc && *argv[optind] == '-') {
+         char *arg = argv[optind] + 1;
+         const char *longopt = "";
+         /* a single - is not an option, it also stops argument scanning */
+@@ -398,6 +400,11 @@
+                 fprintf(stderr, "qjs: missing expression for -e\n");
+                 exit(2);
+             }
++            if (!strcmp(longopt, "bundle")) {
++                if (optind >= argc) { fprintf(stderr, "qjs: --bundle requires a filename\n"); return 2; }
++                bundle = 1;
++                break;
++            }
+             if (opt == 'I' || !strcmp(longopt, "include")) {
+                 if (optind >= argc) {
+                     fprintf(stderr, "expecting filename");
+@@ -485,6 +492,10 @@
+         }
+     }
+ 
++    if (bundle && (expr || include_count || interactive || empty_run || strict || module != -1)) {
++        fprintf(stderr, "qjs: --bundle cannot be combined with eval/include/interactive/quit/strict/module/script\n");
++        return 2;
++    }
+     if (trace_memory) {
+         js_trace_malloc_init(&trace_data);
+         rt = JS_NewRuntime2(&trace_mf, &trace_data);
+@@ -518,7 +529,7 @@
+ 
+     if (!empty_run) {
+         js_std_add_helpers(ctx, argc - optind, argv + optind);
+-        if (js_cosmo_set_cli(ctx, argc, argv, optind, expr ? 1 : 0) < 0)
++        if (js_cosmo_set_cli(ctx, argc, argv, optind, bundle ? 4 : expr ? 1 : 0) < 0)
+             goto fail;
+ 
+         /* make 'std' and 'os' visible to non module code */
+@@ -535,7 +546,12 @@
+                 goto fail;
+         }
+ 
+-        if (expr) {
++        if (bundle) {
++            if (js_cosmo_bundle_eval(ctx, argv[optind]) < 0) {
++                js_std_dump_error(ctx);
++                goto fail;
++            }
++        } else if (expr) {
+             int eval_flags;
+             if (module > 0) {
+                 eval_flags = JS_EVAL_TYPE_MODULE;
+--- a/quickjs-libc.c
++++ b/quickjs-libc.c
+@@ -725,6 +725,8 @@
+ {
+     if (js_cosmo_is_builtin(module_name))
+         return js_cosmo_load_builtin(ctx, module_name);
++    if (!strncmp(module_name, "qjb:", 4))
++        return js_cosmo_bundle_load(ctx, module_name);
+     JSModuleDef *m;
+     int res;
+     
+@@ -3774,6 +3776,7 @@
+     char *basename; /* module base name */
+     uint8_t *process_state;
+     size_t process_state_size;
++    void *bundle;
+     JSWorkerMessagePipe *recv_pipe, *send_pipe;
+     int strip_flags;
+ } WorkerFuncArgs;
+@@ -3928,8 +3931,11 @@
+ 
+     rt = JS_NewRuntime();
+     if (rt == NULL) {
+-        fprintf(stderr, "JS_NewRuntime failure");
+-        exit(1);
++        fprintf(stderr, "JS_NewRuntime failure\n");
++        free(args->filename); free(args->basename); free(args->process_state);
++        js_cosmo_bundle_release(args->bundle);
++        js_free_message_pipe(args->recv_pipe); js_free_message_pipe(args->send_pipe);
++        free(args); return NULL;
+     }
+     JS_SetStripInfo(rt, args->strip_flags);
+     js_std_init_handlers(rt);
+@@ -3945,11 +3951,13 @@
+     /* function pointer to avoid linking the whole JS_NewContext() if
+        not needed */
+     js_cosmo_worker_enter(args->process_state, args->process_state_size, args->basename, args->filename);
++    js_cosmo_bundle_enter(args->bundle);
+     ctx = js_worker_new_context_func(rt);
++    js_cosmo_bundle_enter(NULL);
+     js_cosmo_worker_enter(NULL, 0, NULL, NULL);
+     if (ctx == NULL) {
+         fprintf(stderr, "JS_NewContext failure\n");
+-        free(args->filename); free(args->basename); free(args->process_state); free(args);
++        free(args->filename); free(args->basename); free(args->process_state); js_cosmo_bundle_release(args->bundle); free(args);
+         js_std_free_handlers(rt);
+         JS_FreeRuntime(rt);
+         return NULL;
+@@ -3963,6 +3971,7 @@
+     free(args->filename);
+     free(args->basename);
+     free(args->process_state);
++    js_cosmo_bundle_release(args->bundle);
+     free(args);
+     val = js_std_await(ctx, val);
+     if (JS_IsException(val))
+@@ -4038,15 +4047,24 @@
+         goto fail;
+ 
+     /* module name */
+-    filename = JS_ToCString(ctx, argv[0]);
++    size_t filename_length;
++    filename = JS_ToCStringLen(ctx, &filename_length, argv[0]);
+     if (!filename)
++        goto fail;
++    if (js_cosmo_validate_module_specifier(ctx, filename, filename_length) < 0)
+         goto fail;
+ 
+     args = malloc(sizeof(*args));
+     if (!args)
+         goto oom_fail;
+     memset(args, 0, sizeof(*args));
+-    args->filename = strdup(filename);
++    args->bundle = js_cosmo_bundle_acquire(ctx);
++    if (!strncmp(basename,"qjb:",4) || !strncmp(filename,"qjb:",4)) {
++        char *canonical = js_cosmo_bundle_resolve(ctx,basename,filename);
++        if (!canonical) goto fail;
++        args->filename = strdup(canonical);
++        js_free(ctx,canonical);
++    } else args->filename = strdup(filename);
+     args->basename = strdup(basename);
+     if (!args->filename || !args->basename) goto oom_fail;
+     args->process_state = js_cosmo_worker_snapshot(ctx, &args->process_state_size);
+@@ -4088,6 +4106,7 @@
+         free(args->filename);
+         free(args->basename);
+         free(args->process_state);
++        js_cosmo_bundle_release(args->bundle);
+         js_free_message_pipe(args->recv_pipe);
+         js_free_message_pipe(args->send_pipe);
+         free(args);

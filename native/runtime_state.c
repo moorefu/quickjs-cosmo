@@ -13,6 +13,7 @@
 #include "quickjs-libc.h"
 #include "module_registry.h"
 #include "runtime_state.h"
+#include "bundle.h"
 #include "common/windows_host.h"
 #include "fs/sync.h"
 #include "crypto/binding.h"
@@ -77,6 +78,7 @@ static void state_finalize(JSRuntime *rt, JSValue value) {
         JS_FreeValueRT(rt, state->apis);
         js_free_rt(rt, state->compiled_root);
         js_free_rt(rt, state->worker_entry);
+        js_cosmo_bundle_release(state->bundle);
         js_free_rt(rt, state);
     }
 }
@@ -249,6 +251,7 @@ CosmoRuntimeState *js_cosmo_state(JSContext *ctx) {
     state->holder = holder; /* Borrowed: the global and native closures own this object. */
     state->data = JS_UNDEFINED; state->apis = JS_UNDEFINED;
     state->worker = worker_thread; state->mode = 3;
+    state->bundle = js_cosmo_bundle_inherited();
     JS_SetOpaque(holder, state);
     state->data = worker_state ? JS_ReadObject(ctx, worker_state, worker_state_size, JS_READ_OBJ_REFERENCE) : JS_NewObject(ctx);
     if (JS_IsException(state->data)) { state->data = JS_UNDEFINED; JS_FreeValue(ctx, holder); goto fail; }
@@ -491,6 +494,8 @@ JSValue js_cosmo_native_api(JSContext *ctx, CosmoRuntimeState *state) {
     if (JS_IsException(http) || JS_SetPropertyStr(ctx, api, "http", http) < 0) goto fail;
     JSValue stdio = js_cosmo_stdio_api(ctx);
     if (JS_IsException(stdio) || JS_SetPropertyStr(ctx, api, "stdio", stdio) < 0) goto fail;
+    JSValue bundle = js_cosmo_bundle_api(ctx);
+    if (JS_IsException(bundle) || JS_SetPropertyStr(ctx, api, "bundle", bundle) < 0) goto fail;
     return api;
 fail:
     JS_FreeValue(ctx, api); return JS_EXCEPTION;
@@ -525,7 +530,7 @@ uint8_t *js_cosmo_worker_snapshot(JSContext *ctx, size_t *size) {
 int js_cosmo_set_cli(JSContext *ctx, int argc, char **argv, int first, int mode) {
     CosmoRuntimeState *state = js_cosmo_state(ctx);
     if (!state) return -1;
-    state->mode = mode;
+    state->mode = mode == 5 ? 3 : mode;
     JSValue args = JS_NewArray(ctx), options = JS_NewArray(ctx);
     JSValue raw = IsWindows() ? js_cosmo_windows_arguments(ctx) : JS_UNDEFINED;
     if (JS_IsException(args) || JS_IsException(options) || JS_IsException(raw)) goto fail;
@@ -543,7 +548,7 @@ int js_cosmo_set_cli(JSContext *ctx, int argc, char **argv, int first, int mode)
         exe = JS_GetPropertyStr(ctx, state->data, "execPath");
         if (JS_IsException(exe) || JS_SetPropertyUint32(ctx, args, index++, exe) < 0) goto fail;
         first = 1;
-    } else if (mode == 0 && first < argc) {
+    } else if ((mode == 0 || mode == 4 || mode == 5) && first < argc) {
         char *entry = js_cosmo_absolute_filename(ctx, argv[first++]);
         if (!entry) goto fail;
         host_separators(entry);
@@ -553,15 +558,33 @@ int js_cosmo_set_cli(JSContext *ctx, int argc, char **argv, int first, int mode)
     }
     for (int i = first; i < raw_count; i++) {
         JSValue arg = IsWindows() ? JS_GetPropertyUint32(ctx, raw, i) : JS_NewString(ctx, argv[i]);
+        if ((mode == 4 || mode == 5) && i == first) {
+            const char *text = JS_ToCString(ctx, arg);
+            if (!text) { JS_FreeValue(ctx,arg); goto fail; }
+            int separator = !strcmp(text,"--"); JS_FreeCString(ctx,text);
+            if (separator) { JS_FreeValue(ctx,arg); continue; }
+        }
         if (JS_IsException(arg) || JS_SetPropertyUint32(ctx, args, index++, arg) < 0) goto fail;
     }
-    if (mode != 2) for (int i = 1; i < (mode == 0 ? first - 1 : first); i++) {
+    if (mode != 2) for (int i = 1; i < (mode == 0 || mode == 4 || mode == 5 ? first - 1 : first); i++) {
         JSValue arg = IsWindows() ? JS_GetPropertyUint32(ctx, raw, i) : JS_NewString(ctx, argv[i]);
         if (JS_IsException(arg) || JS_SetPropertyUint32(ctx, options, i - 1, arg) < 0) goto fail;
     }
     int result = JS_SetPropertyStr(ctx, state->data, "argv", args);
     args = JS_UNDEFINED;
     if (result < 0) goto fail;
+    if (mode == 4 || mode == 5) {
+        JSValue process_args=JS_GetPropertyStr(ctx,state->data,"argv"),script_args=JS_NewArray(ctx);
+        if(JS_IsException(process_args)||JS_IsException(script_args)) {JS_FreeValue(ctx,process_args);JS_FreeValue(ctx,script_args);goto fail;}
+        for(unsigned i=1;i<index;i++) {
+            JSValue arg=JS_GetPropertyUint32(ctx,process_args,i);
+            if(JS_IsException(arg)||JS_SetPropertyUint32(ctx,script_args,i-1,arg)<0) {JS_FreeValue(ctx,process_args);JS_FreeValue(ctx,script_args);goto fail;}
+        }
+        JS_FreeValue(ctx,process_args);
+        JSValue global=JS_GetGlobalObject(ctx);
+        int rc=JS_SetPropertyStr(ctx,global,"scriptArgs",script_args);JS_FreeValue(ctx,global);
+        if(rc<0)goto fail;
+    }
     result = JS_SetPropertyStr(ctx, state->data, "execArgv", options);
     options = JS_UNDEFINED;
     JS_FreeValue(ctx, raw);
@@ -613,6 +636,12 @@ int js_cosmo_import_meta(JSContext *ctx, JSValueConst value, int use_realpath, i
     JS_FreeAtom(ctx, atom);
     if (!filename) return -1;
     if (state->worker_entry && !strcmp(filename, state->worker_entry)) main = 1;
+    if (!strncmp(filename,"qjb://",6)) {
+        JSValue meta=JS_GetImportMeta(ctx,module);
+        int rc=JS_IsException(meta)?-1:JS_DefinePropertyValueStr(ctx,meta,"url",JS_NewString(ctx,filename),JS_PROP_C_W_E);
+        if(rc>=0)rc=JS_DefinePropertyValueStr(ctx,meta,"main",JS_NewBool(ctx,main),JS_PROP_C_W_E);
+        JS_FreeValue(ctx,meta);JS_FreeCString(ctx,filename);return rc<0?-1:0;
+    }
     char *path;
     int internal = filename[0] == '<' && strcmp(filename, "<cmdline>");
     if (internal) main = 0;

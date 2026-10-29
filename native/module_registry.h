@@ -7,6 +7,16 @@
 extern "C" {
 #endif
 
+/* QJB source packages: native ownership is independent of JS Runtime opaque. */
+void *js_cosmo_bundle_acquire(JSContext *ctx);
+void *js_cosmo_bundle_retain(void *bundle);
+void js_cosmo_bundle_release(void *bundle);
+void js_cosmo_bundle_enter(void *bundle);
+void *js_cosmo_bundle_inherited(void);
+char *js_cosmo_bundle_resolve(JSContext *ctx, const char *base, const char *name);
+JSModuleDef *js_cosmo_bundle_load(JSContext *ctx, const char *name);
+int js_cosmo_bundle_eval(JSContext *ctx, const char *filename);
+
 /* Call once per new context. Install the normalizer on its runtime as well. */
 int js_cosmo_init_modules(JSContext *ctx);
 int js_cosmo_is_builtin(const char *name);

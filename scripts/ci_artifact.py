@@ -13,13 +13,14 @@ import zipfile
 from build_config import load_config
 from release_version import bundle_release, release_info
 from runtime_inputs import runtime_source_names
+from test_bundle import PACKAGES as QJB_PACKAGES
 from runtime_capabilities import report as capability_report, features
 from release_evidence import validate_reports, validate_evidence
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = "build/ci/bundle-manifest.json"
 BUILD_EVIDENCE = "build/ci/build-evidence.json"
-STANDALONES = ("build/test-linux/host-filesystem-standalone.exe", "build/test-linux/host-filesystem-sdk.exe", "build/test-linux/portable-example.exe", "build/test-linux/hello-standalone.exe", "build/test-linux/runtime-standalone.exe",
+STANDALONES = ("build/test-linux/bundle-sdk.exe", "build/test-linux/bundle-unmounted.exe", "build/test-linux/host-filesystem-standalone.exe", "build/test-linux/host-filesystem-sdk.exe", "build/test-linux/portable-example.exe", "build/test-linux/hello-standalone.exe", "build/test-linux/runtime-standalone.exe",
                "build/test-linux/registry-standalone.exe", "build/test-linux/registry-sdk.exe",
                "build/test-linux/buffer-standalone.exe", "build/test-linux/foundation-standalone.exe",
                "build/test-linux/entry-standalone.exe", "build/test-linux/scheduling-standalone.exe",
@@ -36,6 +37,7 @@ STANDALONES = ("build/test-linux/host-filesystem-standalone.exe", "build/test-li
                "build/test-linux/tls-security-sdk.exe", "build/test-linux/tls-policy-sdk.exe",
                "build/test-linux/tls-client-standalone.exe", "build/test-linux/tls-worker-standalone.exe", "build/test-linux/tls-client-sdk.exe",
                "build/test-linux/http-standalone.exe", "build/test-linux/http-parser-sdk.exe", "build/test-linux/http-client-sdk.exe", "build/test-linux/https-standalone.exe", "build/test-linux/https-client-sdk.exe", "build/test-linux/delivery-standalone.exe", "build/test-linux/stdio-standalone.exe", "build/test-linux/stdio-sdk.exe", "build/test-linux/lifecycle-sdk.exe")
+QJB_FILES = (*QJB_PACKAGES, "build/qjb/packages.json")
 SOURCE = ".cache/quickjs-source.tar.gz"
 NATIVE_PROBES = tuple("build/native/" + name + suffix
                      for name in ("toolchain-probe.exe", "backends-probe.exe")
@@ -62,7 +64,7 @@ def checked_name(name, version):
     if path.is_absolute() or ".." in path.parts or "\\" in name or ":" in name or str(path) != name:
         raise ValueError("Unsafe CI artifact path: " + name)
     release = f"releases/quickjs-cosmo-{version}.zip"
-    allowed = name in (MANIFEST, BUILD_EVIDENCE, SOURCE, *STANDALONES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA, *HTTPS_METADATA, release, release + ".sha256")
+    allowed = name in (MANIFEST, BUILD_EVIDENCE, SOURCE, *STANDALONES, *QJB_FILES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA, *HTTPS_METADATA, release, release + ".sha256")
     allowed |= len(path.parts) == 2 and path.parts[0] == "dist"
     allowed |= len(path.parts) == 3 and path.parts[:2] == ("dist", ".aarch64")
     if not allowed:
@@ -176,7 +178,7 @@ def verify(settings):
             raise ValueError("CI payload hash mismatch: " + name)
     sdk = verify_dist(settings)
     expected = {"dist/" + name for name in sdk["files"]} | {
-        "dist/manifest.json", BUILD_EVIDENCE, SOURCE, *STANDALONES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA, *HTTPS_METADATA,
+        "dist/manifest.json", BUILD_EVIDENCE, SOURCE, *STANDALONES, *QJB_FILES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA, *HTTPS_METADATA,
         "releases/" + release["archive"], "releases/" + release["archive"] + ".sha256"}
     if set(metadata["files"]) != expected:
         raise ValueError("CI bundle payload inventory mismatch")
@@ -227,7 +229,7 @@ def pack(settings, output, tag=None):
     (settings.root/BUILD_EVIDENCE).write_text(json.dumps(evidence,indent=2)+'\n',encoding='utf8')
     archive = "releases/" + release["archive"]
     files = sorted({"dist/" + name for name in sdk["files"]} | {
-        "dist/manifest.json", BUILD_EVIDENCE, SOURCE, *STANDALONES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA, *HTTPS_METADATA, archive, archive + ".sha256"})
+        "dist/manifest.json", BUILD_EVIDENCE, SOURCE, *STANDALONES, *QJB_FILES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA, *HTTPS_METADATA, archive, archive + ".sha256"})
     for name in ("probe-linux.json", "backends-linux.json"):
         native = json.loads((settings.root / "build/native" / name).read_text(encoding="utf-8"))
         if not native["passed"]:

@@ -63,3 +63,11 @@ Worker 保持 QuickJS 的启动和消息协议；这不等于实现 Node Worker 
 差分报告保存到 `build/node-compat/`。`reference_only` 报告只证明 Node 基线 fixture 可执行，不是 QuickJS 验收报告。
 
 M6-01 补充：Windows 用户参数从固定 Nightly 的原始命令行解析器取得，保留盘符、反斜杠、空参数和引号。静态与动态模块说明符均在完整字符串边界拒绝 NUL；不得截断后加载前缀模块。具体标准流和 SDK 回收合同见 [全入口交付](M6_DELIVERY.md)。
+
+## 6. QJB 源码应用包
+
+`qjs --bundle app.qjb -- args` 按清单选择 ESM 或经典脚本入口。包内统一采用 `qjb://挂载ID/成员`，先于宿主路径处理；模块、动态导入、Worker 和资源共享解析规则。`process.argv` 为解释器、绝对包路径和应用参数，`scriptArgs` 为其去掉解释器的部分；分隔符 `--` 去除一次，cwd 保持启动位置。`execArgv` 保留包路径之前的解释器选项。
+
+包内 import.meta 只设置规范地址和 main；主入口及 Worker 入口的 main 为 true，依赖为 false。包内地址不交给宿主 realpath。只读归档的原生引用独立于 JS Runtime/Context opaque，最后一个持有者销毁后释放。完整格式、预算和错误码见 [QJB v1](QJB_FORMAT.md)。
+
+SDK 主机先安装现有模块加载器、事件处理器和 Worker Context 工厂，再调用 `js_cosmo_set_cli(ctx, argc, argv, 1, 5)` 建立包参数，以及 `js_cosmo_bundle_eval(ctx, argv[1])` 执行包；mode 5 保留 SDK 入口身份。最后正常运行事件循环并释放 Context/Runtime。示例见 [tests/native/bundle.c](../tests/native/bundle.c)。生成的 qjsc 应用没有新增包启动命令；未挂载时资源 API 返回明确的 ERR_QJB_MOUNT。

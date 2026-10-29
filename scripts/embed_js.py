@@ -90,6 +90,7 @@ return {
     'node:net': exportObject(net.api), 'node:tls': exportObject(tls.api),
     'node:http': exportObject(http.api), 'node:https': exportObject(https.api),
     'node:url': exportObject(url),
+    'cosmo:bundle': exportObject({resolve:native.bundle.resolve, readFileSync:address=>Buffer.from(native.bundle.read(address)), readTextSync:native.bundle.readText}),
     _drainTicks: scheduler.drainTicks,
     _beforeExit: processStates.get(process).beforeExit,
     _exit: processStates.get(process).emitExit,

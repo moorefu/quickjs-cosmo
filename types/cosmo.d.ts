@@ -1,3 +1,12 @@
+declare module 'cosmo:bundle' {
+    /** Resolve inside the current mounted QJB; never falls back to the host. */
+    export function resolve(specifier:string,baseURL:string):string;
+    /** Fresh bytes; requires a canonical mounted address. */
+    export function readFileSync(bundleURL:string):import('node:buffer').Buffer;
+    /** Strict UTF-8; malformed input throws ERR_QJB_UTF8. */
+    export function readTextSync(bundleURL:string):string;
+}
+
 declare module 'cosmo:runtime' {
     export type APIStatus='planned'|'partial'|'supported'|'blocked'|'unsupported';
     export interface RuntimeCapabilities {

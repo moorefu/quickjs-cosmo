@@ -37,6 +37,7 @@ class Endpoint:
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--probe',type=Path,required=True);parser.add_argument('--node',type=Path)
+    parser.add_argument('--startup-peer',type=Path,help='Also verify the companion audit program uses bounded Windows startup')
     args=parser.parse_args();host=host_info();key=node_oracle_key(host)
     node=(args.node or ROOT/'toolchains'/('node-v24.21.0-'+key)/('node.exe' if os.name=='nt' else 'bin/node')).resolve()
     inventory=read_json(ROOT/'compat/node-api.json');node_identity(node,ROOT,read_json(ROOT/inventory['node_baseline']))
@@ -48,7 +49,16 @@ def main():
             raise ValueError('TLS regression failed '+repr(arguments)+': '+str(result.returncode)+'\n'+result.stdout+result.stderr)
         count+=1
     with tempfile.TemporaryDirectory(prefix='qjs-tls-security-') as temp:
-        folder=Path(temp);subprocess.run([str(node),str(ROOT/'tests/fixtures/tls-certificates.mjs'),str(folder)],check=True,capture_output=True,timeout=60)
+        folder=Path(temp)
+        if os.name=='nt':
+            invalid=folder/'not-a-directory';invalid.write_bytes(b'file')
+            for program in [args.probe,*([args.startup_peer] if args.startup_peer else [])]:
+                result=subprocess.run([str(program.resolve())],cwd=ROOT,capture_output=True,text=True,
+                                      timeout=5,env=dict(os.environ,TMP=str(invalid),TEMP=str(invalid)))
+                if not result.returncode or str(invalid) not in result.stderr or 'signal' not in result.stderr.lower():
+                    raise ValueError('TLS audit program lacks bounded host startup: '+str(program)+'\n'+result.stdout+result.stderr)
+                count+=1
+        subprocess.run([str(node),str(ROOT/'tests/fixtures/tls-certificates.mjs'),str(folder)],check=True,capture_output=True,timeout=60)
         for i,expected in enumerate([1,0,0,0,-1,-1,-1,-1]):run(['--cert',folder/('der-'+str(i)+'.pem'),expected],marker='PASS tls-policy-cert')
         def connect(label='rsa',cipher='ECDHE-RSA-AES128-GCM-SHA256',version=ssl.TLSVersion.TLSv1_2,identity='127.0.0.1',accepted=True,ca=None,rng=False):
             endpoint=Endpoint(folder,label,cipher,version,ipv6=identity=='::1')

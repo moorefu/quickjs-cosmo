@@ -4,6 +4,7 @@
 #include "quickjs-libc.h"
 #include "module_registry.h"
 #include "runtime_state.h"
+#include "bundle.h"
 #include "qjs-cosmo-config.h"
 #include "qjs-builtins.h"
 
@@ -21,6 +22,7 @@ static const Builtin builtins[] = {
     { "std", js_init_module_std },
     { "os", js_init_module_os },
     { "cosmo:runtime", runtime_module },
+    { "cosmo:bundle", core_module },
     { "node:buffer", core_module },
     { "node:process", core_module },
     { "node:path", core_module },
@@ -167,6 +169,8 @@ char *js_cosmo_module_normalize(JSContext *ctx, const char *base,
         unknown_builtin(ctx, name);
         return NULL;
     }
+    if (!strncmp(base,"qjb:",4) || !strncmp(name,"qjb:",4))
+        return js_cosmo_bundle_resolve(ctx,base,name);
     relative = js_std_normalize_filename(ctx, name);
     if (!relative) return NULL;
     if (relative[0] != '.') {

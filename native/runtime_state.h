@@ -11,6 +11,7 @@ typedef struct {
     int scheduler_finished;
     char *compiled_root;
     char *worker_entry;
+    void *bundle;
 } CosmoRuntimeState;
 
 CosmoRuntimeState *js_cosmo_state(JSContext *ctx);

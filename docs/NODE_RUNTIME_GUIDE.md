@@ -95,3 +95,5 @@ console.log(info.capabilities.scope,info.capabilities.limits);
 ```
 
 七平台 CI 覆盖 Linux x64/ARM64、macOS Intel/ARM64、Windows 2022/2025 x64 和 Windows ARM 上的 x64 APE。BSD 没有本项目验收 runner。CI 的 compatibility-report.json 绑定本次二进制、源码/输入和 Node 基线；API 数量不作为兼容率。
+
+源码应用可使用 [QJB v1](QJB_FORMAT.md)：`qjs tools/qjb-pack.mjs ./app -o app.qjb --deflate` 打包完整目录，`qjs --bundle app.qjb -- args` 运行。清单、代码与资源保留原始字节；计算路径的动态导入与包内 Worker 也可继续工作。`cosmo:bundle` 提供资源解析、Buffer 读取和严格 UTF-8 文本读取，包地址与宿主 fs 路径各自遵循文档中的合同。

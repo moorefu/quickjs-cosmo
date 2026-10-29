@@ -587,6 +587,22 @@
       "task": "M6-01",
       "description": "Module NUL rejection, file metadata and host realpath boundaries",
       "timeout_seconds": 30
+    },
+    {
+      "id": "QJB-001",
+      "status": "runtime",
+      "file": "tests/fixtures/qjb-app/src/main.mjs",
+      "task": "QJB-04",
+      "description": "Canonical QJB resources, cache, dynamic import, TLA and Worker snapshot",
+      "timeout_seconds": 30
+    },
+    {
+      "id": "QJB-002",
+      "status": "runtime",
+      "file": "tests/runtime_bundle.mjs",
+      "task": "QJB-06",
+      "description": "Unmounted bundle APIs fail clearly in source/qjsc contexts",
+      "timeout_seconds": 30
     }
   ],
   "modules": [
@@ -25539,6 +25555,126 @@
           }
         }
       ]
+    },
+    {
+      "specifier": "cosmo:bundle",
+      "aliases": [],
+      "entries": [
+        {
+          "name": "resolve",
+          "status": "supported",
+          "task": "QJB-04",
+          "parameters": "(specifier: string, baseURL: string) => canonical QJB URL",
+          "tests": [
+            "QJB-001",
+            "QJB-002"
+          ],
+          "differences": [
+            "QJB v1 extension, not a Node API. Requires a mounted archive. Generated qjsc CLIs do not mount packages; SDK hosts may call js_cosmo_bundle_eval. See docs/QJB_FORMAT.md for strict paths, UTF-8 and quotas."
+          ],
+          "evidence": [
+            "scripts/test_bundle.py",
+            "tests/native/bundle.c",
+            "docs/QJB_FORMAT.md"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "supported",
+              "worker": "supported",
+              "qjsc": "unsupported",
+              "sdk": "supported"
+            },
+            "darwin": {
+              "qjs": "supported",
+              "worker": "supported",
+              "qjsc": "unsupported",
+              "sdk": "supported"
+            },
+            "win32": {
+              "qjs": "supported",
+              "worker": "supported",
+              "qjsc": "unsupported",
+              "sdk": "supported"
+            }
+          }
+        },
+        {
+          "name": "readFileSync",
+          "status": "supported",
+          "task": "QJB-04",
+          "parameters": "(bundleURL: string) => fresh Buffer",
+          "tests": [
+            "QJB-001",
+            "QJB-002"
+          ],
+          "differences": [
+            "QJB v1 extension, not a Node API. Requires a mounted archive. Generated qjsc CLIs do not mount packages; SDK hosts may call js_cosmo_bundle_eval. See docs/QJB_FORMAT.md for strict paths, UTF-8 and quotas."
+          ],
+          "evidence": [
+            "scripts/test_bundle.py",
+            "tests/native/bundle.c",
+            "docs/QJB_FORMAT.md"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "supported",
+              "worker": "supported",
+              "qjsc": "unsupported",
+              "sdk": "supported"
+            },
+            "darwin": {
+              "qjs": "supported",
+              "worker": "supported",
+              "qjsc": "unsupported",
+              "sdk": "supported"
+            },
+            "win32": {
+              "qjs": "supported",
+              "worker": "supported",
+              "qjsc": "unsupported",
+              "sdk": "supported"
+            }
+          }
+        },
+        {
+          "name": "readTextSync",
+          "status": "supported",
+          "task": "QJB-04",
+          "parameters": "(bundleURL: string) => strict UTF-8 string",
+          "tests": [
+            "QJB-001",
+            "QJB-002"
+          ],
+          "differences": [
+            "QJB v1 extension, not a Node API. Requires a mounted archive. Generated qjsc CLIs do not mount packages; SDK hosts may call js_cosmo_bundle_eval. See docs/QJB_FORMAT.md for strict paths, UTF-8 and quotas."
+          ],
+          "evidence": [
+            "scripts/test_bundle.py",
+            "tests/native/bundle.c",
+            "docs/QJB_FORMAT.md"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "supported",
+              "worker": "supported",
+              "qjsc": "unsupported",
+              "sdk": "supported"
+            },
+            "darwin": {
+              "qjs": "supported",
+              "worker": "supported",
+              "qjsc": "unsupported",
+              "sdk": "supported"
+            },
+            "win32": {
+              "qjs": "supported",
+              "worker": "supported",
+              "qjsc": "unsupported",
+              "sdk": "supported"
+            }
+          }
+        }
+      ]
     }
   ],
   "unsupported": [
@@ -28216,5 +28352,8 @@
         }
       ]
     }
+  ],
+  "extension_plans": [
+    "docs/QJB_FORMAT.md"
   ]
 }

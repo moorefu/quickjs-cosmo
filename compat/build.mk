@@ -2,6 +2,7 @@
 QJS_COMPAT_OBJS = $(OBJDIR)/qjs-host-exit.o $(OBJDIR)/qjs-host-process.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-module-registry.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-runtime-state.o
+QJS_COMPAT_OBJS += $(OBJDIR)/qjs-bundle.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-tasks.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-windows-host.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-fs-sync.o
@@ -32,6 +33,9 @@ $(OBJDIR)/qjs-compression.o: $(QJS_COSMO_ROOT)/build/native/compression/qjs-comp
 	cp $< $@
 	mkdir -p $(OBJDIR)/.aarch64
 	cp $(QJS_COSMO_ROOT)/build/native/compression/.aarch64/qjs-compression.o $(OBJDIR)/.aarch64/
+
+$(OBJDIR)/qjs-bundle.o: $(QJS_COSMO_ROOT)/native/bundle.c $(QJS_COSMO_ROOT)/native/bundle.h $(QJS_COSMO_ROOT)/native/runtime_state.h quickjs.h quickjs-libc.h | $(OBJDIR)
+	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -I$(QJS_COSMO_NATIVE) -c -o $@ $<
 
 $(OBJDIR)/qjs-module-registry.o: $(QJS_COSMO_ROOT)/native/module_registry.c \
     $(QJS_COSMO_ROOT)/native/module_registry.h $(QJS_COSMO_ROOT)/native/runtime_state.h qjs-cosmo-config.h qjs-builtins.h quickjs.h quickjs-libc.h | $(OBJDIR)

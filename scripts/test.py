@@ -161,7 +161,12 @@ def main():
     check("custom/delivery-source", [qjs, "-m", ROOT/"tests/runtime_delivery.mjs"], contains="PASS runtime-delivery", timeout=60)
     check("qjsc/module-nul", [qjsc,"-c","-m","-o",scratch/"module-nul.c",ROOT/"tests/fixtures/module-nul.mjs"], expected=1, contains="ERR_UNKNOWN_BUILTIN_MODULE")
 
+    check('custom/runtime-bundle-unmounted',[qjs,'-m',ROOT/'tests/runtime_bundle.mjs'],contains='PASS runtime-bundle-unmounted')
     if args.compile:
+        check('qjsc/compile-bundle-unmounted',[qjsc,'-m','-o',scratch/'bundle-unmounted.exe',ROOT/'tests/runtime_bundle.mjs'],timeout=180)
+        check('qjsc/run-bundle-unmounted',[scratch/'bundle-unmounted.exe'],contains='PASS runtime-bundle-unmounted')
+        check('sdk/compile-bundle',[settings.toolchain/'bin/cosmocc','-O2','-I'+str(settings.dist),ROOT/'tests/native/bundle.c',settings.dist/'libquickjs.a','-lm','-lpthread','-ldl','-Wl,--wrap=_Exit,-u,__wrap__Exit','-o',scratch/'bundle-sdk.exe'],timeout=180)
+        check('custom/qjb-full',[sys.executable,ROOT/'scripts/test_bundle.py','--qjs',qjs,'--sdk',scratch/'bundle-sdk.exe','--prepare','--full'],contains='PASS qjb:',timeout=120)
         check('qjsc/compile-host-filesystem',[qjsc,'-m','-D',ROOT/'tests/fixtures/host-filesystem-worker.mjs','-o',scratch/'host-filesystem-standalone.exe',ROOT/'tests/runtime_host_filesystem.mjs'],timeout=180)
         check('sdk/compile-host-filesystem',[settings.toolchain/'bin/cosmocc','-O2','-I'+str(settings.dist),ROOT/'tests/native/host_filesystem.c',settings.dist/'libquickjs.a','-lm','-lpthread','-ldl','-Wl,--wrap=_Exit,-u,__wrap__Exit','-o',scratch/'host-filesystem-sdk.exe'],timeout=180)
         check('custom/host-filesystem-all-entries',[sys.executable,ROOT/'scripts/test_host_filesystem.py','--qjs',qjs,'--compiled',scratch/'host-filesystem-standalone.exe','--sdk',scratch/'host-filesystem-sdk.exe'],contains='PASS host filesystem:',timeout=180)
@@ -203,7 +208,7 @@ def main():
         if check("sdk/compile-tls-audit", [sys.executable, ROOT / "scripts/probe_tls.py", "--offline", "--output", scratch], timeout=600):
             check("sdk/tls-security-unit", [scratch / "tls-security-sdk.exe"], contains="PASS tls-security-unit", timeout=120)
             if args.node_compat:
-                tls_command=[sys.executable, ROOT / "scripts/test_tls_security.py", "--probe", scratch / "tls-policy-sdk.exe"]
+                tls_command=[sys.executable, ROOT / "scripts/test_tls_security.py", "--probe", scratch / "tls-policy-sdk.exe", "--startup-peer", scratch / "tls-security-sdk.exe"]
                 if args.node: tls_command += ["--node", str(Path(args.node).resolve())]
                 check("sdk/tls-security-policy", tls_command, contains="PASS TLS security policy:", timeout=120)
         if check("qjsc/compile-network-ape", [qjsc, "-m", "-D", ROOT / "tests/fixtures/network-worker.mjs",
@@ -323,6 +328,8 @@ def main():
                  timeout=180):
             check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
+        check('qjsc/cross-host-bundle-unmounted',[args.standalone.resolve().parent/'bundle-unmounted.exe'],contains='PASS runtime-bundle-unmounted')
+        check('custom/qjb-cross-host',[sys.executable,ROOT/'scripts/test_bundle.py','--qjs',qjs,'--sdk',args.standalone.resolve().parent/'bundle-sdk.exe'],contains='PASS qjb:',timeout=120)
         check('custom/host-filesystem-all-entries',[sys.executable,ROOT/'scripts/test_host_filesystem.py','--qjs',qjs,'--compiled',args.standalone.resolve().parent/'host-filesystem-standalone.exe','--sdk',args.standalone.resolve().parent/'host-filesystem-sdk.exe'],contains='PASS host filesystem:',timeout=180)
         check('qjsc/cross-host-portable-example',[args.standalone.resolve().parent/'portable-example.exe'],contains='"example":"core"',timeout=60)
         check("qjsc/cross-host-delivery",[args.standalone.resolve().parent/"delivery-standalone.exe"],contains="PASS runtime-delivery",timeout=60)
@@ -345,7 +352,7 @@ def main():
             check("custom/cross-host-tls-client",tls_client,contains="PASS TLS client timeout",timeout=300)
         check("sdk/cross-host-tls-security", [args.standalone.resolve().parent / "tls-security-sdk.exe"], contains="PASS tls-security-unit", timeout=120)
         if args.node_compat:
-            tls_command=[sys.executable, ROOT / "scripts/test_tls_security.py", "--probe", args.standalone.resolve().parent / "tls-policy-sdk.exe"]
+            tls_command=[sys.executable, ROOT / "scripts/test_tls_security.py", "--probe", args.standalone.resolve().parent / "tls-policy-sdk.exe", "--startup-peer", args.standalone.resolve().parent / "tls-security-sdk.exe"]
             if args.node: tls_command += ["--node", str(Path(args.node).resolve())]
             check("sdk/cross-host-tls-policy", tls_command, contains="PASS TLS security policy:", timeout=120)
         check("qjsc/cross-host-hash-extra", [args.standalone.resolve().parent / "hash-extra-standalone.exe"], contains="PASS runtime-hash-extra", timeout=120)
