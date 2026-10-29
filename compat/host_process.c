@@ -1,6 +1,7 @@
 /* These files are the checksum-verified sources of the selected toolchain. */
 #if defined(__x86_64__)
 #include "libc/calls/open-nt.c"
+#include "libc/calls/readntsym.c"
 #include "libc/calls/mkntcmdline.c"
 #include "libc/calls/ntspawn.c"
 /* Native children use synchronous Windows offsets. Keep the cursor alive until

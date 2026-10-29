@@ -73,7 +73,13 @@
       "url": "https://raw.githubusercontent.com/jart/cosmopolitan/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/libc/proc/proc.c",
       "sha256": "a6f2863d67e575aea21a539cc994c65f37f3db64be9b6dda5b8b36873647c89d",
       "patched_sha256": "1bef650883a4b5aa85337602868990fd2a41aa0b95594de51eec9a7fc09074e9"
+    },
+    {
+      "path": "libc/calls/readntsym.c",
+      "url": "https://raw.githubusercontent.com/jart/cosmopolitan/aefad27c09ffda64c6ac64bd69f758e9f9c7b91d/libc/calls/readntsym.c",
+      "sha256": "b2b9d328c85fd7d2dc9682945976c9452550dcc6c98eb668b44c9dbb054c04f8",
+      "patched_sha256": "4dc72777372ab4f1c02dc2052f689721f6f67b9fb924347704f8f9daae943f21"
     }
   ],
-  "patch_sha256": "8a53a36cda2ff09ec77aeac0f9586d9d9261b85162c195c3726cdec2372170ed"
+  "patch_sha256": "3f9224059a6faacaa5ffb78fb711da20b593d9c84b68afde6d651bd6582b4c9e"
 }

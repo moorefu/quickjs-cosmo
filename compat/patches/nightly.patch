@@ -722,3 +722,83 @@
      pr->dwExitCode = dwExitCode;
      if (pr->status == PROC_STOPPED) {
        dll_remove(&__proc.stopped, &pr->stopelem);
+--- a/libc/calls/readntsym.c
++++ b/libc/calls/readntsym.c
+@@ -17,6 +17,7 @@
+ #include "libc/calls/syscall_support-nt.internal.h"
+ #include "libc/intrin/strace.h"
+ #include "libc/limits.h"
++#include <stddef.h>
+ #include "libc/nt/enum/fsctl.h"
+ #include "libc/nt/enum/io.h"
+ #include "libc/nt/errors.h"
+@@ -62,8 +63,14 @@
+   if (!ok)
+     return eacces();
+ 
+-  // reparse points can serve many purposes besides just symbolic links
+-  if (m->rdb.ReparseTag != kNtIoReparseTagSymlink) {
++  if (dwBytesReturned < 8 || dwBytesReturned > BIG_REPARSE_DATA_BUFFER_SIZE ||
++      m->rdb.ReparseDataLength > dwBytesReturned - 8)
++    return eio();
++  size_t total = 8 + m->rdb.ReparseDataLength;
++
++  // Both symbolic links and directory junctions are name-surrogate links.
++  if (m->rdb.ReparseTag != kNtIoReparseTagSymlink &&
++      m->rdb.ReparseTag != kNtIoReparseTagMountPoint) {
+     // e.g. 0xA000001D means IO_REPARSE_TAG_LX_SYMLINK
+     //
+     //     "WSL symlinks can't be opened from Windows, only from
+@@ -77,28 +84,42 @@
+     // 0x80000023 which means IO_REPARSE_TAG_AF_UNIX, which is what
+     // happens when we create an AF_UNIX domain socket.
+     if (m->rdb.ReparseTag != kNtIoReparseTagAfUnix)
+-      NTTRACE("unexpected reparse point tag %#x");
++      NTTRACE("unexpected reparse point tag %#x", m->rdb.ReparseTag);
+     if (opt_out_ReparseTag)
+       *opt_out_ReparseTag = m->rdb.ReparseTag;
+     return enolink();
+   }
+ 
+-  // convert ntdll style target path into utf-8 unix style path
+-  int path16len =
+-      m->rdb.SymbolicLinkReparseBuffer.SubstituteNameLength / sizeof(char16_t);
+-  char16_t *path16 =
+-      (char16_t *)((char *)m->rdb.SymbolicLinkReparseBuffer.PathBuffer +
+-                   m->rdb.SymbolicLinkReparseBuffer.SubstituteNameOffset);
++  // The junction layout omits the symbolic-link Flags field. Validate the
++  // selected layout and its byte offsets before reading or terminating a name.
++  size_t base, offset, length;
++  if (m->rdb.ReparseTag == kNtIoReparseTagMountPoint) {
++    base = offsetof(struct NtReparseDataBuffer, MountPointReparseBuffer.PathBuffer);
++    if (total < base)
++      return eio();
++    offset = m->rdb.MountPointReparseBuffer.SubstituteNameOffset;
++    length = m->rdb.MountPointReparseBuffer.SubstituteNameLength;
++  } else {
++    base = offsetof(struct NtReparseDataBuffer, SymbolicLinkReparseBuffer.PathBuffer);
++    if (total < base)
++      return eio();
++    offset = m->rdb.SymbolicLinkReparseBuffer.SubstituteNameOffset;
++    length = m->rdb.SymbolicLinkReparseBuffer.SubstituteNameLength;
++  }
++  if (((offset | length) & 1) || offset > total - base ||
++      length > total - base - offset)
++    return eio();
++  size_t path16len = length / sizeof(char16_t);
+   if (path16len >= PATH_MAX ||
+-      sizeof(struct NtReparseDataBuffer) + (path16len + 1) * sizeof(char16_t) >
+-          BIG_REPARSE_DATA_BUFFER_SIZE)
++      base + offset + length > BIG_REPARSE_DATA_BUFFER_SIZE - sizeof(char16_t))
+     return enomem();
++  char16_t *path16 = (char16_t *)(m->rdb_bytes + base + offset);
+   path16[path16len] = 0;
+   return __mkunixpath(path16, path8);
+ }
+ 
+ /**
+- * Reads windows symlink content from handle as utf-8 unix path.
++ * Reads Windows symlink or junction content as a UTF-8 Unix path.
+  *
+  * If this function succeeds, no truncation occurred and `path8` will be
+  * nul terminated. This implementation generally maps truncation errors,

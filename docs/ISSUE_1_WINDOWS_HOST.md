@@ -16,4 +16,14 @@
 
 所有兼容源仍来自已锁定 Nightly 提交，原文、补丁及修改后摘要都已更新。运行包的三文件布局不变。完成状态以本次提交的七平台 CI 门禁为准。
 
-本地验证：完整离线构建及构建测试 145/145；Linux 跨入口验证 95/95；Windows 97/97，另有一个预先声明的 Unix shell 用例跳过；Python 110 项及 TypeScript 声明检查通过。48 个独立 APE 的传输清单和三文件发布包通过校验。跨入口用例包含 Worker、SDK Worker 工厂、逻辑 PID 信号往返和原生文件身份核对。
+## 目录联接补充修复
+
+重开的报告确认 `os.lstat` 和 Node lstat 把目录联接误报为普通文件，`os.readlink` 返回 ENOLINK。固定 Nightly 的 `__readntsym` 只识别 `IO_REPARSE_TAG_SYMLINK`；fstat 因此把无法识别的 mount-point tag 降为普通文件。
+
+兼容补丁同时解码符号链接与目录联接的不同结构，检查返回字节数、UTF-16 偏移/长度及终止空间。成功读取联接目标后，现有 fstat 保留 S_IFLNK。legacy、Node 同步、callback、Promise 和 SDK 共用这一修复；源码锁和修改后摘要继续对应同一 Nightly。
+
+`FS-004` 由锁定的原生 Node 独立创建联接或 Unix 符号链接，比较三种 lstat 入口、悬空目标、Unicode/空格路径、联接祖先和普通文件/目录对照。旧发布 qjs 副本作为负例稳定失败，修复版本通过。宿主文件系统测试另覆盖 legacy readlink 的实际目标、原生文件身份、源码/Worker/qjsc/SDK、联接目录下的动态模块导入及 chdir。夹具只删除自建链接，并在递归清理前验证临时根目录身份。
+
+原始修复本地验证：完整离线构建及构建测试 145/145；Linux 跨入口验证 95/95；Windows 97/97，另有一个预先声明的 Unix shell 用例跳过；Python 110 项及 TypeScript 声明检查通过。48 个独立 APE 的传输清单和三文件发布包通过校验。跨入口用例包含 Worker、SDK Worker 工厂、逻辑 PID 信号往返和原生文件身份核对。
+
+联接补充本地验证：完整离线构建，构建测试 156/156、Linux 跨入口 100/100、Windows 103/103（另有既定 Unix 跳过）、61 项 Node 差分、126 项 Python 和 TypeScript 检查通过；同一产物通过真实 ARM64 64K 内核八种入口及发布/SDK 摘要校验。补充实现提交后的七平台、64K 内核与 CI gate 仍需全绿后结案。

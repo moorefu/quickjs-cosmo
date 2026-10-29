@@ -5,7 +5,9 @@ if(process.argv[2]==='--signal-child'){
 }else{
 const root=globalThis.hostFilesystemRoot??process.argv[2];
 if(!root)throw Error('Missing native filesystem fixture root');
-const main=await probe(root+'/main'),worker=new os.Worker('./fixtures/host-filesystem-worker.mjs');
+const main=await probe(root+'/main'),previous=process.cwd();
+try{process.chdir(main.links[0].name);main.chdir=process.cwd();}finally{process.chdir(previous);}
+const worker=new os.Worker('./fixtures/host-filesystem-worker.mjs');
 const value=await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('Host filesystem Worker timeout')),15000);worker.onmessage=({data})=>{clearTimeout(timer);worker.onmessage=null;data.error?reject(Error(data.error)):resolve(data.value);};worker.postMessage(root+'/worker');});
 let received=false;os.signal(os.SIGUSR1,()=>{received=true;});
 try{

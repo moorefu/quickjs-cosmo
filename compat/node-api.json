@@ -621,6 +621,14 @@
       "description": "Read-only process.argv0 and native/APE custom argv0 round trips",
       "timeout_seconds": 60,
       "compare_output": true
+    },
+    {
+      "id": "FS-004",
+      "status": "differential",
+      "file": "tests/node/fs-junctions.mjs",
+      "task": "M2-02",
+      "timeout_seconds": 30,
+      "description": "Native-produced directory junction/symlink types, dangling targets, Unicode and ancestor traversal through sync/callback/Promise lstat"
     }
   ],
   "modules": [
@@ -10184,16 +10192,23 @@
           "parameters": "Each synchronous overload, encoding/flags/mode, Stats/Dirent and path errors; async and streams have later tasks",
           "tests": [
             "FS-001",
-            "FS-002"
+            "FS-002",
+            "FS-004"
           ],
           "differences": [
-            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks."
+            "Synchronous Node v24.21.0 subset; see docs/M2_FS.md for native birthtime, Windows flags and deferred URL integration. Callbacks/FileHandle/streams remain later tasks.",
+            "Windows directory junctions are symbolic-link entries for lstat; stat follows their targets. Source/Worker/qjsc/SDK target and file-identity regressions are in tests/runtime_host_filesystem.mjs."
           ],
           "evidence": [
             {
               "test": "FS-001",
               "report": "build/node-compat/<platform>.json",
               "scope": "FS-001/FS-002, Worker/qjsc and SDK fault injection; full seven-platform CI passed at 3d743bc (run 40476137441)."
+            },
+            {
+              "test": "FS-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Pinned native Node produces Windows junctions or Unix symlinks independently; sync/callback/Promise lstat, dangling and ancestor cases are compared."
             }
           ],
           "support": {
@@ -11135,10 +11150,12 @@
           "task": "M3-02",
           "parameters": "Callback forms of supported synchronous file operations",
           "tests": [
-            "FS-003"
+            "FS-003",
+            "FS-004"
           ],
           "differences": [
-            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md.",
+            "Windows directory junctions are symbolic-link entries for lstat; stat follows their targets. Source/Worker/qjsc/SDK target and file-identity regressions are in tests/runtime_host_filesystem.mjs."
           ],
           "support": {
             "linux": {
@@ -11165,6 +11182,11 @@
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
               "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
+            },
+            {
+              "test": "FS-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Pinned native Node produces Windows junctions or Unix symlinks independently; sync/callback/Promise lstat, dangling and ancestor cases are compared."
             }
           ]
         },
@@ -12315,10 +12337,12 @@
           "task": "M3-02",
           "parameters": "Promise forms of supported file operations; FileHandle and AbortSignal only where Node supports it",
           "tests": [
-            "FS-003"
+            "FS-003",
+            "FS-004"
           ],
           "differences": [
-            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md."
+            "Asynchronous Node v24.21.0 subset; task queue/arena quotas and remaining URL/Windows realpath/stream boundaries are documented in docs/M3_ASYNC.md.",
+            "Windows directory junctions are symbolic-link entries for lstat; stat follows their targets. Source/Worker/qjsc/SDK target and file-identity regressions are in tests/runtime_host_filesystem.mjs."
           ],
           "support": {
             "linux": {
@@ -12345,6 +12369,11 @@
               "test": "FS-003",
               "report": "build/node-compat/<platform>.json",
               "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
+            },
+            {
+              "test": "FS-004",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Pinned native Node produces Windows junctions or Unix symlinks independently; sync/callback/Promise lstat, dangling and ancestor cases are compared."
             }
           ]
         },

@@ -10,7 +10,9 @@ export async function probe(directory){
     fs.mkdirSync(path.join(root,'real'),{recursive:true});fs.mkdirSync(path.join(root,'中文 空格'),{recursive:true});
     const file=path.join(root,'real','identity.txt'),unicode=path.join(root,'中文 空格','value.txt');
     fs.writeFileSync(file,'identity');fs.writeFileSync(unicode,'unicode');
-    const paths=[['.',process.cwd()],[file,file],[unicode,unicode],[path.join(root,'linked','identity.txt'),file]];
+    const junctionFile=path.join(root,'目标 空格','identity.txt');fs.writeFileSync(junctionFile,'junction unicode');
+    const paths=[['.',process.cwd()],[file,file],[unicode,unicode],[path.join(root,'linked','identity.txt'),file],
+        [path.join(root,'chain','identity.txt'),file],[path.join(root,'联接 空格','identity.txt'),junctionFile]];
     if(process.platform==='win32'&&root.startsWith('\\\\')){
         paths.push([root,root],['\\\\?\\UNC\\'+root.slice(2),root]);
     }else if(process.platform==='win32'){
@@ -18,7 +20,19 @@ export async function probe(directory){
             [root[0]+':\\',root[0]+':\\'],['/'+root[0],root[0]+':\\'],['/'+root[0]+'/',root[0]+':\\'],
             ['\\\\?\\'+root,root],[root.toUpperCase(),root]);
     }
-    const output={paths:[],errors:[],files:[]};
+    const output={paths:[],errors:[],files:[],links:[]};
+    const type=value=>[value.isSymbolicLink(),value.isFile(),value.isDirectory()];
+    for(const [name,target,dangling]of [['linked','real',false],['联接 空格','目标 空格',false],['chain','linked',false],['dangling','missing-junction-target',true]]){
+        const link=path.join(root,name),row={name:link,target:path.join(root,target),dangling,
+            legacy:os.lstat(link),readlink:os.readlink(link),stat:os.stat(link),sync:type(fs.lstatSync(link)),async:type(await fs.promises.lstat(link))};
+        row.callback=await new Promise((resolve,reject)=>fs.lstat(link,(error,value)=>error?reject(error):resolve(type(value))));
+        try{row.syncStat=type(fs.statSync(link));}catch(e){row.syncStat=e.code;}
+        try{row.asyncStat=type(await fs.promises.stat(link));}catch(e){row.asyncStat=e.code;}
+        output.links.push(row);
+    }
+    output.controls=[type(fs.lstatSync(file)),type(await fs.promises.lstat(path.join(root,'real')))];
+    fs.writeFileSync(path.join(root,'real','linked-module.mjs'),'export default "junction module";');
+    output.module=(await import(path.join(root,'chain','linked-module.mjs'))).default;
     for(const [input,expected]of paths){trace('realpath '+input);const value={input,expected,legacy:os.realpath(input)};try{value.sync=fs.realpathSync(input);}catch(e){value.syncError=e.code;}try{value.async=await fs.promises.realpath(input);}catch(e){value.asyncError=e.code;}output.paths.push(value);}
     for(const [input,expected]of [[path.join(root,'missing'),'ENOENT'],[path.join(file,'child'),'ENOTDIR']]){
         trace('error '+input);

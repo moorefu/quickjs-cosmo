@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import re
+import stat
 import subprocess
 import tempfile
 from host_runtime import ape_command
@@ -23,12 +24,15 @@ def setup(root):
     links=[]
     for label in ('main','worker'):
         directory=root/label;target=directory/'real';target.mkdir(parents=True)
-        link=directory/'linked'
-        if os.name=='nt':
-            run=subprocess.run(['cmd','/d','/c','mklink','/J',str(link),str(target)],capture_output=True,timeout=15)
-            assert run.returncode==0,run.stderr
-        else:link.symlink_to(target,target_is_directory=True)
-        links.append(link)
+        unicode=directory/'目标 空格';unicode.mkdir()
+        for link,target in ((directory/'linked',target),(directory/'联接 空格',unicode),
+                            (directory/'chain',directory/'linked'),(directory/'dangling',directory/'missing-junction-target')):
+            if os.name=='nt':
+                run=subprocess.run(['cmd','/d','/c','mklink','/J',str(link),str(target)],capture_output=True,timeout=15)
+                assert run.returncode==0,run.stderr
+                native=link.lstat();assert native.st_file_attributes&0x400 and native.st_reparse_tag==0xa0000003,link
+            else:link.symlink_to(target,target_is_directory=True)
+            links.append(link)
     return links
 
 def attributes(path,value):
@@ -49,6 +53,24 @@ def observe(command,environment):
             for result in (row['legacy'][0],row['sync'],row['async']):assert os.path.samefile(native_path(result),row['expected']),row
         for row in value[context]['errors']:
             assert row['legacy'][1]!=0 and row['sync']==row['expected'] and row['async']==row['expected'],row
+        assert len(value[context]['links'])==4,'Missing junction/symlink fixtures'
+        for row in value[context]['links']:
+            assert row['legacy'][1]==0 and stat.S_ISLNK(row['legacy'][0]['mode']),row
+            assert row['sync']==row['async']==row['callback']==[True,False,False],row
+            assert row['readlink'][1]==0,row
+            actual=os.path.normcase(os.path.normpath(native_path(row['readlink'][0])))
+            expected=os.path.normcase(os.path.normpath(row['target']))
+            assert actual==expected,row
+            if row['dangling']:
+                assert row['stat'][1]!=0 and row['syncStat']==row['asyncStat']=='ENOENT',row
+                assert not Path(row['target']).exists(),row
+            else:
+                assert row['stat'][1]==0 and stat.S_ISDIR(row['stat'][0]['mode']),row
+                assert row['syncStat']==row['asyncStat']==[False,False,True],row
+                assert os.path.samefile(native_path(row['readlink'][0]),row['target']),row
+        assert value[context]['controls']==[[False,True,False],[False,False,True]],value[context]
+        assert value[context]['module']=='junction module',value[context]
+    assert os.path.samefile(native_path(value['main']['chdir']),Path(value['main']['links'][0]['target']))
     return value
 
 def check(command,root,environment):
