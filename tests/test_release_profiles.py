@@ -2,6 +2,7 @@
 import copy
 import json
 import io
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -16,13 +17,22 @@ sys.path.insert(0,str(ROOT/'scripts'))
 from assemble_release import extract_zip
 from ape_layout import inspect
 from build_config import load_config
-from build_variants import CA_MEMBER,validate_ca,validate_architecture
+from build_variants import CA_MEMBER,validate_ca,validate_architecture,validate_shell_bootstrap
 import release_assets as assets
 from runtime_capabilities import report
 from runtime_profiles import declaration_files,selected_profile
 
 
 class ReleaseProfileTests(unittest.TestCase):
+    @unittest.skipIf(os.name=='nt','POSIX shell dispatch is exercised by the Linux build jobs')
+    def test_shell_dispatch_requires_closed_preamble(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);(root/'build').mkdir();binary=root/'runtime'
+            binary.write_text("APEDBG='\n' <<'end'\nignored binary header\nend\n#'\"\nexec ape \"$0\" \"$@\"\n")
+            binary.chmod(0o755);validate_shell_bootstrap(binary,root)
+            binary.write_text("APEDBG='\n\n#'\"\nexec ape \"$0\" \"$@\"\n")
+            with self.assertRaisesRegex(ValueError,'shell bootstrap failed'):validate_shell_bootstrap(binary,root)
+
     def test_loader_rejects_unrecognized_shell_preamble(self):
         with tempfile.TemporaryDirectory() as directory:
             path=Path(directory)/'runtime';path.write_bytes(b'jartsr=\n\n')

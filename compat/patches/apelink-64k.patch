@@ -18,6 +18,19 @@
    } else {           //
      pagesz = 4096;   // x86-64, raspberry pi
    }
+@@ -1985,9 +1985,9 @@
+     assert(strategy == kApe);
+     if (force_bypass_binfmt_misc) {
+       p = stpcpy(p, "APEDBG='\n\n");
+-      if (support_vector & (_HOSTWINDOWS | _HOSTMETAL)) {
+-        p = FinishGeneratingDosHeader(p);
+-      }
++      // The quoted loader magic needs its heredoc terminator on Unix-only
++      // targets too, even when no DOS or PE entry will be executed.
++      p = FinishGeneratingDosHeader(p);
+     } else if (support_vector & _HOSTWINDOWS) {
+       p = stpcpy(p, "MZqFpD='\n\n");
+       p = FinishGeneratingDosHeader(p);
 @@ -2076,9 +2076,9 @@
        p = EncodeWordAsPrintf(p, in->elf->e_entry, 8);
        in->printf_phoff = p;

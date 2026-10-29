@@ -24,7 +24,7 @@ def main():
     source=root/'tests/runtime_profiles.mjs'
     records=[]
     def execute(binary,arguments,entry):
-        result=subprocess.run(ape_command(binary,arguments,dist),cwd=root,capture_output=True,text=True,encoding='utf8',timeout=120)
+        result=subprocess.run(ape_command(binary,arguments,dist),cwd=root,capture_output=True,text=True,encoding='utf8',errors='replace',timeout=120)
         if result.returncode:raise ValueError(entry+': '+result.stdout+result.stderr)
         if 'PASS' not in result.stdout:raise ValueError('Missing profile execution result: '+entry)
         if entry in ('qjs','qjsc','sdk','x64','arm64'):

@@ -2,6 +2,10 @@
 """Relink single-CPU APEs from the exact ELF inputs used for the fat qjs."""
 import json
 import hashlib
+import os
+from pathlib import Path
+import subprocess
+import tempfile
 import zipfile
 
 from ape_layout import inspect
@@ -38,6 +42,18 @@ def validate_architecture(binary, architecture):
             raise ValueError('Missing or mismatched runtime architecture resource')
 
 
+def validate_shell_bootstrap(binary, root):
+    """Exercise the actual shell prologue before a native loader takes over."""
+    with tempfile.TemporaryDirectory(prefix='ape-bootstrap-',dir=root/'build') as directory:
+        loader=Path(directory)/'ape'
+        loader.write_text('#!/bin/sh\nprintf "APE_BOOTSTRAP_OK:%s\\n" "$1"\n',encoding='ascii')
+        loader.chmod(0o755)
+        environment={**os.environ,'PATH':directory+os.pathsep+os.environ['PATH']}
+        result=subprocess.run(['/bin/sh',str(binary),'--bootstrap-check'],env=environment,cwd=root,capture_output=True,timeout=30)
+        if result.returncode or result.stdout!=('APE_BOOTSTRAP_OK:'+str(binary)+'\n').encode():
+            raise ValueError('APE shell bootstrap failed: '+str(binary)+'\n'+result.stderr.decode('utf8',errors='replace'))
+
+
 def build():
     settings = load_config()
     profile = settings.runtime_profile
@@ -65,6 +81,7 @@ def build():
             archive.writestr(entry, architecture.encode('ascii'))
         target.chmod(0o755)
         layout = inspect(target, expected_architecture=architecture)
+        validate_shell_bootstrap(target,settings.root)
         fat_layout=inspect(settings.dist/'qjs.exe')
         fat_payload=next(value for value in fat_layout['payloads'] if value['machine']==layout['payloads'][0]['machine'])
         segments=slice_segments(target,layout['payloads'][0])
@@ -78,7 +95,7 @@ def build():
         cap_path.write_text(json.dumps(capabilities, indent=2) + '\n', encoding='utf8')
         record = dict(format=1, profile=profile, architecture=architecture,
                       qjs=dict(bytes=target.stat().st_size, sha256=sha256(target)),
-                      capabilitiesSha256=sha256(cap_path), ca=ca, layout=layout, segments=segments,
+                      capabilitiesSha256=sha256(cap_path), ca=ca, layout=layout, segments=segments,shellBootstrap=True,
                       fatLinkInput=dict(path=source.relative_to(settings.root).as_posix(), sha256=sha256(source)),
                       command=list(map(str, command)))
         (directory / 'manifest.json').write_text(json.dumps(record, indent=2) + '\n', encoding='utf8')
