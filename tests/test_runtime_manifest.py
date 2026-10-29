@@ -25,10 +25,10 @@ class RuntimeManifestTests(unittest.TestCase):
         for name in names:
             (self.root / name).parent.mkdir(parents=True,exist_ok=True)
             (self.root / name).write_text("original")
-        self.manifest = dict(self.data, compatibility=self.compat, patches={}, files={},
+        self.manifest = dict(self.data, runtime_profile='base', architecture='fat', compatibility=self.compat, patches={}, files={},
                              compatibility_sources={p.relative_to(self.root).as_posix():ci_artifact.sha256(p) for p in (self.root/'compat').iterdir() if p.is_file()},
                              runtime_sources={name: ci_artifact.sha256(self.root / name) for name in names})
-        self.settings = SimpleNamespace(root=self.root, dist=self.root / "dist", data=self.data)
+        self.settings = SimpleNamespace(runtime_profile='base', root=self.root, dist=self.root / "dist", data=self.data)
 
     def write_manifest(self):
         (self.root / "dist/manifest.json").write_text(json.dumps(self.manifest))

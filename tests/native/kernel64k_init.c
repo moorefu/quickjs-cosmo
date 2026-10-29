@@ -39,6 +39,7 @@ void start(U *sp){
     char *compiled[]={"/bin/ape","/app/deployment-standalone.exe",0};execute("compiled",compiled);
     char *sdk[]={"/bin/ape","/app/deployment-sdk.exe","/app/kernel.mjs",0};execute("sdk",sdk);
     char *qjsc[]={"/bin/ape","/app/qjsc.exe","-c","-m","-o","/tmp/kernel.c","/app/kernel.mjs",0};execute("qjsc",qjsc);
+    char *ca[]={"/bin/ape","/app/ca-provider-sdk.exe","default","/app/ca-source.pem","/tmp/ca.pem",0};execute("ca-resource",ca);
     /* Loading a matching module is confined to this disposable VM. */
     long fd=call(56,-100,(U)"/bin/binfmt_misc.ko",0,0,0,0);
     if(fd>=0){error=call(273,fd,(U)"",0,0,0,0);call(57,fd,0,0,0,0,0);if(error)fail("finit_module",error);}

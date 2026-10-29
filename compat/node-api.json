@@ -282,7 +282,10 @@
       "file": "tests/node/compression-zstd.mjs",
       "task": "M2-04",
       "timeout_seconds": 30,
-      "description": "Zstd parameters, frames, skip/trailing/truncated data, dictionaries and output caps"
+      "description": "Zstd parameters, frames, skip/trailing/truncated data, dictionaries and output caps",
+      "profiles": [
+        "full"
+      ]
     },
     {
       "id": "ZIP-004",
@@ -15471,7 +15474,10 @@
               "qjsc": "partial",
               "sdk": "partial"
             }
-          }
+          },
+          "profiles": [
+            "full"
+          ]
         },
         {
           "name": "zstdDecompressSync",
@@ -15510,7 +15516,10 @@
               "qjsc": "partial",
               "sdk": "partial"
             }
-          }
+          },
+          "profiles": [
+            "full"
+          ]
         },
         {
           "name": "crc32",
@@ -15900,6 +15909,9 @@
               "report": "build/node-compat/<platform>.json",
               "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
+          ],
+          "profiles": [
+            "full"
           ]
         },
         {
@@ -15939,6 +15951,9 @@
               "report": "build/node-compat/<platform>.json",
               "scope": "Same-source Node differential plus source/Worker/qjsc and SDK resource/failure tests; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
+          ],
+          "profiles": [
+            "full"
           ]
         },
         {
@@ -16259,6 +16274,9 @@
               "report": "build/node-compat/<platform>.json",
               "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
             }
+          ],
+          "profiles": [
+            "full"
           ]
         },
         {
@@ -16299,6 +16317,9 @@
               "report": "build/node-compat/<platform>.json",
               "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
             }
+          ],
+          "profiles": [
+            "full"
           ]
         },
         {
@@ -16658,6 +16679,9 @@
               "report": "build/node-compat/<platform>.json",
               "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
             }
+          ],
+          "profiles": [
+            "full"
           ]
         },
         {
@@ -16698,6 +16722,9 @@
               "report": "build/node-compat/<platform>.json",
               "scope": "Same-source Node/qjs contracts plus source/Worker/qjsc/SDK lifecycle checks STR-008."
             }
+          ],
+          "profiles": [
+            "full"
           ]
         },
         {
@@ -25221,7 +25248,10 @@
               "qjsc": "partial",
               "sdk": "partial"
             }
-          }
+          },
+          "profiles": [
+            "full"
+          ]
         },
         {
           "name": "lz4DecompressSync",
@@ -25258,7 +25288,10 @@
               "qjsc": "partial",
               "sdk": "partial"
             }
-          }
+          },
+          "profiles": [
+            "full"
+          ]
         },
         {
           "name": "bzip2CompressSync",
@@ -25295,7 +25328,10 @@
               "qjsc": "partial",
               "sdk": "partial"
             }
-          }
+          },
+          "profiles": [
+            "full"
+          ]
         },
         {
           "name": "bzip2DecompressSync",
@@ -25332,7 +25368,10 @@
               "qjsc": "partial",
               "sdk": "partial"
             }
-          }
+          },
+          "profiles": [
+            "full"
+          ]
         },
         {
           "name": "crc32c",
@@ -25482,6 +25521,9 @@
               "report": "build/test-results/<platform>.json",
               "scope": "Source/Worker/qjsc and SDK lifecycle; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
+          ],
+          "profiles": [
+            "full"
           ]
         },
         {
@@ -25521,6 +25563,9 @@
               "report": "build/test-results/<platform>.json",
               "scope": "Source/Worker/qjsc and SDK lifecycle; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
+          ],
+          "profiles": [
+            "full"
           ]
         },
         {
@@ -25560,6 +25605,9 @@
               "report": "build/test-results/<platform>.json",
               "scope": "Source/Worker/qjsc and SDK lifecycle; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
+          ],
+          "profiles": [
+            "full"
           ]
         },
         {
@@ -25599,6 +25647,9 @@
               "report": "build/test-results/<platform>.json",
               "scope": "Source/Worker/qjsc and SDK lifecycle; full M3-02 CI: https://github.com/moorefu/quickjs-cosmo/actions/runs/40537555777."
             }
+          ],
+          "profiles": [
+            "full"
           ]
         }
       ]

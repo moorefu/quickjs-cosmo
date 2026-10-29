@@ -9,6 +9,7 @@ import tarfile
 from host_runtime import host_info
 from node_contract import ROOT, read_json
 from prepare_native import fetch, sha256, source_name, write_member
+from runtime_profiles import selected_profile
 
 
 def prepare_tool(root=ROOT, offline=False):
@@ -58,15 +59,17 @@ def main():
                              text=True, encoding="utf-8", timeout=30).stdout.strip()
     if version != "Version " + lock["version"]:
         raise ValueError("TypeScript compiler version mismatch")
-    fixtures = sorted((ROOT / "tests/types").rglob("*.ts")) + sorted((ROOT/'examples').glob('portable-*.mjs'))
+    fixtures = sorted((ROOT / "tests/types").glob("*.ts")) + sorted((ROOT/'examples').glob('portable-*.mjs'))
     if not fixtures:
         raise ValueError("Missing declaration checks")
     for libraries in ("es2022", "es2022,dom"):
         for directory in ('types','dist'):
+            profile = 'full' if directory == 'types' else selected_profile()
+            selected = fixtures + sorted((ROOT / 'tests/types' / profile).glob('*.ts'))
             entry=ROOT/directory/'node-compat.d.ts'
             if not entry.is_file():raise ValueError('Missing public declaration entry: '+str(entry))
             subprocess.run([str(compiler), "--noEmit", "--strict", "--allowJs", "--checkJs", "--target", "es2022", "--module", "es2022", "--lib", libraries,
-                            str(entry),*map(str, fixtures)], cwd=ROOT, check=True, timeout=120)
+                            str(entry),*map(str, selected)], cwd=ROOT, check=True, timeout=120)
     print("PASS TypeScript " + lock["version"] + ": source/SDK root entries and positive/negative compile fixtures")
 
 

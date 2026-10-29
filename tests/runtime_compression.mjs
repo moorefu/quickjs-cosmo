@@ -11,6 +11,7 @@ assert.equal(c.crc32c('56789',c.crc32c('1234')),0xe3069283);
 assert.equal(c.adler32('Wikipedia'),0x11e60398);
 assert.equal(c.adler32('pedia',c.adler32('Wiki')),0x11e60398);
 assert.notEqual(c.crc32c('123456789'),z.crc32('123456789'));
+if(process.env.QUICKJS_COSMO_RUNTIME_PROFILE!=='base'){
 for(const [compress,decompress,options] of [
     [c.lz4CompressSync,c.lz4DecompressSync,{}],
     [c.lz4CompressSync,c.lz4DecompressSync,{level:12,checksum:true,blockSize:4}],
@@ -38,11 +39,12 @@ for (const [compress,decompress,options] of [[c.lz4CompressSync,c.lz4DecompressS
     assert.throws(()=>decompress(corrupt),{code:'ERR_COMPRESSION_DATA'});
 }
 assert.throws(()=>z.zstdCompressSync('x',{params:{400:1}}),{code:'ERR_NOT_SUPPORTED'});
+}
 const info=z.gzipSync('x',{info:true});
 assert(info.engine instanceof z.Gzip);assert.equal(info.engine.bytesWritten,1);
 assert.equal(z.gunzipSync(info.buffer).toString(),'x');
-const names=c.codecInfo().map(record=>record.name);assert.equal(names.join(','),'zlib,zstd,lz4,bzip2');
-assert(c.codecInfo('lz4').version.length>0);
+const names=c.codecInfo().map(record=>record.name);assert.equal(names.join(','),process.env.QUICKJS_COSMO_RUNTIME_PROFILE==='base'?'zlib':'zlib,zstd,lz4,bzip2');
+if(process.env.QUICKJS_COSMO_RUNTIME_PROFILE!=='base')assert(c.codecInfo('lz4').version.length>0);
 const worker=new os.Worker('./fixtures/compression-worker.mjs');
 const timer=os.setTimeout(()=>std.exit(1),10000);
 try {

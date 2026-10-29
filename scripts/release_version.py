@@ -13,7 +13,8 @@ def release_info(settings, tag=None, *, from_environment=True):
     if tag is None and from_environment and os.environ.get("GITHUB_REF_TYPE") == "tag":
         tag = os.environ.get("GITHUB_REF_NAME", "")
     version = validate_tag(tag)[1:] if tag is not None else settings.data["quickjs"]["version"]
-    return dict(tag=tag, version=version, archive=f"quickjs-cosmo-{version}.zip")
+    suffix = '-full' if getattr(settings, 'runtime_profile', 'base') == 'full' else ''
+    return dict(tag=tag, version=version, archive=f"quickjs-cosmo{suffix}-{version}.zip")
 
 
 def bundle_release(metadata, settings):

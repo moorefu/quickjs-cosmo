@@ -3,12 +3,7 @@ import {gzipSync} from 'zlib';
 import compression from 'cosmo:compression';
 const zipped:Buffer=gzipSync('abc',{level:9,windowBits:15,maxOutputLength:1000});
 const restored:Buffer=zlib.unzipSync(zipped);
-const zstd:Buffer=zlib.zstdCompressSync(new DataView(new ArrayBuffer(4)),{params:{[zlib.constants.ZSTD_c_checksumFlag]:true}});
-const lz4:Buffer=compression.lz4CompressSync('abc',{blockSize:4,checksum:true});
-const bz:Buffer=compression.bzip2DecompressSync(compression.bzip2CompressSync('abc'),{small:true});
-const version:string=compression.codecInfo('lz4').version;
 const check:number=zlib.crc32(new Uint8Array(4));
-void [zipped,restored,zstd,lz4,bz,version,check];
 zlib.gzip('abc',()=>{});
 const info:Buffer=gzipSync('abc',{info:true}).buffer;
 const engine:import('node:zlib').Gzip=gzipSync('abc',{info:true}).engine;
@@ -16,5 +11,3 @@ const engine:import('node:zlib').Gzip=gzipSync('abc',{info:true}).engine;
 zlib.crc32(new ArrayBuffer(1));
 // @ts-expect-error Brotli is outside this plan.
 zlib.constants.BROTLI_PARAM_QUALITY;
-// @ts-expect-error LZ4 raw blocks are not the Frame API.
-compression.lz4CompressSync('abc',{blockSize:3});

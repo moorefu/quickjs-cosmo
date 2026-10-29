@@ -18,6 +18,7 @@ import time
 
 from host_runtime import ape_command, host_info, normalize_arch, node_oracle_key
 from node_contract import ROOT, checked_file, load_contract, read_json, validate
+from runtime_profiles import selected_profile
 
 PREFIX = "NODE_COMPAT_RESULT "
 OUTPUT_LIMIT = 1024 * 1024
@@ -154,6 +155,7 @@ def compare_case(case, node, qjs, scratch, reference_only=False):
 
 
 def main():
+    os.environ['QUICKJS_COSMO_RUNTIME_PROFILE'] = selected_profile()
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(description=__doc__)
@@ -186,7 +188,7 @@ def main():
         allowed = {"reference", "differential"} if args.reference_only else {"differential"}
         if args.case and any(case["status"] not in allowed for case in candidates):
             raise ValueError("Selected test is not runnable in this mode; use --reference-only for Node observations")
-        cases = [case for case in candidates if case["status"] in allowed]
+        cases = [case for case in candidates if case["status"] in allowed and selected_profile() in case.get('profiles', ('base','full'))]
         if not cases:
             raise ValueError("No runnable tests selected")
         qjs = args.qjs.resolve()

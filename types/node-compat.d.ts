@@ -1,3 +1,4 @@
+/// <reference path="./compression-full.d.ts" />
 /// <reference path="./algorithms-async.d.ts" />
 /// <reference path="./child-process-async.d.ts" />
 /// <reference path="./child_process.d.ts" />

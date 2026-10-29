@@ -21,10 +21,10 @@ def read(path):return json.loads(Path(path).read_text(encoding='utf8'))
 
 def binding(settings):
     root,dist=settings.root,settings.dist
-    return dict(sourceRevision=os.environ.get('GITHUB_SHA'),manifestSha256=digest(dist/'manifest.json'),inventorySha256=digest(root/'compat/node-api.json'),
+    return dict(profile=settings.runtime_profile,architecture='fat',capabilitiesSha256=digest(dist/'capabilities.json'),sourceRevision=os.environ.get('GITHUB_SHA'),manifestSha256=digest(dist/'manifest.json'),inventorySha256=digest(root/'compat/node-api.json'),
         nodeBaselineSha256=digest(root/'compat/node-baseline.json'),nativeLockSha256=digest(root/'native/versions.json'),
         releaseChecksSha256=digest(root/'compat/release-checks.json'),versionsSha256=digest(root/'versions.json'),
-        qjsSha256=digest(dist/'qjs.exe'),qjscSha256=digest(dist/'qjsc.exe'),
+        qjsSha256=digest(dist/'qjs.exe'),qjscSha256=digest(dist/'qjsc.exe'),testRunnerSha256=digest(dist/'run-test262.exe'),
         sdkSha256={name:digest(dist/name) for name in ('libquickjs.a','.aarch64/libquickjs.a')})
 
 def expected_checks(root,build,platform):
@@ -45,13 +45,34 @@ def validate_evidence(settings,value,build=False):
     host=value['host'];platform=host['platform'];runner=value['runner']
     if runner in MATRIX and (platform,host['host_arch'],host['execution_arch'])!=MATRIX[runner]:raise ValueError('Matrix host/APE architecture mismatch: '+runner)
     if build and (platform,host['execution_arch'])!=('linux','x86_64'):raise ValueError('Build evidence requires Linux x86_64')
+    if build:
+        packages=value.get('packages',{})
+        records=packages.get('records',[])
+        if packages.get('inputs')!=binding(settings) or len(records)!=3 or {v['entry'] for v in records}!={'tests','qjsc-sdk','ca-sdk'} or any(v.get('passed') is not True for v in records):
+            raise ValueError('Missing independent SDK/tests package execution')
+        expected={'tests':value['inputs']['testRunnerSha256'],'qjsc-sdk':value['inputs']['qjscSha256'],'ca-sdk':value['inputs']['sdkSha256']['libquickjs.a']}
+        if any(record.get('sha256')!=expected[record['entry']] for record in records):
+            raise ValueError('Extracted packages used a different SDK or test runner')
     expected=expected_checks(root,build,platform)
     if len(value['checks'])!=len(expected) or set(value['checks'])!=expected or value['passed']!=len(expected) or value['failed']!=0:raise ValueError('Incomplete required runtime checks: '+runner)
     allowed=[read(root/'compat/release-checks.json')['windows_skip']] if platform=='win32' else []
     if value['skipped']!=allowed:raise ValueError('Unexpected or missing platform skip: '+runner)
-    inventory=read(root/'compat/node-api.json');tests={t['id'] for t in inventory['tests'] if t['status']=='differential'}
+    inventory=read(root/'compat/node-api.json');tests={t['id'] for t in inventory['tests'] if t['status']=='differential' and settings.runtime_profile in t.get('profiles',('base','full'))}
     if len(value['nodeTests'])!=len(tests) or set(value['nodeTests'])!=tests:raise ValueError('Incomplete differential coverage: '+runner)
     validate_node_identity(root,value['node'],host)
+    profiles=value.get('profiles',{})
+    entries=profiles.get('records',[])
+    architecture='x64' if host['execution_arch']=='x86_64' else 'arm64'
+    expected_entries={'qjs','qjsc','sdk',architecture,'ca-default','ca-provider','ca-missing','ca-nul'}
+    if (profiles.get('host')!=host or profiles.get('profile')!=settings.runtime_profile or profiles.get('architecture')!='fat' or
+        profiles.get('qjsSha256')!=value['inputs']['qjsSha256'] or profiles.get('capabilitiesSha256')!=value['inputs']['capabilitiesSha256'] or
+        profiles.get('caProvider')!=['default','provider','missing','nul'] or len(entries)!=len(expected_entries) or {v['entry'] for v in entries}!=expected_entries):
+        raise ValueError('Missing or mismatched profile/CA/architecture evidence: '+runner)
+    for record in entries:
+        if not re.fullmatch('[0-9a-f]{64}',record.get('sha256','')) or 'PASS' not in record.get('output',''):
+            raise ValueError('Invalid profile execution evidence: '+runner)
+    if set(profiles.get('variants',{}))!={'x64','arm64'} or next(v['sha256'] for v in entries if v['entry']==architecture)!=profiles['variants'][architecture]:
+        raise ValueError('Single-architecture execution used a different runtime: '+runner)
     from test_terminal import expected_cases
     terminal=value.get('terminal',{})
     records=terminal.get('records',[])
@@ -120,6 +141,8 @@ def validate_reports(settings,runner='local',build=False):
     value=dict(format=1,runner=runner,host=runtime['host'],inputs=inputs,node=identity,terminal=terminal,
         passed=runtime['passed'],failed=runtime['failed'],skipped=runtime['skipped'],checks=[x['name'] for x in checks],nodeTests=[x['id'] for x in node['results']])
     value['deployment']=read(root/('build/deployment/'+host_report+'/results.json'))
+    value['profiles']=read(root/('build/profiles/'+host_report+'/results.json'))
+    if build:value['packages']=read(root/('build/package-validation/'+settings.runtime_profile+'.json'))
     if runtime['host']['platform']=='win32':value['windowsSecurity']=read(root/'build/deployment/windows/security.json')
     return validate_evidence(settings,value,build)
 
@@ -128,7 +151,7 @@ def aggregate(settings,directory):
     values=[validate_evidence(settings,read(p)) for p in paths]
     if len(values)!=len(MATRIX) or {x['runner'] for x in values}!=set(MATRIX):raise ValueError('Require exactly one successful evidence record for each of the seven matrix rows')
     build=validate_evidence(settings,read(settings.root/'build/ci/build-evidence.json'),build=True)
-    kernel_paths=list(Path(directory).glob('reports-kernel64k/results.json'))
+    kernel_paths=list(Path(directory).glob('reports-'+settings.runtime_profile+'-kernel64k/results.json'))
     if len(kernel_paths)!=1:raise ValueError('Require the real ARM64 64K kernel evidence')
     kernel=read(kernel_paths[0]);validate_kernel(settings,kernel)
     if digest(kernel_paths[0].with_name('console.log'))!=kernel['consoleSha256']:raise ValueError('64K kernel console log changed')
@@ -138,13 +161,13 @@ def aggregate(settings,directory):
 def validate_kernel(settings,value):
     # Keep this independent of QEMU/compilers so the final gate remains offline.
     lock=read(settings.root/'compat/kernel64k.json')
-    cases={'loader-fat','literal-argv0','bare-elf','compiled','sdk','qjsc','binfmt-fat','binfmt-nested'}
+    cases={'loader-fat','literal-argv0','bare-elf','compiled','sdk','qjsc','ca-resource','binfmt-fat','binfmt-nested'}
     if value.get('format')!=1 or value.get('inputs')!=binding(settings) or value.get('kernel',{}).get('lock')!=lock or value.get('auxv')!=dict(pageSize=65536,release=lock['release'],machine='aarch64'):
         raise ValueError('Missing or stale real 64K kernel identity')
     if len(value.get('cases',[]))!=len(cases) or set(value['cases'])!=cases or len(value.get('results',[]))!=7 or any(v.get('kernel') is not True or v.get('immutable') is not True for v in value['results']):
         raise ValueError('Incomplete real 64K kernel execution')
     if not re.fullmatch('[0-9a-f]{64}',value.get('consoleSha256','')):raise ValueError('Missing kernel console evidence')
-    for name in ('qjs.exe','qjsc.exe','deployment-standalone.exe','deployment-sdk.exe'):
+    for name in ('qjs.exe','qjsc.exe','deployment-standalone.exe','deployment-sdk.exe','ca-provider-sdk.exe'):
         layout=value.get('layouts',{}).get(name,{})
         expected={'qjs.exe':value['inputs']['qjsSha256'],'qjsc.exe':value['inputs']['qjscSha256']}.get(name)
         if expected and layout.get('sha256')!=expected:raise ValueError('64K kernel executed a different payload: '+name)

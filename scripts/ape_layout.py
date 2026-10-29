@@ -81,7 +81,11 @@ def pe(data):
     return dict(machine=machine, entry=entry, sections=segments)
 
 
-def inspect(path, require_64k=True):
+def inspect(path, require_64k=True, expected_architecture='fat'):
+    machines = {'fat': {AMD64, ARM64}, 'x64': {AMD64}, 'arm64': {ARM64}}
+    if expected_architecture not in machines:
+        raise ValueError('Unknown APE architecture')
+    expected = machines[expected_architecture]
     data = Path(path).read_bytes()
     if data.startswith(b'\x7fELF'):
         result = dict(format='ELF', sha256=digest(data), elf=elf(data))
@@ -89,8 +93,8 @@ def inspect(path, require_64k=True):
             raise ValueError('ARM64 ELF is not 64K aligned: ' + str(path))
         return result
     payloads = [elf(printf_bytes(m[1]), data) for m in re.finditer(rb"printf '([^']*)' >&7", data[:65536]) if m[1].startswith(b'\\177ELF')]
-    if len(payloads) != 2 or {v['machine'] for v in payloads} != {AMD64, ARM64}:
-        raise ValueError('APE must contain both decoded ELF boot headers')
+    if len(payloads) != len(expected) or {v['machine'] for v in payloads} != expected:
+        raise ValueError('APE decoded ELF boot headers do not match ' + expected_architecture)
     loaders = {}
     offset = 0
     while True:
@@ -111,11 +115,11 @@ def inspect(path, require_64k=True):
         except zlib.error:
             pass  # Other payload bytes may resemble gzip; required loaders remain mandatory.
         offset += 1
-    if set(loaders) != {AMD64, ARM64}:
+    if set(loaders) != expected:
         raise ValueError('Missing required embedded loaders')
-    native_pe = pe(data)
-    if native_pe['machine'] != 0x8664:
+    native_pe = pe(data) if AMD64 in expected else None
+    if native_pe is not None and native_pe['machine'] != 0x8664:
         raise ValueError('APE Windows entry must be AMD64 (including emulation)')
-    if require_64k and (any(not v['modern'] for v in payloads) or any(not v['ready64k'] for v in payloads if v['machine'] == ARM64) or not loaders[ARM64]['ready64k']):
+    if require_64k and (any(not v['modern'] for v in payloads) or any(not v['ready64k'] for v in payloads if v['machine'] == ARM64) or ARM64 in expected and not loaders[ARM64]['ready64k']):
         raise ValueError('APE boot flags, payload or embedded loader lack reviewed 64K layout: ' + str(path))
     return dict(format='APE', sha256=digest(data), pe=native_pe, payloads=payloads, loaders={str(k): v for k, v in loaders.items()})

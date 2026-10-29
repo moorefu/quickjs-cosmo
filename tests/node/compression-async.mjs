@@ -3,7 +3,7 @@ import {promisify} from 'node:util';
 import {check,result,errorOf} from './fixtures/result.mjs';
 const output={codecs:{}};
 const source=Buffer.from('中文😀\0async-compression-'.repeat(100));
-const pairs=[['gzip','gunzip'],['deflate','inflate'],['deflateRaw','inflateRaw'],['zstdCompress','zstdDecompress']];
+const pairs=[['gzip','gunzip'],['deflate','inflate'],['deflateRaw','inflateRaw'],['zstdCompress','zstdDecompress']].filter(([name])=>process.env.QUICKJS_COSMO_RUNTIME_PROFILE!=='base'||!name.startsWith('zstd'));
 for(const [encode,decode] of pairs) {
     const encoded=await promisify(zlib[encode])(source),decoded=await promisify(zlib[decode])(encoded);
     check(decoded.equals(source),encode+' roundtrip');

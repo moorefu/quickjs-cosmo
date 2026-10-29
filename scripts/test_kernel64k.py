@@ -16,7 +16,7 @@ from prepare_kernel64k import prepare
 from prepare_native import sha256
 from release_evidence import binding
 
-CASES={'loader-fat','literal-argv0','bare-elf','compiled','sdk','qjsc','binfmt-fat','binfmt-nested'}
+CASES={'loader-fat','literal-argv0','bare-elf','compiled','sdk','qjsc','ca-resource','binfmt-fat','binfmt-nested'}
 
 
 def newc(entries):
@@ -34,7 +34,7 @@ def prepare_guest(settings,offline):
     inputs,provenance=prepare(offline);lock=provenance['lock'];tool=settings.toolchain/'bin'
     protected=[*settings.dist.glob('*'),settings.dist/'.aarch64/libquickjs.a',root/'versions.json',root/'native/versions.json',root/'compat/versions.json',*settings.releases.glob('*.zip')]
     before={str(p.relative_to(root)):sha256(p) for p in protected if p.is_file()}
-    names={'qjs.exe':settings.dist/'qjs.exe','qjsc.exe':settings.dist/'qjsc.exe','deployment-standalone.exe':root/'build/test-linux/deployment-standalone.exe','deployment-sdk.exe':root/'build/test-linux/deployment-sdk.exe'}
+    names={'qjs.exe':settings.dist/'qjs.exe','qjsc.exe':settings.dist/'qjsc.exe','deployment-standalone.exe':root/'build/test-linux/deployment-standalone.exe','deployment-sdk.exe':root/'build/test-linux/deployment-sdk.exe','ca-provider-sdk.exe':root/'build/test-linux/ca-provider-sdk.exe'}
     layouts={name:inspect(path) for name,path in names.items()};layouts['loader']=inspect(settings.dist/'ape-aarch64.elf')
     bare=output/'qjs.elf';shutil.copy2(names['qjs.exe'],bare)
     subprocess.run([str(tool/'assimilate'),'-e','-a','-c',str(bare)],check=True)
@@ -45,17 +45,21 @@ def prepare_guest(settings,offline):
     layouts['init']=inspect(init)
     module=inputs/'binfmt_misc.ko';compressed=inputs/'binfmt_misc.ko.zst'
     if compressed.is_file():
-        # Use the already admitted zstd backend, without another library.
+        # Guest preparation is a host tool task. The pinned Node oracle supplies
+        # its verified decoder even when the runtime under test is base.
+        from prepare_native import prepare_node
+        from test_node_compat import node_identity
+        node = prepare_node(offline=offline)
+        node_identity(node, root, json.loads((root/'compat/node-baseline.json').read_text()))
         code="import fs from 'node:fs';import {zstdDecompressSync} from 'node:zlib';fs.writeFileSync(process.argv[1],zstdDecompressSync(fs.readFileSync(process.argv[2])));"
-        from host_runtime import ape_command
-        subprocess.run(ape_command(settings.dist/'qjs.exe',['-m','-e',code,str(module),str(compressed)],settings.dist),check=True)
+        subprocess.run([str(node),'--input-type=module','-e',code,str(module),str(compressed)],check=True)
     entries=[(d,b'',stat.S_IFDIR|0o755,0,0) for d in ('bin','usr','usr/bin','app','app/fixtures','dev','proc','tmp','root')]
     entries += [('dev/console',b'',stat.S_IFCHR|0o600,5,1),('dev/null',b'',stat.S_IFCHR|0o666,1,3),('dev/zero',b'',stat.S_IFCHR|0o666,1,5)]
     files={'init':init,'bin/ape':settings.dist/'ape-aarch64.elf','usr/bin/ape':settings.dist/'ape-aarch64.elf','app/qjs.elf':bare,
-           'app/kernel.mjs':root/'tests/runtime_deployment.mjs','app/fixtures/deployment-worker.mjs':root/'tests/fixtures/deployment-worker.mjs',
+           'app/kernel.mjs':root/'tests/runtime_deployment.mjs','app/fixtures/deployment-worker.mjs':root/'tests/fixtures/deployment-worker.mjs','app/ca-source.pem':root/'native/tls/ca-bundle.pem',
            **{'app/'+name:path for name,path in names.items()}}
     if module.is_file():files['bin/binfmt_misc.ko']=module
-    for name,path in files.items():entries.append((name,path.read_bytes(),stat.S_IFREG|(0o644 if name.endswith('.mjs') else 0o755),0,0))
+    for name,path in files.items():entries.append((name,path.read_bytes(),stat.S_IFREG|(0o644 if name.endswith(('.mjs','.pem')) else 0o755),0,0))
     entries.append(('app/immutable.json',json.dumps({'/'+name:sha256(path) for name,path in files.items()}).encode(),stat.S_IFREG|0o444,0,0))
     initrd=output/'initramfs.cpio.gz';initrd.write_bytes(gzip.compress(newc(entries),mtime=0))
     proof=dict(format=1,inputs=binding(settings),kernel=provenance,layouts=layouts,immutable=before,
@@ -97,7 +101,7 @@ def main():
     if after!=before:raise ValueError('Kernel test modified protected build inputs or release payloads')
     value=dict(format=1,inputs=binding(settings),kernel=provenance,auxv=aux[0],cases=cases,results=results,layouts=layouts,
         immutable=before,qemu=dict(version=version,sha256=sha256(Path(shutil.which(args.qemu) or args.qemu)),command=command),consoleSha256=sha256(log))
-    (output/'results.json').write_text(json.dumps(value,indent=2)+'\n');print('PASS kernel64k: real AT_PAGESZ=65536; eight entry cases')
+    (output/'results.json').write_text(json.dumps(value,indent=2)+'\n');print('PASS kernel64k: real AT_PAGESZ=65536; nine entry cases including shared CA and concurrent SDK loading')
 
 
 if __name__=='__main__':main()

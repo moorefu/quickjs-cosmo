@@ -48,25 +48,26 @@ Linux / WSL / macOS：
 
 `.exe` 后缀在 Unix 上不影响运行。Unix 入口会启动同目录的 `.exe` APE；Windows 直接启动 `.exe`。无需为 Windows、Linux 分别编译。
 
-## 官方格式的发布包
+## 发布 profiles 与独立下载包
 
-```powershell
-python scripts/package.py
+默认推荐 **base-fat**，保留脚本、文件/进程、crypto、网络、TLS/HTTPS/Fetch 和 zlib/gzip。
+**full** 增加 Zstd、LZ4 Frame 和 bzip2；base 不导出这些 API。两种 profile 均提供
+fat、x64、arm64 运行包，另外提供独立 SDK 和 tests 下载包。
+
+```sh
+export QUICKJS_COSMO_RUNTIME_PROFILE=base  # 可改为 full
+sh scripts/build.sh --offline
+python3 scripts/package.py --validate
 ```
 
-生成 `releases/quickjs-cosmo-2026-06-04.zip` 及外置 SHA-256 校验文件。文件名中的日期取自 QuickJS `VERSION`，遵循[官方二进制发布包](https://bellard.org/quickjs/binary_releases/quickjs-cosmo-2026-06-04.zip)的命名方式；本包仍由上述 master 提交和本项目兼容补丁自行构建。
+原版本规则保持不变：tag `v2026-06-04.1` 对应 `quickjs-cosmo-2026-06-04.1.zip`。
+默认 ZIP 根目录仅含 `qjs` 和 `readme.txt`；Windows 将 qjs 改名为 qjs.exe。
+SDK/tests 各自含 base/、full/；tests 解压后直接执行 `python3 base/run-tests.py`。
+每个 ZIP 带外置 SHA-256；manifest、capabilities 和证据明确绑定 profile 与架构。
 
-tag 构建改用发布版本号：例如 `v2026-06-04.1` 生成 `quickjs-cosmo-2026-06-04.1.zip`。GitHub Actions 自动识别当前 tag；本地可执行 `python scripts/package.py --tag v2026-06-04.1`。这不改变固定的 QuickJS 源码提交或引擎 VERSION。
-
-ZIP 根目录只有三个文件，与官方包相同，无外层目录：
-
-```text
-readme.txt
-run-test262
-qjs
-```
-
-`readme.txt` 保留上游 `readme-cosmo.txt`，末尾追加 QuickJS、cosmocc 的固定提交标识；其余两个文件为不带扩展名的 APE 二进制。Windows 下可将 `qjs`、`run-test262` 重命名为 `qjs.exe`、`run-test262.exe` 运行。源码、构建脚本、自编测试、验证报告和 `qjsc` 等开发文件保留在项目中，不加入这个精简发布包。WSL 若把无扩展名的 APE 交给 Windows 启动，可使用项目里的 loader，例如 `dist/ape-x86_64.elf <解压目录>/qjs examples/hello.js`。
+本地 package.py 生成当前 profile 的三个 runtime ZIP 和 SDK/tests 中间包；CI 汇总
+两种 profile 后生成最终八个下载包。文件名、体积预算、provider 接口和完整命令见
+[发布 profiles 指南](docs/RELEASE_PROFILES.md)。readme 保留上游文本并追加全部许可和构建身份。
 
 ## 固定的工具链与构建路径
 
@@ -81,7 +82,7 @@ qjs
 | 内容 | 路径 |
 | --- | --- |
 | 工具链 | `toolchains/cosmocc-nightly-2026-10-26-aefad27c09ff/` |
-| 构建文件 | `build/quickjs-nightly/` |
+| 构建文件 | `build/quickjs-nightly-base/` |
 | 可执行文件与清单 | `dist/` |
 | 验证报告 | `build/test-results/` |
 | 官方格式的发布包 | `releases/quickjs-cosmo-2026-06-04.zip` |
@@ -141,13 +142,13 @@ python scripts/test.py --upstream
 WSL / Linux 测试，同时验证 `qjsc` 编译独立程序：
 
 ```sh
-PATH="$PWD/toolchains/cosmocc-nightly-2026-10-26-aefad27c09ff/bin:$PATH" python3 scripts/test.py --upstream --compile
+PATH="$PWD/toolchains/cosmocc-nightly-2026-10-26-aefad27c09ff-runtime64k/bin:$PATH" python3 scripts/test.py --upstream --compile
 ```
 
 也可在 PowerShell 直接调用：
 
 ```powershell
-wsl -d Ubuntu-22.04 --cd /mnt/d/Workspace/dairn/quickjs-cosmo --exec /bin/sh -c 'PATH="$PWD/toolchains/cosmocc-nightly-2026-10-26-aefad27c09ff/bin:$PATH" python3 scripts/test.py --upstream --compile'
+wsl -d Ubuntu-22.04 --cd /mnt/d/Workspace/dairn/quickjs-cosmo --exec /bin/sh -c 'PATH="$PWD/toolchains/cosmocc-nightly-2026-10-26-aefad27c09ff-runtime64k/bin:$PATH" python3 scripts/test.py --upstream --compile'
 ```
 
 每个用例独立进程、有超时限制，并检查退出码；自编 JS 用例还要求输出成功标记。报告保存到 `build/test-results/windows.json` 和 `build/test-results/linux.json`。
@@ -188,20 +189,20 @@ wsl -d Ubuntu-22.04 --cd /mnt/d/Workspace/dairn/quickjs-cosmo --exec /bin/sh -c 
 
 Runner 标签对应 [GitHub 官方支持列表](https://docs.github.com/en/actions/how-tos/write-workflows/choose-where-workflows-run/choose-the-runner-for-a-job)。测试报告分别记录主机架构、Python 架构和启动策略选择的执行架构。Windows ARM 项会检查实际宿主为 ARM64，单独标明 APE 的 x64 兼容运行。
 
-`scripts/ci_artifact.py` 打包、恢复并校验 SDK、源码归档、清单中的全部独立程序及原生探测程序及其构建记录和官方格式发布 ZIP。传输使用 tar 保留执行权限与 `.aarch64` 目录；下载端先验证固定输入、完整文件清单与 SHA-256，再执行测试。矩阵用 `bootstrap.py --source-only --offline` 恢复上游测试源码，无需下载 cosmocc；macOS 的 APE 启动过程可使用 runner 预装的系统 C 编译器。Linux 构建任务包含编译步骤，各矩阵项还运行 API 清单与 Node 差分验收；Windows 保留一个 Unix 专用用例的跳过记录，实际用例数量以报告为准。
+`scripts/ci_artifact.py` 打包、恢复并校验 SDK、源码归档、清单中的全部独立程序及原生探测程序及其构建记录和按 profile 拆分的发布 ZIP。传输使用 tar 保留执行权限与 `.aarch64` 目录；下载端先验证固定输入、完整文件清单与 SHA-256，再执行测试。矩阵用 `bootstrap.py --source-only --offline` 恢复上游测试源码，无需下载 cosmocc；macOS 的 APE 启动过程可使用 runner 预装的系统 C 编译器。Linux 构建任务包含编译步骤，各矩阵项还运行 API 清单与 Node 差分验收；Windows 保留一个 Unix 专用用例的跳过记录，实际用例数量以报告为准。
 
 每个任务保存主测试报告和进程汇总报告，产物名称为 `reports-*`。仅汇总报告会被上传，临时用例配置保留在任务工作目录。全部矩阵通过后，`CI gate` 保存 `quickjs-cosmo-release` Actions 产物，包含 ZIP、外置 SHA-256 与构建清单。构建或任一矩阵项失败、取消或跳过时，门禁不能成功；可将 `CI gate` 设为分支的必需检查。
 
 推送 `v` 开头的版本 tag 时，同一工作流会在 `CI gate` 成功后执行 `Publish tagged release`，以完整 tag 作为 GitHub Release 的版本和标题。例如首个版本 `v2026-06-04.1`；后续可递增末尾编号。普通分支和 PR 运行只保存 Actions 产物。
 
-发布附件为 `quickjs-cosmo-2026-06-04.1.zip`、对应的 `.sha256` 和 `manifest.json`。ZIP 文件名使用去掉前导 `v` 的 tag 版本号，内部三文件布局保持不变。CI 传输清单同时绑定发布 tag、版本和文件名，各矩阵项校验它们与当前 ref 一致。发布脚本 `scripts/publish_release.py` 先建立草稿，上传后核对 GitHub 返回的附件 SHA-256，并再次确认 tag 指向本次 CI 的提交，然后公开发布。重跑相同版本时，匹配的已发布附件直接复用；不同内容的已发布版本会被拒绝覆盖。本工作流创建的未完成草稿可以继续上传、校验和发布。
+发布附件为六种 runtime、SDK、tests 共八个 ZIP，以及对应校验和、capabilities、manifest 和兼容性报告。ZIP 文件名使用去掉前导 `v` 的 tag 版本号；runtime 仅含 qjs/readme，SDK/tests 独立。CI 传输清单同时绑定发布 tag、版本和文件名，各矩阵项校验它们与当前 ref 一致。发布脚本 `scripts/publish_release.py` 先建立草稿，上传后核对 GitHub 返回的附件 SHA-256，并再次确认 tag 指向本次 CI 的提交，然后公开发布。重跑相同版本时，匹配的已发布附件直接复用；不同内容的已发布版本会被拒绝覆盖。本工作流创建的未完成草稿可以继续上传、校验和发布。
 
 ```sh
 git tag -a v2026-06-04.1 -m "Release v2026-06-04.1"
 git push origin main refs/tags/v2026-06-04.1
 ```
 
-发布任务单独使用 `contents: write` 权限，其余构建和验证任务保持只读。本地可在 `package.py --tag v2026-06-04.1`、`ci_artifact.py pack --tag v2026-06-04.1` 之后，用 `python scripts/publish_release.py --tag v2026-06-04.1 --dry-run` 校验附件并预览发布说明。
+发布任务单独使用 `contents: write` 权限，其余构建和验证任务保持只读。下载完整 CI gate 的 `quickjs-cosmo-release` 到 `releases/public/` 后，可用 `python scripts/publish_release.py --tag v2026-06-04.1 --dry-run` 校验附件并预览发布说明。
 
 若原有 tag 的构建和完整矩阵已通过、但发布步骤需要修复，可在默认分支运行 `Retry verified tag release`，填写原 tag 和原 `Build and verify APE` 的 run ID。重试入口核对 tag 的提交、工作流来源和成功的 CI gate，再下载原始产物；仅发布工具采用当前工作流提交的版本。它保留 tag 和已经测试的二进制，仍核对全部附件摘要，拒绝覆盖内容不同的已发布版本。草稿通过包含草稿的发布列表查找，随后按 release ID 校验。
 
@@ -226,7 +227,7 @@ CI 辅助与合同门禁测试使用 `python -m unittest discover -s tests -p 't
 WSL / Linux 中：
 
 ```sh
-export PATH="$PWD/toolchains/cosmocc-nightly-2026-10-26-aefad27c09ff/bin:$PATH"
+export PATH="$PWD/toolchains/cosmocc-nightly-2026-10-26-aefad27c09ff-runtime64k/bin:$PATH"
 ./dist/qjsc -o build/hello.exe examples/hello.js
 ./dist/ape-x86_64.elf build/hello.exe # ARM64 使用 ape-aarch64.elf
 ```

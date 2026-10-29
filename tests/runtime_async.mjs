@@ -13,7 +13,7 @@ try {
     const handle=await fsp.open(file,'r');
     try{assert.equal(await fsp.readFile(handle,'utf8'),'async-worker-input');}finally{await handle.close();}
     const data=Buffer.from('async-compression-中文😀'.repeat(1000));
-    for(const [encode,decode] of [['lz4Compress','lz4Decompress'],['bzip2Compress','bzip2Decompress']]) {
+    if(process.env.QUICKJS_COSMO_RUNTIME_PROFILE!=='base')for(const [encode,decode] of [['lz4Compress','lz4Decompress'],['bzip2Compress','bzip2Decompress']]) {
         const encoded=await promisify(compression[encode])(data);
         assert((await promisify(compression[decode])(encoded)).equals(data));
     }

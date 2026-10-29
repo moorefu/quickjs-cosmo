@@ -16,8 +16,8 @@ from runtime_capabilities import runtime_summary,features,report
 
 class ReleaseEvidenceTests(unittest.TestCase):
     def setUp(self):
-        self.settings=SimpleNamespace(root=ROOT)
-        self.inputs={'qjsSha256':'current-qjs','qjscSha256':'current-qjsc'}
+        self.settings=SimpleNamespace(root=ROOT,runtime_profile='base')
+        self.inputs={'qjsSha256':'current-qjs','qjscSha256':'current-qjsc','capabilitiesSha256':'current-cap','testRunnerSha256':'current-test-runner','sdkSha256':{'libquickjs.a':'current-sdk'}}
         self.binding=patch.object(evidence,'binding',return_value=self.inputs);self.binding.start();self.addCleanup(self.binding.stop)
 
     def value(self,runner='ubuntu-24.04',build=False):
@@ -35,12 +35,35 @@ class ReleaseEvidenceTests(unittest.TestCase):
         records += [dict(entry=entry+'-custom-argv0',nativePid=1,value=dict(custom=True,main=dict(argv0='custom',pid=1),worker=dict(argv0='custom',pid=1))) for entry in ('qjs','compiled','sdk')]
         deployment=dict(host=host,qjsSha256=self.inputs['qjsSha256'],records=records,immutable={'dist/qjs.exe':self.inputs['qjsSha256']},capabilities={'zero':{}})
         security=dict(qjsSha256=self.inputs['qjsSha256'],deniedTargetKnownLive=True,unc=dict(status='implemented'),integrity=[dict(requested=rid,value=dict(status='executed',integrity=rid,proof=dict(passed=True,integrity=rid,deniedTarget=dict(status='permission-denied'),checks=[{}]*3))) for rid in (4096,8192,12288)])
-        return dict(format=1,runner=runner,host=host,inputs=copy.deepcopy(self.inputs),node=node,terminal=terminal,deployment=deployment,windowsSecurity=security,passed=len(checks),failed=0,
+        architecture='x64' if execution=='x86_64' else 'arm64'
+        entries=['qjs','qjsc','sdk',architecture,'ca-default','ca-provider','ca-missing','ca-nul']
+        profiles=dict(host=host,profile='base',architecture='fat',qjsSha256=self.inputs['qjsSha256'],capabilitiesSha256=self.inputs['capabilitiesSha256'],variants={'x64':'a'*64,'arm64':'a'*64},caProvider=['default','provider','missing','nul'],records=[dict(entry=entry,sha256='a'*64,output='PASS') for entry in entries])
+        return dict(packages=dict(inputs=copy.deepcopy(self.inputs),records=[dict(entry=entry,passed=True,sha256={'tests':'current-test-runner','qjsc-sdk':'current-qjsc','ca-sdk':'current-sdk'}[entry]) for entry in ('tests','qjsc-sdk','ca-sdk')]),profiles=profiles,format=1,runner=runner,host=host,inputs=copy.deepcopy(self.inputs),node=node,terminal=terminal,deployment=deployment,windowsSecurity=security,passed=len(checks),failed=0,
             skipped=[contract['windows_skip']] if platform=='win32' else [],checks=checks,
-            nodeTests=[t['id'] for t in evidence.read(ROOT/'compat/node-api.json')['tests'] if t['status']=='differential'])
+            nodeTests=[t['id'] for t in evidence.read(ROOT/'compat/node-api.json')['tests'] if t['status']=='differential' and 'base' in t.get('profiles',('base','full'))])
 
     def test_complete_host_record(self):
         for runner in evidence.MATRIX:evidence.validate_evidence(self.settings,self.value(runner))
+
+    def test_wrong_profile_is_rejected(self):
+        value=self.value();value['profiles']['profile']='full'
+        with self.assertRaisesRegex(ValueError,'profile/CA'):evidence.validate_evidence(self.settings,value)
+
+    def test_wrong_capability_file_is_rejected(self):
+        value=self.value();value['profiles']['capabilitiesSha256']='old-capabilities'
+        with self.assertRaisesRegex(ValueError,'profile/CA'):evidence.validate_evidence(self.settings,value)
+
+    def test_different_single_cpu_executable_is_rejected(self):
+        value=self.value();value['profiles']['variants']['x64']='b'*64
+        with self.assertRaisesRegex(ValueError,'Single-architecture'):evidence.validate_evidence(self.settings,value)
+
+    def test_missing_independent_package_execution_is_rejected(self):
+        value=self.value(build=True);value['packages']['records'].pop()
+        with self.assertRaisesRegex(ValueError,'independent SDK/tests'):evidence.validate_evidence(self.settings,value,build=True)
+
+    def test_changed_extracted_sdk_is_rejected(self):
+        value=self.value(build=True);value['packages']['records'][1]['sha256']='different-sdk'
+        with self.assertRaisesRegex(ValueError,'different SDK'):evidence.validate_evidence(self.settings,value,build=True)
 
     def test_empty_success_is_rejected(self):
         value=self.value();value.update(checks=[],passed=0)
@@ -92,8 +115,8 @@ class ReleaseEvidenceTests(unittest.TestCase):
         lock=evidence.read(ROOT/'compat/kernel64k.json')
         layout=dict(format='APE',payloads=[dict(machine=183,ready64k=True,modern=True)],loaders={'183':dict(ready64k=True)})
         return dict(format=1,inputs=copy.deepcopy(self.inputs),kernel=dict(lock=lock),auxv=dict(pageSize=65536,release=lock['release'],machine='aarch64'),
-            cases=['loader-fat','literal-argv0','bare-elf','compiled','sdk','qjsc','binfmt-fat','binfmt-nested'],results=[dict(kernel=True,immutable=True)]*7,
-            consoleSha256='a'*64,layouts={name:dict(layout,sha256=self.inputs.get('qjsSha256' if name=='qjs.exe' else 'qjscSha256','unused')) for name in ('qjs.exe','qjsc.exe','deployment-standalone.exe','deployment-sdk.exe')})
+            cases=['loader-fat','literal-argv0','bare-elf','compiled','sdk','qjsc','ca-resource','binfmt-fat','binfmt-nested'],results=[dict(kernel=True,immutable=True)]*7,
+            consoleSha256='a'*64,layouts={name:dict(layout,sha256=self.inputs.get('qjsSha256' if name=='qjs.exe' else 'qjscSha256','unused')) for name in ('qjs.exe','qjsc.exe','deployment-standalone.exe','deployment-sdk.exe','ca-provider-sdk.exe')})
 
     def test_wrong_native_pid_is_rejected(self):
         value=self.value();value['deployment']['records'][0]['nativePid']=2
@@ -122,7 +145,7 @@ class ReleaseEvidenceTests(unittest.TestCase):
             for runner in evidence.MATRIX:(folder/(runner+'.json')).write_text(json.dumps(self.value(runner)),encoding='utf8')
             original=evidence.read
             build=self.value(build=True);build['runner']='build-linux-x64'
-            kernel=Path(directory)/'reports-kernel64k';kernel.mkdir();(kernel/'results.json').write_text(json.dumps(self.kernel()));(kernel/'console.log').write_text('console')
+            kernel=Path(directory)/'reports-base-kernel64k';kernel.mkdir();(kernel/'results.json').write_text(json.dumps(self.kernel()));(kernel/'console.log').write_text('console')
             with patch.object(evidence,'digest',return_value='a'*64),patch.object(evidence,'read',side_effect=lambda path:build if Path(path).as_posix().endswith('/build/ci/build-evidence.json') else original(path)):
                 result=evidence.aggregate(self.settings,directory)
             self.assertEqual(len(result['platforms']),7)

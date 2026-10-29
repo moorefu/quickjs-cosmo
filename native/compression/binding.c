@@ -81,7 +81,7 @@ typedef struct {int mode;const uint8_t *input;size_t length;QCOptions options;} 
 static JSValue parse_run(JSContext *ctx,int argc,JSValueConst *args,Parsed *out) {
     if (argc<10) return JS_ThrowTypeError(ctx,"Invalid native compression argument count");
     int64_t mode,values[11],parameter_count,pledged;
-    if (number(ctx,args[0],0,QC_UNBZIP2,&mode)<0) return JS_EXCEPTION;
+    if (number(ctx,args[0],0,QJS_COMPRESSION_FULL?QC_UNBZIP2:QC_UNZIP,&mode)<0) return JS_EXCEPTION;
     for (int i=0;i<11;i++) if (element(ctx,args[4],i,&values[i])<0) return JS_EXCEPTION;
     QCOptions options={.maximum=values[0],.chunk=values[1],.window=values[2],.level=values[3],
         .memory=values[4],.strategy=values[5],.finish=values[6],.reject=values[7],.checksum=values[8],.block_size=values[9],.small=values[10],.pledged=UINT64_MAX};
@@ -169,7 +169,7 @@ static JSValue checksum(JSContext *ctx,JSValueConst self,int argc,JSValueConst *
 static JSValue versions(JSContext *ctx,JSValueConst self,int argc,JSValueConst *args) {
     JSValue object=JS_NewObject(ctx); if (JS_IsException(object)) return object;
     const char *names[]={"zlib","zstd","lz4","bzip2"};
-    for (int i=0;i<4;i++) if (put(ctx,object,names[i],JS_NewString(ctx,qc_version(i)))<0) { JS_FreeValue(ctx,object); return JS_EXCEPTION; }
+    for (int i=0;i<(QJS_COMPRESSION_FULL?4:1);i++) if (put(ctx,object,names[i],JS_NewString(ctx,qc_version(i)))<0) { JS_FreeValue(ctx,object); return JS_EXCEPTION; }
     if (JS_SetPropertyStr(ctx,object,"zlibVernum",JS_NewInt32(ctx,ZLIB_VERNUM))<0) { JS_FreeValue(ctx,object); return JS_EXCEPTION; }
     return object;
 }

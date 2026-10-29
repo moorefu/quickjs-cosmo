@@ -1,5 +1,8 @@
 # Node 风格运行时使用指南
 
+默认 base 保留 zlib/gzip；Zstd、LZ4 Frame 和 bzip2 需 full。请配套使用当前 profile 的 SDK 类型和 capabilities，详见 [发布 profiles](RELEASE_PROFILES.md)。
+
+
 运行时以 ESM 为入口，提供规划中已声明的 Node API 子集。固定 Node 对照基线为 v24.21.0；QuickJS 与 Cosmopolitan 的版本和摘要见 versions.json。实际方法、参数、平台与入口支持以 SDK 的 capabilities.json 和 compat/node-api.json 为准。
 
 ## 模块命名

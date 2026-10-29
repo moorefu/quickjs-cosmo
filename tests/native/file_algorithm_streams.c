@@ -30,7 +30,7 @@ int main(void){
         JS_SetContextOpaque(ctx,(void *)(uintptr_t)0x1234);assert(js_cosmo_init_modules(ctx)==0);
         JS_SetModuleLoaderFunc2(rt,js_cosmo_module_normalize,js_module_loader,js_module_check_attributes,NULL);checked=1;
         evaluate(ctx,"import z from 'node:zlib';import c from 'node:crypto';import {Readable,Writable} from 'node:stream';import {pipeline} from 'node:stream/promises';import a from 'node:assert/strict';"
-            "globalThis.cycle=async(length=8192)=>{for(const [encode,decode] of [['Gzip','Gunzip'],['ZstdCompress','ZstdDecompress']]){let count=0;const data=Buffer.alloc(length,97);const source=Readable.from([data]);await pipeline(source,z['create'+encode]({chunkSize:257}),z['create'+decode]({chunkSize:4093}),new Writable({write(c,e,cb){count+=c.length;cb();}}));a.equal(count,data.length);}"
+            "globalThis.cycle=async(length=8192)=>{for(const [encode,decode] of [['Gzip','Gunzip'],['ZstdCompress','ZstdDecompress']].filter(([name])=>typeof z['create'+name]==='function')){let count=0;const data=Buffer.alloc(length,97);const source=Readable.from([data]);await pipeline(source,z['create'+encode]({chunkSize:257}),z['create'+decode]({chunkSize:4093}),new Writable({write(c,e,cb){count+=c.length;cb();}}));a.equal(count,data.length);}"
             "const hash=c.createHash('sha256'),parts=[];hash.on('data',v=>parts.push(v));await pipeline(Readable.from(['a','b','c']),hash);a.equal(Buffer.concat(parts).toString('hex'),c.createHash('sha256').update('abc').digest('hex'));};await cycle(65537);");
         for(int gc=0;gc<4;gc++)JS_RunGC(rt);JSMemoryUsage before,after;JS_ComputeMemoryUsage(rt,&before);
         evaluate(ctx,"for(let i=0;i<6;i++)await cycle();");for(int gc=0;gc<4;gc++)JS_RunGC(rt);JS_ComputeMemoryUsage(rt,&after);
@@ -41,7 +41,7 @@ int main(void){
         evaluate(ctx,"import z from 'node:zlib';let failed=false;try{z.createGzip();}catch(e){failed=true;}if(!failed)throw Error('missing injected allocation failure');");
         assert(injected==iteration+1);assert(!fail_arena);
         /* Teardown owns queued/running work even when JS never awaits it. */
-        evaluate(ctx,"import z from 'node:zlib';globalThis.pending=z.createZstdCompress();pending.on('error',()=>{});pending.write(Buffer.alloc(65536,7));");
+        evaluate(ctx,"import z from 'node:zlib';globalThis.pending=z.createZstdCompress?z.createZstdCompress():z.createGzip();pending.on('error',()=>{});pending.write(Buffer.alloc(65536,7));");
         assert(JS_GetContextOpaque(ctx)==(void *)(uintptr_t)0x1234);
         js_std_free_handlers(rt);JS_FreeContext(ctx);JS_FreeRuntime(rt);checked=0;
     }

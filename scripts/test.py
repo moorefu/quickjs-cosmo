@@ -50,6 +50,7 @@ def main():
     if args.node and not args.node_compat:
         parser.error("--node requires --node-compat")
     settings = load_config("nightly" if args.nightly else None)
+    os.environ['QUICKJS_COSMO_RUNTIME_PROFILE'] = settings.runtime_profile
     qjs = (args.qjs or settings.dist / "qjs.exe").resolve()
     qjsc = (args.qjsc or settings.dist / "qjsc.exe").resolve()
     arch = "aarch64" if platform.machine().lower() in ("aarch64", "arm64") else "x86_64"
@@ -110,6 +111,10 @@ def main():
     check("custom/runtime-hash-extra", [qjs, "-m", ROOT / "tests/runtime_hash_extra.mjs"], contains="PASS runtime-hash-extra", timeout=120)
     check("custom/runtime-network", [sys.executable, ROOT / "scripts/test_network.py", "--executable", qjs, "--source"], contains="PASS runtime-network", timeout=120)
     check("custom/runtime-compression", [qjs, "-m", ROOT / "tests/runtime_compression.mjs"], contains="PASS runtime-compression")
+    profiles=[sys.executable,ROOT/'scripts/test_profiles.py']
+    if args.compile:profiles.append('--compile')
+    elif args.standalone:profiles += ['--standalone',args.standalone.resolve().parent]
+    check('custom/runtime-profiles',profiles,contains='PASS release profiles',timeout=300)
     check("custom/runtime-child-process", [qjs, "-m", ROOT / "tests/runtime_child_process.mjs"], contains="PASS runtime-child-process")
     check("custom/runtime-async", [qjs, "-m", ROOT / "tests/runtime_async.mjs"], contains="PASS runtime-async", timeout=120)
     check("custom/runtime-file-algorithm-streams", [qjs, "-m", ROOT / "tests/runtime_file_algorithm_streams.mjs"], contains="PASS runtime-file-algorithm-streams", timeout=120)

@@ -4,13 +4,15 @@
 #include "libc/str/str.h"
 #include "libc/nexgen32e/crc32.h"
 #include "third_party/zlib/zlib.h"
+#include "core.h"
+#if QJS_COMPRESSION_FULL
 #define ZSTD_STATIC_LINKING_ONLY
 #include "third_party/zstd/zstd.h"
 #include "third_party/zstd/zstd_errors.h"
 #include "third_party/lz4cli/lz4.h"
 #include "third_party/lz4cli/lz4frame.h"
 #include "third_party/bzip2/bzlib.h"
-#include "core.h"
+#endif
 
 static void *allocate(void *owner,size_t size) { return qc_allocate(owner,size); }
 static void release(void *owner,void *data) { qc_free(data); }
@@ -20,9 +22,11 @@ static void *zallocate(void *owner,unsigned count,unsigned size) {
     if (data) memset(data,0,(size_t)count*size);
     return data;
 }
+#if QJS_COMPRESSION_FULL
 static void *bzallocate(void *owner,int count,int size) {
     return count<0 || size<0?NULL:zallocate(owner,count,size);
 }
+#endif
 static int error(QCResult *result,int status,int backend,const char *message) {
     result->status=status; result->backend=backend;
     snprintf(result->message,sizeof(result->message),"%s",message?message:"Compression operation failed");
@@ -100,6 +104,7 @@ static void zlib_run(int mode,const uint8_t *input,size_t length,const QCOptions
 done:
     if (compress) deflateEnd(&stream); else inflateEnd(&stream);
 }
+#if QJS_COMPRESSION_FULL
 static int zstd_error(QCResult *result,size_t code,int parameter) {
     if (!ZSTD_isError(code)) return 0;
     return error(result,parameter?QC_PARAMETER:QC_DATA,ZSTD_getErrorCode(code),ZSTD_getErrorName(code));
@@ -229,12 +234,17 @@ static void bzip_run(int mode,const uint8_t *input,size_t length,const QCOptions
     result->consumed=length-stream.avail_in;
     if (compress) BZ2_bzCompressEnd(&stream); else BZ2_bzDecompressEnd(&stream);
 }
+#endif
 QCResult qc_run(int mode,const uint8_t *input,size_t length,const QCOptions *options,QCAllocator *owner) {
     QCResult result={0}; QCAllocator *previous=qc_allocator_enter(owner);
     if (mode<=QC_UNZIP) zlib_run(mode,input,length,options,owner,&result);
+#if QJS_COMPRESSION_FULL
     else if (mode<=QC_UNZSTD) zstd_run(mode,input,length,options,owner,&result);
     else if (mode<=QC_UNLZ4) lz4_run(mode,input,length,options,owner,&result);
     else bzip_run(mode,input,length,options,owner,&result);
+#else
+    else error(&result,QC_PARAMETER,0,"Invalid compression mode");
+#endif
     if (owner->failed) error(&result,QC_MEMORY,0,"Compression allocation failed");
     qc_allocator_leave(previous);
     if (result.status) { qc_free(result.output.data); memset(&result.output,0,sizeof(result.output)); }
@@ -247,7 +257,11 @@ uint32_t qc_checksum(int kind,const uint8_t *input,size_t length,uint32_t initia
 }
 const char *qc_version(int codec) {
     if (codec==0) return zlibVersion();
+#if QJS_COMPRESSION_FULL
     if (codec==1) return ZSTD_versionString();
     if (codec==2) return LZ4_versionString();
     return BZ2_bzlibVersion();
+#else
+    return NULL;
+#endif
 }

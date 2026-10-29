@@ -9,7 +9,8 @@ import subprocess
 from urllib.parse import quote
 
 from build_config import load_config
-from ci_artifact import sha256, verify
+from ci_artifact import sha256
+from assemble_release import verify_public
 from release_version import validate_tag
 
 
@@ -101,11 +102,12 @@ def publish(tag, repository, commit, files, notes, client=None):
 
 def prepare(settings, tag, commit, run_url):
     validate_tag(tag)
-    metadata = verify(settings)
+    metadata = verify_public(settings, commit=commit, tag=tag)
     if metadata["release"]["tag"] != tag:
         raise ValueError("CI bundle belongs to a different release tag")
-    archive = settings.releases / metadata["release"]["archive"]
-    files = [archive, archive.with_suffix(".zip.sha256"), settings.dist / "manifest.json"]
+    directory=settings.releases/'public'
+    archive = directory / metadata['release']['archive']
+    files = [directory/name for name in sorted(metadata['files'])]+[directory/'manifest.json']
     output = settings.root / "build/release"
     output.mkdir(parents=True, exist_ok=True)
     notes = output / "notes.md"
@@ -117,8 +119,10 @@ def prepare(settings, tag, commit, run_url):
         f"`{settings.data['cosmopolitan']['commit']}`\n"
         f"- 验证：Linux x86_64/ARM64、macOS Intel/ARM64、Windows x64，以及 Windows ARM 的 x64 兼容运行。\n"
         f"- CI：[构建与完整矩阵]({run_url})\n\n"
-        f"下载 `{archive.name}`，按同目录的 `.sha256` 校验。ZIP 保持官方三文件布局："
-        "`readme.txt`、`run-test262`、`qjs`。Windows 可将后二者重命名为 `.exe` 后运行。\n\n"
+        f"默认下载 `{archive.name}`（base-fat），按同目录的 `.sha256` 校验。runtime ZIP 仅包含 "
+        "`readme.txt` 和 `qjs`；Windows 将 `qjs` 重命名为 `qjs.exe` 后运行。\n\n"
+        "full 增加 Zstd、LZ4 Frame 和 bzip2；另提供 x64/arm64 单架构包。SDK 和 tests 分开下载，"
+        "其中 base/full 各自带匹配的类型、能力和入口。两种 profile 均通过七平台和真实 64K 内核验证。\n\n"
         "发布版本号来自 tag，ZIP 文件名使用去掉前导 v 的版本号。QuickJS 引擎的固定 VERSION 不变。"
         "`manifest.json` 记录完整构建输入、补丁和文件哈希。\n", encoding="utf-8")
     return files, notes

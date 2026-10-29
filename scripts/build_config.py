@@ -10,20 +10,23 @@ from types import SimpleNamespace
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def load_config(profile=None):
+def load_config(profile=None, runtime_profile=None):
     profile = profile or os.environ.get("QUICKJS_COSMO_PROFILE", "nightly")
     if profile != "nightly":
         raise ValueError("This checkout is pinned to Nightly cosmocc; use versions.json")
+    runtime_profile = runtime_profile or os.environ.get("QUICKJS_COSMO_RUNTIME_PROFILE", "base")
+    if runtime_profile not in ("base", "full"):
+        raise ValueError("Runtime profile must be base or full")
     lock_file = ROOT / "versions.json"
     data = json.loads(lock_file.read_text())
     cosmo = data["cosmopolitan"]
     timestamp = datetime.fromisoformat(data["quickjs"]["commit_date"].replace("Z", "+00:00"))
     return SimpleNamespace(
-        root=ROOT, profile=profile, lock_file=lock_file, data=data,
+        root=ROOT, profile=profile, runtime_profile=runtime_profile, lock_file=lock_file, data=data,
         base_toolchain=ROOT / "toolchains" / ("cosmocc-" + cosmo["version"]),
         toolchain=ROOT / "toolchains" / ("cosmocc-" + cosmo["version"] + "-runtime64k"),
         archive=ROOT / ".cache" / cosmo.get("archive_name", "cosmocc-" + cosmo["version"] + ".zip"),
-        build=ROOT / "build/quickjs-nightly",
+        build=ROOT / ("build/quickjs-nightly-" + runtime_profile),
         native_source=ROOT / "upstream" / ("cosmopolitan-native-" + cosmo["commit"][:12]),
         dist=ROOT / "dist",
         reports=ROOT / "build/test-results",

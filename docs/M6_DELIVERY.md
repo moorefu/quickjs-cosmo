@@ -1,5 +1,8 @@
 # M6-01 全入口交付
 
+> 本文记录 M6 交付时的布局。当前 base/full、两文件 runtime ZIP、独立 SDK/tests 和双 profile 门禁见 [发布 profiles](RELEASE_PROFILES.md)。
+
+
 ## 范围
 
 沿用固定 QuickJS 2026-06-04、Cosmopolitan Nightly 802 和 Node v24.21.0 基线，不新增第三方库。已有模块继续通过源码、Worker、qjsc 和手工链接 SDK 的验收；本批补齐标准流与入口边界，并检查对象和运行时销毁后的资源回收。

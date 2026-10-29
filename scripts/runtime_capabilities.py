@@ -2,16 +2,18 @@
 import hashlib
 import json
 from pathlib import Path
+from runtime_profiles import selected_profile, project_inventory, OPTIONAL_BACKENDS
 
 ROOT=Path(__file__).resolve().parents[1]
 
 def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
-def report(root=ROOT):
-    inventory=json.loads((root/'compat/node-api.json').read_text(encoding='utf8'))
+def report(root=ROOT, profile=None):
+    profile=selected_profile(profile)
+    inventory=project_inventory(json.loads((root/'compat/node-api.json').read_text(encoding='utf8')),profile)
     native=json.loads((root/'native/versions.json').read_text(encoding='utf8'))
-    return dict(format=1,nodeApiTarget=json.loads((root/inventory['node_baseline']).read_text(encoding='utf8'))['version'],
+    return dict(format=1,profile=profile,architecture='fat',nodeApiTarget=json.loads((root/inventory['node_baseline']).read_text(encoding='utf8'))['version'],
         inventorySha256=digest(root/'compat/node-api.json'),
         backendLocks={p.relative_to(root).as_posix():digest(p) for p in sorted((root/'native').rglob('*.json'))},
         scope=dict(modules='ESM',commonJS=False,npmResolution=False,tlsVersions=['TLSv1.2'],serverNetworking=False,
@@ -21,7 +23,7 @@ def report(root=ROOT):
             childProcesses=dict(scope='runtime',count=16),
             terminal=dict(scope='process',devices=16,owners=64,legacyDepth=32,resizePollMs=100,lineCharacters=65536,iteratorLines=64,historyEntries=1000),
             stdio=dict(scope='process',readers=1,writeChunkBytes=65536,pollIntervalMs=10)),
-        backends=[dict(id=x['id'],delivery=x['delivery'],sourceAdmission=x['admission']) for x in native['libraries']],
+        backends=[dict(id=x['id'],delivery=x['delivery'],sourceAdmission=x['admission']) for x in native['libraries'] if profile=='full' or x['id'] not in OPTIONAL_BACKENDS],
         modules=inventory['modules'],globals=inventory['globals'],
         notes=['Method status describes only its declared parameters and platform/entry support.',
                'Source admission labels are backend input evidence, not claims of full library API exposure.',

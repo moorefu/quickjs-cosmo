@@ -157,7 +157,8 @@
     "upstream/test_loop",
     "upstream/test_rw_handler",
     "upstream/test_std",
-    "upstream/test_worker"
+    "upstream/test_worker",
+    "custom/runtime-profiles"
   ],
   "verify": [
     "cli/explicit-exit",
@@ -258,7 +259,8 @@
     "upstream/test_language",
     "upstream/test_loop",
     "upstream/test_rw_handler",
-    "upstream/test_worker"
+    "upstream/test_worker",
+    "custom/runtime-profiles"
   ],
   "unix": [
     "upstream/test_std"

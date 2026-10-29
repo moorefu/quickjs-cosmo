@@ -18,7 +18,7 @@ for(const name of ['sha256','sha512','blake2b512']){
     const data=collect(mac);mac.end(input);output.hmac=(await data).toString('hex')===crypto.createHmac('sha256','key').update(input).digest('hex');
     const copied=collect(copy);copy.end('tail');output.hashCopy=(await copied).toString('hex')===crypto.createHash('sha256').update('prefixtail').digest('hex');
 }
-for(const [encode,decode] of [['Deflate','Inflate'],['Gzip','Gunzip'],['DeflateRaw','InflateRaw'],['ZstdCompress','ZstdDecompress']]){
+for(const [encode,decode] of [['Deflate','Inflate'],['Gzip','Gunzip'],['DeflateRaw','InflateRaw'],['ZstdCompress','ZstdDecompress']].filter(([name])=>process.env.QUICKJS_COSMO_RUNTIME_PROFILE!=='base'||!name.startsWith('Zstd'))){
     const encoder=zlib['create'+encode]({chunkSize:257,highWaterMark:97}),decoder=zlib['create'+decode]({chunkSize:311,highWaterMark:73});
     let offset=0,ticks=0;const timer=setInterval(()=>ticks++,1);
     const source=new Readable({read(){if(offset===input.length){this.push(null);return;}const end=Math.min(input.length,offset+7777);this.push(input.subarray(offset,end));offset=end;}});
@@ -32,7 +32,7 @@ for(const [encode,decode] of [['Deflate','Inflate'],['Gzip','Gunzip'],['DeflateR
     for(let i=0;i<zipped.length;i++)decoder.write(zipped.subarray(i,i+1));decoder.end();
     output.members=(await data).toString();
 }
-{
+if(process.env.QUICKJS_COSMO_RUNTIME_PROFILE!=='base'){
     const skip=Buffer.from([0x50,0x2a,0x4d,0x18,3,0,0,0,1,2,3]);
     const source=Buffer.concat([zlib.zstdCompressSync('first'),skip,zlib.zstdCompressSync('second')]);
     const decoder=zlib.createZstdDecompress({chunkSize:64}),data=collect(decoder);

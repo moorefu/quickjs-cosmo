@@ -1,5 +1,8 @@
 # M6-02 CI、能力清单与发布门禁
 
+> 本文记录 M6 交付时的布局。当前 base/full、两文件 runtime ZIP、独立 SDK/tests 和双 profile 门禁见 [发布 profiles](RELEASE_PROFILES.md)。
+
+
 ## 能力描述
 
 `compat/node-api.json` 仍是方法、参数、平台和入口差异的权威清单。构建从它生成以下交付：

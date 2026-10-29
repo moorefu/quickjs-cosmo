@@ -89,11 +89,15 @@ def main():
     if platform.system() != 'Linux': parser.error('Run independent oracle compilation on the Linux build host')
     settings = load_config(); node = prepare_node(offline=args.offline)
     identity = node_identity(node, ROOT, read_json(ROOT / 'compat/node-baseline.json'))
-    lz4_compress,lz4_decompress,lz4_identity = lz4_oracle(args.offline)
+    full = settings.runtime_profile == 'full'
+    lz4_identity = None
+    if full:
+        lz4_compress,lz4_decompress,lz4_identity = lz4_oracle(args.offline)
     codecs = {'gzip':(gzip.compress,gzip.decompress), 'zlib':(zlib.compress,zlib.decompress),
               'raw':(lambda data:(lambda encoder:encoder.compress(data)+encoder.flush())(zlib.compressobj(wbits=-15)),
-                     lambda data:zlib.decompress(data,wbits=-15)),
-              'bzip2':(bz2.compress,bz2.decompress), 'lz4':(lz4_compress,lz4_decompress)}
+                     lambda data:zlib.decompress(data,wbits=-15))}
+    if full:
+        codecs.update(bzip2=(bz2.compress,bz2.decompress),lz4=(lz4_compress,lz4_decompress))
     cases = []
     with tempfile.TemporaryDirectory(prefix='compression-interop-',dir=ROOT / 'build') as directory:
         scratch = Path(directory); source=scratch/'source.bin'; encoded=scratch/'encoded.bin'; decoded=scratch/'decoded.bin'
@@ -121,7 +125,7 @@ def main():
                     execute('qjs','compress',codec,source,encoded,{'stream':True})
                     if decompress(encoded.read_bytes())!=data: raise ValueError(codec+' stream failed independent encode')
                     cases.append(dict(codec=codec,stream=True,length=len(data),directions=['external-to-qjs','qjs-to-external'],passed=True))
-        for data in payloads:
+        for data in payloads if full else ():
             source.write_bytes(data)
             for encoder,decoder in (('node','qjs'),('qjs','node')):
                 execute(encoder,'compress','zstd',source,encoded,{'params':{'201':1}})

@@ -1,8 +1,9 @@
 function createCompression(native, streams) {
     const binding = native.compression;
     const versions = binding.versions();
+    const full = versions.zstd !== undefined;
     const empty = new ArrayBuffer(0);
-    const constants = Object.freeze({...compressionConstants, ZLIB_VERNUM: versions.zlibVernum});
+    const constants = Object.freeze(Object.fromEntries(Object.entries({...compressionConstants, ZLIB_VERNUM: versions.zlibVernum}).filter(([key]) => full || !key.startsWith('ZSTD_'))));
     const codes = {};
     for (const name of ['Z_OK','Z_STREAM_END','Z_NEED_DICT','Z_ERRNO','Z_STREAM_ERROR','Z_DATA_ERROR','Z_MEM_ERROR','Z_BUF_ERROR','Z_VERSION_ERROR']) {
         codes[name] = constants[name]; codes[constants[name]] = name;
@@ -163,7 +164,7 @@ function createCompression(native, streams) {
         if(typeof callback!=='function')throw invalidType('callback','a function');
         const marker=Buffer.alloc(0);markers.set(marker.buffer,{flush:constants.Z_SYNC_FLUSH,params:[level,strategy]});this.write(marker,callback);
     };
-    for(let mode=0;mode<9;mode++){
+    for(let mode=0;mode<(full?9:7);mode++){
         const name=constructorNames[mode];
         const Constructor={[name]:function(options){
             if(!(this instanceof Constructor))return new Constructor(options);
@@ -177,7 +178,7 @@ function createCompression(native, streams) {
         Object.setPrototypeOf(Constructor.prototype,Codec.prototype);Object.setPrototypeOf(Constructor,Codec);
         constructors.push(Constructor);api[name]=Constructor;api['create'+name]=options=>new Constructor(options);
     }
-    for (let mode=0;mode<names.length;mode++) {
+    for (let mode=0;mode<(full?names.length:7);mode++) {
         const name = names[mode];
         const fn = {[name](input, options) { return perform(mode, input, options); }}[name];
         (mode<9 ? api : extensions)[name] = fn;
@@ -206,6 +207,7 @@ function createCompression(native, streams) {
             {name:'lz4',format:'LZ4 Frame',backend:'Cosmopolitan LZ4',version:versions.lz4},
             {name:'bzip2',format:'bzip2 stream',backend:'Cosmopolitan bzip2',version:versions.bzip2}
         ];
+        if (!full) records.splice(1);
         if (name === undefined) return records;
         if (typeof name !== 'string') throw invalidType('name', 'a string');
         const found = records.find(record => record.name === name);

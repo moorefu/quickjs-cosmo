@@ -16,11 +16,13 @@ from runtime_inputs import runtime_source_names
 from test_bundle import PACKAGES as QJB_PACKAGES
 from runtime_capabilities import report as capability_report, features
 from release_evidence import validate_reports, validate_evidence
+from runtime_profiles import declaration_files
+from release_assets import profile_asset_names, verify_runtime, verify_auxiliary
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = "build/ci/bundle-manifest.json"
 BUILD_EVIDENCE = "build/ci/build-evidence.json"
-STANDALONES = ("build/test-linux/deployment-standalone.exe", "build/test-linux/deployment-sdk.exe", "build/test-linux/terminal-standalone.exe", "build/test-linux/terminal-sdk.exe", "build/test-linux/bundle-sdk.exe", "build/test-linux/bundle-unmounted.exe", "build/test-linux/host-filesystem-standalone.exe", "build/test-linux/host-filesystem-sdk.exe", "build/test-linux/portable-example.exe", "build/test-linux/hello-standalone.exe", "build/test-linux/runtime-standalone.exe",
+STANDALONES = ("build/test-linux/profiles-standalone.exe", "build/test-linux/profiles-sdk.exe", "build/test-linux/ca-provider-sdk.exe", "build/test-linux/deployment-standalone.exe", "build/test-linux/deployment-sdk.exe", "build/test-linux/terminal-standalone.exe", "build/test-linux/terminal-sdk.exe", "build/test-linux/bundle-sdk.exe", "build/test-linux/bundle-unmounted.exe", "build/test-linux/host-filesystem-standalone.exe", "build/test-linux/host-filesystem-sdk.exe", "build/test-linux/portable-example.exe", "build/test-linux/hello-standalone.exe", "build/test-linux/runtime-standalone.exe",
                "build/test-linux/registry-standalone.exe", "build/test-linux/registry-sdk.exe",
                "build/test-linux/buffer-standalone.exe", "build/test-linux/foundation-standalone.exe",
                "build/test-linux/entry-standalone.exe", "build/test-linux/scheduling-standalone.exe",
@@ -63,10 +65,11 @@ def checked_name(name, version):
     path = PurePosixPath(name)
     if path.is_absolute() or ".." in path.parts or "\\" in name or ":" in name or str(path) != name:
         raise ValueError("Unsafe CI artifact path: " + name)
-    release = f"releases/quickjs-cosmo-{version}.zip"
-    allowed = name in (MANIFEST, BUILD_EVIDENCE, SOURCE, *STANDALONES, *QJB_FILES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA, *HTTPS_METADATA, release, release + ".sha256")
+    assets = ['releases/' + asset for profile in ('base','full') for asset in profile_asset_names(version,profile)]
+    allowed = name in (MANIFEST, BUILD_EVIDENCE, SOURCE, *STANDALONES, *QJB_FILES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA, *HTTPS_METADATA, *assets, *[x+'.sha256' for x in assets], 'releases/assets-base.json', 'releases/assets-full.json')
     allowed |= len(path.parts) == 2 and path.parts[0] == "dist"
     allowed |= len(path.parts) == 3 and path.parts[:2] == ("dist", ".aarch64")
+    allowed |= len(path.parts) == 4 and path.parts[:2] == ('dist','variants') and path.parts[2] in ('x64','arm64') and path.name in ('qjs.exe','manifest.json','capabilities.json')
     if not allowed:
         raise ValueError("Unexpected CI artifact path: " + name)
     return path
@@ -75,6 +78,8 @@ def checked_name(name, version):
 def verify_dist(settings):
     root, dist = settings.root, settings.dist
     manifest = json.loads((dist / "manifest.json").read_text(encoding="utf-8"))
+    if manifest.get('runtime_profile') != settings.runtime_profile or manifest.get('architecture') != 'fat':
+        raise ValueError('Artifact profile/architecture does not match this build')
     if any(manifest[key] != settings.data[key] for key in ("quickjs", "cosmopolitan")):
         raise ValueError("Artifact versions do not match this checkout's versions.json")
     compat = json.loads((root / "compat/versions.json").read_text(encoding="utf-8"))
@@ -94,13 +99,13 @@ def verify_dist(settings):
                 "http.d.ts", "fetch.d.ts", "https.d.ts", "qjs", "qjsc", "run-test262", "versions.json", "QUICKJS-LICENSE", "NODE-MODULES-LICENSE", "NATIVE-MODULES-LICENSES"}
     if not required.issubset(manifest["files"]):
         raise ValueError("Incomplete SDK in CI artifact")
-    required_types={p.name for p in (root/'types').glob('*.d.ts')}
-    if not required_types.issubset(manifest['files']):raise ValueError('SDK is missing current declaration files')
-    for name in required_types:
-        if sha256(root/'types'/name)!=sha256(dist/name):raise ValueError('Stale SDK declaration: '+name)
+    expected_types=declaration_files(root,settings.runtime_profile)
+    actual_types={p.name:p.read_bytes() for p in dist.glob('*.d.ts')}
+    if actual_types!=expected_types:raise ValueError('SDK declarations do not match runtime profile')
+
     for source,target in (('native/module_registry.h','qjs-cosmo.h'),('native/tasks.h','qjs-tasks.h')):
         if sha256(root/source)!=sha256(dist/target):raise ValueError('Stale SDK public header: '+target)
-    capabilities=capability_report(root)
+    capabilities=capability_report(root,settings.runtime_profile)
     if json.loads((dist/'capabilities.json').read_text(encoding='utf8'))!=capabilities or manifest['features']!=features(capabilities):raise ValueError('Capability contract differs from source inventory')
     if 'capabilities.json' not in manifest['files']:raise ValueError('SDK capability contract is not hashed')
     for name, record in manifest["files"].items():
@@ -132,6 +137,13 @@ def verify_dist(settings):
     for name in ('qjs.exe','qjsc.exe','run-test262.exe','ape-aarch64.elf','ape-x86_64.elf'):inspect(dist/name)
     for name in ('ape-aarch64.elf','ape-x86_64.elf'):
         if sha256(dist/name)!=record['installed']['bin/'+name]['sha256']:raise ValueError('Published loader differs from reviewed toolchain')
+    compression=manifest.get('compression',{})
+    expected_backends=['zlib']+(['zstd','lz4','bzip2'] if settings.runtime_profile=='full' else [])
+    if compression.get('profile')!=settings.runtime_profile or compression.get('linked_backends')!=expected_backends:
+        raise ValueError('Compression link closure does not match runtime profile')
+    from build_variants import validate_ca
+    if manifest.get('shared_ca')!={name:validate_ca(dist/name,root) for name in ('qjs.exe','qjsc.exe')}:
+        raise ValueError('SDK/interpreter shared CA resource metadata mismatch')
     return manifest
 
 
@@ -140,32 +152,11 @@ def verify_package(settings, release=None):
     source = settings.root / SOURCE
     if sha256(source) != settings.data["quickjs"]["sha256"]:
         raise ValueError("Pinned QuickJS source archive hash mismatch")
-    archive = settings.releases / release["archive"]
-    checksum = archive.with_suffix(".zip.sha256").read_text().split()
-    if checksum != [sha256(archive), archive.name]:
-        raise ValueError("Release ZIP checksum mismatch")
-    with zipfile.ZipFile(archive) as bundle:
-        if bundle.namelist() != ["readme.txt", "run-test262", "qjs"] or bundle.testzip():
-            raise ValueError("Release ZIP must have the official three-file layout and valid CRC")
-        for name in ("qjs", "run-test262"):
-            if bundle.read(name) != (settings.dist / (name + ".exe")).read_bytes():
-                raise ValueError("Release binary differs from SDK: " + name)
-        readme = bundle.read("readme.txt")
-        if ("Release version: " + release["version"]).encode() not in readme:
-            raise ValueError("Release readme version differs from the archive version")
-        with tarfile.open(source, "r:gz") as sources:
-            original = next(m for m in sources if m.name.endswith("/readme-cosmo.txt"))
-            with sources.extractfile(original) as stream:
-                if not readme.startswith(stream.read()):
-                    raise ValueError("Release readme is missing the upstream text")
-        if any(settings.data[key]["commit"].encode() not in readme for key in ("quickjs", "cosmopolitan")):
-            raise ValueError("Release readme is missing pinned commits")
-        if (settings.dist / "NODE-MODULES-LICENSE").read_bytes() not in readme:
-            raise ValueError("Release readme is missing Node module notices")
-        if (settings.dist / "NATIVE-MODULES-LICENSES").read_bytes() not in readme:
-            raise ValueError("Release readme is missing native source notices")
-        from runtime_capabilities import readme as capability_readme
-        if not readme.endswith(capability_readme(capability_report(settings.root))):raise ValueError('Release readme has a stale capability contract')
+    records = [verify_runtime(settings,release['version'],arch) for arch in ('fat','x64','arm64')]
+    metadata = json.loads((settings.releases/('assets-'+settings.runtime_profile+'.json')).read_text())
+    if metadata != dict(format=1,profile=settings.runtime_profile,version=release['version'],runtimes=records):
+        raise ValueError('Stale runtime size/asset evidence')
+    verify_auxiliary(settings,release['version'])
 
 
 def bundle_metadata(settings):
@@ -193,7 +184,9 @@ def verify(settings):
     sdk = verify_dist(settings)
     expected = {"dist/" + name for name in sdk["files"]} | {
         "dist/manifest.json", BUILD_EVIDENCE, SOURCE, *STANDALONES, *QJB_FILES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA, *HTTPS_METADATA,
-        "releases/" + release["archive"], "releases/" + release["archive"] + ".sha256"}
+        *['releases/'+name for name in profile_asset_names(release['version'],settings.runtime_profile)],
+        *['releases/'+name+'.sha256' for name in profile_asset_names(release['version'],settings.runtime_profile)],
+        'releases/assets-'+settings.runtime_profile+'.json'}
     if set(metadata["files"]) != expected:
         raise ValueError("CI bundle payload inventory mismatch")
     validate_evidence(settings,json.loads((settings.root/BUILD_EVIDENCE).read_text(encoding='utf8')),build=True)
@@ -241,9 +234,11 @@ def pack(settings, output, tag=None):
     evidence=validate_reports(settings,'build-linux-x64',build=True)
     (settings.root/BUILD_EVIDENCE).parent.mkdir(parents=True,exist_ok=True)
     (settings.root/BUILD_EVIDENCE).write_text(json.dumps(evidence,indent=2)+'\n',encoding='utf8')
-    archive = "releases/" + release["archive"]
+    assets={'releases/'+name for name in profile_asset_names(release['version'],settings.runtime_profile)}
+    asset_files=assets|{name+'.sha256' for name in assets}|{'releases/assets-'+settings.runtime_profile+'.json'}
     files = sorted({"dist/" + name for name in sdk["files"]} | {
-        "dist/manifest.json", BUILD_EVIDENCE, SOURCE, *STANDALONES, *QJB_FILES, *NATIVE_PROBES, *TLS_METADATA, *HTTP_METADATA, *HTTPS_METADATA, archive, archive + ".sha256"})
+        "dist/manifest.json", BUILD_EVIDENCE, SOURCE, *STANDALONES, *QJB_FILES, *NATIVE_PROBES,
+        *TLS_METADATA, *HTTP_METADATA, *HTTPS_METADATA, *asset_files})
     for name in ("probe-linux.json", "backends-linux.json"):
         native = json.loads((settings.root / "build/native" / name).read_text(encoding="utf-8"))
         if not native["passed"]:

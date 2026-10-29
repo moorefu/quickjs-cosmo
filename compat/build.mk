@@ -16,6 +16,7 @@ QJS_COMPAT_OBJS += $(OBJDIR)/qjs-process-async.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-dns.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-net.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-tls.o
+QJS_COMPAT_OBJS += $(OBJDIR)/qjs-resources.o $(OBJDIR)/qjs-ca.zip.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-http.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-stdio.o
 QJS_COMPAT_OBJS += $(OBJDIR)/qjs-tty.o
@@ -65,6 +66,14 @@ $(OBJDIR)/qjs-tls.o: $(QJS_COSMO_ROOT)/build/native/tls/qjs-tls.o | $(OBJDIR)
 	cp $< $@
 	mkdir -p $(OBJDIR)/.aarch64
 	cp $(QJS_COSMO_ROOT)/build/native/tls/.aarch64/qjs-tls.o $(OBJDIR)/.aarch64/
+
+$(OBJDIR)/qjs-ca.zip.o: $(QJS_COSMO_ROOT)/build/native/tls/qjs-ca.zip.o | $(OBJDIR)
+	cp $< $@
+	mkdir -p $(OBJDIR)/.aarch64
+	cp $(QJS_COSMO_ROOT)/build/native/tls/.aarch64/qjs-ca.zip.o $(OBJDIR)/.aarch64/
+
+$(OBJDIR)/qjs-resources.o: $(QJS_COSMO_ROOT)/native/tls/resources.c $(QJS_COSMO_ROOT)/native/module_registry.h | $(OBJDIR)
+	$(CC) $(CFLAGS_OPT) -std=gnu23 -D_COSMO_SOURCE -I. -I$(QJS_COSMO_NATIVE) -c -o $@ $<
 
 $(OBJDIR)/qjs-http.o: $(QJS_COSMO_ROOT)/build/native/http/qjs-http.o | $(OBJDIR)
 	cp $< $@

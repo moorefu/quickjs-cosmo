@@ -32,10 +32,12 @@ def build(root=ROOT):
     output = root / 'build/native/compression'
     output.mkdir(parents=True, exist_ok=True)
     objects, commands = [], []
-    for name in ('allocator', 'core', 'stream', 'binding', 'bzip2-huffman', 'bzip2-blocksort'):
+    full = settings.runtime_profile == 'full'
+    names = ('allocator', 'core', 'stream', 'binding') + (('bzip2-huffman', 'bzip2-blocksort') if full else ())
+    for name in names:
         target = output / (name + '.o')
         command = [settings.toolchain / 'bin/cosmocc', '-std=gnu23', '-D_COSMO_SOURCE', '-D_GNU_SOURCE',
-                   '-DBZ_NO_STDIO', '-O2', '-Wall', '-Werror=implicit-function-declaration',
+                   '-DBZ_NO_STDIO', '-DQJS_COMPRESSION_FULL=' + str(int(full)), '-O2', '-Wall', '-Werror=implicit-function-declaration',
                    '-ffunction-sections', '-fdata-sections', '-ffile-prefix-map=' + str(root) + '=.',
                    '-I' + str(settings.build), '-I' + str(settings.native_source),
                    '-c', root / 'native/compression' / (name + '.c'), '-o', target]
@@ -51,7 +53,7 @@ def build(root=ROOT):
         command = [str(tools) + 'ld', '-r', '--gc-sections', '-u', ROOT_SYMBOL,
                    '--wrap=malloc', '--wrap=calloc', '--wrap=realloc', '--wrap=free', '-o', target,
                    *map(peer, objects), '--start-group',
-                   *[peer(backend / name) for name in ('zstd.a', 'lz4-frame.a', 'bzip2.a')], '--end-group']
+                   *[peer(backend / name) for name in (('zstd.a', 'lz4-frame.a', 'bzip2.a') if full else ())], '--end-group']
         run(command, root)
         commands.append(dict(command=list(map(str, command))))
         command = [str(tools) + 'objcopy', '-G', ROOT_SYMBOL, '--strip-unneeded', target]
@@ -62,6 +64,8 @@ def build(root=ROOT):
         if [line.split()[0] for line in definitions] != [ROOT_SYMBOL]:
             raise ValueError('Compression closure leaks backend definitions: ' + str(definitions))
         symbols = run([str(tools) + 'nm', '-P', target], root)
+        if not full and any(token in symbols for token in ('ZSTD_', 'LZ4_', 'LZ4F_', 'BZ2_')):
+            raise ValueError('Optional compression implementation survived in base')
         if any(token in symbols for token in ('BZ2_bzReadOpen', 'BZ2_bzWriteOpen', ' LZ4IO_', ' main ')):
             raise ValueError('CLI or file interfaces survived compression closure')
         undefined = run([str(tools) + 'nm', '-u', '-P', target], root).splitlines()
@@ -71,10 +75,11 @@ def build(root=ROOT):
     sources = ['native/compression/' + name for name in ('core.c', 'core.h', 'stream.c', 'stream.h', 'stream-binding.h', 'binding.c', 'binding.h', 'allocator.c',
         'bzip2-huffman.c', 'bzip2-blocksort.c', 'bzip2-workspace.h')]
     sources += ['scripts/build_compression.py', 'native/build-inputs.json', 'native/tasks.h']
-    (output / 'build.json').write_text(json.dumps(dict(format=1,
+    (output / 'build.json').write_text(json.dumps(dict(format=1, profile=settings.runtime_profile,
         inputs={name: sha256(root / name) for name in sources}, backend_fingerprint=manifest['fingerprint'],
         architectures=reports, commands=commands, included_sources=included,
-        scope='Private Zstd/LZ4 Frame/bzip2 SDK closure; toolchain zlib via its native ABI; no CLI'),
+        linked_backends=['zlib']+(['zstd','lz4','bzip2'] if full else []),
+        scope='Private profile-specific compression closure; no CLI'),
         indent=2) + '\n', encoding='utf-8')
     print('PASS compression SDK closure: x86_64/aarch64, private backends, quota allocators')
 

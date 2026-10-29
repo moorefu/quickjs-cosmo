@@ -56,7 +56,7 @@ int main(void) {
             "const {z,c,a}=fixture;const data=Buffer.alloc(15000);for(let i=0;i<data.length;i++)data[i]=(i*131+(i>>8))&255;"
             "const codecs=[[z.gzipSync,z.gunzipSync],[z.deflateSync,z.inflateSync],[z.deflateRawSync,z.inflateRawSync],"
             "[z.zstdCompressSync,z.zstdDecompressSync],[c.lz4CompressSync,c.lz4DecompressSync],[c.bzip2CompressSync,c.bzip2DecompressSync]];"
-            "for(const [compress,decompress] of codecs) {"
+            "for(const [compress,decompress] of codecs.filter(([f])=>typeof f==='function')) {"
             " const encoded=compress(data);a(decompress(encoded).equals(data));"
             " for(const operation of [()=>compress(data),()=>decompress(encoded)]) {"
             "  compressionFault(0);operation();const count=nativeCalls();a(count>0);"

@@ -12,8 +12,10 @@ const corrupt=Buffer.from(compressed);corrupt[corrupt.length-8]^=1;
 output.checksum=await failure(zlib.createGunzip(),corrupt);
 const dictionary=Buffer.from('shared dictionary');
 output.dictionary=await failure(zlib.createInflate(),zlib.deflateSync('shared dictionary text',{dictionary}));
+if(process.env.QUICKJS_COSMO_RUNTIME_PROFILE!=='base'){
 output.zstd=await failure(zlib.createZstdDecompress(),Buffer.from('invalid'));
 output.zstdTruncated=await failure(zlib.createZstdDecompress(),zlib.zstdCompressSync('truncated').subarray(0,-1));
+}
 {
     const hash=crypto.createHash('sha256').update('done');hash.digest();
     output.finalized=await failure(hash,Buffer.from('late'));

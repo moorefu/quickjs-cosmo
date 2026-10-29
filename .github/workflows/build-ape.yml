@@ -19,7 +19,13 @@ env:
 
 jobs:
   build:
-    name: Build pinned APE (Linux x86_64)
+    name: Build ${{ matrix.profile }} APE (Linux x86_64)
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [base, full]
+    env:
+      QUICKJS_COSMO_RUNTIME_PROFILE: ${{ matrix.profile }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
@@ -57,12 +63,12 @@ jobs:
       - name: Check implemented API declarations
         run: python scripts/check_types.py
       - name: Create official release ZIP
-        run: python scripts/package.py
+        run: python scripts/package.py --validate
       - name: Prepare locked ARM64 64K kernel guest
         run: python scripts/test_kernel64k.py --prepare-only
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: kernel64k-guest
+          name: kernel64k-guest-${{ matrix.profile }}
           path: |
             build/kernel64k/preparation.json
             build/kernel64k/initramfs.cpio.gz
@@ -74,7 +80,7 @@ jobs:
         run: python scripts/ci_artifact.py pack
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: quickjs-cosmo-build
+          name: quickjs-cosmo-build-${{ matrix.profile }}
           path: |
             build/ci/quickjs-cosmo-ci.tar.gz
             build/ci/quickjs-cosmo-ci.tar.gz.sha256
@@ -86,8 +92,9 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: reports-build-linux-x86_64
+          name: reports-${{ matrix.profile }}-build-linux-x86_64
           path: |
+            build/profiles/
             build/terminal/
             build/test-results/*.json
             build/runtime-audit/nightly-regression-*.json
@@ -101,13 +108,17 @@ jobs:
           retention-days: 14
 
   verify:
-    name: Verify ${{ matrix.runner }} (${{ matrix.arch }}, APE ${{ matrix.execution_arch }})
+    name: Verify ${{ matrix.profile }} ${{ matrix.runner }} (${{ matrix.arch }}, APE ${{ matrix.execution_arch }})
+    env:
+      QUICKJS_COSMO_RUNTIME_PROFILE: ${{ matrix.profile }}
     needs: build
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
+        profile: [base, full]
+        runner: [ubuntu-24.04, ubuntu-24.04-arm, macos-15-intel, macos-15, windows-2022, windows-2025, windows-11-arm]
         include:
           - {runner: ubuntu-24.04, platform: linux, arch: x86_64, execution_arch: x86_64, python_arch: x64}
           - {runner: ubuntu-24.04-arm, platform: linux, arch: arm64, execution_arch: arm64, python_arch: arm64}
@@ -127,7 +138,7 @@ jobs:
           architecture: ${{ matrix.python_arch }}
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: quickjs-cosmo-build
+          name: quickjs-cosmo-build-${{ matrix.profile }}
           path: build/ci
       - name: Verify and unpack the same build
         run: python scripts/ci_artifact.py unpack
@@ -155,9 +166,10 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: reports-${{ matrix.runner }}
+          name: reports-${{ matrix.profile }}-${{ matrix.runner }}
           # Only aggregate reports; per-case fixtures contain inherited environments.
           path: |
+            build/profiles/
             build/terminal/
             build/release-evidence/*.json
             build/test-results/*.json
@@ -169,7 +181,13 @@ jobs:
           retention-days: 14
 
   kernel64k:
-    name: Verify ARM64 kernel (64K pages)
+    name: Verify ${{ matrix.profile }} ARM64 kernel (64K pages)
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [base, full]
+    env:
+      QUICKJS_COSMO_RUNTIME_PROFILE: ${{ matrix.profile }}
     needs: build
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -182,12 +200,12 @@ jobs:
           python-version: "3.12"
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: quickjs-cosmo-build
+          name: quickjs-cosmo-build-${{ matrix.profile }}
           path: build/ci
       - run: python scripts/ci_artifact.py unpack
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: kernel64k-guest
+          name: kernel64k-guest-${{ matrix.profile }}
           path: build/kernel64k
       - name: Install full-system QEMU
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y qemu-system-arm
@@ -198,15 +216,21 @@ jobs:
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
-          name: reports-kernel64k
+          name: reports-${{ matrix.profile }}-kernel64k
           path: |
             build/kernel64k/results.json
             build/kernel64k/console.log
           if-no-files-found: error
           retention-days: 14
 
-  ci:
-    name: CI gate
+  certify:
+    name: Certify ${{ matrix.profile }} release
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [base, full]
+    env:
+      QUICKJS_COSMO_RUNTIME_PROFILE: ${{ matrix.profile }}
     if: always()
     needs: [build, verify, kernel64k]
     runs-on: ubuntu-24.04
@@ -230,14 +254,14 @@ jobs:
           python-version: "3.12"
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: quickjs-cosmo-build
+          name: quickjs-cosmo-build-${{ matrix.profile }}
           path: build/ci
       - name: Verify release payload after the matrix passes
         run: python scripts/ci_artifact.py unpack
       - name: Download all platform reports
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          pattern: reports-*
+          pattern: reports-${{ matrix.profile }}-*
           path: build/matrix-reports
           merge-multiple: false
       - name: Require seven matching platform evidence records
@@ -245,13 +269,49 @@ jobs:
       - name: Save validated release files
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: quickjs-cosmo-release
+          name: quickjs-cosmo-certified-${{ matrix.profile }}
           path: |
             releases/quickjs-cosmo-*.zip
             releases/quickjs-cosmo-*.zip.sha256
+            releases/internal/
+            releases/assets-${{ matrix.profile }}.json
+            .cache/quickjs-source.tar.gz
+            dist/variants/*/*.json
             dist/manifest.json
             dist/capabilities.json
             releases/compatibility-report.json
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14
+
+  ci:
+    name: CI gate
+    if: always()
+    needs: [build, verify, kernel64k, certify]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Require both profiles and all platform gates
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: python -c "import json,os; assert all(v['result']=='success' for v in json.loads(os.environ['RESULTS']).values())"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: quickjs-cosmo-certified-*
+          path: build/certified
+          merge-multiple: false
+      - name: Revalidate both profiles and assemble eight release assets
+        run: python scripts/assemble_release.py --certified build/certified
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: quickjs-cosmo-release
+          path: releases/public/
           if-no-files-found: error
           retention-days: 14
 
@@ -273,10 +333,8 @@ jobs:
           python-version: "3.12"
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          name: quickjs-cosmo-build
-          path: build/ci
-      - name: Verify the tested release payload
-        run: python scripts/ci_artifact.py unpack
+          name: quickjs-cosmo-release
+          path: releases/public
       - name: Publish the current tag after the complete CI gate
         env:
           GH_TOKEN: ${{ github.token }}

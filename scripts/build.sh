@@ -3,15 +3,18 @@ set -eu
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$ROOT"
 QUICKJS_COSMO_PROFILE=${QUICKJS_COSMO_PROFILE:-nightly}
+QUICKJS_COSMO_RUNTIME_PROFILE=${QUICKJS_COSMO_RUNTIME_PROFILE:-base}
 OFFLINE=
 for argument in "$@"; do
     case "$argument" in
         --nightly) QUICKJS_COSMO_PROFILE=nightly ;;
         --offline) OFFLINE=--offline ;;
+        --base) QUICKJS_COSMO_RUNTIME_PROFILE=base ;;
+        --full) QUICKJS_COSMO_RUNTIME_PROFILE=full ;;
         *) printf 'Unknown option: %s\n' "$argument" >&2; exit 2 ;;
     esac
 done
-export QUICKJS_COSMO_PROFILE
+export QUICKJS_COSMO_PROFILE QUICKJS_COSMO_RUNTIME_PROFILE
 python3 scripts/bootstrap.py $OFFLINE
 MAKE=${MAKE:-$(command -v make)}
 python3 scripts/prepare_toolchain.py $OFFLINE
@@ -71,7 +74,7 @@ for program in qjs qjsc run-test262; do
     chmod +x "$DIST/$program"
 done
 cp "$BUILD/quickjs.h" "$BUILD/quickjs-libc.h" "$BUILD/qjs-cosmo.h" "$BUILD/qjs-tasks.h" "$DIST/"
-cp types/*.d.ts "$DIST/"
+python3 scripts/runtime_profiles.py
 cp src/js/vendor/node/LICENSE "$DIST/NODE-MODULES-LICENSE"
 cat src/js/vendor/punycode/LICENSE >> "$DIST/NODE-MODULES-LICENSE"
 cp build/native/backends/LICENSES.txt "$DIST/NATIVE-MODULES-LICENSES"
@@ -84,5 +87,6 @@ cp "$BUILD/.aarch64/libquickjs.a" "$DIST/.aarch64/"
 cp upstream/quickjs/LICENSE "$DIST/QUICKJS-LICENSE"
 cp "$LOCK" "$DIST/versions.json"
 cp "$TOOLCHAIN/.runtime-toolchain.json" "$DIST/toolchain.json"
+python3 scripts/build_variants.py
 python3 scripts/artifact_manifest.py
 printf '\nBuilt portable binaries in %s\n' "$DIST"

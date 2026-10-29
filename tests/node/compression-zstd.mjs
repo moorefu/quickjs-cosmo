@@ -1,6 +1,7 @@
 import z from 'node:zlib';
 import {Buffer} from 'node:buffer';
 import {result} from './fixtures/result.mjs';
+if(process.env.QUICKJS_COSMO_RUNTIME_PROFILE!=='base'){
 const outcomes={};
 function record(name,call) {
     try {const value=call();outcomes[name]=Buffer.isBuffer(value)?['Buffer',value.toString('hex')]:value;}
@@ -40,3 +41,5 @@ record('dataView',()=>z.zstdDecompressSync(z.zstdCompressSync(new DataView(Uint8
 const corrupt=z.zstdCompressSync('checksum',{params:{201:1}});corrupt[corrupt.length-1]^=1;
 record('checksum',()=>z.zstdDecompressSync(corrupt));
 result(outcomes);
+
+}

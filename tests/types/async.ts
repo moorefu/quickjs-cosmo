@@ -19,7 +19,6 @@ async function check() {
     crypto.hkdf('sha256','p','s','i',32,(error,key)=>{if(error)throw error;const answer:ArrayBuffer=key;void answer;});
     crypto.randomFill(new DataView(new ArrayBuffer(10)),1,2,(error,value)=>{if(error)throw error;const answer:DataView=value;void answer;});
     zlib.gzip('text',{level:9,signal:new AbortController().signal},(error,value)=>{if(error)throw error;const answer:Buffer=value;void answer;});
-    zlib.zstdCompress(data,{params:{100:3}},()=>{});compression.lz4Compress(data,()=>{});compression.bzip2Decompress(data,{small:true},()=>{});
     // @ts-expect-error Promise paths do not accept integer file descriptors.
     await fsp.readFile(1);
     // @ts-expect-error callbacks are required for callback zlib methods.

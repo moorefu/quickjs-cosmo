@@ -2,7 +2,6 @@ declare module 'node:zlib' {
     import {Transform,TransformOptions,StreamCallback} from 'node:stream';
     import {Buffer} from 'node:buffer';
     export interface ZlibOptions extends Options,Omit<TransformOptions,'flush'> {}
-    export interface ZstdStreamOptions extends ZstdOptions,Omit<TransformOptions,'flush'> {}
     export interface ZlibResult<T extends Transform=Transform> {buffer:Buffer;engine:T;}
     export interface ZlibStream extends Transform {
         readonly bytesWritten:number;
@@ -48,16 +47,6 @@ declare module 'node:zlib' {
         constructor(options?:ZlibOptions);
     }
     export function createUnzip(options?:ZlibOptions):Unzip;
-    export interface ZstdCompress extends ZlibStream {}
-    export class ZstdCompress extends Transform {
-        constructor(options?:ZstdStreamOptions);
-    }
-    export function createZstdCompress(options?:ZstdStreamOptions):ZstdCompress;
-    export interface ZstdDecompress extends ZlibStream {}
-    export class ZstdDecompress extends Transform {
-        constructor(options?:ZstdStreamOptions);
-    }
-    export function createZstdDecompress(options?:ZstdStreamOptions):ZstdDecompress;
     export function deflateSync(input:InputType,options:Omit<Options,'info'>&{info:true}):ZlibResult<Deflate>;
     export function inflateSync(input:InputType,options:Omit<Options,'info'>&{info:true}):ZlibResult<Inflate>;
     export function gzipSync(input:InputType,options:Omit<Options,'info'>&{info:true}):ZlibResult<Gzip>;
@@ -65,10 +54,7 @@ declare module 'node:zlib' {
     export function deflateRawSync(input:InputType,options:Omit<Options,'info'>&{info:true}):ZlibResult<DeflateRaw>;
     export function inflateRawSync(input:InputType,options:Omit<Options,'info'>&{info:true}):ZlibResult<InflateRaw>;
     export function unzipSync(input:InputType,options:Omit<Options,'info'>&{info:true}):ZlibResult<Unzip>;
-    export function zstdCompressSync(input:InputType,options:Omit<ZstdOptions,'info'>&{info:true}):ZlibResult<ZstdCompress>;
-    export function zstdDecompressSync(input:InputType,options:Omit<ZstdOptions,'info'>&{info:true}):ZlibResult<ZstdDecompress>;
     interface AsyncCompression { (input:InputType,options:Omit<AsyncOptions,'info'>&{info:true},callback:(error:Error|null,result:ZlibResult<ZlibStream>)=>void):void; }
-    interface AsyncZstd { (input:InputType,options:Omit<AsyncZstdOptions,'info'>&{info:true},callback:(error:Error|null,result:ZlibResult<ZlibStream>)=>void):void; }
     interface AsyncZlibMethods {
         Deflate:typeof Deflate;createDeflate:typeof createDeflate;
         Inflate:typeof Inflate;createInflate:typeof createInflate;
@@ -77,7 +63,5 @@ declare module 'node:zlib' {
         DeflateRaw:typeof DeflateRaw;createDeflateRaw:typeof createDeflateRaw;
         InflateRaw:typeof InflateRaw;createInflateRaw:typeof createInflateRaw;
         Unzip:typeof Unzip;createUnzip:typeof createUnzip;
-        ZstdCompress:typeof ZstdCompress;createZstdCompress:typeof createZstdCompress;
-        ZstdDecompress:typeof ZstdDecompress;createZstdDecompress:typeof createZstdDecompress;
     }
 }

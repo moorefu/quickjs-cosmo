@@ -42,6 +42,8 @@ def validate(inventory, root=ROOT):
         tasks.update(re.findall(r"\b(?:QJB|TTY|DEPLOY)-[0-9]{2}\b", text))
     tests = {}
     for test in inventory["tests"]:
+        if not test.get('profiles',['base','full']) or not set(test.get('profiles',['base','full'])) <= {'base','full'}:
+            raise ValueError('Invalid test profiles')
         identifier = test["id"]
         if identifier in tests or not re.fullmatch(r"[A-Z]+-[0-9]{3}", identifier):
             raise ValueError("Invalid or duplicate test ID: " + identifier)
@@ -74,6 +76,8 @@ def validate(inventory, root=ROOT):
         if not module["entries"]:
             raise ValueError("Empty module inventory: " + name)
         for entry in module["entries"]:
+            if not entry.get('profiles',['base','full']) or not set(entry.get('profiles',['base','full'])) <= {'base','full'}:
+                raise ValueError('Invalid API profiles')
             identifier = name + "." + entry["name"]
             if identifier in identifiers or entry["status"] not in STATUSES:
                 raise ValueError("Invalid or duplicate API: " + identifier)

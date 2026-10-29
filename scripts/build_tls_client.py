@@ -12,8 +12,13 @@ def main():
     parser=argparse.ArgumentParser();parser.add_argument('--offline',action='store_true');args=parser.parse_args()
     settings=load_config();output,manifest=build(offline=args.offline)
     ca=ROOT/'native/tls/ca-bundle.pem'
-    # Bytes are pinned and checked by build_tls before embedding.
-    (output/'ca-bundle.h').write_text('static const unsigned char qjs_tls_ca[]=\n'+''.join(json.dumps(line)+'\n' for line in ca.read_text().splitlines(keepends=True))+';\n')
+    # zipobj preserves the pinned bytes; apelink deduplicates this member across
+    # architectures. The SDK archive carries both resource objects itself.
+    for arch in ('x86_64','aarch64'):
+        target=output/('.aarch64' if arch=='aarch64' else '.')/'qjs-ca.zip.o'
+        target.parent.mkdir(parents=True,exist_ok=True)
+        run([settings.toolchain/'bin/zipobj','-a',arch,'-N','.quickjs-cosmo/ca-bundle.pem',
+             '-o',target,ca.relative_to(ROOT)],ROOT)
     objects=[]
     for name in ('backend','policy'):
         target=output/(name+'.o');objects.append(target)
@@ -33,7 +38,9 @@ def main():
         if any(line.split()[0].startswith(('mbedtls_','Hacl_','Everest_','__wrap_')) for line in undefined):raise ValueError('Unresolved TLS backend dependency: '+str(undefined))
         reports[arch]=dict(sha256=sha256(target),exported=[symbol],undefined=undefined)
     sources=['scripts/build_tls_client.py','native/tls/backend.c','native/tls/backend.h','native/tls/policy.c','native/tls/policy.h','native/tls/ca-bundle.pem']
-    (output/'client.json').write_text(json.dumps(dict(format=1,backend_fingerprint=manifest['fingerprint'],inputs={p:sha256(ROOT/p) for p in sources},architectures=reports),indent=2)+'\n')
+    resources=dict(member='.quickjs-cosmo/ca-bundle.pem',source_sha256=sha256(ca),
+                   objects={arch:sha256(output/('.aarch64' if arch=='aarch64' else '.')/'qjs-ca.zip.o') for arch in ('x86_64','aarch64')})
+    (output/'client.json').write_text(json.dumps(dict(format=1,backend_fingerprint=manifest['fingerprint'],inputs={p:sha256(ROOT/p) for p in sources},architectures=reports,resources=resources),indent=2)+'\n')
     print('PASS TLS client closure: dual architecture, localized backend, fixed CA')
 
 if __name__=='__main__':main()
