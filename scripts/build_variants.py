@@ -51,7 +51,9 @@ def build():
                    'linux+mac+bsd+windows' if architecture == 'x64' else 'linux+mac+bsd',
                    '-l', settings.toolchain / ('bin/ape-' + cpu + '.elf')]
         if architecture == 'arm64':
-            command += ['-M', settings.toolchain / 'bin/ape-m1.c']
+            # The pinned loaders recognize APEDBG=' but not apelink's unquoted
+            # jartsr= prefix emitted when neither Windows nor metal is selected.
+            command += ['-B', '-M', settings.toolchain / 'bin/ape-m1.c']
         command += ['-o', target, source]
         run(command, settings.root)
         # The immutable resource describes the release architecture to both

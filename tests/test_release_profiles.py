@@ -14,6 +14,7 @@ import zipfile
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'scripts'))
 from assemble_release import extract_zip
+from ape_layout import inspect
 from build_config import load_config
 from build_variants import CA_MEMBER,validate_ca,validate_architecture
 import release_assets as assets
@@ -22,6 +23,10 @@ from runtime_profiles import declaration_files,selected_profile
 
 
 class ReleaseProfileTests(unittest.TestCase):
+    def test_loader_rejects_unrecognized_shell_preamble(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/'runtime';path.write_bytes(b'jartsr=\n\n')
+            with self.assertRaisesRegex(ValueError,'loader-compatible'):inspect(path,expected_architecture='arm64')
     def test_source_archive_pin_is_required_before_packaging(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);(root/'.cache').mkdir();(root/'.cache/quickjs-source.tar.gz').write_bytes(b'changed')

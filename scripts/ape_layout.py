@@ -92,7 +92,9 @@ def inspect(path, require_64k=True, expected_architecture='fat'):
         if require_64k and result['elf']['machine'] == ARM64 and not result['elf']['ready64k']:
             raise ValueError('ARM64 ELF is not 64K aligned: ' + str(path))
         return result
-    payloads = [elf(printf_bytes(m[1]), data) for m in re.finditer(rb"printf '([^']*)' >&7", data[:65536]) if m[1].startswith(b'\\177ELF')]
+    if not data.startswith((b"MZqFpD='", b"jartsr='", b"APEDBG='")):
+        raise ValueError('Missing loader-compatible APE preamble: ' + str(path))
+    payloads = [elf(printf_bytes(m[1]), data) for m in re.finditer(rb"printf '([^']*)' >&7", data[:8192]) if m[1].startswith(b'\\177ELF')]
     if len(payloads) != len(expected) or {v['machine'] for v in payloads} != expected:
         raise ValueError('APE decoded ELF boot headers do not match ' + expected_architecture)
     loaders = {}
