@@ -1,12 +1,33 @@
 """Exercise the real provider using damaged copies of a linked SDK APE."""
 import os
+from contextlib import contextmanager
 import struct
 from pathlib import Path
 import tempfile
+import time
 import warnings
 import zipfile
 
 from runtime_resources import CORE, CA, CAPABILITIES, MANIFEST, LIMITS
+
+
+@contextmanager
+def probe_directory(root):
+    temporary = tempfile.TemporaryDirectory(prefix='resource-faults-', dir=root / 'build')
+    try:
+        yield Path(temporary.name)
+    finally:
+        # Windows ARM's x64 emulator may retain an exited image briefly. Every
+        # case has a new pathname; cleanup still must succeed within the bound.
+        deadline = time.monotonic() + 15
+        while True:
+            try:
+                temporary.cleanup()
+                break
+            except PermissionError:
+                if os.name != 'nt' or time.monotonic() >= deadline:
+                    raise
+                time.sleep(0.1)
 
 
 def expected_cases():
@@ -23,7 +44,9 @@ def rewrite_zip(source, target, member=None, data=None, duplicate=False, strip=F
     with zipfile.ZipFile(source) as archive:
         entries = [(entry, archive.read(entry)) for entry in archive.infolist()]
         prefix = source.read_bytes()[:min(entry.header_offset for entry, _ in entries)]
-    target.write_bytes(prefix)
+    # Never overwrite an executable that a previous case has run.
+    with target.open('xb') as output:
+        output.write(prefix)
     if not strip:
         with zipfile.ZipFile(target, 'a', zipfile.ZIP_DEFLATED) as archive:
             for entry, content in entries:
@@ -39,9 +62,7 @@ def rewrite_zip(source, target, member=None, data=None, duplicate=False, strip=F
 def validate(settings, sdk, execute):
     root = settings.root
     records = []
-    with tempfile.TemporaryDirectory(prefix='resource-faults-', dir=root / 'build') as temporary:
-        directory = Path(temporary)
-        target = directory / 'resource-probe.exe'
+    with probe_directory(root) as directory:
         with zipfile.ZipFile(sdk) as archive:
             original = {name: archive.read(name) for name in (CORE, CA, CAPABILITIES, MANIFEST)}
         for name, content in original.items():
@@ -53,10 +74,12 @@ def validate(settings, sdk, execute):
                 cases.append(('format', b'{}\n'))
             cases.append(('format', content))
             for index, (mode, changed) in enumerate(cases):
-                rewrite_zip(sdk, target, name, changed, duplicate=index == len(cases) - 1)
                 entry = 'resource-' + name.rsplit('/', 1)[-1] + '-' + mode + '-' + str(index)
+                target = directory / (entry + '.exe')
+                rewrite_zip(sdk, target, name, changed, duplicate=index == len(cases) - 1)
                 execute(target, [mode, name, 'unused'], entry)
                 records.append(entry)
+        target = directory / 'resource-non-zip.exe'
         rewrite_zip(sdk, target, strip=True)
         execute(target, ['unavailable', CORE, 'unused'], 'resource-non-zip')
         records.append('resource-non-zip')
@@ -72,11 +95,14 @@ def validate(settings, sdk, execute):
                               "try { runtimeInfo(); throw Error('resource unexpectedly accepted'); } catch(error) {\n"
                               "if(error.code!==" + repr(code) + "||!error.message.includes('capabilities.json'))throw error;\n"
                               "print('PASS JS resource diagnostics'); }\n", encoding='utf8')
-            rewrite_zip(settings.dist / 'qjs.exe', target, CAPABILITIES, changed)
             entry = 'resource-js-' + mode
+            target = directory / (entry + '.exe')
+            rewrite_zip(settings.dist / 'qjs.exe', target, CAPABILITIES, changed)
             execute(target, ['-m', source], entry)
             records.append(entry)
         for mode in ('local-too-large', 'local-mismatch', 'deflate-corrupt'):
+            entry = 'resource-' + mode
+            target = directory / (entry + '.exe')
             rewrite_zip(sdk, target)
             with zipfile.ZipFile(target) as archive:
                 info = archive.getinfo(CA)
@@ -91,7 +117,6 @@ def validate(settings, sdk, execute):
                 struct.pack_into('<I', raw, offset + 22, size)
                 expected = 'too-large' if mode == 'local-too-large' else 'format'
             target.write_bytes(raw)
-            entry = 'resource-' + mode
             execute(target, [expected, CA, 'unused'], entry)
             records.append(entry)
     if records != expected_cases():

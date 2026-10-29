@@ -6,6 +6,8 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import Mock, patch
+from types import SimpleNamespace
 import warnings
 import zipfile
 
@@ -14,9 +16,37 @@ sys.path.insert(0, str(ROOT / 'scripts'))
 from runtime_resources import resource_files, validate_resources, CORE, CA, CAPABILITIES, MANIFEST
 from runtime_capabilities import report
 from test_resources import expected_cases
+import test_resources as driver
 
 
 class RuntimeResourceTests(unittest.TestCase):
+    def test_windows_image_cleanup_is_retried_but_never_ignored(self):
+        temporary = Mock(name='temporary')
+        temporary.name = 'resource-probes'
+        temporary.cleanup.side_effect = [PermissionError('image busy'), None]
+        with patch.object(driver.tempfile, 'TemporaryDirectory', return_value=temporary), \
+             patch.object(driver, 'os', SimpleNamespace(name='nt')), \
+             patch.object(driver.time, 'sleep') as sleep:
+            with driver.probe_directory(ROOT): pass
+            self.assertEqual(temporary.cleanup.call_count, 2)
+            sleep.assert_called_once_with(0.1)
+        temporary.cleanup.side_effect = PermissionError('still busy')
+        with patch.object(driver.tempfile, 'TemporaryDirectory', return_value=temporary), \
+             patch.object(driver, 'os', SimpleNamespace(name='nt')), \
+             patch.object(driver.time, 'monotonic', side_effect=[0, 16]):
+            with self.assertRaisesRegex(PermissionError, 'still busy'):
+                with driver.probe_directory(ROOT): pass
+
+    def test_fault_images_are_created_exclusively(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / 'source.exe'
+            target = Path(directory) / 'probe.exe'
+            with zipfile.ZipFile(source, 'w') as archive: archive.writestr('member', b'data')
+            driver.rewrite_zip(source, target)
+            original = target.read_bytes()
+            with self.assertRaises(FileExistsError): driver.rewrite_zip(source, target)
+            self.assertEqual(target.read_bytes(), original)
+
     def test_local_header_size_is_checked_independently(self):
         files = resource_files(ROOT, 'base')
         with tempfile.TemporaryDirectory() as directory:
