@@ -52,6 +52,15 @@ def validate_evidence(settings,value,build=False):
     inventory=read(root/'compat/node-api.json');tests={t['id'] for t in inventory['tests'] if t['status']=='differential'}
     if len(value['nodeTests'])!=len(tests) or set(value['nodeTests'])!=tests:raise ValueError('Incomplete differential coverage: '+runner)
     validate_node_identity(root,value['node'],host)
+    from test_terminal import expected_cases
+    terminal=value.get('terminal',{})
+    records=terminal.get('records',[])
+    expected_transport='ConPTY' if platform=='win32' else 'PTY'
+    if terminal.get('host')!=host or terminal.get('qjsSha256')!=value['inputs']['qjsSha256'] or terminal.get('transport')!=expected_transport or len(records)!=len(expected_cases()) or {(v['entry'],v['case']) for v in records}!=expected_cases():
+        raise ValueError('Missing, stale or incomplete real terminal evidence: '+runner)
+    for record in records:
+        if not record.get('logs') or any(not re.fullmatch('[0-9a-f]{64}',v) for v in record['logs'].values()) or (record['case']=='pipe' and record.get('noAutomaticAnsi') is not True) or (record['case']!='pipe' and (record.get('restored') is not True or record.get('result',[0])[0]!=1)):
+            raise ValueError('Invalid terminal restoration or raw log evidence: '+runner)
     return value
 
 def validate_reports(settings,runner='local',build=False):
@@ -74,7 +83,8 @@ def validate_reports(settings,runner='local',build=False):
     # all five host-specific Node archives in the release payload.
     from test_node_compat import verify_node
     if verify_node(Path(identity['execPath']),read(root/'compat/node-baseline.json'),root)!=identity['verification']:raise ValueError('Node executable changed after differential testing')
-    value=dict(format=1,runner=runner,host=runtime['host'],inputs=inputs,node=identity,
+    terminal=read(root/('build/terminal/'+host_report+'/results.json'))
+    value=dict(format=1,runner=runner,host=runtime['host'],inputs=inputs,node=identity,terminal=terminal,
         passed=runtime['passed'],failed=runtime['failed'],skipped=runtime['skipped'],checks=[x['name'] for x in checks],nodeTests=[x['id'] for x in node['results']])
     return validate_evidence(settings,value,build)
 

@@ -14,6 +14,7 @@
 #include "module_registry.h"
 #include "runtime_state.h"
 #include "bundle.h"
+#include "tty.h"
 #include "common/windows_host.h"
 #include "fs/sync.h"
 #include "crypto/binding.h"
@@ -496,6 +497,8 @@ JSValue js_cosmo_native_api(JSContext *ctx, CosmoRuntimeState *state) {
     if (JS_IsException(stdio) || JS_SetPropertyStr(ctx, api, "stdio", stdio) < 0) goto fail;
     JSValue bundle = js_cosmo_bundle_api(ctx);
     if (JS_IsException(bundle) || JS_SetPropertyStr(ctx, api, "bundle", bundle) < 0) goto fail;
+    JSValue tty = js_cosmo_tty_api(ctx);
+    if (JS_IsException(tty) || JS_SetPropertyStr(ctx, api, "tty", tty) < 0) goto fail;
     return api;
 fail:
     JS_FreeValue(ctx, api); return JS_EXCEPTION;

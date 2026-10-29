@@ -82,11 +82,11 @@ function createStreams(process) {
     Object.setPrototypeOf(Readable.prototype,Stream.prototype);Object.setPrototypeOf(Readable,Stream);
     Readable.prototype._read=function(){errorOrDestroy(this,error('ERR_METHOD_NOT_IMPLEMENTED','_read() is not implemented'));};
     function pull(stream) {
-        const r=readers.get(stream),state=states.get(stream);if(!r || r.reading || r.ended || state.destroyed || state.error || state.constructing || r.length>=r.hwm && r.length>0)return;
+        const r=readers.get(stream),state=states.get(stream);if(!r || r.reading || r.ended || state.destroyed || state.error || state.constructing || state.stdioPaused || r.length>=r.hwm && r.length>0)return;
         r.reading=true;r.syncReading=true;try{stream._read(r.hwm);}catch(e){errorOrDestroy(stream,e);}finally{r.syncReading=false;}
     }
     function requestRead(stream) {
-        const r=readers.get(stream),state=states.get(stream);if(!r || r.scheduled || r.reading || r.ended || state.destroyed || state.constructing)return;
+        const r=readers.get(stream),state=states.get(stream);if(!r || r.scheduled || r.reading || r.ended || state.destroyed || state.constructing || state.stdioPaused)return;
         if(r.length>=r.hwm && r.length>0)return;
         r.scheduled=true;tick(()=>{r.scheduled=false;pull(stream);});
     }
@@ -148,7 +148,7 @@ function createStreams(process) {
     };
     Readable.prototype.setEncoding=function(encoding){const r=readers.get(this),decoder=new Decoder(encoding),chunks=[];for(const chunk of r.queue){const text=typeof chunk==='string'?chunk:decoder.write(chunk);if(text)chunks.push(text);}r.decoder=decoder;r.encoding=decoder.encoding;r.queue=chunks;r.length=chunks.reduce((sum,s)=>sum+s.length,0);return this;};
     Readable.prototype.pause=function(){const r=readers.get(this);if(r.flowing!==false){r.flowing=false;this.emit('pause');}return this;};
-    Readable.prototype.resume=function(){const r=readers.get(this);if(r.flowing!==true){r.flowing=this.listenerCount('readable')===0;tick(()=>{if(!this.destroyed){this.read(0);this.emit('resume');while(r.flowing && !this.destroyed && this.read()!==null){}requestRead(this);}});}return this;};
+    Readable.prototype.resume=function(){const r=readers.get(this);if(r.flowing!==true){r.flowing=this.listenerCount('readable')===0;tick(()=>{if(!this.destroyed && !states.get(this).stdioPaused){this.read(0);this.emit('resume');while(r.flowing && !this.destroyed && this.read()!==null){}requestRead(this);}});}return this;};
     Readable.prototype.isPaused=function(){return readers.get(this).flowing===false;};
     Readable.prototype.on=function(type,listener){EventEmitter.prototype.on.call(this,type,listener);const r=readers.get(this);if(type==='data' && r.flowing!==false)this.resume();else if(type==='readable'){r.flowing=false;requestRead(this);if(r.length || r.ended)readable(this);}return this;};
     Readable.prototype.addListener=Readable.prototype.on;
@@ -317,5 +317,5 @@ function createStreams(process) {
     const promises={finished(stream,opts){return new Promise((resolve,reject)=>finished(stream,opts,e=>e?reject(e):resolve()));},pipeline(...args){let opts={};if(args.length && !states.has(args[args.length-1]) && !Array.isArray(args[args.length-1]) && typeof args[args.length-1]==='object')opts=args.pop();return new Promise((resolve,reject)=>pipelineRun(args,opts,e=>e?reject(e):resolve()));}};
     function addAbortSignal(value,stream){if(value===undefined)throw invalidType('signal','an AbortSignal');signal(value);if(!states.has(stream))throw invalidType('stream','a Stream');const state=states.get(stream),abort=()=>stream.destroy(aborted(value));if(value.aborted)tick(abort);else if(!state.closed){value.addEventListener('abort',abort,{once:true});state.abortCleanups.push(()=>value.removeEventListener('abort',abort));}return stream;}
     if(Symbol.asyncDispose)Stream.prototype[Symbol.asyncDispose]=function(){if(!this.destroyed)this.destroy(aborted());return promises.finished(this,{cleanup:true}).catch(e=>{if(e.code!=='ABORT_ERR')throw e;});};
-    const api={Stream,Readable,Writable,Duplex,Transform,PassThrough,pipeline,finished,addAbortSignal,promises};Object.assign(Stream,api);return {api,default:Stream,promises,decoder:encoding=>new Decoder(encoding),socketClose:stream=>{states.get(stream).socketClose=true;},httpOutgoing:stream=>{writers.get(stream).httpOutgoing=true;},stdioSink:stream=>{states.get(stream).stdioSink=true;}};
+    const api={Stream,Readable,Writable,Duplex,Transform,PassThrough,pipeline,finished,addAbortSignal,promises};Object.assign(Stream,api);return {api,default:Stream,promises,decoder:encoding=>new Decoder(encoding),socketClose:stream=>{states.get(stream).socketClose=true;},httpOutgoing:stream=>{writers.get(stream).httpOutgoing=true;},stdioSink:stream=>{states.get(stream).stdioSink=true;},stdioPause:(stream,paused)=>{states.get(stream).stdioPaused=paused;readers.get(stream).reading=false;if(!paused)requestRead(stream);}};
 }

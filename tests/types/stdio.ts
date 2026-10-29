@@ -4,8 +4,11 @@ stdin.setEncoding('utf8');stdin.ref().unref();stdin.pipe(stdout);stdout.write(ne
 const fd:0=process.stdin.fd;
 // @ts-expect-error Standard descriptors cannot be reassigned through this API.
 process.stdin.fd=5;
-// @ts-expect-error TTY raw mode is outside this stdio subset.
+// @ts-expect-error Narrow isTTY before using terminal-only methods.
 stdin.setRawMode(true);
 const filename: string | undefined = import.meta.filename;
 const directory: string | undefined = import.meta.dirname;
 void filename; void directory;
+
+if(stdin.isTTY)stdin.setRawMode(true).setRawMode(false);
+if(stdout.isTTY){const size:[number,number]=stdout.getWindowSize();stdout.cursorTo(size[0]);}

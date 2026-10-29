@@ -17,6 +17,10 @@ char *js_cosmo_bundle_resolve(JSContext *ctx, const char *base, const char *name
 JSModuleDef *js_cosmo_bundle_load(JSContext *ctx, const char *name);
 int js_cosmo_bundle_eval(JSContext *ctx, const char *filename);
 
+/* Paired legacy terminal ownership and default signal restoration. */
+JSValue js_cosmo_tty_legacy(JSContext *ctx, int argc, JSValueConst *argv);
+void js_cosmo_tty_signal(int number, void (*handler)(int));
+
 /* Call once per new context. Install the normalizer on its runtime as well. */
 int js_cosmo_init_modules(JSContext *ctx);
 int js_cosmo_is_builtin(const char *name);

@@ -65,7 +65,7 @@ JSValue js_cosmo_process_error_info(JSContext *ctx,int code) {
         {EIO,-4070,"EIO"},{EISDIR,-4068,"EISDIR"},{ELOOP,-4067,"ELOOP"},{EMFILE,-4066,"EMFILE"},
         {ENAMETOOLONG,-4064,"ENAMETOOLONG"},{ENFILE,-4061,"ENFILE"},{ENOBUFS,-4060,"ENOBUFS"},
         {ENOENT,-4058,"ENOENT"},{ENOMEM,-4057,"ENOMEM"},{ENOSYS,-4054,"ENOSYS"},{ENOTDIR,-4052,"ENOTDIR"},
-        {ENOTSUP,-4049,"ENOTSUP"},{EPERM,-4048,"EPERM"},{EPIPE,-4047,"EPIPE"},{ESRCH,-4040,"ESRCH"},
+        {ENOTSUP,-4049,"ENOTSUP"},{EPERM,-4048,"EPERM"},{EPIPE,-4047,"EPIPE"},{ESRCH,-4040,"ESRCH"},{ENOTTY,-4029,"ENOTTY"},
         {ETIMEDOUT,-4039,"ETIMEDOUT"},{ENOEXEC,-4022,"ENOEXEC"}};
     const char *name="UNKNOWN";int number=-code;
     for(size_t i=0;i<sizeof(values)/sizeof(*values);i++)if(values[i].value==code){name=values[i].name;if(IsWindows())number=values[i].windows;break;}

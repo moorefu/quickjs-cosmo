@@ -603,6 +603,15 @@
       "task": "QJB-06",
       "description": "Unmounted bundle APIs fail clearly in source/qjsc contexts",
       "timeout_seconds": 30
+    },
+    {
+      "id": "TTY-001",
+      "status": "differential",
+      "file": "tests/node/terminal.mjs",
+      "task": "TTY-03",
+      "description": "TTY pipe identity, key parser, CRLF, question/abort/iterator, ASCII editing and cursor bytes",
+      "timeout_seconds": 30,
+      "compare_output": true
     }
   ],
   "modules": [
@@ -5036,10 +5045,11 @@
           "task": "M6-01",
           "parameters": "Inherited standard descriptor as a Readable or Writable stream",
           "tests": [
-            "PROC-007"
+            "PROC-007",
+            "TTY-001"
           ],
           "differences": [
-            "Synchronous output in bounded chunks, deferred callbacks; stdin readiness and ref/unref. Worker shared stdin is unavailable. No raw mode or terminal control. See docs/M6_DELIVERY.md."
+            "Synchronous bounded output with deferred callbacks; terminal conditional tty streams, paired raw ownership and resize documented in docs/TERMINAL_CONTRACT.md. Worker shared input is unavailable."
           ],
           "support": {
             "linux": {
@@ -5075,10 +5085,11 @@
           "task": "M6-01",
           "parameters": "Inherited standard descriptor as a Readable or Writable stream",
           "tests": [
-            "PROC-007"
+            "PROC-007",
+            "TTY-001"
           ],
           "differences": [
-            "Synchronous output in bounded chunks, deferred callbacks; stdin readiness and ref/unref. Worker shared stdin is unavailable. No raw mode or terminal control. See docs/M6_DELIVERY.md."
+            "Synchronous bounded output with deferred callbacks; terminal conditional tty streams, paired raw ownership and resize documented in docs/TERMINAL_CONTRACT.md. Worker shared input is unavailable."
           ],
           "support": {
             "linux": {
@@ -5114,10 +5125,11 @@
           "task": "M6-01",
           "parameters": "Inherited standard descriptor as a Readable or Writable stream",
           "tests": [
-            "PROC-007"
+            "PROC-007",
+            "TTY-001"
           ],
           "differences": [
-            "Synchronous output in bounded chunks, deferred callbacks; stdin readiness and ref/unref. Worker shared stdin is unavailable. No raw mode or terminal control. See docs/M6_DELIVERY.md."
+            "Synchronous bounded output with deferred callbacks; terminal conditional tty streams, paired raw ownership and resize documented in docs/TERMINAL_CONTRACT.md. Worker shared input is unavailable."
           ],
           "support": {
             "linux": {
@@ -25675,6 +25687,537 @@
           }
         }
       ]
+    },
+    {
+      "specifier": "node:tty",
+      "aliases": [
+        "tty"
+      ],
+      "entries": [
+        {
+          "name": "isatty",
+          "status": "partial",
+          "task": "TTY-03",
+          "parameters": "Node v24.21.0 subset in docs/TERMINAL_CONTRACT.md",
+          "differences": [
+            "Constructs standard TTY descriptors only; Workers cannot read stdin or change modes. Bounded ASCII readline editing; no completer, grapheme layout, mouse or transactional Readline. Resize uses an unreferenced 100 ms poll."
+          ],
+          "tests": [
+            "TTY-001"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "TTY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source pinned Node comparison; scripts/test_terminal.py real PTY/ConPTY source/qjsc/SDK with native post-exit mode/display checks and raw logs"
+            }
+          ]
+        },
+        {
+          "name": "ReadStream",
+          "status": "partial",
+          "task": "TTY-03",
+          "parameters": "Node v24.21.0 subset in docs/TERMINAL_CONTRACT.md",
+          "differences": [
+            "Constructs standard TTY descriptors only; Workers cannot read stdin or change modes. Bounded ASCII readline editing; no completer, grapheme layout, mouse or transactional Readline. Resize uses an unreferenced 100 ms poll."
+          ],
+          "tests": [
+            "TTY-001"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "TTY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source pinned Node comparison; scripts/test_terminal.py real PTY/ConPTY source/qjsc/SDK with native post-exit mode/display checks and raw logs"
+            }
+          ]
+        },
+        {
+          "name": "WriteStream",
+          "status": "partial",
+          "task": "TTY-03",
+          "parameters": "Node v24.21.0 subset in docs/TERMINAL_CONTRACT.md",
+          "differences": [
+            "Constructs standard TTY descriptors only; Workers cannot read stdin or change modes. Bounded ASCII readline editing; no completer, grapheme layout, mouse or transactional Readline. Resize uses an unreferenced 100 ms poll."
+          ],
+          "tests": [
+            "TTY-001"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "TTY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source pinned Node comparison; scripts/test_terminal.py real PTY/ConPTY source/qjsc/SDK with native post-exit mode/display checks and raw logs"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:readline",
+      "aliases": [
+        "readline"
+      ],
+      "entries": [
+        {
+          "name": "Interface",
+          "status": "partial",
+          "task": "TTY-03",
+          "parameters": "Node v24.21.0 subset in docs/TERMINAL_CONTRACT.md",
+          "differences": [
+            "Constructs standard TTY descriptors only; Workers cannot read stdin or change modes. Bounded ASCII readline editing; no completer, grapheme layout, mouse or transactional Readline. Resize uses an unreferenced 100 ms poll."
+          ],
+          "tests": [
+            "TTY-001"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "TTY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source pinned Node comparison; scripts/test_terminal.py real PTY/ConPTY source/qjsc/SDK with native post-exit mode/display checks and raw logs"
+            }
+          ]
+        },
+        {
+          "name": "createInterface",
+          "status": "partial",
+          "task": "TTY-03",
+          "parameters": "Node v24.21.0 subset in docs/TERMINAL_CONTRACT.md",
+          "differences": [
+            "Constructs standard TTY descriptors only; Workers cannot read stdin or change modes. Bounded ASCII readline editing; no completer, grapheme layout, mouse or transactional Readline. Resize uses an unreferenced 100 ms poll."
+          ],
+          "tests": [
+            "TTY-001"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "TTY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source pinned Node comparison; scripts/test_terminal.py real PTY/ConPTY source/qjsc/SDK with native post-exit mode/display checks and raw logs"
+            }
+          ]
+        },
+        {
+          "name": "emitKeypressEvents",
+          "status": "partial",
+          "task": "TTY-03",
+          "parameters": "Node v24.21.0 subset in docs/TERMINAL_CONTRACT.md",
+          "differences": [
+            "Constructs standard TTY descriptors only; Workers cannot read stdin or change modes. Bounded ASCII readline editing; no completer, grapheme layout, mouse or transactional Readline. Resize uses an unreferenced 100 ms poll."
+          ],
+          "tests": [
+            "TTY-001"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "TTY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source pinned Node comparison; scripts/test_terminal.py real PTY/ConPTY source/qjsc/SDK with native post-exit mode/display checks and raw logs"
+            }
+          ]
+        },
+        {
+          "name": "cursorTo",
+          "status": "partial",
+          "task": "TTY-03",
+          "parameters": "Node v24.21.0 subset in docs/TERMINAL_CONTRACT.md",
+          "differences": [
+            "Constructs standard TTY descriptors only; Workers cannot read stdin or change modes. Bounded ASCII readline editing; no completer, grapheme layout, mouse or transactional Readline. Resize uses an unreferenced 100 ms poll."
+          ],
+          "tests": [
+            "TTY-001"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "TTY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source pinned Node comparison; scripts/test_terminal.py real PTY/ConPTY source/qjsc/SDK with native post-exit mode/display checks and raw logs"
+            }
+          ]
+        },
+        {
+          "name": "moveCursor",
+          "status": "partial",
+          "task": "TTY-03",
+          "parameters": "Node v24.21.0 subset in docs/TERMINAL_CONTRACT.md",
+          "differences": [
+            "Constructs standard TTY descriptors only; Workers cannot read stdin or change modes. Bounded ASCII readline editing; no completer, grapheme layout, mouse or transactional Readline. Resize uses an unreferenced 100 ms poll."
+          ],
+          "tests": [
+            "TTY-001"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "TTY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source pinned Node comparison; scripts/test_terminal.py real PTY/ConPTY source/qjsc/SDK with native post-exit mode/display checks and raw logs"
+            }
+          ]
+        },
+        {
+          "name": "clearLine",
+          "status": "partial",
+          "task": "TTY-03",
+          "parameters": "Node v24.21.0 subset in docs/TERMINAL_CONTRACT.md",
+          "differences": [
+            "Constructs standard TTY descriptors only; Workers cannot read stdin or change modes. Bounded ASCII readline editing; no completer, grapheme layout, mouse or transactional Readline. Resize uses an unreferenced 100 ms poll."
+          ],
+          "tests": [
+            "TTY-001"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "TTY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source pinned Node comparison; scripts/test_terminal.py real PTY/ConPTY source/qjsc/SDK with native post-exit mode/display checks and raw logs"
+            }
+          ]
+        },
+        {
+          "name": "clearScreenDown",
+          "status": "partial",
+          "task": "TTY-03",
+          "parameters": "Node v24.21.0 subset in docs/TERMINAL_CONTRACT.md",
+          "differences": [
+            "Constructs standard TTY descriptors only; Workers cannot read stdin or change modes. Bounded ASCII readline editing; no completer, grapheme layout, mouse or transactional Readline. Resize uses an unreferenced 100 ms poll."
+          ],
+          "tests": [
+            "TTY-001"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "TTY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source pinned Node comparison; scripts/test_terminal.py real PTY/ConPTY source/qjsc/SDK with native post-exit mode/display checks and raw logs"
+            }
+          ]
+        },
+        {
+          "name": "promises",
+          "status": "partial",
+          "task": "TTY-03",
+          "parameters": "Node v24.21.0 subset in docs/TERMINAL_CONTRACT.md",
+          "differences": [
+            "Constructs standard TTY descriptors only; Workers cannot read stdin or change modes. Bounded ASCII readline editing; no completer, grapheme layout, mouse or transactional Readline. Resize uses an unreferenced 100 ms poll."
+          ],
+          "tests": [
+            "TTY-001"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "TTY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source pinned Node comparison; scripts/test_terminal.py real PTY/ConPTY source/qjsc/SDK with native post-exit mode/display checks and raw logs"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "specifier": "node:readline/promises",
+      "aliases": [
+        "readline/promises"
+      ],
+      "entries": [
+        {
+          "name": "Interface",
+          "status": "partial",
+          "task": "TTY-03",
+          "parameters": "Node v24.21.0 subset in docs/TERMINAL_CONTRACT.md",
+          "differences": [
+            "Constructs standard TTY descriptors only; Workers cannot read stdin or change modes. Bounded ASCII readline editing; no completer, grapheme layout, mouse or transactional Readline. Resize uses an unreferenced 100 ms poll."
+          ],
+          "tests": [
+            "TTY-001"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "TTY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source pinned Node comparison; scripts/test_terminal.py real PTY/ConPTY source/qjsc/SDK with native post-exit mode/display checks and raw logs"
+            }
+          ]
+        },
+        {
+          "name": "createInterface",
+          "status": "partial",
+          "task": "TTY-03",
+          "parameters": "Node v24.21.0 subset in docs/TERMINAL_CONTRACT.md",
+          "differences": [
+            "Constructs standard TTY descriptors only; Workers cannot read stdin or change modes. Bounded ASCII readline editing; no completer, grapheme layout, mouse or transactional Readline. Resize uses an unreferenced 100 ms poll."
+          ],
+          "tests": [
+            "TTY-001"
+          ],
+          "support": {
+            "linux": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "darwin": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            },
+            "win32": {
+              "qjs": "partial",
+              "worker": "partial",
+              "qjsc": "partial",
+              "sdk": "partial"
+            }
+          },
+          "evidence": [
+            {
+              "test": "TTY-001",
+              "report": "build/node-compat/<platform>.json",
+              "scope": "Same-source pinned Node comparison; scripts/test_terminal.py real PTY/ConPTY source/qjsc/SDK with native post-exit mode/display checks and raw logs"
+            }
+          ]
+        }
+      ]
     }
   ],
   "unsupported": [
@@ -28354,6 +28897,7 @@
     }
   ],
   "extension_plans": [
-    "docs/QJB_FORMAT.md"
+    "docs/QJB_FORMAT.md",
+    "docs/TERMINAL_CONTRACT.md"
   ]
 }

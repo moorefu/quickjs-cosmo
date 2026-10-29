@@ -19,6 +19,7 @@ def report(root=ROOT):
         limits=dict(nativeTasks=dict(scope='runtime',threads=2,tasks=64,reservedBytes=64*1024*1024),
             sockets=dict(scope='runtime',count=32,inputBytes=65536,outputBytes=65536,tlsArenaBytes=8*1024*1024),
             childProcesses=dict(scope='runtime',count=16),
+            terminal=dict(scope='process',devices=16,owners=64,legacyDepth=32,resizePollMs=100,lineCharacters=65536,iteratorLines=64,historyEntries=1000),
             stdio=dict(scope='process',readers=1,writeChunkBytes=65536,pollIntervalMs=10)),
         backends=[dict(id=x['id'],delivery=x['delivery'],sourceAdmission=x['admission']) for x in native['libraries']],
         modules=inventory['modules'],globals=inventory['globals'],

@@ -75,6 +75,7 @@ jobs:
         with:
           name: reports-build-linux-x86_64
           path: |
+            build/terminal/
             build/test-results/*.json
             build/runtime-audit/nightly-regression-*.json
             build/node-compat/*.json
@@ -144,6 +145,7 @@ jobs:
           name: reports-${{ matrix.runner }}
           # Only aggregate reports; per-case fixtures contain inherited environments.
           path: |
+            build/terminal/
             build/release-evidence/*.json
             build/test-results/*.json
             build/runtime-audit/nightly-regression-*.json

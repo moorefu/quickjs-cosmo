@@ -1,0 +1,121 @@
+--- a/quickjs-libc.c
++++ b/quickjs-libc.c
+@@ -1936,19 +1936,7 @@
+ static JSValue js_os_ttySetRaw(JSContext *ctx, JSValueConst this_val,
+                                int argc, JSValueConst *argv)
+ {
+-    int fd;
+-    HANDLE handle;
+-
+-    if (JS_ToInt32(ctx, &fd, argv[0]))
+-        return JS_EXCEPTION;
+-    handle = (HANDLE)_get_osfhandle(fd);
+-    SetConsoleMode(handle, ENABLE_WINDOW_INPUT | __ENABLE_VIRTUAL_TERMINAL_INPUT);
+-    _setmode(fd, _O_BINARY);
+-    if (fd == 0) {
+-        handle = (HANDLE)_get_osfhandle(1); /* corresponding output */
+-        SetConsoleMode(handle, ENABLE_PROCESSED_OUTPUT | ENABLE_WRAP_AT_EOL_OUTPUT | __ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+-    }
+-    return JS_UNDEFINED;
++    return js_cosmo_tty_legacy(ctx, argc, argv);
+ }
+ #else
+ static JSValue js_os_ttyGetWinSize(JSContext *ctx, JSValueConst this_val,
+@@ -1961,7 +1949,7 @@
+     if (JS_ToInt32(ctx, &fd, argv[0]))
+         return JS_EXCEPTION;
+     if (ioctl(fd, TIOCGWINSZ, &ws) == 0 &&
+-        ws.ws_col >= 4 && ws.ws_row >= 4) {
++        ws.ws_col >= 1 && ws.ws_row >= 1) {
+         obj = JS_NewArray(ctx);
+         if (JS_IsException(obj))
+             return obj;
+@@ -1973,40 +1961,10 @@
+     }
+ }
+ 
+-static struct termios oldtty;
+-
+-static void term_exit(void)
+-{
+-    tcsetattr(0, TCSANOW, &oldtty);
+-}
+-
+-/* XXX: should add a way to go back to normal mode */
+ static JSValue js_os_ttySetRaw(JSContext *ctx, JSValueConst this_val,
+                                int argc, JSValueConst *argv)
+ {
+-    struct termios tty;
+-    int fd;
+-
+-    if (JS_ToInt32(ctx, &fd, argv[0]))
+-        return JS_EXCEPTION;
+-
+-    memset(&tty, 0, sizeof(tty));
+-    tcgetattr(fd, &tty);
+-    oldtty = tty;
+-
+-    tty.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP
+-                          |INLCR|IGNCR|ICRNL|IXON);
+-    tty.c_oflag |= OPOST;
+-    tty.c_lflag &= ~(ECHO|ECHONL|ICANON|IEXTEN);
+-    tty.c_cflag &= ~(CSIZE|PARENB);
+-    tty.c_cflag |= CS8;
+-    tty.c_cc[VMIN] = 1;
+-    tty.c_cc[VTIME] = 0;
+-
+-    tcsetattr(fd, TCSANOW, &tty);
+-
+-    atexit(term_exit);
+-    return JS_UNDEFINED;
++    return js_cosmo_tty_legacy(ctx, argc, argv);
+ }
+ 
+ #endif /* !_WIN32 */
+@@ -2184,7 +2142,7 @@
+             handler = SIG_DFL;
+         else
+             handler = SIG_IGN;
+-        signal(sig_num, handler);
++        js_cosmo_tty_signal(sig_num, handler);
+     } else {
+         if (!JS_IsFunction(ctx, func))
+             return JS_ThrowTypeError(ctx, "not a function");
+@@ -2198,7 +2156,7 @@
+         }
+         JS_FreeValue(ctx, sh->func);
+         sh->func = JS_DupValue(ctx, func);
+-        signal(sig_num, os_signal_handler);
++        js_cosmo_tty_signal(sig_num, os_signal_handler);
+     }
+     return JS_UNDEFINED;
+ }
+@@ -4277,7 +4235,7 @@
+     JS_CFUNC_MAGIC_DEF("write", 4, js_os_read_write, 1 ),
+     JS_CFUNC_DEF("isatty", 1, js_os_isatty ),
+     JS_CFUNC_DEF("ttyGetWinSize", 1, js_os_ttyGetWinSize ),
+-    JS_CFUNC_DEF("ttySetRaw", 1, js_os_ttySetRaw ),
++    JS_CFUNC_DEF("ttySetRaw", 2, js_os_ttySetRaw ),
+     JS_CFUNC_DEF("remove", 1, js_os_remove ),
+     JS_CFUNC_DEF("rename", 2, js_os_rename ),
+     JS_CFUNC_MAGIC_DEF("setReadHandler", 2, js_os_setReadHandler, 0 ),
+@@ -4289,6 +4247,9 @@
+     OS_FLAG(SIGILL),
+     OS_FLAG(SIGSEGV),
+     OS_FLAG(SIGTERM),
++#if !defined(_WIN32)
++    OS_FLAG(SIGWINCH),
++#endif
+ #if !defined(_WIN32)
+     OS_FLAG(SIGQUIT),
+     OS_FLAG(SIGPIPE),
+--- a/quickjs.c
++++ b/quickjs.c
+@@ -2829,6 +2829,7 @@
+     if (--js_rc(ctx)->ref_count > 0)
+         return;
+     assert(js_rc(ctx)->ref_count == 0);
++    js_cosmo_tasks_close_context(ctx);
+ 
+ #ifdef DUMP_ATOMS
+     JS_DumpAtoms(ctx->rt);

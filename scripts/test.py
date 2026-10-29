@@ -163,6 +163,9 @@ def main():
 
     check('custom/runtime-bundle-unmounted',[qjs,'-m',ROOT/'tests/runtime_bundle.mjs'],contains='PASS runtime-bundle-unmounted')
     if args.compile:
+        check('qjsc/compile-terminal',[qjsc,'-m','-D',ROOT/'tests/fixtures/terminal-worker.mjs','-o',scratch/'terminal-standalone.exe',ROOT/'tests/runtime_terminal.mjs'],timeout=180)
+        check('sdk/compile-terminal',[settings.toolchain/'bin/cosmocc','-O2','-D_COSMO_SOURCE','-I'+str(ROOT/('upstream/cosmopolitan-native-'+settings.data['cosmopolitan']['commit'][:12])),'-I'+str(settings.dist),ROOT/'tests/native/terminal.c',settings.dist/'libquickjs.a','-lm','-lpthread','-ldl','-Wl,--wrap=_Exit,-u,__wrap__Exit','-o',scratch/'terminal-sdk.exe'],timeout=180)
+        check('custom/terminal-all-entries',[sys.executable,ROOT/'scripts/test_terminal.py','--qjs',qjs,'--compiled',scratch/'terminal-standalone.exe','--sdk',scratch/'terminal-sdk.exe'],contains='PASS terminal all entries:',timeout=240)
         check('qjsc/compile-bundle-unmounted',[qjsc,'-m','-o',scratch/'bundle-unmounted.exe',ROOT/'tests/runtime_bundle.mjs'],timeout=180)
         check('qjsc/run-bundle-unmounted',[scratch/'bundle-unmounted.exe'],contains='PASS runtime-bundle-unmounted')
         check('sdk/compile-bundle',[settings.toolchain/'bin/cosmocc','-O2','-I'+str(settings.dist),ROOT/'tests/native/bundle.c',settings.dist/'libquickjs.a','-lm','-lpthread','-ldl','-Wl,--wrap=_Exit,-u,__wrap__Exit','-o',scratch/'bundle-sdk.exe'],timeout=180)
@@ -328,6 +331,7 @@ def main():
                  timeout=180):
             check("sdk/run-registry", [scratch / "registry-sdk.exe"], contains="PASS module-registry-sdk")
     if args.standalone:
+        check('custom/terminal-all-entries',[sys.executable,ROOT/'scripts/test_terminal.py','--qjs',qjs,'--compiled',args.standalone.resolve().parent/'terminal-standalone.exe','--sdk',args.standalone.resolve().parent/'terminal-sdk.exe'],contains='PASS terminal all entries:',timeout=240)
         check('qjsc/cross-host-bundle-unmounted',[args.standalone.resolve().parent/'bundle-unmounted.exe'],contains='PASS runtime-bundle-unmounted')
         check('custom/qjb-cross-host',[sys.executable,ROOT/'scripts/test_bundle.py','--qjs',qjs,'--sdk',args.standalone.resolve().parent/'bundle-sdk.exe'],contains='PASS qjb:',timeout=120)
         check('custom/host-filesystem-all-entries',[sys.executable,ROOT/'scripts/test_host_filesystem.py','--qjs',qjs,'--compiled',args.standalone.resolve().parent/'host-filesystem-standalone.exe','--sdk',args.standalone.resolve().parent/'host-filesystem-sdk.exe'],contains='PASS host filesystem:',timeout=180)

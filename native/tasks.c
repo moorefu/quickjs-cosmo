@@ -11,6 +11,7 @@
 #include "process/async.h"
 #include "net/net.h"
 #include "stdio/binding.h"
+#include "tty.h"
 
 enum { THREADS=2,CAPACITY=64,MAX_RESERVED=64*1024*1024 };
 enum { PREPARED,QUEUED,RUNNING,READY };
@@ -244,6 +245,7 @@ int js_cosmo_tasks_poll(JSContext *ctx) {
 }
 void js_cosmo_tasks_close_context(JSContext *ctx) {
     js_cosmo_stdio_close_context(ctx);
+    js_cosmo_tty_close_context(ctx);
     js_cosmo_net_close_context(ctx);
     js_cosmo_process_close_context(ctx);
     Pool *p=find_pool(JS_GetRuntime(ctx));if(!p)return;
@@ -268,6 +270,7 @@ void js_cosmo_tasks_close_context(JSContext *ctx) {
 }
 void js_cosmo_tasks_shutdown(JSRuntime *rt) {
     js_cosmo_stdio_shutdown(rt);
+    js_cosmo_tty_shutdown(rt);
     js_cosmo_net_shutdown(rt);
     js_cosmo_process_shutdown(rt);
     pthread_mutex_lock(&registry_mutex);Pool **link=&registry;

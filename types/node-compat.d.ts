@@ -13,6 +13,7 @@
 /// <reference path="./network.d.ts" />
 /// <reference path="./stream.d.ts" />
 /// <reference path="./tls.d.ts" />
+/// <reference path="./terminal.d.ts" />
 /// <reference path="./zlib-streams.d.ts" />
 /// <reference path="./zlib.d.ts" />
 // The implemented ESM subset. This file does not declare unimplemented Node APIs.
@@ -194,8 +195,10 @@ declare module 'events' { export * from 'node:events'; export { default } from '
 declare module 'node:process' {
     import { EventEmitter } from 'node:events';
     import {Readable,Writable} from 'node:stream';
-    export interface InputStream extends Readable {readonly fd:0;readonly isTTY?:true;ref():this;unref():this;}
-    export interface OutputStream extends Writable {readonly fd:1|2;readonly isTTY?:true;}
+    export interface PipeInputStream extends Readable {readonly fd:0;readonly isTTY?:undefined;ref():this;unref():this;}
+    export type InputStream=PipeInputStream|import('node:tty').ReadStream;
+    export interface PipeOutputStream extends Writable {readonly fd:1|2;readonly isTTY?:undefined;}
+    export type OutputStream=PipeOutputStream|import('node:tty').WriteStream;
     export interface ProcessEnv { [name: string]: string | undefined; }
     export interface Process extends EventEmitter {
         readonly stdin:InputStream;readonly stdout:OutputStream;readonly stderr:OutputStream;

@@ -39,7 +39,7 @@ def validate(inventory, root=ROOT):
     tasks = set(re.findall(r"\bM[0-6]-[0-9]{2}\b", plan))
     for extension in inventory.get("extension_plans", []):
         text = checked_file(root, extension).read_text(encoding="utf-8")
-        tasks.update(re.findall(r"\bQJB-[0-9]{2}\b", text))
+        tasks.update(re.findall(r"\b(?:QJB|TTY)-[0-9]{2}\b", text))
     tests = {}
     for test in inventory["tests"]:
         identifier = test["id"]

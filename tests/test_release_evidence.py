@@ -26,7 +26,10 @@ class ReleaseEvidenceTests(unittest.TestCase):
         baseline=evidence.read(ROOT/'compat/node-baseline.json');oracle=baseline['artifacts'][node_oracle_key(host)]
         node=dict(version=baseline['version'],platform=platform,arch='x64' if execution=='x86_64' else execution,execPath='node',sha256=oracle['sha256'],verification=dict(artifact=oracle['file'],artifact_sha256=oracle['sha256'],executable_sha256=oracle['sha256']))
         checks=sorted(evidence.expected_checks(ROOT,build,platform));contract=evidence.read(ROOT/'compat/release-checks.json')
-        return dict(format=1,runner=runner,host=host,inputs=copy.deepcopy(self.inputs),node=node,passed=len(checks),failed=0,
+        from test_terminal import expected_cases
+        records=[dict(entry=entry,case=case,logs={'input.bin':'a'*64},**({'noAutomaticAnsi':True} if case=='pipe' else {'restored':True,'result':[1,0,0,0,0]})) for entry,case in sorted(expected_cases())]
+        terminal=dict(host=host,qjsSha256=self.inputs['qjsSha256'],transport='ConPTY' if platform=='win32' else 'PTY',records=records)
+        return dict(format=1,runner=runner,host=host,inputs=copy.deepcopy(self.inputs),node=node,terminal=terminal,passed=len(checks),failed=0,
             skipped=[contract['windows_skip']] if platform=='win32' else [],checks=checks,
             nodeTests=[t['id'] for t in evidence.read(ROOT/'compat/node-api.json')['tests'] if t['status']=='differential'])
 
@@ -36,6 +39,18 @@ class ReleaseEvidenceTests(unittest.TestCase):
     def test_empty_success_is_rejected(self):
         value=self.value();value.update(checks=[],passed=0)
         with self.assertRaises(ValueError):evidence.validate_evidence(self.settings,value)
+
+    def test_missing_terminal_case_is_rejected(self):
+        value=self.value();value['terminal']['records'].pop()
+        with self.assertRaisesRegex(ValueError,'terminal evidence'):evidence.validate_evidence(self.settings,value)
+
+    def test_missing_terminal_log_is_rejected(self):
+        value=self.value();value['terminal']['records'][0]['logs']={}
+        with self.assertRaisesRegex(ValueError,'raw log evidence'):evidence.validate_evidence(self.settings,value)
+
+    def test_stale_terminal_binary_is_rejected(self):
+        value=self.value();value['terminal']['qjsSha256']='stale'
+        with self.assertRaisesRegex(ValueError,'terminal evidence'):evidence.validate_evidence(self.settings,value)
 
     def test_missing_sdk_check_is_rejected(self):
         value=self.value();value['checks'].remove('sdk/cross-host-lifecycle');value['passed']-=1

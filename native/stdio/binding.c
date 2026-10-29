@@ -12,7 +12,7 @@
 #include "../module_registry.h"
 #include "../runtime_state.h"
 #include "../process/binding.h"
-typedef struct {JSRuntime *rt;JSContext *ctx;JSValue callback;int referenced;} Input;
+typedef struct {JSRuntime *rt;JSContext *ctx;JSValue callback;int referenced,owner;} Input;
 static Input *reader;
 static pthread_mutex_t mutex=PTHREAD_MUTEX_INITIALIZER;
 static JSValue failure(JSContext *ctx,const char *code,const char *message){
@@ -22,22 +22,24 @@ static JSValue failure(JSContext *ctx,const char *code,const char *message){
 static void release(Input *input){if(!input)return;JSContext *ctx=input->ctx;JSValue callback=input->callback;js_free_rt(input->rt,input);JS_FreeValue(ctx,callback);JS_FreeContext(ctx);}
 void js_cosmo_stdio_close_context(JSContext *ctx){pthread_mutex_lock(&mutex);Input *old=reader&&reader->ctx==ctx?reader:NULL;if(old)reader=NULL;pthread_mutex_unlock(&mutex);release(old);}
 void js_cosmo_stdio_shutdown(JSRuntime *rt){pthread_mutex_lock(&mutex);Input *old=reader&&reader->rt==rt?reader:NULL;if(old)reader=NULL;pthread_mutex_unlock(&mutex);release(old);}
+static void unwatch(JSContext *ctx,int owner){pthread_mutex_lock(&mutex);Input *old=reader&&reader->ctx==ctx&&reader->owner==owner?reader:NULL;if(old)reader=NULL;pthread_mutex_unlock(&mutex);release(old);}
 static JSValue watch(JSContext *ctx,JSValueConst self,int argc,JSValueConst *argv){
     if(argc<1)return JS_ThrowTypeError(ctx,"Missing stdin callback");
-    if(JS_IsNull(argv[0])){js_cosmo_stdio_close_context(ctx);return JS_UNDEFINED;}
+    int owner=0;if(argc>2&&JS_ToInt32(ctx,&owner,argv[2])<0)return JS_EXCEPTION;
+    if(JS_IsNull(argv[0])){unwatch(ctx,owner);return JS_UNDEFINED;}
     if(!JS_IsFunction(ctx,argv[0]))return JS_ThrowTypeError(ctx,"Expected stdin callback");
     CosmoRuntimeState *state=js_cosmo_state(ctx);if(!state)return JS_EXCEPTION;
     if(state->worker)return failure(ctx,"ERR_WORKER_UNSUPPORTED_OPERATION","Shared stdin reading is unavailable in QuickJS Worker");
     if(js_cosmo_scheduler_stopped(ctx))return failure(ctx,"ERR_RUNTIME_CLOSED","Runtime is closed");
     int referenced=argc<2?1:JS_ToBool(ctx,argv[1]);if(referenced<0)return JS_EXCEPTION;
-    pthread_mutex_lock(&mutex);int busy=reader&&reader->ctx!=ctx;pthread_mutex_unlock(&mutex);
+    pthread_mutex_lock(&mutex);int busy=reader&&(reader->ctx!=ctx||reader->owner!=owner);pthread_mutex_unlock(&mutex);
     if(busy)return failure(ctx,"ERR_STDIN_BUSY","Only one Context can read process stdin");
     Input *fresh=js_mallocz(ctx,sizeof(*fresh));if(!fresh)return JS_EXCEPTION;
-    fresh->rt=JS_GetRuntime(ctx);fresh->ctx=JS_DupContext(ctx);fresh->callback=JS_DupValue(ctx,argv[0]);fresh->referenced=referenced;
-    pthread_mutex_lock(&mutex);Input *old=reader;busy=old&&old->ctx!=ctx;if(!busy)reader=fresh;pthread_mutex_unlock(&mutex);
+    fresh->rt=JS_GetRuntime(ctx);fresh->ctx=JS_DupContext(ctx);fresh->callback=JS_DupValue(ctx,argv[0]);fresh->referenced=referenced;fresh->owner=owner;
+    pthread_mutex_lock(&mutex);Input *old=reader;busy=old&&(old->ctx!=ctx||old->owner!=owner);if(!busy)reader=fresh;pthread_mutex_unlock(&mutex);
     if(busy){release(fresh);return failure(ctx,"ERR_STDIN_BUSY","Only one Context can read process stdin");}release(old);return JS_UNDEFINED;
 }
-static JSValue reference(JSContext *ctx,JSValueConst self,int argc,JSValueConst *argv){int value=argc?JS_ToBool(ctx,argv[0]):1;if(value<0)return JS_EXCEPTION;pthread_mutex_lock(&mutex);if(reader&&reader->ctx==ctx)reader->referenced=value;pthread_mutex_unlock(&mutex);return JS_UNDEFINED;}
+static JSValue reference(JSContext *ctx,JSValueConst self,int argc,JSValueConst *argv){int value=argc?JS_ToBool(ctx,argv[0]):1,owner=0;if(value<0||(argc>1&&JS_ToInt32(ctx,&owner,argv[1])<0))return JS_EXCEPTION;pthread_mutex_lock(&mutex);if(reader&&reader->ctx==ctx&&reader->owner==owner)reader->referenced=value;pthread_mutex_unlock(&mutex);return JS_UNDEFINED;}
 int js_cosmo_stdio_pending(JSRuntime *rt){pthread_mutex_lock(&mutex);int result=reader&&reader->rt==rt&&reader->referenced;pthread_mutex_unlock(&mutex);return result;}
 int js_cosmo_stdio_active(JSRuntime *rt){pthread_mutex_lock(&mutex);int result=reader&&reader->rt==rt;pthread_mutex_unlock(&mutex);return result;}
 int js_cosmo_stdio_poll(JSContext *current){

@@ -6,10 +6,13 @@
 #include <libc/calls/state.internal.h>
 
 extern void __real__Exit(int) __attribute__((noreturn));
+extern void js_cosmo_tty_restore_all(void) __attribute__((weak));
 __static_yoink("qjs_cosmo_process_link");
 
 /* exit() still runs its destructors and flushes stdio before reaching here. */
 void __wrap__Exit(int status) {
+    if (!__vforked && js_cosmo_tty_restore_all)
+        js_cosmo_tty_restore_all();
     /* A simulated vfork must first unwind to its parent on exec failure. */
     if (IsWindows() && !__vforked)
         TerminateThisProcess((uint32_t)status);

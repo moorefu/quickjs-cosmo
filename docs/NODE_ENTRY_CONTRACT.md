@@ -71,3 +71,7 @@ M6-01 补充：Windows 用户参数从固定 Nightly 的原始命令行解析器
 包内 import.meta 只设置规范地址和 main；主入口及 Worker 入口的 main 为 true，依赖为 false。包内地址不交给宿主 realpath。只读归档的原生引用独立于 JS Runtime/Context opaque，最后一个持有者销毁后释放。完整格式、预算和错误码见 [QJB v1](QJB_FORMAT.md)。
 
 SDK 主机先安装现有模块加载器、事件处理器和 Worker Context 工厂，再调用 `js_cosmo_set_cli(ctx, argc, argv, 1, 5)` 建立包参数，以及 `js_cosmo_bundle_eval(ctx, argv[1])` 执行包；mode 5 保留 SDK 入口身份。最后正常运行事件循环并释放 Context/Runtime。示例见 [tests/native/bundle.c](../tests/native/bundle.c)。生成的 qjsc 应用没有新增包启动命令；未挂载时资源 API 返回明确的 ERR_QJB_MOUNT。
+
+## Terminal extension (#4)
+
+`node:tty`, `node:readline` and `node:readline/promises` provide the bounded Node subset in [TERMINAL_CONTRACT.md](TERMINAL_CONTRACT.md). Process stdio uses TTY classes only when attached. Legacy `os.ttySetRaw(fd, enabled = true)` has paired, nested release. Real PTY/ConPTY source/qjsc/SDK evidence and post-exit native modes are required; applications own their ANSI cursor/screen changes.

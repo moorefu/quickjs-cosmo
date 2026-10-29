@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CORE_SOURCES = ("src/js/internal/errors.js", "src/js/internal/encoding.js", "src/js/node/buffer.js",
                 "src/js/node/events.js", "src/js/node/process.js", "src/js/node/path-adapter.js",
                 "src/js/node/os.js", "src/js/node/util.js", "src/js/node/assert.js", "src/js/node/console.js",
-                "src/js/internal/abort.js", "src/js/node/timers.js", "src/js/node/stream.js", "src/js/internal/stdio.js", "src/js/node/dns.js", "src/js/node/net.js", "src/js/node/tls.js", "src/js/node/url.js", "src/js/node/fs-async.js", "src/js/node/fs-streams.js", "src/js/node/fs.js", "src/js/node/crypto-keys.js", "src/js/node/crypto-cipher.js", "src/js/node/crypto.js",
+                "src/js/internal/abort.js", "src/js/node/timers.js", "src/js/node/stream.js", "src/js/internal/stdio.js", "src/js/node/readline.js", "src/js/node/dns.js", "src/js/node/net.js", "src/js/node/tls.js", "src/js/node/url.js", "src/js/node/fs-async.js", "src/js/node/fs-streams.js", "src/js/node/fs.js", "src/js/node/crypto-keys.js", "src/js/node/crypto-cipher.js", "src/js/node/crypto.js",
                 "src/js/internal/compression-constants.js", "src/js/node/zlib.js", "src/js/node/http.js", "src/js/node/https.js", "src/js/internal/web-streams.js", "src/js/internal/fetch.js", "src/js/node/child-process-async.js", "src/js/node/child_process.js")
 
 
@@ -40,7 +40,8 @@ const os = createOs(native, process, path);
 const url = createURLModule(native, process, path, dns.isIP);
 dns.setDomainNormalizer(url.domainToASCII);
 const fs = createFs(native, path, streams.api);
-installStdio(native,process,streams,fs);
+const tty=installStdio(native,process,streams,fs);
+const readline=createReadline(process,streams);
 let extraCA=null;
 const extraCAFile=process.env.NODE_EXTRA_CA_CERTS;
 if(extraCAFile){
@@ -82,6 +83,7 @@ return {
     'node:assert': assertionExports(assert), 'node:assert/strict': assertionExports(strictAssert),
     'node:timers': exportObject(scheduler.api), 'node:timers/promises': exportObject(scheduler.promises),
     'node:stream': {...exportObject(streams.api), default: streams.default}, 'node:stream/promises': exportObject(streams.promises),
+    'node:tty': exportObject(tty), 'node:readline': exportObject(readline.api), 'node:readline/promises': exportObject(readline.promises),
     'node:fs': exportObject(fs), 'node:fs/promises': exportObject(fs.promises),
     'node:crypto': exportObject(crypto.api), 'cosmo:crypto': exportObject(crypto.extensions),
     'node:zlib': exportObject(compression.api), 'cosmo:compression': exportObject(compression.extensions),
