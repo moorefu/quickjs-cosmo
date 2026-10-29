@@ -43,4 +43,16 @@ class HostIdentityTests(unittest.TestCase):
             run=subprocess.CompletedProcess([],0,'HOST_FILESYSTEM_RESULT '+json.dumps(value)+'\n','')
             with patch.object(driver.subprocess,'run',return_value=run),self.assertRaises(AssertionError):driver.observe([], {})
 
+    def test_target_parent_alias_uses_native_identity(self):
+        with tempfile.TemporaryDirectory() as name:
+            parent=Path(name);target=parent/'identity';target.mkdir();alias=parent/'alias-parent'
+            value=self.value(target,target)
+            for row in value['main']['links']:row['readlink'][0]=str(alias/Path(row['target']).relative_to(parent))
+            samefile=driver.os.path.samefile
+            def translate(path):
+                value=Path(path)
+                return parent/value.relative_to(alias) if value.is_relative_to(alias) else value
+            run=subprocess.CompletedProcess([],0,'HOST_FILESYSTEM_RESULT '+json.dumps(value)+'\n','')
+            with patch.object(driver.subprocess,'run',return_value=run),patch.object(driver.os.path,'samefile',side_effect=lambda a,b:samefile(translate(a),translate(b))):driver.observe([], {})
+
 if __name__=='__main__':unittest.main()

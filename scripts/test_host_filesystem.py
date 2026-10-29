@@ -20,6 +20,14 @@ def native_path(name):
         if len(name)==2 and name[1]==':':name+='\\'
     return name
 
+def directory_link(link,target):
+    if os.name=='nt':
+        run=subprocess.run(['cmd','/d','/c','mklink','/J',str(link),str(target)],capture_output=True,timeout=15)
+        assert run.returncode==0,run.stderr
+        native=link.lstat();assert native.st_file_attributes&0x400 and native.st_reparse_tag==0xa0000003,link
+    else:link.symlink_to(target,target_is_directory=True)
+
+
 def setup(root):
     links=[]
     for label in ('main','worker'):
@@ -27,11 +35,7 @@ def setup(root):
         unicode=directory/'目标 空格';unicode.mkdir()
         for link,target in ((directory/'linked',target),(directory/'联接 空格',unicode),
                             (directory/'chain',directory/'linked'),(directory/'dangling',directory/'missing-junction-target')):
-            if os.name=='nt':
-                run=subprocess.run(['cmd','/d','/c','mklink','/J',str(link),str(target)],capture_output=True,timeout=15)
-                assert run.returncode==0,run.stderr
-                native=link.lstat();assert native.st_file_attributes&0x400 and native.st_reparse_tag==0xa0000003,link
-            else:link.symlink_to(target,target_is_directory=True)
+            directory_link(link,target)
             links.append(link)
     return links
 
@@ -60,7 +64,11 @@ def observe(command,environment):
             assert row['readlink'][1]==0,row
             actual=os.path.normcase(os.path.normpath(native_path(row['readlink'][0])))
             expected=os.path.normcase(os.path.normpath(row['target']))
-            assert actual==expected,row
+            # UNC shares and junction ancestors may name the same directory
+            # differently. The final name and native parent identity must agree,
+            # including when the target itself is deliberately absent.
+            assert os.path.basename(actual)==os.path.basename(expected),row
+            assert os.path.samefile(os.path.dirname(actual),os.path.dirname(expected)),row
             if row['dangling']:
                 assert row['stat'][1]!=0 and row['syncStat']==row['asyncStat']=='ENOENT',row
                 assert not Path(row['target']).exists(),row
@@ -107,6 +115,12 @@ def main():
             'sdk':lambda directory:ape_command(args.sdk.resolve(),[str(FIXTURE),str(directory)],args.qjs.resolve().parent)}
         for label,command in commands.items():
             root=base/(label+' 中文 空格');root.mkdir();check(command(root),root,environment)
+            physical=base/(label+' physical');physical.mkdir();alias=base/(label+' alias')
+            directory_link(alias,physical)
+            try:check(command(alias),physical,environment)
+            finally:
+                if os.name=='nt':alias.rmdir()
+                else:alias.unlink()
             if os.name=='nt':
                 app=base/(label+' startup');app.mkdir();links=setup(app)
                 try:
